@@ -1,4 +1,6 @@
-# cse125-sp22-group2
+# Team Big Skrrt Studios
+Our game is Skrrt Skirt: a 3-versus-1 game of everse tag in which one player possesses a crown and three other players try to steal that crown for themselves. 
+The goal of the game is to possess the crown for the most amount of time.
 
 # Library Downloads
 This section lists all of the libraries required to build the project.
