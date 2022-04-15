@@ -27,10 +27,20 @@ namespace cse125framing {
 		Action action;
 	} Frame;
 
-	// Serializes the Frame into the given buffer
+	/**
+	 * @brief Serializes the Frame into the given buffer
+	 * 
+	 * @param frame   game state data
+	 * @param buffer  game state data byte array output 
+	 */
 	void serialize(const Frame* frame, boost::array<char, cse125constants::FRAME_BUFFER_SIZE>& buffer);
 
-	// Sets the fields of the Frame from the given buffer
+	/**
+	 * @brief Sets the fields of the Frame from the given buffer
+	 * 
+	 * @param frame   game state data
+	 * @param buffer  game state data byte array input
+	 */
 	void deserialize(Frame* frame, const boost::array<char, cse125constants::FRAME_BUFFER_SIZE>& buffer);
 
 	std::ostream& operator<<(std::ostream& os, const Action& action);
