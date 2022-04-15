@@ -7,7 +7,7 @@ The goal of the game is to possess the crown for the most amount of time.
 # Library Downloads
 This section lists all of the libraries required to build the project.
 - [GLM](https://sourceforge.net/projects/glm.mirror/)
-- [Boost / Asio](https://www.boost.org/users/download/)
+- [Boost](https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/)
 
 # Visual Studio Configuration
 ## Additional Include Directories
