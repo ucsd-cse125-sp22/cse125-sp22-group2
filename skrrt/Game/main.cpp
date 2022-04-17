@@ -31,10 +31,12 @@ void printHelp(){
       press Esc to quit.
       press 'O' to save a screenshot.
       press the arrow keys to rotate camera.
-      press 'A'/'Z' to zoom.
+      press 'Z' to zoom.
       press 'R' to reset camera.
       press 'L' to turn on/off the lighting.
     
+      press 'W' 'A' 'S' 'D' to move. 
+
       press Spacebar to generate images for hw3 submission.
     
 )";
