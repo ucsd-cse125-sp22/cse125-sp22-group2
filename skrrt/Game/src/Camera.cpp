@@ -33,33 +33,27 @@ glm::mat3 rotation(const float degrees,const glm::vec3 axis){
 
 void Camera::rotateRight(const float degrees){
     glm::vec3 targetToEye = eye - target;
-    // camera basis Cex, Cey, Cez
-    glm::vec3 Cez = glm::normalize(targetToEye);
-    glm::vec3 Cey = glm::normalize(up - glm::dot(Cez,up)*Cez);
-    glm::vec3 Cex = glm::cross(Cey,Cez);
     
-    glm::vec3 axis = Cey;
-    glm::vec3 targetToEye_new = rotation(degrees, axis)*targetToEye;
+    //glm::vec3 axis = glm::cross(targetToEye, up);
+    glm::mat3 rotMat = rotation(degrees, glm::vec3(0.0f,1.0f,0.0f));
+    glm::vec3 targetToEye_new = targetToEye * rotMat;
     eye = target + targetToEye_new;
-    up = Cey;
+    up = up * rotMat;
 }
 void Camera::rotateUp(const float degrees){
     glm::vec3 targetToEye = eye - target;
-    // camera basis Cex, Cey, Cez
-    glm::vec3 Cez = glm::normalize(targetToEye);
-    glm::vec3 Cey = glm::normalize(up - glm::dot(Cez,up)*Cez);
-    glm::vec3 Cex = glm::cross(Cey,Cez);
     
-    glm::vec3 axis = -Cex;
-    glm::vec3 targetToEye_new = rotation(degrees, axis)*targetToEye;
+    glm::vec3 axis = glm::cross(targetToEye, up);
+    glm::mat3 rotMat = rotation(-1.0f * degrees, axis); // invert controls with -1
+    glm::vec3 targetToEye_new = targetToEye * rotMat;
     eye = target + targetToEye_new;
-    up = Cey;
+    up = up * rotMat;
 }
 void Camera::zoom(const float factor){
     eye = target + factor * (eye - target);
 }
 
-void Camera::moveForward(const float distance) {
+void Camera::movePositionForward(const float distance) {
     glm::vec3 targetToEye = eye - target;
     
     // calculate sideways vector
@@ -77,7 +71,7 @@ void Camera::moveForward(const float distance) {
 }
 
 // Left is positive distance, right is negitive distance
-void Camera::moveSideways(const float distance) {
+void Camera::movePositionSideways(const float distance) {
     glm::vec3 targetToEye = eye - target;
     glm::vec3 directionToMove = glm::cross(targetToEye, up);
     directionToMove.y = 0.0f; // Only want to move in xz plane, so remove y component.

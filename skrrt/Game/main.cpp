@@ -22,6 +22,9 @@ static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 
+static int mouseX = 0.0f;
+static int mouseY = 0.0f;
+
 #include "hw3AutoScreenshots.h"
 
 void printHelp(){
@@ -88,19 +91,19 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> moveSideways(0.1f);
+            scene.camera -> movePositionSideways(0.1f);
             glutPostRedisplay();
             break;
         case 'd':
-            scene.camera -> moveSideways(-0.1f);
+            scene.camera -> movePositionSideways(-0.1f);
             glutPostRedisplay();
             break;
         case 'w':
-            scene.camera -> moveForward(0.1f);
+            scene.camera -> movePositionForward(0.1f);
             glutPostRedisplay();
             break;
         case 's':
-            scene.camera -> moveForward(-0.1f);
+            scene.camera -> movePositionForward(-0.1f);
             glutPostRedisplay();
             break;
         case 'z':
@@ -141,6 +144,21 @@ void specialKey(int key, int x, int y){
     }
 }
 
+void mouseMovement(int x, int y) {
+	int maxDelta = 100;
+	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
+	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
+
+	mouseX = x;
+	mouseY = y;
+
+    if (dx != 0 || dy != 0) {
+        scene.camera->rotateRight(dx);
+        scene.camera->rotateUp(dy);
+        glutPostRedisplay();
+    }
+}
+
 int main(int argc, char** argv)
 {
     // BEGIN CREATE WINDOW
@@ -167,6 +185,9 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKey);
+    glutPassiveMotionFunc(mouseMovement);
+    glutMotionFunc(mouseMovement);
+    
     
     glutMainLoop();
 	return 0;   /* ANSI C requires main to return int. */

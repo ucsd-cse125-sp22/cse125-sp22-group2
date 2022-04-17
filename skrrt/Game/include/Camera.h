@@ -36,8 +36,8 @@ public:
     void computeMatrices(void);
     void reset(void);
 
-    void moveForward(const float distance);
-    void moveSideways(const float distance);
+    void movePositionForward(const float distance);
+    void movePositionSideways(const float distance);
 };
 
 #endif 
