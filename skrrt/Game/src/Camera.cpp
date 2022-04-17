@@ -59,6 +59,35 @@ void Camera::zoom(const float factor){
     eye = target + factor * (eye - target);
 }
 
+void Camera::moveForward(const float distance) {
+    glm::vec3 targetToEye = eye - target;
+    
+    // calculate sideways vector
+    glm::vec3 directionToMove = glm::cross(targetToEye, up);
+    directionToMove.y = 0.0f; // Only want to move in xz plane, so remove y component.
+    directionToMove = glm::normalize(directionToMove);
+    
+    // vector is now perpendicular to sideways vector
+    directionToMove = glm::vec3(-1.0f * directionToMove.z, 0.0f, directionToMove.x);
+    
+    glm::vec3 delta = directionToMove * distance;
+
+    target += delta;
+    eye += delta; 
+}
+
+// Left is positive distance, right is negitive distance
+void Camera::moveSideways(const float distance) {
+    glm::vec3 targetToEye = eye - target;
+    glm::vec3 directionToMove = glm::cross(targetToEye, up);
+    directionToMove.y = 0.0f; // Only want to move in xz plane, so remove y component.
+    directionToMove = glm::normalize(directionToMove);
+    glm::vec3 delta = directionToMove * distance;
+
+    target += delta;
+    eye += delta; 
+}
+
 void Camera::computeMatrices(){
     // Note that glm matrix column majored.
     // That is, A[i] is the ith column of A,

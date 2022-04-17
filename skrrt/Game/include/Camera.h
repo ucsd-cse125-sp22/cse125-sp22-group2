@@ -19,7 +19,7 @@ public:
     float far; // far clipping distance
     
     // default values for reset
-    glm::vec3 eye_default = glm::vec3(5.0f, 0.0f, 0.0f);
+    glm::vec3 eye_default = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 target_default = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 up_default = glm::vec3(0.0f, 1.0f, 0.0f);
     float fovy_default = 30.0f;
@@ -35,6 +35,9 @@ public:
     void zoom(const float factor);
     void computeMatrices(void);
     void reset(void);
+
+    void moveForward(const float distance);
+    void moveSideways(const float distance);
 };
 
 #endif 

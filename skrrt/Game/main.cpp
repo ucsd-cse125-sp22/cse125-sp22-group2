@@ -86,7 +86,19 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> zoom(0.9f);
+            scene.camera -> moveSideways(0.1f);
+            glutPostRedisplay();
+            break;
+        case 'd':
+            scene.camera -> moveSideways(-0.1f);
+            glutPostRedisplay();
+            break;
+        case 'w':
+            scene.camera -> moveForward(0.1f);
+            glutPostRedisplay();
+            break;
+        case 's':
+            scene.camera -> moveForward(-0.1f);
             glutPostRedisplay();
             break;
         case 'z':
@@ -109,19 +121,19 @@ void keyboard(unsigned char key, int x, int y){
 void specialKey(int key, int x, int y){
     switch (key) {
         case GLUT_KEY_UP: // up
-            scene.camera -> rotateUp(-10.0f);
+            scene.camera -> rotateUp(-1.0f);
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            scene.camera -> rotateUp(10.0f);
+            scene.camera -> rotateUp(1.0f);
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            scene.camera -> rotateRight(-10.0f);
+            scene.camera -> rotateRight(-1.0f);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            scene.camera -> rotateRight(10.0f);
+            scene.camera -> rotateRight(1.0f);
             glutPostRedisplay();
             break;
     }
