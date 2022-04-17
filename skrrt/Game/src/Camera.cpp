@@ -17,7 +17,7 @@ glm::vec4 qmultiply(const glm::vec4 p, const glm::vec4 q){
 glm::vec4 qconj(const glm::vec4 q){return glm::vec4(-q.x,-q.y,-q.z,q.w);}
 
 glm::mat3 rotation(const float degrees,const glm::vec3 axis){
-    const float angle = degrees * M_PI/180.0f; // convert to radians
+    const float angle = degrees * (float)M_PI/180.0f; // convert to radians
     const glm::vec3 a = glm::normalize(axis);
     glm::mat3 R;
     glm::vec4 q = glm::vec4( glm::sin(0.5f*angle)*a, glm::cos(0.5f*angle) );
@@ -81,7 +81,7 @@ void Camera::computeMatrices(){
     
     // PROJECTION MATRIX
     proj = glm::mat4(1.0f);
-    float fovy_rad = fovy * M_PI/180.0f;
+    float fovy_rad = fovy * (float)M_PI/180.0f;
     float tan = glm::tan(fovy_rad/2.0f);
     proj = glm::mat4(1.0f/(aspect*tan), 0.0f,     0.0f, 0.0f,
                      0.0f,              1.0f/tan, 0.0f, 0.0f,
