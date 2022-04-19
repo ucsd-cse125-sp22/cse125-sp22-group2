@@ -10,12 +10,18 @@ Scene.inl contains the definition of the scene graph
 using namespace glm;
 void Scene::init(void){
     // Create a geometry palette
+    /*
     geometry["cube"] = new Cube;
     geometry["teapot"] = new Obj;
     geometry["bunny"] = new Obj;
     geometry["cube"] -> init();
     geometry["teapot"] -> init("models/teapot.obj");
     geometry["bunny"] -> init("models/bunny.obj");
+    */
+    //geometry["quadbot"] = new Obj;
+    //geometry["quadbot"]->init("models/Quadbot.obj");
+    geometry["car"] = new Obj;
+    geometry["car"]->init("models/Car.obj");
     
     // Create a material palette
     material["wood"] = new Material;
@@ -24,6 +30,7 @@ void Scene::init(void){
     material["wood"] -> specular = vec4(0.3f,0.15f,0.1f,1.0f);
     material["wood"] -> shininess = 100.0f;
     
+    /*
     material["ceramic"] = new Material;
     material["ceramic"] -> ambient = vec4(0.02f, 0.07f, 0.2f, 1.0f);
     material["ceramic"] -> diffuse = vec4(0.1f, 0.25f, 0.7f, 1.0f);
@@ -48,8 +55,10 @@ void Scene::init(void){
     material["bulb"] -> specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
+    */
     
     // Create a model palette
+    /*
     model["teapot1"] = new Model;
     model["teapot1"] -> geometry = geometry["teapot"];
     model["teapot1"] -> material = material["silver"];
@@ -65,6 +74,13 @@ void Scene::init(void){
     model["bulb"] = new Model;
     model["bulb"] -> geometry = geometry["cube"];
     model["bulb"] -> material = material["bulb"];
+    */
+    //model["quadbot"] = new Model; 
+    //model["quadbot"]->geometry = geometry["quadbot"]; 
+    //model["quadbot"]->material = material["wood"];
+    model["car"] = new Model; 
+    model["car"]->geometry = geometry["car"]; 
+    model["car"]->material = material["wood"];
     
     // Create a light palette
     light["sun"] = new Light;
@@ -76,14 +92,19 @@ void Scene::init(void){
     light["bulb"] -> color = 1.5f * vec4(1.0f,0.2f,0.1f,1.0f);
     
     // Build the scene graph
+    node["car"] = new Node;
+    node["car"]->models.push_back(model["car"]);
+    node["car"]->modeltransforms.push_back(scale(vec3(0.5f, 0.5f, 0.5)));
+    /*
     node["table"] = new Node;
     node["table top"] = new Node;
     node["table leg"] = new Node;
     node["teapot1"] = new Node;
     node["teapot2"] = new Node;
     node["bunny"] = new Node;
+    */
     
-    
+    /*
     node["table"] -> childnodes.push_back( node["table top"] );
     node["table"] -> childtransforms.push_back( translate(vec3(0.0f,1.2f,0.0f)) );
     node["table"] -> childnodes.push_back( node["table leg"] );
@@ -119,6 +140,9 @@ void Scene::init(void){
     node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
     node["world"] -> models.push_back( model["bulb"] );
     node["world"] -> modeltransforms.push_back( translate(vec3(0.0f,2.0f,0.0f))*scale(vec3(0.1f)) );
+    */
+    node["world"]->childnodes.push_back(node["car"]);
+    node["world"] -> childtransforms.push_back( mat4(1.0f) );
     
     // Put a camera
     camera = new Camera;

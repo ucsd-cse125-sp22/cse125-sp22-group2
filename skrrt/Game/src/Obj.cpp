@@ -23,12 +23,27 @@ that loads an obj file.
 #include "Obj.h"
 
 void Obj::init(const char * filename){
-    std::vector< glm::vec3 > temp_vertices, vertices;
-    std::vector< glm::vec3 > temp_normals, normals;
-    std::vector< unsigned int > temp_vertexIndices, indices;
-    std::vector< unsigned int > temp_normalIndices;
+    //std::vector< glm::vec3 > temp_vertices, vertices;
+    //std::vector< glm::vec2 > uvs;
+    //std::vector< glm::vec3 > temp_normals, normals;
+    //std::vector< unsigned int > temp_vertexIndices, indices;
+    //std::vector< unsigned int > temp_normalIndices;
+
+    std::vector< glm::vec3 > vertices;
+    std::vector< glm::vec2 > uvs;
+    std::vector< glm::vec3 > normals;
+    std::vector< unsigned int > indices;
     
     // load obj file
+    bool loaded = objloader::loadOBJ(filename, vertices, uvs, normals, indices);
+    if (!loaded) {
+        std::cerr << "Error loading model " << filename << std::endl;
+    }
+    else {
+        std::cerr << "Loaded model" << std::endl;
+    }
+
+    /*
     FILE * file = fopen( filename , "r" );
     if( file == NULL ){
         std::cerr << "Cannot open file: " << filename << std::endl;
@@ -58,6 +73,7 @@ void Obj::init(const char * filename){
             temp_vertexIndices.push_back(vertexIndex[0]);
             temp_vertexIndices.push_back(vertexIndex[1]);
             temp_vertexIndices.push_back(vertexIndex[2]);
+
             temp_normalIndices.push_back(normalIndex[0]);
             temp_normalIndices.push_back(normalIndex[1]);
             temp_normalIndices.push_back(normalIndex[2]);
@@ -76,7 +92,10 @@ void Obj::init(const char * filename){
         vertices[i] = temp_vertices[ temp_vertexIndices[i] - 1 ];
         normals[i] = temp_normals[ temp_normalIndices[i] - 1 ];
     }
+    */
     std::cout << "done." << std::endl;
+
+    unsigned int n = indices.size();
     
     // setting up buffers
     std::cout << "Setting up buffers...";
