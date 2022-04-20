@@ -2,11 +2,13 @@
 
 layout (location = 0) in vec3 vertex_position;
 layout (location = 1) in vec3 vertex_normal;
+layout (location = 2) in vec2 aTexCoord;
 
 uniform mat4 modelview;
 uniform mat4 projection;
 
 out vec4 position;
+out vec2 TexCoord;
 out vec3 normal;
 
 void main(){
@@ -14,4 +16,5 @@ void main(){
     // forward the raw position and normal in the model coord to frag shader
     position = vec4(vertex_position, 1.0f );
     normal = vertex_normal;
+    TexCoord = aTexCoord;
 }

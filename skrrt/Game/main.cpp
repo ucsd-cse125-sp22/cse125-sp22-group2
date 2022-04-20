@@ -97,10 +97,12 @@ void keyboard(unsigned char key, int x, int y){
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
             glutPostRedisplay();
             break;
+        /*
         case ' ':
             hw3AutoScreenshots();
             glutPostRedisplay();
             break;
+        */
         default:
             glutPostRedisplay();
             break;

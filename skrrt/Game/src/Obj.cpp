@@ -35,9 +35,9 @@ void Obj::init(const char * filename, const char * texture_filename){
     glGenTextures(1, &textureID); 
     glBindTexture(GL_TEXTURE_2D, textureID); 
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     unsigned char* image = stbi_load(texture_filename, &width, &height, &nrChannels, 0);
@@ -56,7 +56,6 @@ void Obj::init(const char * filename, const char * texture_filename){
     std::cout << "Setting up buffers...";
     glGenVertexArrays(1, &vao );
     buffers.resize(4);
-    //glGenBuffers(3, buffers.data());
     glGenBuffers(4, buffers.data());
     glBindVertexArray(vao);
     
@@ -75,10 +74,15 @@ void Obj::init(const char * filename, const char * texture_filename){
     // indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[2]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, n*sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 
     // uv's
     glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
     glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(3);
+    //glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,8 * sizeof(float),(void*)(6 * sizeof(float)));
+    glVertexAttribPointer(3,2,GL_FLOAT,GL_FALSE,0,(void*)0);
     
     count = n;
     glBindVertexArray(0);
@@ -87,6 +91,8 @@ void Obj::init(const char * filename, const char * texture_filename){
 
 void Obj::draw(void){
     glBindTexture(GL_TEXTURE_2D, textureID);
+    glUniform1i(textureID, 0); 
+
 	glBindVertexArray(vao);
 	glDrawElements(mode,count,type,0);
 }
