@@ -11,7 +11,7 @@ using namespace glm;
 void Scene::init(void){
     // Create a geometry palette
     geometry["car"] = new Obj;
-    geometry["car"]->init("models/Car.obj");
+    geometry["car"]->init("models/Car.obj", "textures/pink_car.png");
     
     // Create a material palette
     material["wood"] = new Material;
@@ -74,7 +74,7 @@ void Scene::init(void){
     camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
-    camera -> reset();
+    camera -> reset(); 
     
     // Initialize shader
     shader = new SurfaceShader;

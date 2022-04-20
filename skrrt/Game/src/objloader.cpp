@@ -46,13 +46,11 @@ bool objloader::loadOBJ(
 			glm::vec3 vertex;
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
 			temp_vertices.push_back(vertex);
-		/*
 		}else if ( strcmp( lineHeader, "vt" ) == 0 ){
 			glm::vec2 uv;
 			fscanf(file, "%f %f\n", &uv.x, &uv.y );
 			uv.y = -uv.y; // Invert V coordinate since we will only use DDS texture, which are inverted. Remove if you want to use TGA or BMP loaders.
 			temp_uvs.push_back(uv);
-		*/
 		}else if ( strcmp( lineHeader, "vn" ) == 0 ){
 			glm::vec3 normal;
 			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
@@ -93,8 +91,7 @@ bool objloader::loadOBJ(
 		
 		// Get the attributes thanks to the index
 		glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
-		//glm::vec2 uv = temp_uvs[ uvIndex-1 ];
-		glm::vec2 uv = glm::vec2(0);
+		glm::vec2 uv = temp_uvs[ uvIndex-1 ];
 		glm::vec3 normal = temp_normals[ normalIndex-1 ];
 		
 		// Put the attributes in buffers
