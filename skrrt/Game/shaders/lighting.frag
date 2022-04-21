@@ -33,14 +33,13 @@ void main (void){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
-        //fragColor = texture(ourTexture, TexCoord);
-        fragColor = texture(ourTexture, vec2(25.0f, 25.0f));
+        fragColor = texture(ourTexture, TexCoord);
+        //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
         
         // HW3: You will compute the lighting here.
         //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
-        //fragColor = texture(ourTexture, TexCoord);
-        fragColor = texture(ourTexture, vec2(25.0f, 25.0f));
+        fragColor = texture(ourTexture, TexCoord);
 
         //make 3x3 matrix to transform normal
         mat3 a_modelview = mat3(modelview);
