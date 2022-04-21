@@ -37,6 +37,7 @@ public:
     
     virtual void init(){};
     virtual void init(const char* s){};
+    virtual void init(const char* s, const char* t){};
     
     void draw(void){
         glBindVertexArray(vao);
