@@ -33,13 +33,14 @@ void main (void){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
-        fragColor = texture(ourTexture, TexCoord);
+        //fragColor = texture(ourTexture, TexCoord);
+        fragColor = texture(ourTexture, vec2(25.0f, 25.0f));
     } else {
         
-               
         // HW3: You will compute the lighting here.
         //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
-        fragColor = texture(ourTexture, TexCoord);
+        //fragColor = texture(ourTexture, TexCoord);
+        fragColor = texture(ourTexture, vec2(25.0f, 25.0f));
 
         //make 3x3 matrix to transform normal
         mat3 a_modelview = mat3(modelview);
@@ -50,7 +51,6 @@ void main (void){
 
         // avoid divide by zero
         vec3 v_eye_norm = normalize((pos_eye.w * vec3(0.0f,0.0f,0.0f)) - (1.0f * pos_eye.xyz));
-
 
         for(int i = 0; i < nlights; i++) {
             vec4 lightpos_eye = view * lightpositions[i];

@@ -34,7 +34,7 @@ struct SurfaceShader : Shader {
     GLuint lightpositions_loc;
     GLuint lightcolors_loc;
     
-    //GLuint sampler_loc;
+    //sampler2D sampler_loc;
     
     void initUniforms(){
         view_loc  = glGetUniformLocation( program, "view" );
