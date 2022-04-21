@@ -8,14 +8,15 @@
 
 using boost::asio::ip::tcp;
 
-void getUserInput(cse125framing::Frame* frame) {
+int frameCtr = 0;
+int frameId = -1;
+
+void getUserInput(cse125framing::ClientFrame* frame) {
     // TODO: Get input from I/O device (e.g. keyboard) instead of hard-coded message
-    frame->playerPosition = vec4(1, 2, 3, 4);
-    frame->movementDirection = vec3(5, 6, 7);
-    frame->makeupLevel = 15;
-    frame->score = 20;
-    frame->hasCrown = true;
-    frame->action = cse125framing::Action::LOSE_CROWN;    
+    frame->cameraDirection = vec3(1, 2, 3);
+    frame->ctr = frameCtr++;
+    frame->id = frameId;
+    frame->movementKey = cse125framing::MovementKey::FORWARD;
 }
 
 int main(int argc, char* argv[])
@@ -41,22 +42,23 @@ int main(int argc, char* argv[])
             boost::asio::connect(socket, endpoints);
 
             // Get user input from game and set the fields of the Frame
-            cse125framing::Frame frame;
-            getUserInput(&frame);
+            cse125framing::ClientFrame clientFrame;
+            getUserInput(&clientFrame);
 
             // Serialize the Frame
-            boost::array<char, cse125constants::FRAME_BUFFER_SIZE> buffer;
-            cse125framing::serialize(&frame, buffer);
+            boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+            cse125framing::serialize(&clientFrame, clientBuffer);
  
             std::cout << "About to send info to server" << std::endl;
             boost::system::error_code writeError;
-            size_t numWritten = boost::asio::write(socket, boost::asio::buffer(buffer), writeError);
+            size_t numWritten = boost::asio::write(socket, boost::asio::buffer(clientBuffer), writeError);
             // TODO: Handle writeError
             std::cout << "Sent info to server, now waiting for response" << std::endl;
 
             // Get server response
+            boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
             boost::system::error_code error;
-            size_t numRead = socket.read_some(boost::asio::buffer(buffer), error);
+            size_t numRead = socket.read_some(boost::asio::buffer(serverBuffer), error);
 
             if (error == boost::asio::error::eof) {
                 std::cout << "EOF from server:" << std::endl;
@@ -67,10 +69,11 @@ int main(int argc, char* argv[])
             }
 
             // Deserialize the data
-            cse125framing::deserialize(&frame, buffer);
+            cse125framing::ServerFrame serverFrame;
+            cse125framing::deserialize(&serverFrame, serverBuffer);
 
             std::cout << "Frame from server: " << std::endl;
-            std::cout << &frame << std::endl;
+            std::cout << &serverFrame << std::endl;
 
         }
     }

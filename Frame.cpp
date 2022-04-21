@@ -2,8 +2,6 @@
 #include <string>
 #include "Frame.hpp"
 
-using namespace cse125framing;
-
 std::ostream& cse125framing::operator<<(std::ostream& os, const Action& action)
 {
 	std::string str;
@@ -34,20 +32,47 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const Action& action)
 	os << str;
 	return os;
 }
-//
-//std::ostream& cse125framing::operator<<(std::ostream& os, const Frame* frame)
-//{
-//	const vec4& v4 = frame->playerPosition;
-//	const vec3& v3 = frame->movementDirection;
-//	os << "Player position: " << "(" << v4.x << ", " << v4.y << ", " << v4.z <<  ", " << v4.w << ")" << std::endl;
-//	os << "Movement direction: " << "(" << v3.x << ", " << v3.y << ", " << v3.z << ")" << std::endl;
-//	os << "Makeup level: " << frame->makeupLevel << std::endl;
-//	os << "Score: " << frame->score << std::endl;
-//	os << "Has crown: " << frame->hasCrown << std::endl;
-//	os << "Action: " << frame->action << std::endl;
-//
-//	return os;
-//}
+
+std::ostream& cse125framing::operator<<(std::ostream& os, const MovementKey& movementKey)
+{
+	std::string str;
+	switch (movementKey) {
+	case MovementKey::FORWARD:
+		str = "FORWARD";
+		break;
+	case MovementKey::BACKWARD:
+		str = "BACKWARD";
+		break;
+	case MovementKey::RIGHT:
+		str = "RIGHT";
+		break;
+	case MovementKey::LEFT:
+		str = "LEFT";
+		break;
+	}
+
+	os << str;
+	return os;
+}
+
+std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* frame)
+{
+	const vec3& camera = frame->cameraDirection;
+	os << "Client frame:" << std::endl;
+	os << "id: " << frame->id << std::endl;
+	os << "ctr: " << frame->ctr << std::endl;
+	os << "camera: " << "(" << camera.x << ", " << camera.y << ", " << camera.z << ")" << std::endl;
+	os << "movement key: " << frame->movementKey << std::endl;
+	return os;
+}
+
+std::ostream& cse125framing::operator<<(std::ostream& os, const ServerFrame* frame)
+{
+	os << "Server frame:" << std::endl;
+	os << "id: " << frame->id << std::endl;
+	os << "Server frame ctr: " << frame->ctr << std::endl;
+	return os;
+}
 
 void cse125framing::serialize(const ClientFrame* frame, boost::array<char, CLIENT_FRAME_BUFFER_SIZE>& buffer)
 {

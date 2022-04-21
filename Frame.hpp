@@ -18,12 +18,16 @@ namespace cse125framing {
 		TAKE_CROWN
 	};
 
+	std::ostream& operator<<(std::ostream& os, const Action& action);
+
 	enum class MovementKey {
 		FORWARD,
 		BACKWARD,
 		RIGHT,
 		LEFT
 	};
+
+	std::ostream& operator<<(std::ostream& os, const MovementKey& movementKey);
 
 	typedef struct ClientFrame {
 		int id;
@@ -33,6 +37,8 @@ namespace cse125framing {
 	} ClientFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);
+
+	std::ostream& operator<<(std::ostream& os, const ClientFrame* frame);
 
 	/**
 	 * @brief Serializes the Frame into the given buffer
@@ -67,6 +73,8 @@ namespace cse125framing {
 
 	const size_t SERVER_FRAME_BUFFER_SIZE = sizeof(ServerFrame);
 
+	std::ostream& operator<<(std::ostream& os, const ServerFrame* frame);
+
 	/**
 	 * @brief Serializes the Frame into the given buffer
 	 *
@@ -83,7 +91,5 @@ namespace cse125framing {
 	 */
 	void deserialize(ServerFrame* frame, const boost::array<char, SERVER_FRAME_BUFFER_SIZE>& buffer);
 
-
-	std::ostream& operator<<(std::ostream& os, const Action& action);
 
 }
