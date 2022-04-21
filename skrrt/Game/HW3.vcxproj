@@ -85,8 +85,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Obj.cpp" />
+    <ClCompile Include="src\objloader.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
@@ -98,9 +100,11 @@
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Obj.h" />
+    <ClInclude Include="include\objloader.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Screenshot.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
