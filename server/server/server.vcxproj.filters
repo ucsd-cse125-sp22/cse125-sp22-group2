@@ -21,7 +21,7 @@
     <ClCompile Include="..\..\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Server.cpp">
+    <ClCompile Include="Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
         tcp::resolver resolver(io_context);
         tcp::resolver::results_type endpoints =
-            resolver.resolve(argv[1], "daytime");
+            resolver.resolve(argv[1], "13");
 
         while (true) {
             // Initiate a connection to the server
