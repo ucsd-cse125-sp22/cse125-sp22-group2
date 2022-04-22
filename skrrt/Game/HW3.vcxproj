@@ -92,6 +92,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
     <ClInclude Include="include\Camera.h" />

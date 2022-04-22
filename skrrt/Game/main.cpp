@@ -26,10 +26,11 @@ static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 
-const std::string HOST = "localhost";
-const std::string PORT = "13";
+const std::string HOST = "localhost"; // name of the server this client connects to
+const std::string PORT = "13"; // port number of the server, represented as a string
 
-int clientId = -1;
+int clientId = -1; // this client's unique id
+int clientFrameCtr = 0;
 
 #include "hw3AutoScreenshots.h"
 
@@ -156,8 +157,20 @@ void requestClientId() {
     boost::asio::ip::tcp::socket socket(ioContext);
     boost::asio::connect(socket, endpoints);
 
+    cse125framing::ClientFrame frame;
+    frame.id = cse125constants::DEFAULT_CLIENT_ID;
+
     // Get this client's id from the server
     while (true) {
+        // Send a frame with an id of -1
+        boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+        cse125framing::serialize(&frame, clientBuffer);
+        boost::system::error_code writeError;
+        size_t numWritten = boost::asio::write(socket, boost::asio::buffer(clientBuffer), writeError);
+        if (writeError) {
+            std::cerr << "Error getting client id from server, retrying ..." << std::endl;
+            continue;
+        }
         boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
         boost::system::error_code error;
         size_t numRead = socket.read_some(boost::asio::buffer(serverBuffer), error);
@@ -174,6 +187,7 @@ void requestClientId() {
             // TODO: Account for endianess differences
             std::memcpy(&clientId, &serverBuffer, sizeof(int));
             std::cout << "Client id is now " << clientId << std::endl;
+            break;
         }
     }  
 }
