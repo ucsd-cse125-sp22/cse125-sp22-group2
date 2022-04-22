@@ -41,10 +41,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\include;$(IncludePath)</IncludePath>
+    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>.\include;$(IncludePath)</IncludePath>
+    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
     <LibraryPath>.\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -82,6 +82,7 @@
     <None Include="src\Scene.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Obj.cpp" />
@@ -91,6 +92,8 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Definitions.hpp" />
+    <ClInclude Include="..\..\Frame.hpp" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Cube.h" />
     <ClInclude Include="include\FreeImage.h" />

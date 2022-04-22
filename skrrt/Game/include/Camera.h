@@ -5,8 +5,7 @@ Camera is a class for a camera object.
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#pragma once
 
 class Camera {
 public:
@@ -15,8 +14,8 @@ public:
     glm::vec3 up;      // up vector
     float fovy;  // field of view in degrees
     float aspect; // aspect ratio
-    float near; // near clipping distance
-    float far; // far clipping distance
+    float nearPlane; // near clipping distance
+    float farPlane; // far clipping distance
     
     // default values for reset
     glm::vec3 eye_default = glm::vec3(5.0f, 0.0f, 0.0f);
@@ -36,5 +35,3 @@ public:
     void computeMatrices(void);
     void reset(void);
 };
-
-#endif 

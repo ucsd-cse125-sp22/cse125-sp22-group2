@@ -142,14 +142,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Definitions.cpp" />
-    <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="..\Definitions.cpp" />
+    <ClCompile Include="..\Frame.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Constants.hpp" />
-    <ClInclude Include="..\..\Definitions.hpp" />
-    <ClInclude Include="..\..\Frame.hpp" />
+    <ClInclude Include="..\ClockTick.hpp" />
+    <ClInclude Include="..\Constants.hpp" />
+    <ClInclude Include="..\Definitions.hpp" />
+    <ClInclude Include="..\Frame.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

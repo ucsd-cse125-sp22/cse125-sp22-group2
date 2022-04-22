@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 // OSX systems need their own headers
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -12,8 +13,11 @@
 // Use of degrees is deprecated. Use radians for GLM functions
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
 #include "Screenshot.h"
 #include "Scene.h"
+#include "../../Frame.hpp"
 
 
 static const int width = 800;
@@ -21,6 +25,11 @@ static const int height = 600;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
+
+const std::string HOST = "localhost";
+const std::string PORT = "13";
+
+int clientId = -1;
 
 #include "hw3AutoScreenshots.h"
 
@@ -136,6 +145,39 @@ void idle() {
 
 }
 
+
+// Asks the server to provide this client with its unique id that the client can use for all future communication
+// with the server
+void requestClientId() {
+    // Set up connection to server for outgoing data
+    boost::asio::io_context ioContext;
+    boost::asio::ip::tcp::resolver resolver(ioContext);
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(HOST, PORT);
+    boost::asio::ip::tcp::socket socket(ioContext);
+    boost::asio::connect(socket, endpoints);
+
+    // Get this client's id from the server
+    while (true) {
+        boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+        boost::system::error_code error;
+        size_t numRead = socket.read_some(boost::asio::buffer(serverBuffer), error);
+
+        if (error == boost::asio::error::eof) {
+            std::cout << "EOF from server:" << std::endl; // Server closed connection
+            break;
+        }
+        else if (error) {
+            throw boost::system::system_error(error); // Some other error.
+        }
+        else {
+            // Parse the id provided by the server
+            // TODO: Account for endianess differences
+            std::memcpy(&clientId, &serverBuffer, sizeof(int));
+            std::cout << "Client id is now " << clientId << std::endl;
+        }
+    }  
+}
+
 int main(int argc, char** argv)
 {
     // BEGIN CREATE WINDOW
@@ -157,6 +199,8 @@ int main(int argc, char** argv)
 #endif
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
+
+    requestClientId();
     
     initialize();
     glutDisplayFunc(display);

@@ -85,8 +85,8 @@ void Camera::computeMatrices(){
     float tan = glm::tan(fovy_rad/2.0f);
     proj = glm::mat4(1.0f/(aspect*tan), 0.0f,     0.0f, 0.0f,
                      0.0f,              1.0f/tan, 0.0f, 0.0f,
-                     0.0f, 0.0f,    -(far+near)/(far-near), -1.0f,
-                     0.0f, 0.0f, -2.0f*far*near/(far-near), 0.0f);
+                     0.0f, 0.0f,    -(farPlane+nearPlane)/(farPlane- nearPlane), -1.0f,
+                     0.0f, 0.0f, -2.0f*farPlane* nearPlane /(farPlane- nearPlane), 0.0f);
 }
 
 void Camera::reset(){
@@ -95,6 +95,6 @@ void Camera::reset(){
     up = up_default;      // up vector
     fovy = fovy_default;  // field of view in degrees
     aspect = aspect_default; // aspect ratio
-    near = near_default; // near clipping distance
-    far = far_default; // far clipping distance
+    nearPlane = near_default; // near clipping distance
+    farPlane = far_default; // far clipping distance
 }

@@ -10,6 +10,7 @@ using boost::asio::ip::tcp;
 
 int frameCtr = 0;
 int gameTime = 0;
+int clientCtr = 0;
 
 void initializeServerFrame(cse125framing::ServerFrame* frame) {
     frame->id = -1;
@@ -38,26 +39,29 @@ int main()
             acceptor.accept(socket);
             std::cout << "Accepted a connection" << std::endl;
 
-            // Read the data from a client
-            boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
-            boost::system::error_code readError;
-            size_t numRead = socket.read_some(boost::asio::buffer(clientBuffer), readError);
+            //// Read the data from a client
+            //boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+            //boost::system::error_code readError;
+            //size_t numRead = socket.read_some(boost::asio::buffer(clientBuffer), readError);
 
-            // Deserialize the data
-            cse125framing::ClientFrame clientFrame;
-            cse125framing::deserialize(&clientFrame, clientBuffer);
+            //// Deserialize the data
+            //cse125framing::ClientFrame clientFrame;
+            //cse125framing::deserialize(&clientFrame, clientBuffer);
 
-            std::cout << "Frame from client: " << std::endl;
-            std::cout << &clientFrame << std::endl;
+            //std::cout << "Frame from client: " << std::endl;
+            //std::cout << &clientFrame << std::endl;
 
-            // TODO: Update game state
-            // TODO: Game logic to prepare the correct response for the client
-            cse125framing::ServerFrame serverFrame;
-            initializeServerFrame(&serverFrame);
+            //// TODO: Update game state
+            //// TODO: Game logic to prepare the correct response for the client
+            //cse125framing::ServerFrame serverFrame;
+            //initializeServerFrame(&serverFrame);
 
             // Serialize the data
             boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-            cse125framing::serialize(&serverFrame, serverBuffer);
+            std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
+            clientCtr += 1;
+
+            // cse125framing::serialize(&serverFrame, serverBuffer);
 
             // Send a response to the client
             boost::system::error_code ignored_error;
