@@ -22,7 +22,10 @@ uniform vec4 lightpositions[ maximal_allowed_lights ];
 uniform vec4 lightcolors[ maximal_allowed_lights ];
 
 // Texture sampler 
-uniform sampler2D ourTexture;
+uniform int texture_id;
+//uniform sampler2D ourTexture;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 // Output the frag color
 out vec4 fragColor;
@@ -33,13 +36,23 @@ void main (void){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
-        fragColor = texture(ourTexture, TexCoord);
+        //fragColor = texture(ourTexture, TexCoord);
+        if (texture_id == 0) {
+			fragColor = texture(texture1, TexCoord);
+        } else {
+			fragColor = texture(texture2, TexCoord);
+        }
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
         
         // HW3: You will compute the lighting here.
         //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
-        fragColor = texture(ourTexture, TexCoord);
+        //fragColor = texture(ourTexture, TexCoord);
+        if (texture_id == 0) {
+			fragColor = texture(texture1, TexCoord);
+        } else {
+			fragColor = texture(texture2, TexCoord);
+        }
 
         //make 3x3 matrix to transform normal
         mat3 a_modelview = mat3(modelview);

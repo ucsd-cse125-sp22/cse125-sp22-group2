@@ -61,6 +61,7 @@ void Scene::draw(void){
 
 
             // The draw command
+            shader->texture_id = (cur->models[i])->geometry->object_number;
             shader->setUniforms();
             (cur->models[i])->geometry->draw();
         }

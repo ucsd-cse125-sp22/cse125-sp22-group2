@@ -17,7 +17,10 @@ that loads an obj file.
 
 #include "Obj.h"
 
-void Obj::init(const char * filename, const char * texture_filename){
+void Obj::init(const char * filename, const char * texture_filename, int obj_num){
+
+    object_number = obj_num;
+
     std::vector< glm::vec3 > vertices;
     std::vector< glm::vec2 > uvs;
     std::vector< glm::vec3 > normals;
@@ -33,6 +36,7 @@ void Obj::init(const char * filename, const char * texture_filename){
 
     // load texture file
     glGenTextures(1, &textureID); 
+    glActiveTexture(GL_TEXTURE0 + object_number);
     glBindTexture(GL_TEXTURE_2D, textureID); 
 
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
@@ -94,11 +98,13 @@ void Obj::init(const char * filename, const char * texture_filename){
     count = n;
     glBindVertexArray(0);
     std::cout << "done." << std::endl;
+
+    //glUniform1i(glGetUniformLocation( , "texture" + object_number), 0); 
 }
 
 void Obj::draw(void){
+    glActiveTexture(GL_TEXTURE0 + object_number);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glUniform1i(textureID, 0); 
 
 	glBindVertexArray(vao);
 	glDrawElements(mode,count,type,0);

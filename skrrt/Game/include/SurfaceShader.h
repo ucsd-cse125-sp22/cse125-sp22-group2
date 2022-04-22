@@ -33,8 +33,13 @@ struct SurfaceShader : Shader {
     GLuint nlights_loc;
     GLuint lightpositions_loc;
     GLuint lightcolors_loc;
+
+    // Texture id 
+    GLuint texture_id = 0;          // indicates which texture to render on object
+    GLuint texture_id_loc;
     
-    //sampler2D sampler_loc;
+    GLuint pinkcar_texture_loc; 
+    GLuint bluecar_texture_loc; 
     
     void initUniforms(){
         view_loc  = glGetUniformLocation( program, "view" );
@@ -49,8 +54,11 @@ struct SurfaceShader : Shader {
         nlights_loc = glGetUniformLocation( program, "nlights" );
         lightpositions_loc = glGetUniformLocation( program, "lightpositions" );
         lightcolors_loc = glGetUniformLocation( program, "lightcolors" );
+
+        texture_id_loc = glGetUniformLocation( program, "texture_id" );
         
-        //sampler_loc = glGetUniformLocation(program, "ourTexture");
+        pinkcar_texture_loc = glGetUniformLocation(program, "texture1");
+        bluecar_texture_loc = glGetUniformLocation(program, "texture2");
     }
     void setUniforms(){
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
@@ -65,6 +73,11 @@ struct SurfaceShader : Shader {
         glUniform1i( nlights_loc, nlights );
         glUniform4fv( lightpositions_loc, GLsizei(nlights), &lightpositions[0][0] );
         glUniform4fv( lightcolors_loc, GLsizei(nlights), &lightcolors[0][0] );
+
+        glUniform1i( texture_id_loc, texture_id);
+
+        glUniform1i(pinkcar_texture_loc, 0);
+        glUniform1i(bluecar_texture_loc, 1);
         
     }
 };
