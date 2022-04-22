@@ -118,22 +118,53 @@ void keyboard(unsigned char key, int x, int y){
             break;
     }
 }
+
+void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirection) {
+    boost::asio::io_context outgoingContext;
+    boost::asio::ip::tcp::resolver outgoingResolver = boost::asio::ip::tcp::resolver(outgoingContext);
+    boost::asio::ip::tcp::resolver::results_type outgoingEndpoints = outgoingResolver.resolve(HOST, PORT);
+    boost::asio::ip::tcp::socket outgoingSocket = boost::asio::ip::tcp::socket(outgoingContext);
+    boost::asio::connect(outgoingSocket, outgoingEndpoints);
+
+    cse125framing::ClientFrame frame;
+    frame.id = clientId;
+    frame.ctr = clientFrameCtr++;
+    frame.movementKey = movementKey;
+    frame.cameraDirection = cameraDirection;
+
+    boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+    cse125framing::serialize(&frame, clientBuffer);
+    boost::system::error_code writeError;
+    size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
+    if (writeError) {
+        std::cerr << "Error sending packet to server, continuing ..." << std::endl;
+        std::cerr << writeError << std::endl;
+    }
+    else {
+        std::cout << "Successfully sent frame # " << clientFrameCtr << " to server" << std::endl;
+    }
+}
+
 void specialKey(int key, int x, int y){
     switch (key) {
         case GLUT_KEY_UP: // up
             scene.camera -> rotateUp(-10.0f);
+            sendDataToServer(cse125framing::MovementKey::FORWARD, scene.camera->eye);
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
             scene.camera -> rotateUp(10.0f);
+            sendDataToServer(cse125framing::MovementKey::BACKWARD, scene.camera->eye);
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
             scene.camera -> rotateRight(-10.0f);
+            sendDataToServer(cse125framing::MovementKey::RIGHT, scene.camera->eye);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
             scene.camera -> rotateRight(10.0f);
+            sendDataToServer(cse125framing::MovementKey::LEFT, scene.camera->eye);
             glutPostRedisplay();
             break;
     }
@@ -214,7 +245,11 @@ int main(int argc, char** argv)
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
 
+    // Set this client's id
     requestClientId();
+
+    // TODO: Set up persistent outgoing connection
+
     
     initialize();
     glutDisplayFunc(display);
