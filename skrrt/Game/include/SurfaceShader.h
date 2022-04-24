@@ -35,7 +35,7 @@ struct SurfaceShader : Shader {
     GLuint lightcolors_loc;
 
     // Texture id 
-    GLuint texture_id = 0;          // indicates which texture to render on object
+    GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
     
     GLuint pinkcar_texture_loc; 
@@ -74,7 +74,7 @@ struct SurfaceShader : Shader {
         glUniform4fv( lightpositions_loc, GLsizei(nlights), &lightpositions[0][0] );
         glUniform4fv( lightcolors_loc, GLsizei(nlights), &lightcolors[0][0] );
 
-        glUniform1i( texture_id_loc, texture_id);
+        glUniform1i(texture_id_loc, texture_id);
 
         glUniform1i(pinkcar_texture_loc, 0);
         glUniform1i(bluecar_texture_loc, 1);

@@ -14,8 +14,8 @@ class Obj : public Geometry {
 private: 
     GLuint textureID; 
     int width, height, nrChannels; 
-    int object_number;
 public:
+    //int object_number;
     void init(const char * filename, const char * texture_filename, int obj_num);
     void draw(void);
         

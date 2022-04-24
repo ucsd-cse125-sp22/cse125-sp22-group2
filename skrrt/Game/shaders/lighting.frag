@@ -37,11 +37,13 @@ void main (void){
         vec3 N = normalize(normal);
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
         //fragColor = texture(ourTexture, TexCoord);
+
         if (texture_id == 0) {
 			fragColor = texture(texture1, TexCoord);
         } else {
 			fragColor = texture(texture2, TexCoord);
         }
+
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
         
