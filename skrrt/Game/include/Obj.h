@@ -15,8 +15,8 @@ private:
     GLuint textureID; 
     int width, height, nrChannels; 
 public:
-
-    void init(const char * filename, const char * texture_filename);
+    //int object_number;
+    void init(const char * filename, const char * texture_filename, int obj_num);
     void draw(void);
         
 };
