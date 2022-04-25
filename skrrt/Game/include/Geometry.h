@@ -34,9 +34,13 @@ public:
     GLenum type = GL_UNSIGNED_INT; // type of the index array
     GLuint vao; // vertex array object a.k.a. geometry spreadsheet
     std::vector<GLuint> buffers; // data storage
+
+    int object_number = 0;
     
     virtual void init(){};
     virtual void init(const char* s){};
+    virtual void init(const char* s, const char* t){};
+    virtual void init(const char* s, const char* t, int obj_num){};
     
     void draw(void){
         glBindVertexArray(vao);

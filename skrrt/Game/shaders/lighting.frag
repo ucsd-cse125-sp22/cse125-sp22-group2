@@ -2,6 +2,7 @@
 
 in vec4 position; // raw position in the model coord
 in vec3 normal;   // raw normal in the model coord
+in vec2 TexCoord; // texture coordinates
 
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
@@ -20,6 +21,12 @@ uniform int nlights;
 uniform vec4 lightpositions[ maximal_allowed_lights ];
 uniform vec4 lightcolors[ maximal_allowed_lights ];
 
+// Texture sampler 
+uniform int texture_id;
+//uniform sampler2D ourTexture;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+
 // Output the frag color
 out vec4 fragColor;
 
@@ -28,12 +35,26 @@ void main (void){
     if (!enablelighting){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
-        fragColor = vec4(0.5f*N + 0.5f , 1.0f);
+        //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
+        //fragColor = texture(ourTexture, TexCoord);
+
+        if (texture_id == 0) {
+			fragColor = texture(texture1, TexCoord);
+        } else {
+			fragColor = texture(texture2, TexCoord);
+        }
+
+        //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
         
-               
         // HW3: You will compute the lighting here.
-        fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
+        //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
+        //fragColor = texture(ourTexture, TexCoord);
+        if (texture_id == 0) {
+			fragColor = texture(texture1, TexCoord);
+        } else {
+			fragColor = texture(texture2, TexCoord);
+        }
 
         //make 3x3 matrix to transform normal
         mat3 a_modelview = mat3(modelview);
@@ -44,7 +65,6 @@ void main (void){
 
         // avoid divide by zero
         vec3 v_eye_norm = normalize((pos_eye.w * vec3(0.0f,0.0f,0.0f)) - (1.0f * pos_eye.xyz));
-
 
         for(int i = 0; i < nlights; i++) {
             vec4 lightpos_eye = view * lightpositions[i];

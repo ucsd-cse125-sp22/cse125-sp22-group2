@@ -97,10 +97,12 @@ void keyboard(unsigned char key, int x, int y){
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
             glutPostRedisplay();
             break;
+        /*
         case ' ':
             hw3AutoScreenshots();
             glutPostRedisplay();
             break;
+        */
         default:
             glutPostRedisplay();
             break;
@@ -125,6 +127,13 @@ void specialKey(int key, int x, int y){
             glutPostRedisplay();
             break;
     }
+}
+
+void idle() {
+    // Idle loop for logic 
+    // Get's called anytime there isn't a keyboard event
+    // Packet receiving stuff 
+
 }
 
 int main(int argc, char** argv)
@@ -153,6 +162,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKey);
+    glutIdleFunc(idle);
     
     glutMainLoop();
 	return 0;   /* ANSI C requires main to return int. */
