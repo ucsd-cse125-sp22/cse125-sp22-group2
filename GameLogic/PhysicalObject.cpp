@@ -10,11 +10,22 @@ PhysicalObject::~PhysicalObject() {
 
 BoundingBox PhysicalObject::generateBoundingBox(glm::vec3 pos, glm::vec3 dir)
 {
-	return BoundingBox(this->id, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f));
+	return BoundingBox(this->id, pos, dir, this->up, this->length, this->width, this->height);
 }
 
-bool PhysicalObject::checkCollision(glm::vec3 pos, glm::vec3 dir) {
-	
+bool PhysicalObject::checkPlaceFree(glm::vec3 pos, glm::vec3 dir) {
+	int objCount = this->objects->size();
+	BoundingBox bb = generateBoundingBox(pos, dir);
+	vector<int> collisions = vector<int>();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == id) {
+			continue;
+		}
+		if (this->objects->at(i)->solid && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 vector<int> PhysicalObject::findCollisionObjects(glm::vec3 pos, glm::vec3 dir)
@@ -26,7 +37,7 @@ vector<int> PhysicalObject::findCollisionObjects(glm::vec3 pos, glm::vec3 dir)
 		if (i == id) {
 			continue;
 		}
-		if (collision::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
 			collisions.push_back(i);
 		}
 	}
@@ -40,16 +51,17 @@ void PhysicalObject::movePosition(glm::vec3 pos) {
 			return;
 		}
 	}
-	position = pos;
+	this->position = pos;
 }
 
-void PhysicalObject::moveDirection(glm::vec3 pos, glm::vec3 dir) {
-	vector<int> collisions = findCollisionObjects(pos, dir);
+void PhysicalObject::moveDirection(glm::vec3 dir) {
+	glm::vec3 destination = this->position + this->speed * dir;
+	vector<int> collisions = findCollisionObjects(destination, dir);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
 			return;
 		}
 	}
-	position = pos;
-	direction = dir;
+	this->position = destination;
+	this->direction = dir;
 }
