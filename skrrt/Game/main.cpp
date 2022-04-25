@@ -134,6 +134,8 @@ void idle() {
     // Get's called anytime there isn't a keyboard event
     // Packet receiving stuff 
 
+    // Update wheel animation
+     
 }
 
 int main(int argc, char** argv)

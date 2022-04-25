@@ -58,7 +58,6 @@ void Scene::draw(void){
             shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
             shader->material = (cur->models[i])->material;
             shader->texture_id = (cur->models[i])->geometry->object_number;
-            std::cout << (cur->models[i])->geometry->object_number;
 
             // The draw command
             shader->setUniforms();
