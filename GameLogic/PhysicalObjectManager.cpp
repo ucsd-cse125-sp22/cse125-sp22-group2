@@ -2,8 +2,9 @@
 
 PhysicalObjectManager::PhysicalObjectManager()
 {
-	vector<PhysicalObject*>* objects = new vector<PhysicalObject*>();
+	this->objects = new vector<PhysicalObject*>();
 	// Note: gridMin, gridMax are based on the size of the scene
+	this->uniformGrid = nullptr;
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
 }
 

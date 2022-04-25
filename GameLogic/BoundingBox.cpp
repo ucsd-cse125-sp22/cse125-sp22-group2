@@ -6,6 +6,7 @@ using namespace bounding;
 
 BoundingBox::BoundingBox() {
 	// This shouldn't ever happen
+	BoundingBox(0, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f));
 }
 
 BoundingBox::BoundingBox(int id, glm::vec3 vertex, glm::vec3 a, glm::vec3 b, glm::vec3 c)

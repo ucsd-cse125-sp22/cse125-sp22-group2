@@ -33,6 +33,7 @@ public:
 	// glm::mat4 transform;
 
 	PhysicalObject();
+	PhysicalObject(vector<PhysicalObject*>* objects, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, unsigned int id, bool solid);
 	~PhysicalObject();
 
 	// Create a bounding box
