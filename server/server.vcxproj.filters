@@ -13,12 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Game Logic">
+      <UniqueIdentifier>{8bae1b66-6e34-4945-b2f9-c02a0957f450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Logic">
+      <UniqueIdentifier>{5f50c076-224f-4283-b441-4c8e79ef349a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Definitions.cpp">
+    <ClCompile Include="..\GameLogic\PhysicalObject.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\BoundingBox.cpp">
+      <Filter>Source Files\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClockTick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Frame.cpp">
+    <ClCompile Include="..\Definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Server.cpp">
@@ -26,13 +44,28 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Constants.hpp">
+    <ClInclude Include="..\GameLogic\BoundingBox.hpp">
+      <Filter>Header Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\core.h">
+      <Filter>Header Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\PhysicalObject.hpp">
+      <Filter>Header Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp">
+      <Filter>Header Files\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClockTick.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Definitions.hpp">
+    <ClInclude Include="..\Constants.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Frame.hpp">
+    <ClInclude Include="..\Definitions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Frame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

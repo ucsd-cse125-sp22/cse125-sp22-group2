@@ -29,13 +29,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -72,9 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\Steven\Desktop\skrrt\cse-125-include-directories;C:\Users\Steven\Desktop\skrrt\skrrt\packages\boost_1_78_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\Steven\Desktop\skrrt\cse-125-include-directories;C:\Users\Steven\Desktop\skrrt\skrrt\packages\boost_1_78_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -142,14 +144,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Definitions.cpp" />
-    <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="..\ClockTick.cpp" />
+    <ClCompile Include="..\Definitions.cpp" />
+    <ClCompile Include="..\Frame.cpp" />
+    <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
+    <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
+    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Constants.hpp" />
-    <ClInclude Include="..\..\Definitions.hpp" />
-    <ClInclude Include="..\..\Frame.hpp" />
+    <ClInclude Include="..\ClockTick.hpp" />
+    <ClInclude Include="..\Constants.hpp" />
+    <ClInclude Include="..\Definitions.hpp" />
+    <ClInclude Include="..\Frame.hpp" />
+    <ClInclude Include="..\GameLogic\BoundingBox.hpp" />
+    <ClInclude Include="..\GameLogic\core.h" />
+    <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
+    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
