@@ -78,9 +78,6 @@ void requestClientId() {
 }
 
 void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirection) {
-
-    // boost::asio::connect(outgoingSocket, outgoingEndpoints);
-
     cse125framing::ClientFrame frame;
     frame.id = clientId;
     frame.ctr = clientFrameCtr++;
@@ -96,7 +93,25 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
         std::cerr << writeError << std::endl;
     }
     else {
-        std::cout << "Successfully sent frame # " << clientFrameCtr << " to server" << std::endl;
+        std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
+    }
+
+    // Wait for server to respond. With multiple clients, this listening step must be
+    // moved into a separate, asynchronous thread.
+    cse125framing::ServerFrame serverFrame;
+    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+    boost::system::error_code error;
+    size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+
+    if (error == boost::asio::error::eof) {
+        std::cout << "EOF from server." << std::endl; // Server closed connection
+    }
+    else if (error) {
+        std::cerr << "Error reading from server." << std::endl; // Some other error.
+    }
+    else {
+        cse125framing::deserialize(&serverFrame, serverBuffer);
+        std::cout << "Received reply from server." << std::endl;
     }
 }
 
@@ -332,9 +347,9 @@ int main(int argc, char** argv)
 #endif
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
-
-
     boost::asio::connect(outgoingSocket, outgoingEndpoints);
+
+
     // Set this client's id
     requestClientId();
 

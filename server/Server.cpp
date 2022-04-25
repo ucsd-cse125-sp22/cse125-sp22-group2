@@ -51,6 +51,9 @@ int main()
                 }
                 else if (readError) {
                     std::cout << "Error reading from client: " << readError << std::endl;
+                    if (readError == boost::system::errc::connection_reset) {
+                        break;
+                    }
                     continue;
                 }
 
@@ -77,24 +80,24 @@ int main()
                     }
                 }
                 else {
-                  // TODO: Update game state
-                  // TODO: Game logic to prepare the correct response for the client
-                  cse125framing::ServerFrame serverFrame;
-                  initializeServerFrame(&serverFrame);
-                  serverFrame.playerDirection = clientFrame.cameraDirection;
+                    // TODO: Update game state
+                    // TODO: Game logic to prepare the correct response for the client
+                    cse125framing::ServerFrame serverFrame;
+                    initializeServerFrame(&serverFrame);
+                    serverFrame.playerDirection = clientFrame.cameraDirection;
 
-                  // Serialize the data
-                  boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                  std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
+                    // Serialize the data
+                    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+                    std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
 
-                  cse125framing::serialize(&serverFrame, serverBuffer);
+                    cse125framing::serialize(&serverFrame, serverBuffer);
 
-                  // Send a response to the client
-                  boost::system::error_code ignored_error;
-                  boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
-                  std::cout << "Responded to client" << std::endl;
+                    // Send a response to the client
+                    boost::system::error_code ignored_error;
+                    boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
+                    std::cout << "Responded to client" << std::endl;
                 }
-            }
+            }                 
          }          
     }
     catch (std::exception& e)
