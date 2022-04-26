@@ -18,6 +18,10 @@ public:
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();
+
+	// Create an instance
+	// void createObject(object type, pos, dir);
+	void createObject();
 	
 	// These will not be used for now
 	vector<vector<int>*>* createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes);

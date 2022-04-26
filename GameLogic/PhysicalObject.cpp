@@ -8,7 +8,7 @@ PhysicalObject::PhysicalObject() {
 	this->width = 0.0f;
 	this->height = 0.0f;
 
-	this->speed = 0.0f;
+	this->speed = 1.0f;
 	this->boundingBox = generateBoundingBox(position, direction);
 
 	this->direction = glm::vec3(0.0f);
@@ -26,7 +26,7 @@ PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, glm::vec3 posit
 	this->width = width;
 	this->height = height;
 
-	this->speed = 0.0f;
+	this->speed = 1.0f;
 	this->boundingBox = generateBoundingBox(position, direction);
 
 	this->direction = direction;
