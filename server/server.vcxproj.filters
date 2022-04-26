@@ -21,6 +21,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Definitions.cpp">
     <ClCompile Include="..\GameLogic\PhysicalObject.cpp">
       <Filter>Source Files\Game Logic</Filter>
     </ClCompile>
@@ -39,11 +43,12 @@
     <ClCompile Include="..\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Server.cpp">
+    <ClCompile Include="..\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+
     <ClInclude Include="..\GameLogic\BoundingBox.hpp">
       <Filter>Header Files\Game Logic</Filter>
     </ClInclude>
