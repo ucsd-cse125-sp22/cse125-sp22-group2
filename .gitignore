@@ -3,8 +3,6 @@
 ##
 ## Credit to https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-./cse-125-include-directories/boost
-
 # User-specific files
 *.rsuser
 *.suo
