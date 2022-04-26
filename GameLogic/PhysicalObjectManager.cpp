@@ -17,6 +17,12 @@ PhysicalObjectManager::~PhysicalObjectManager()
 	// delete uniformGrid;
 }
 
+void PhysicalObjectManager::createObject()
+{
+	unsigned int next_id = this->objects->size();
+	this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+}
+
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {
 	glm::vec3 numGrids = (gridMax - gridMin) / gridSizes;
 	vector<vector<int>*>* uniformGrid = new vector<vector<int>*>(numGrids.x * numGrids.y * numGrids.z);

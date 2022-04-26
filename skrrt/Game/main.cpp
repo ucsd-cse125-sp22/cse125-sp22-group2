@@ -82,7 +82,7 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     frame.id = clientId;
     frame.ctr = clientFrameCtr++;
     frame.movementKey = movementKey;
-    frame.cameraDirection = cameraDirection;
+    frame.cameraDirection = glm::vec3(cameraDirection);
 
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
     cse125framing::serialize(&frame, clientBuffer);
@@ -101,7 +101,10 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     cse125framing::ServerFrame serverFrame;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
-    size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+    //size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+
+    size_t numRead = boost::asio::read(outgoingSocket, boost::asio::buffer(serverBuffer));
+
 
     if (error == boost::asio::error::eof) {
         std::cout << "EOF from server." << std::endl; // Server closed connection
@@ -112,6 +115,12 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     else {
         cse125framing::deserialize(&serverFrame, serverBuffer);
         std::cout << "Received reply from server." << std::endl;
+        std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
+        std::cout << &serverFrame << std::endl;
+
+        // Use the data
+        const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
+        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * scene.node["car1"]->modeltransforms[0];
     }
 }
 
@@ -295,25 +304,26 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void specialKey(int key, int x, int y){
+    glm::vec3 camera = (scene.camera->target - scene.camera->eye) * glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
-            scene.camera -> rotateUp(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::FORWARD, scene.camera->eye);
+            //scene.camera -> rotateUp(-10.0f);
+            sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            scene.camera -> rotateUp(10.0f);
-            sendDataToServer(cse125framing::MovementKey::BACKWARD, scene.camera->eye);
+            //scene.camera -> rotateUp(10.0f);
+            sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            scene.camera -> rotateRight(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::RIGHT, scene.camera->eye);
+            //scene.camera -> rotateRight(-10.0f);
+            sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            scene.camera -> rotateRight(10.0f);
-            sendDataToServer(cse125framing::MovementKey::LEFT, scene.camera->eye);
+            //scene.camera -> rotateRight(10.0f);
+            sendDataToServer(cse125framing::MovementKey::LEFT, camera);
             glutPostRedisplay();
             break;
     }

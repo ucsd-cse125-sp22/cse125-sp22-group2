@@ -6,25 +6,55 @@
 
 #include "../Constants.hpp"
 #include "../Frame.hpp"
+#include "../GameLogic/PhysicalObjectManager.hpp"
 
 const int NUM_CLIENTS = 1;
 int frameCtr = 0;
 int gameTime = 0;
 int clientCtr = 0;
 
-void initializeServerFrame(cse125framing::ServerFrame* frame) {
-    frame->id = -1;
+PhysicalObjectManager* manager;
+
+void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing::ServerFrame* frame) {
+    frame->id = id;
+    PhysicalObject* player = manager->objects->at(id);
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
     frame->hasCrown = false;
     frame->makeupLevel = 0;
-    frame->playerDirection = vec3(0.0f);
-    frame->playerPosition = vec4(0.0f);
+    frame->playerDirection = player->direction;
+    frame->playerPosition = vec4(player->position, 1.0f);
     frame->score = 0;
+}
+
+PhysicalObjectManager* initializeGame() {
+    PhysicalObjectManager* manager = new PhysicalObjectManager();
+    manager->createObject();
+    return manager;
+}
+
+void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::MovementKey movementKey, vec3 cameraDirection) {
+    PhysicalObject* player = manager->objects->at(clientID);
+    switch (movementKey) {
+    case cse125framing::MovementKey::RIGHT:
+        player->moveDirection(glm::normalize(vec3(-cameraDirection.x, cameraDirection.y, cameraDirection.z)));
+        break;
+    case cse125framing::MovementKey::FORWARD:
+        player->moveDirection(glm::normalize(cameraDirection));
+        break;
+    case cse125framing::MovementKey::LEFT:
+        player->moveDirection(glm::normalize(vec3(cameraDirection.x, cameraDirection.y, -cameraDirection.z)));
+        break;
+    case cse125framing::MovementKey::BACKWARD:
+        player->moveDirection(glm::normalize(-cameraDirection));
+        break;
+    }
 }
 
 int main()
 {
+    manager = initializeGame();
+
     try
     {
         boost::asio::io_context io_context;
@@ -82,15 +112,20 @@ int main()
                 else {
                     // TODO: Update game state
                     // TODO: Game logic to prepare the correct response for the client
+                    gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
                     cse125framing::ServerFrame serverFrame;
-                    initializeServerFrame(&serverFrame);
-                    serverFrame.playerDirection = clientFrame.cameraDirection;
+                    initializeServerFrame(manager, clientFrame.id, &serverFrame);
 
                     // Serialize the data
                     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                    std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
+                    std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
 
                     cse125framing::serialize(&serverFrame, serverBuffer);
+
+
+                    cout << &serverFrame << endl;
+                    cse125framing::deserialize(&serverFrame, serverBuffer);
+                    cout << &serverFrame << endl;
 
                     // Send a response to the client
                     boost::system::error_code ignored_error;
