@@ -101,9 +101,9 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     cse125framing::ServerFrame serverFrame;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
-    //size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+    size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
-    size_t numRead = boost::asio::read(outgoingSocket, boost::asio::buffer(serverBuffer));
+    //size_t numRead = boost::asio::read(outgoingSocket, boost::asio::buffer(serverBuffer));
 
 
     if (error == boost::asio::error::eof) {
@@ -119,7 +119,7 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
         std::cout << &serverFrame << std::endl;
 
         // Use the data
-        const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
+        const glm::vec3 pos = glm::vec3(serverFrame.players[clientId].playerPosition);
         scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * scene.node["car1"]->modeltransforms[0];
     }
 }

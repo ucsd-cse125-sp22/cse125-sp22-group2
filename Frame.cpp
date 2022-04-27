@@ -71,8 +71,8 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const ServerFrame* fra
 	os << "Server frame:" << std::endl;
 	os << "id: " << frame->id << std::endl;
 	os << "Server frame ctr: " << frame->ctr << std::endl;
-	os << "Position: " << "(" << frame->playerPosition.x << ", " << frame->playerPosition.y << ", " << frame->playerPosition.z << ")" << std::endl;
-	os << "Direction: " << "(" << frame->playerDirection.x << ", " << frame->playerDirection.y << ", " << frame->playerDirection.z << ")" << std::endl;
+	//os << "Position: " << "(" << frame->playerPosition.x << ", " << frame->playerPosition.y << ", " << frame->playerPosition.z << ")" << std::endl;
+	//os << "Direction: " << "(" << frame->playerDirection.x << ", " << frame->playerDirection.y << ", " << frame->playerDirection.z << ")" << std::endl;
 	return os;
 }
 

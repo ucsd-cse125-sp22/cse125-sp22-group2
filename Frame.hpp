@@ -56,18 +56,21 @@ namespace cse125framing {
 	 */
 	void deserialize(ClientFrame* frame, const boost::array<char, CLIENT_FRAME_BUFFER_SIZE>& buffer);
 
-
-	// Only handles 1 client at a time currently
-	// To extend, make each type a vector (e.g. of ids, player positions)
-	typedef struct ServerFrame {
-		int id;
-		int ctr;
+	// Data for individual player
+	typedef struct PlayerData {
 		vec4 playerPosition;
 		vec3 playerDirection;
 		RealNumber makeupLevel;
 		RealNumber score;
 		bool hasCrown;
-		Action action;
+	} PlayerData;
+
+	// Only handles 1 client at a time currently
+	// To extend, make each type a vector (e.g. of ids, player positions)
+	typedef struct ServerFrame {
+		int id; // index in players
+		int ctr;
+		PlayerData players[cse125constants::NUM_PLAYERS];
 		RealNumber gameTime;
 	} ServerFrame;
 
