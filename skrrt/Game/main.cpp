@@ -265,7 +265,7 @@ void saveScreenShot(const char* filename = "test.png"){
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
-            cleanupConnection();
+            //cleanupConnection();
             exit(0);
             break;
         case 'h': // print help
@@ -307,23 +307,23 @@ void specialKey(int key, int x, int y){
     glm::vec3 camera = (scene.camera->target - scene.camera->eye) * glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
-            //scene.camera -> rotateUp(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
+            scene.camera -> rotateUp(-10.0f);
+            //sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            //scene.camera -> rotateUp(10.0f);
-            sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
+            scene.camera -> rotateUp(10.0f);
+            //sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            //scene.camera -> rotateRight(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
+            scene.camera -> rotateRight(-10.0f);
+            //sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            //scene.camera -> rotateRight(10.0f);
-            sendDataToServer(cse125framing::MovementKey::LEFT, camera);
+            scene.camera -> rotateRight(10.0f);
+            //sendDataToServer(cse125framing::MovementKey::LEFT, camera);
             glutPostRedisplay();
             break;
     }
@@ -359,11 +359,11 @@ int main(int argc, char** argv)
 #endif
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
-    boost::asio::connect(outgoingSocket, outgoingEndpoints);
+    //boost::asio::connect(outgoingSocket, outgoingEndpoints);
 
 
     // Set this client's id
-    requestClientId();
+    //requestClientId();
 
     // Set up listening socket "server"
 
