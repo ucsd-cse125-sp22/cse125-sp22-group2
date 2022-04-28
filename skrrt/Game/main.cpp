@@ -51,6 +51,9 @@ void requestClientId() {
         boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
         cse125framing::serialize(&frame, clientBuffer);
         boost::system::error_code writeError;
+
+        std::cerr << "sending frame: \n" <<  &frame << std::endl;
+
         size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
         if (writeError) {
             std::cerr << "Error contacting server, retrying ..." << std::endl;

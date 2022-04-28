@@ -1,155 +1,121 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
-
-#include "../Constants.hpp"
-#include "../Frame.hpp"
-#include "../GameLogic/PhysicalObjectManager.hpp"
 #include "Server.hpp"
 
-const int NUM_CLIENTS = 1;
-int frameCtr = 0;
-int gameTime = 0;
-int clientCtr = 0;
+//
+// async_tcp_echo_server.cpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
 
-PhysicalObjectManager* manager;
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <boost/asio.hpp>
 
-void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing::ServerFrame* frame) {
-    frame->id = id;
-    PhysicalObject* player = manager->objects->at(id);
-    frame->ctr = frameCtr++;
-    frame->gameTime = gameTime++;
-    frame->players[id].hasCrown = false;
-    frame->players[id].makeupLevel = 0;
-    frame->players[id].playerDirection = player->direction;
-    frame->players[id].playerPosition = vec4(player->position, 1.0f);
-    frame->players[id].score = 0;
-}
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
 
-PhysicalObjectManager* initializeGame() {
-    PhysicalObjectManager* manager = new PhysicalObjectManager();
-    manager->createObject();
-    return manager;
-}
-
-void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::MovementKey movementKey, vec3 cameraDirection) {
-    PhysicalObject* player = manager->objects->at(clientID);
-    switch (movementKey) {
-    case cse125framing::MovementKey::RIGHT:
-        player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
-        break;
-    case cse125framing::MovementKey::FORWARD:
-        player->moveDirection(glm::normalize(cameraDirection));
-        break;
-    case cse125framing::MovementKey::LEFT:
-        player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
-        break;
-    case cse125framing::MovementKey::BACKWARD:
-        player->moveDirection(glm::normalize(-cameraDirection));
-        break;
-    }
-}
-
-void launchServer(short port) {
-    boost::asio::io_context io_context;
-
-    GraphicsServer s(io_context, port);
-
-    std::cout << "Before io_context.run()" << std::endl;
-    io_context.run();
-}
-
-int main()
+GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid)
+	: socket(std::move(socket)), id(myid)
 {
-    manager = initializeGame();
+}
 
-    short port = 8000;
-    boost::thread serverThread(launchServer, port);
+void GraphicsSession::start()
+{
+	do_read();
+}
 
-    serverThread.join();
-    return 0;
-    /*
+void GraphicsSession::do_read()
+{
+	std::cerr << "do_read()\n";
+	auto self(shared_from_this());
 
-    try
-    {
-        boost::asio::io_context io_context;
+	boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
 
-        boost::asio::ip::tcp::acceptor acceptor(io_context,
-            boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), std::stoi(cse125constants::SERVER_PORT)));
+	socket.async_read_some(boost::asio::buffer(clientBuffer), 
+		[&clientBuffer, this, self](boost::system::error_code ec, std::size_t length)
+		{
+			if (!ec)
+			{
+				cse125framing::ClientFrame clientFrame;
 
-        int numClientsRegistered = 0;
-        while (true) {
-            while (true) {
-                // Read the data from a client
-                boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
-                boost::system::error_code readError;
-                size_t numRead = socket.read_some(boost::asio::buffer(clientBuffer), readError);
+				// process data
+				cse125framing::deserialize(&clientFrame, clientBuffer);
 
-                if (readError == boost::asio::error::eof) {
-                    std::cout << "Client closed connection" << std::endl;
-                    break;
-                }
-                else if (readError) {
-                    std::cout << "Error reading from client: " << readError << std::endl;
-                    if (readError == boost::system::errc::connection_reset) {
-                        break;
-                    }
-                    continue;
-                }
+				std::cerr << "Frame from client: " << std::endl;
+				std::cerr << &clientFrame << std::endl;
 
-                // Deserialize the data
-                
-                // Check if the client is requesting an id
-                if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID) {
-                    // Send an int id
-                    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                    std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
-                    boost::system::error_code writeError;
-                    boost::asio::write(socket, boost::asio::buffer(serverBuffer), writeError);
-                    if (writeError) {
-                        std::cerr << "Error sending clientId " << clientCtr << " to client, not incrementing clientCtr" << std::endl;
-                    }
-                    else {
-                        numClientsRegistered += 1;
-                        std::cout << "Registered client " << numClientsRegistered << std::endl;
-                    }
-                }
-                else {
-                    // TODO: Update game state
-                    // TODO: Game logic to prepare the correct response for the client
-                    gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
-                    cse125framing::ServerFrame serverFrame;
-                    initializeServerFrame(manager, clientFrame.id, &serverFrame);
+				// Check if ID needs to be sent back
+				if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID)
+				{
+					std::cerr << "Giving clinet id: " << this->id << std::endl;
+					cse125framing::ServerFrame frame;
+					frame.id = this->id;
+					do_write(&frame);
+				}
 
-                    // Serialize the data
-                    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                    std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
+				// write to packet buffer (queue)
 
-                    cse125framing::serialize(&serverFrame, serverBuffer);
+				// read more packets
+				do_read();
+			}
+		});
+}
+
+void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
+{
+	auto self(shared_from_this());
+	boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+
+	cse125framing::serialize(serverFrame, serverBuffer); 
+
+	boost::asio::async_write(socket, boost::asio::buffer(serverBuffer),
+		[&serverFrame, this, self](boost::system::error_code ec, std::size_t /*length*/)
+		{
+			if (!ec)
+			{
+				std::cerr << "Frame written to client" << std::endl;
+				std::cerr << serverFrame << std::endl;
+			}
+			else
+			{
+				std::cerr << "Write failed.. NOT rewriting" << std::endl;
+				// do_write(serverFrame);
+			}
+		});
+}
 
 
-                    cout << &serverFrame << endl;
-                    cse125framing::deserialize(&serverFrame, serverBuffer);
-                    cout << &serverFrame << endl;
+GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
+	: acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+{
+	numConnections = 0;
+	boost::asio::ip::tcp::endpoint endpoint = acceptor.local_endpoint();
+	std::cout << endpoint.address() << std::endl;
+	std::cout << endpoint.port() << std::endl;
+	do_accept();
+}
 
-                    // Send a response to the client
-                    boost::system::error_code ignored_error;
-                    boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
-                    std::cout << "Responded to client" << std::endl;
-                }
-            }                 
-         }          
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-    */
-    
-    serverThread.join();
+void GraphicsServer::do_accept()
+{
+	acceptor.async_accept(
+		[this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
+		{
+			if (!ec)
+			{
+				std::make_shared<GraphicsSession>(std::move(socket), this->numConnections)->start();
 
-    return 0;
+				this->numConnections++;
+			}
+
+			// only accept 4 connections
+			if (this->numConnections < cse125constants::NUM_PLAYERS)
+			{
+				do_accept();
+			}
+		});
 }
