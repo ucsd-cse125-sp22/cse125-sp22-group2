@@ -34,6 +34,8 @@ boost::asio::ip::tcp::socket outgoingSocket = boost::asio::ip::tcp::socket(outgo
 
 int clientId = -1; // this client's unique id
 int clientFrameCtr = 0;
+static int mouseX = 0.0f;
+static int mouseY = 0.0f;
 
 #include "hw3AutoScreenshots.h"
 
@@ -224,10 +226,12 @@ void printHelp(){
       press Esc to quit.
       press 'O' to save a screenshot.
       press the arrow keys to rotate camera.
-      press 'A'/'Z' to zoom.
+      press 'Z' to zoom.
       press 'R' to reset camera.
       press 'L' to turn on/off the lighting.
     
+      press 'W' 'A' 'S' 'D' to move. 
+
       press Spacebar to generate images for hw3 submission.
     
 )";
@@ -280,7 +284,23 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> zoom(0.9f);
+            scene.camera -> movePosition(0.1f, scene.camera->leftVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
+            glutPostRedisplay();
+            break;
+        case 'd':
+            scene.camera -> movePosition(-0.1f, scene.camera->leftVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
+            glutPostRedisplay();
+            break;
+        case 'w':
+            scene.camera -> movePosition(0.1f, scene.camera->forwardVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
+            glutPostRedisplay();
+            break;
+        case 's':
+            scene.camera -> movePosition(-0.1f, scene.camera->forwardVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'z':
@@ -333,7 +353,21 @@ void idle() {
     // Idle loop for logic 
     // Get's called anytime there isn't a keyboard event
     // Packet receiving stuff 
+}
 
+void mouseMovement(int x, int y) {
+	int maxDelta = 100;
+	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
+	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
+
+	mouseX = x;
+	mouseY = y;
+
+    if (dx != 0 || dy != 0) {
+        scene.camera->rotateRight(dx);
+        scene.camera->rotateUp(dy);
+        glutPostRedisplay();
+    }
 }
 
 int main(int argc, char** argv)
@@ -384,6 +418,9 @@ int main(int argc, char** argv)
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKey);
     glutIdleFunc(idle);
+    glutPassiveMotionFunc(mouseMovement);
+    glutMotionFunc(mouseMovement);
+    
     
     glutMainLoop();
     //if (threadSuccess) {
