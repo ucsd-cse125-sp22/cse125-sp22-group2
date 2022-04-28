@@ -122,7 +122,8 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
 
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
-        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * scene.node["car1"]->modeltransforms[0];
+        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate( glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
+        scene.camera->setPosition(pos);
     }
 }
 
@@ -285,22 +286,18 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'a':
             scene.camera -> movePosition(0.1f, scene.camera->leftVectorXZ());
-            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'd':
             scene.camera -> movePosition(-0.1f, scene.camera->leftVectorXZ());
-            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'w':
             scene.camera -> movePosition(0.1f, scene.camera->forwardVectorXZ());
-            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 's':
             scene.camera -> movePosition(-0.1f, scene.camera->forwardVectorXZ());
-            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'z':
@@ -327,22 +324,18 @@ void specialKey(int key, int x, int y){
     glm::vec3 camera = (scene.camera->target - scene.camera->eye) * glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
-            //scene.camera -> rotateUp(-10.0f);
             sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            //scene.camera -> rotateUp(10.0f);
             sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            //scene.camera -> rotateRight(-10.0f);
             sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            //scene.camera -> rotateRight(10.0f);
             sendDataToServer(cse125framing::MovementKey::LEFT, camera);
             glutPostRedisplay();
             break;

@@ -14,8 +14,8 @@ public:
     glm::vec3 up;      // up vector
     float fovy;  // field of view in degrees
     float aspect; // aspect ratio
-    float near; // near clipping distance
-    float far; // far clipping distance
+    float nearPlane; // near clipping distance
+    float farPlane; // far clipping distance
 
     const float MAX_Y_ANGLE = 86.0f; // Camera will not rotate above this angle
     const float MIN_Y_ANGLE = -1.0f * MAX_Y_ANGLE; // Camera will not rotate below this angle
@@ -39,6 +39,7 @@ public:
     void reset(void);
 
     void movePosition(const float distance, const glm::vec3 direction);
+    void setPosition(const glm::vec3 newTarget);
     glm::vec3 Camera::forwardVectorXZ();
     glm::vec3 Camera::leftVectorXZ();
 };

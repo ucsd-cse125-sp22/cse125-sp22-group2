@@ -1,7 +1,6 @@
 #include "Camera.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <iostream>
 
 // Quaternion multiplication p * q
 glm::vec4 qmultiply(const glm::vec4 p, const glm::vec4 q){
@@ -97,6 +96,13 @@ void Camera::movePosition(const float distance, const glm::vec3 direction) {
     glm::vec3 delta = direction * distance;
 
     target += delta;
+    eye += delta; 
+}
+
+void Camera::setPosition(const glm::vec3 newTarget) {
+    glm::vec3 delta = newTarget - target;
+
+    target = newTarget;
     eye += delta; 
 }
 
