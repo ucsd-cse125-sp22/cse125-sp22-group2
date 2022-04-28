@@ -3,10 +3,12 @@
 #include <vector>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 #include "../Constants.hpp"
 #include "../Frame.hpp"
 #include "../GameLogic/PhysicalObjectManager.hpp"
+#include "Server.hpp"
 
 const int NUM_CLIENTS = 1;
 int frameCtr = 0;
@@ -20,11 +22,11 @@ void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing
     PhysicalObject* player = manager->objects->at(id);
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
-    frame->hasCrown = false;
-    frame->makeupLevel = 0;
-    frame->playerDirection = player->direction;
-    frame->playerPosition = vec4(player->position, 1.0f);
-    frame->score = 0;
+    frame->players[id].hasCrown = false;
+    frame->players[id].makeupLevel = 0;
+    frame->players[id].playerDirection = player->direction;
+    frame->players[id].playerPosition = vec4(player->position, 1.0f);
+    frame->players[id].score = 0;
 }
 
 PhysicalObjectManager* initializeGame() {
@@ -51,9 +53,25 @@ void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::Movem
     }
 }
 
+void launchServer(short port) {
+    boost::asio::io_context io_context;
+
+    GraphicsServer s(io_context, port);
+
+    std::cout << "Before io_context.run()" << std::endl;
+    io_context.run();
+}
+
 int main()
 {
     manager = initializeGame();
+
+    short port = 8000;
+    boost::thread serverThread(launchServer, port);
+
+    serverThread.join();
+    return 0;
+    /*
 
     try
     {
@@ -64,11 +82,6 @@ int main()
 
         int numClientsRegistered = 0;
         while (true) {
-            // Accept connections
-            boost::asio::ip::tcp::socket socket(io_context);
-            acceptor.accept(socket);
-            std::cout << "Accepted a connection" << std::endl;
-
             while (true) {
                 // Read the data from a client
                 boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
@@ -88,12 +101,7 @@ int main()
                 }
 
                 // Deserialize the data
-                cse125framing::ClientFrame clientFrame;
-                cse125framing::deserialize(&clientFrame, clientBuffer);
-
-                std::cout << "Frame from client: " << std::endl;
-                std::cout << &clientFrame << std::endl;
-
+                
                 // Check if the client is requesting an id
                 if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID) {
                     // Send an int id
@@ -139,6 +147,9 @@ int main()
     {
         std::cerr << e.what() << std::endl;
     }
+    */
+    
+    serverThread.join();
 
     return 0;
 }
