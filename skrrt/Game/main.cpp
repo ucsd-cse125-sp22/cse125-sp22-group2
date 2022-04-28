@@ -91,19 +91,23 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> movePositionSideways(0.1f);
+            scene.camera -> movePosition(0.1f, scene.camera->leftVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'd':
-            scene.camera -> movePositionSideways(-0.1f);
+            scene.camera -> movePosition(-0.1f, scene.camera->leftVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'w':
-            scene.camera -> movePositionForward(0.1f);
+            scene.camera -> movePosition(0.1f, scene.camera->forwardVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 's':
-            scene.camera -> movePositionForward(-0.1f);
+            scene.camera -> movePosition(-0.1f, scene.camera->forwardVectorXZ());
+            scene.node["world"]->modeltransforms[0] = glm::translate(scene.camera->target);
             glutPostRedisplay();
             break;
         case 'z':
