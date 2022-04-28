@@ -42,6 +42,9 @@
     <ClInclude Include="Server.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ServerQueue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ClockTick.cpp">

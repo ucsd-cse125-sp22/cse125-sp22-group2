@@ -150,6 +150,7 @@
     <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
     <ClInclude Include="Server.hpp" />
+    <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ClockTick.cpp" />

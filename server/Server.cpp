@@ -14,13 +14,14 @@
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <deque>
 #include <boost/asio.hpp>
 
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
-GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid)
-	: socket(std::move(socket)), id(myid)
+GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue)
+	: socket(std::move(socket)), id(myid), serverQueue(serverQueue)
 {
 }
 
@@ -57,8 +58,13 @@ void GraphicsSession::do_read()
 					frame.id = this->id;
 					do_write(&frame);
 				}
+				else
+				{
+					// write to packet buffer (queue)
+					this->serverQueue.push_back(clientFrame);
+					std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
+				}
 
-				// write to packet buffer (queue)
 
 				// read more packets
 				do_read();
@@ -97,6 +103,7 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 	boost::asio::ip::tcp::endpoint endpoint = acceptor.local_endpoint();
 	std::cout << endpoint.address() << std::endl;
 	std::cout << endpoint.port() << std::endl;
+
 	do_accept();
 }
 
@@ -107,7 +114,7 @@ void GraphicsServer::do_accept()
 		{
 			if (!ec)
 			{
-				std::make_shared<GraphicsSession>(std::move(socket), this->numConnections)->start();
+				std::make_shared<GraphicsSession>(std::move(socket), this->numConnections, this->serverQueue)->start();
 
 				this->numConnections++;
 			}

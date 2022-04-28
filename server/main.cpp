@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -16,6 +17,9 @@ int gameTime = 0;
 int clientCtr = 0;
 
 PhysicalObjectManager* manager;
+
+boost::asio::io_context io_context;
+GraphicsServer server(io_context, std::stoi(cse125constants::SERVER_PORT));
 
 void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing::ServerFrame* frame) {
     frame->id = id;
@@ -54,9 +58,6 @@ void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::Movem
 }
 
 void launchServer(short port) {
-    boost::asio::io_context io_context;
-
-    GraphicsServer s(io_context, port);
 
     std::cout << "Before io_context.run()" << std::endl;
     io_context.run();
@@ -70,84 +71,73 @@ int main()
     boost::thread serverThread(launchServer, port);
 
     serverThread.join();
-    return 0;
-    /*
-
+   
     try
     {
-        boost::asio::io_context io_context;
+        while (true)
+        {
+            std::deque<cse125framing::ClientFrame>& serverQueue = server.serverQueue;
+            std::deque<cse125framing::ClientFrame> processQueue;
+            std::unordered_set<int> usedIds;
 
-        boost::asio::ip::tcp::acceptor acceptor(io_context,
-            boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), std::stoi(cse125constants::SERVER_PORT)));
-
-        int numClientsRegistered = 0;
-        while (true) {
-            while (true) {
-                // Read the data from a client
-                boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
-                boost::system::error_code readError;
-                size_t numRead = socket.read_some(boost::asio::buffer(clientBuffer), readError);
-
-                if (readError == boost::asio::error::eof) {
-                    std::cout << "Client closed connection" << std::endl;
-                    break;
+            // for i to queue size
+            for (auto it = serverQueue.crbegin(); it != serverQueue.crend(); it++)
+            {
+                // check if id is already added
+                if (usedIds.count(it->id) == 0)
+                {
+                    // basic functionality for priority: only take last packet
+                    processQueue.push_front(*it); 
+                    usedIds.insert(it->id);
                 }
-                else if (readError) {
-                    std::cout << "Error reading from client: " << readError << std::endl;
-                    if (readError == boost::system::errc::connection_reset) {
-                        break;
-                    }
-                    continue;
-                }
+            }
+            serverQueue.clear();
 
-                // Deserialize the data
-                
-                // Check if the client is requesting an id
-                if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID) {
-                    // Send an int id
-                    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                    std::memcpy(&serverBuffer, &clientCtr, sizeof(int));
-                    boost::system::error_code writeError;
-                    boost::asio::write(socket, boost::asio::buffer(serverBuffer), writeError);
-                    if (writeError) {
-                        std::cerr << "Error sending clientId " << clientCtr << " to client, not incrementing clientCtr" << std::endl;
-                    }
-                    else {
-                        numClientsRegistered += 1;
-                        std::cout << "Registered client " << numClientsRegistered << std::endl;
-                    }
-                }
-                else {
-                    // TODO: Update game state
-                    // TODO: Game logic to prepare the correct response for the client
-                    gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
-                    cse125framing::ServerFrame serverFrame;
-                    initializeServerFrame(manager, clientFrame.id, &serverFrame);
+            // deque, process frame, call physic logic
+            while (processQueue.size() > 0)
+            {
+                cse125framing::ClientFrame clientFrame = processQueue.front();
+			    gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
+                processQueue.pop_front();
 
-                    // Serialize the data
-                    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-                    std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
-
-                    cse125framing::serialize(&serverFrame, serverBuffer);
+            }
 
 
-                    cout << &serverFrame << endl;
-                    cse125framing::deserialize(&serverFrame, serverBuffer);
-                    cout << &serverFrame << endl;
+            // update game state
 
-                    // Send a response to the client
-                    boost::system::error_code ignored_error;
-                    boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
-                    std::cout << "Responded to client" << std::endl;
-                }
-            }                 
-         }          
+
+            continue;
+
+            /*
+            
+			// TODO: Update game state
+			// TODO: Game logic to prepare the correct response for the client
+			cse125framing::ServerFrame serverFrame;
+			// initializeServerFrame(manager, clientFrame.id, &serverFrame);
+
+			// Serialize the data
+			boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+			std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
+
+			cse125framing::serialize(&serverFrame, serverBuffer);
+
+
+			cout << &serverFrame << endl;
+			cse125framing::deserialize(&serverFrame, serverBuffer);
+			cout << &serverFrame << endl;
+
+			// Send a response to the client
+			boost::system::error_code ignored_error;
+			boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
+			std::cout << "Responded to client" << std::endl;
+            */
+        }
+    
     }
     catch (std::exception& e)
     {
         std::cerr << e.what() << std::endl;
     }
-    */
     
     serverThread.join();
 
