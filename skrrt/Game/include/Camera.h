@@ -16,9 +16,12 @@ public:
     float aspect; // aspect ratio
     float nearPlane; // near clipping distance
     float farPlane; // far clipping distance
+
+    const float MAX_Y_ANGLE = 86.0f; // Camera will not rotate above this angle
+    const float MIN_Y_ANGLE = -1.0f * MAX_Y_ANGLE; // Camera will not rotate below this angle
     
     // default values for reset
-    glm::vec3 eye_default = glm::vec3(5.0f, 0.0f, 0.0f);
+    glm::vec3 eye_default = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 target_default = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 up_default = glm::vec3(0.0f, 1.0f, 0.0f);
     float fovy_default = 30.0f;
@@ -34,4 +37,9 @@ public:
     void zoom(const float factor);
     void computeMatrices(void);
     void reset(void);
+
+    void movePosition(const float distance, const glm::vec3 direction);
+    void setPosition(const glm::vec3 newTarget);
+    glm::vec3 Camera::forwardVectorXZ();
+    glm::vec3 Camera::leftVectorXZ();
 };
