@@ -16,6 +16,7 @@ that loads an obj file.
 #endif
 
 #include "Obj.h"
+#include "Debug.h"
 
 void Obj::init(const char * filename, const char * texture_filename, int obj_num){
 
@@ -32,7 +33,9 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
         std::cerr << "Error loading model " << filename << std::endl;
     }
 
-    std::cout << "done." << std::endl;
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "done." << std::endl;
+    }
 
     // load texture file
     glGenTextures(1, &textureID); 
@@ -59,7 +62,9 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
     unsigned int n = indices.size();
     
     // setting up buffers
-    std::cout << "Setting up buffers...";
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "Setting up buffers...";
+    }
     glGenVertexArrays(1, &vao );
     buffers.resize(4);
     glGenBuffers(4, buffers.data());
@@ -97,7 +102,9 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
 
     count = n;
     glBindVertexArray(0);
-    std::cout << "done." << std::endl;
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "done." << std::endl;
+    }
 
     //glUniform1i(glGetUniformLocation( , "texture" + object_number), 0); 
 }

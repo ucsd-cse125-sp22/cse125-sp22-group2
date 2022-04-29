@@ -18,7 +18,7 @@
 #include "Screenshot.h"
 #include "Scene.h"
 #include "../../Frame.hpp"
-
+#include "Debug.h"
 
 
 static const int width = 800;
@@ -55,7 +55,9 @@ void requestClientId() {
         boost::system::error_code writeError;
         size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
         if (writeError) {
-            std::cerr << "Error contacting server, retrying ..." << std::endl;
+            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+                std::cerr << "Error contacting server, retrying ..." << std::endl;
+            }
             continue;
         }
         boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
@@ -63,7 +65,9 @@ void requestClientId() {
         size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
         if (error == boost::asio::error::eof) {
-            std::cout << "EOF from server:" << std::endl; // Server closed connection
+            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+                std::cout << "EOF from server:" << std::endl; // Server closed connection
+            }
             break;
         }
         else if (error) {
@@ -73,7 +77,9 @@ void requestClientId() {
             // Parse the id provided by the server
             // TODO: Account for endianess differences
             std::memcpy(&clientId, &serverBuffer, sizeof(int));
-            std::cout << "Client id is now " << clientId << std::endl;
+            if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+                std::cout << "Client id is now " << clientId << std::endl;
+            }
             break;
         }
     }
@@ -91,11 +97,15 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     boost::system::error_code writeError;
     size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
     if (writeError) {
-        std::cerr << "Error sending packet to server, continuing ..." << std::endl;
-        std::cerr << writeError << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error sending packet to server, continuing ..." << std::endl;
+            std::cerr << writeError << std::endl;
+        }
     }
     else {
-        std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+            std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
+        }
     }
 
     // Wait for server to respond. With multiple clients, this listening step must be
@@ -109,16 +119,22 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
 
 
     if (error == boost::asio::error::eof) {
-        std::cout << "EOF from server." << std::endl; // Server closed connection
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cout << "EOF from server." << std::endl; // Server closed connection
+        }
     }
     else if (error) {
-        std::cerr << "Error reading from server." << std::endl; // Some other error.
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error reading from server." << std::endl; // Some other error.
+        }
     }
     else {
         cse125framing::deserialize(&serverFrame, serverBuffer);
-        std::cout << "Received reply from server." << std::endl;
-        std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
-        std::cout << &serverFrame << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+            std::cout << "Received reply from server." << std::endl;
+            std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
+            std::cout << &serverFrame << std::endl;
+        }
 
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
@@ -131,11 +147,15 @@ void cleanupConnection() {
     boost::system::error_code errorCode;
     outgoingSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
     if (errorCode) {
-        std::cerr << "Error shutting down socket" << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error shutting down socket" << std::endl;
+        }
     }
     outgoingSocket.close(errorCode);
     if (errorCode) {
-        std::cerr << "Error closing socket" << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error closing socket" << std::endl;
+        }
     }
 }
 
@@ -267,6 +287,23 @@ void saveScreenShot(const char* filename = "test.png"){
     imag.save(filename);
 }
 
+void handleMoveForward() {
+    sendDataToServer(cse125framing::MovementKey::FORWARD, scene.camera->forwardVectorXZ());
+}
+
+void handleMoveBackward() {
+    sendDataToServer(cse125framing::MovementKey::BACKWARD, scene.camera->forwardVectorXZ());
+}
+
+void handleMoveRight() {
+    sendDataToServer(cse125framing::MovementKey::RIGHT, scene.camera->forwardVectorXZ());
+
+}
+
+void handleMoveLeft() {
+    sendDataToServer(cse125framing::MovementKey::LEFT, scene.camera->forwardVectorXZ());
+}
+
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
@@ -285,19 +322,19 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> movePosition(0.1f, scene.camera->leftVectorXZ());
+            handleMoveLeft();
             glutPostRedisplay();
             break;
         case 'd':
-            scene.camera -> movePosition(-0.1f, scene.camera->leftVectorXZ());
+            handleMoveRight();
             glutPostRedisplay();
             break;
         case 'w':
-            scene.camera -> movePosition(0.1f, scene.camera->forwardVectorXZ());
+            handleMoveForward();
             glutPostRedisplay();
             break;
         case 's':
-            scene.camera -> movePosition(-0.1f, scene.camera->forwardVectorXZ());
+            handleMoveBackward();
             glutPostRedisplay();
             break;
         case 'z':
@@ -321,22 +358,21 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void specialKey(int key, int x, int y){
-    glm::vec3 camera = (scene.camera->target - scene.camera->eye) * glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
-            sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
+            handleMoveForward();
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
+            handleMoveBackward();
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
+            handleMoveRight();
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            sendDataToServer(cse125framing::MovementKey::LEFT, camera);
+            handleMoveLeft();
             glutPostRedisplay();
             break;
     }
