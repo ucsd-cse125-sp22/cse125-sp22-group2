@@ -12,11 +12,10 @@ public:
 
     void start();
 
-private:
     void do_read();
-
     void do_write(cse125framing::ServerFrame* serverFrame);
 
+private:
     boost::asio::ip::tcp::socket socket;
     int id;
     std::deque<cse125framing::ClientFrame>& serverQueue;
@@ -25,12 +24,15 @@ private:
 class GraphicsServer
 {
 public:
-    GraphicsServer(boost::asio::io_context& io_context, short port);
     std::deque<cse125framing::ClientFrame> serverQueue;
+
+    GraphicsServer(boost::asio::io_context& io_context, short port);
+    void writePackets(cse125framing::ServerFrame* serverFrame);
 
 private:
     void do_accept();
 
+    std::vector<std::shared_ptr<GraphicsSession>> sessions;
     boost::asio::ip::tcp::acceptor acceptor;
     unsigned int numConnections;
 };

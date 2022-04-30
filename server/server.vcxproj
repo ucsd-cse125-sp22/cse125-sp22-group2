@@ -141,7 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\ClockTick.hpp" />
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\Definitions.hpp" />
     <ClInclude Include="..\Frame.hpp" />
@@ -149,16 +148,17 @@
     <ClInclude Include="..\GameLogic\core.h" />
     <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
+    <ClInclude Include="ClockTick.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ClockTick.cpp" />
     <ClCompile Include="..\Definitions.cpp" />
     <ClCompile Include="..\Frame.cpp" />
     <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
+    <ClCompile Include="ClockTick.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>

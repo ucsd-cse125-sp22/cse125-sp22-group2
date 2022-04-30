@@ -10,6 +10,7 @@
 #include "../Frame.hpp"
 #include "../GameLogic/PhysicalObjectManager.hpp"
 #include "Server.hpp"
+#include "ClockTick.hpp"
 
 const int NUM_CLIENTS = 1;
 int frameCtr = 0;
@@ -69,13 +70,13 @@ int main()
 
     short port = 8000;
     boost::thread serverThread(launchServer, port);
+    cse125clocktick::ClockTick ticker(1);
 
-    serverThread.join();
-   
     try
     {
         while (true)
         {
+            ticker.tickStart();
             std::deque<cse125framing::ClientFrame>& serverQueue = server.serverQueue;
             std::deque<cse125framing::ClientFrame> processQueue;
             std::unordered_set<int> usedIds;
@@ -97,7 +98,7 @@ int main()
             while (processQueue.size() > 0)
             {
                 cse125framing::ClientFrame clientFrame = processQueue.front();
-			    gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
+			    // gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
                 processQueue.pop_front();
 
             }
@@ -106,8 +107,14 @@ int main()
             // update game state
 
 
-            continue;
+            // write packet to clients
+            cse125framing::ServerFrame serverFrame;
+            serverFrame.ctr = frameCtr++;
 
+            std::cerr << "Sending packet with ctr: " << serverFrame.ctr << std::endl;
+            server.writePackets(&serverFrame);
+
+            ticker.tickEnd();
             /*
             
 			// TODO: Update game state

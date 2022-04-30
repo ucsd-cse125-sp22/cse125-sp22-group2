@@ -100,9 +100,9 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 	: acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
 	numConnections = 0;
-	boost::asio::ip::tcp::endpoint endpoint = acceptor.local_endpoint();
-	std::cout << endpoint.address() << std::endl;
-	std::cout << endpoint.port() << std::endl;
+	// boost::asio::ip::tcp::endpoint endpoint = acceptor.local_endpoint();
+	// std::cout << endpoint.address() << std::endl;
+	// std::cout << endpoint.port() << std::endl;
 
 	do_accept();
 }
@@ -114,7 +114,12 @@ void GraphicsServer::do_accept()
 		{
 			if (!ec)
 			{
-				std::make_shared<GraphicsSession>(std::move(socket), this->numConnections, this->serverQueue)->start();
+				std::shared_ptr<GraphicsSession> session = 
+						std::make_shared<GraphicsSession>(std::move(socket), 
+														  this->numConnections, 
+							                              this->serverQueue);
+				sessions.push_back(session);
+				session->start();
 
 				this->numConnections++;
 			}
@@ -126,3 +131,12 @@ void GraphicsServer::do_accept()
 			}
 		});
 }
+
+void GraphicsServer::writePackets(cse125framing::ServerFrame* serverFrame)
+{
+	// write to every connection
+	for (std::shared_ptr<GraphicsSession>& session : sessions)
+	{
+		session->do_write(serverFrame);
+	}
+} 
