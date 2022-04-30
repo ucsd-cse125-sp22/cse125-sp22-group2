@@ -14,6 +14,13 @@ namespace cse125gameaction {
 		MOVE_BACKWARD
 	};
 
+	struct s {
+		unsigned int w : 1;
+		unsigned int a : 1;
+		unsigned int s : 1;
+		unsigned int d : 1;
+	};
+
 	class GameAction {
 	public:
 		GameAction();

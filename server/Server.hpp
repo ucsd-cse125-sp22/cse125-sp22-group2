@@ -8,7 +8,7 @@
 class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
 {
 public:
-    GraphicsSession(boost::asio::ip::tcp::socket socket, int id, std::deque<cse125framing::ClientFrame>& serverQueue);
+    GraphicsSession(boost::asio::ip::tcp::socket socket, int id, std::deque<cse125framing::ClientFrame>& serverQueue, unsigned int& clientsConnected);
 
     void start();
 
@@ -18,6 +18,7 @@ public:
 private:
     boost::asio::ip::tcp::socket socket;
     int id;
+    unsigned int& clientsConnected;
     std::deque<cse125framing::ClientFrame>& serverQueue;
 };
 
@@ -25,6 +26,7 @@ class GraphicsServer
 {
 public:
     std::deque<cse125framing::ClientFrame> serverQueue;
+    unsigned int clientsConnected;
 
     GraphicsServer(boost::asio::io_context& io_context, short port);
     void writePackets(cse125framing::ServerFrame* serverFrame);

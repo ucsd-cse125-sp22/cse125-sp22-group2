@@ -20,8 +20,8 @@
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
-GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue)
-	: socket(std::move(socket)), id(myid), serverQueue(serverQueue)
+GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue, unsigned int& clientsConnected)
+	: socket(std::move(socket)), id(myid), serverQueue(serverQueue), clientsConnected(clientsConnected)
 {
 }
 
@@ -53,10 +53,12 @@ void GraphicsSession::do_read()
 				// Check if ID needs to be sent back
 				if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID)
 				{
-					std::cerr << "Giving clinet id: " << this->id << std::endl;
+					// lock
+					std::cerr << "Giving client id: " << this->id << std::endl;
 					cse125framing::ServerFrame frame;
 					frame.id = this->id;
 					do_write(&frame);
+					// free lock
 				}
 				else
 				{
@@ -64,7 +66,6 @@ void GraphicsSession::do_read()
 					this->serverQueue.push_back(clientFrame);
 					std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
 				}
-
 
 				// read more packets
 				do_read();
@@ -86,6 +87,9 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			{
 				std::cerr << "Frame written to client" << std::endl;
 				std::cerr << serverFrame << std::endl;
+				if (this->clientsConnected < cse125constants::NUM_PLAYERS) {
+					this->clientsConnected++;
+				}
 			}
 			else
 			{
@@ -94,6 +98,7 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			}
 		});
 }
+
 
 
 GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
@@ -117,7 +122,8 @@ void GraphicsServer::do_accept()
 				std::shared_ptr<GraphicsSession> session = 
 						std::make_shared<GraphicsSession>(std::move(socket), 
 														  this->numConnections, 
-							                              this->serverQueue);
+							                              this->serverQueue,
+														  this->clientsConnected);
 				sessions.push_back(session);
 				session->start();
 

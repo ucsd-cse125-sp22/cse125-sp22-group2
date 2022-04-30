@@ -72,6 +72,12 @@ int main()
     boost::thread serverThread(launchServer, port);
     cse125clocktick::ClockTick ticker(1);
 
+    std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS << " clients to connect..." << std::endl;
+
+    // Block until 4 clients connected
+    while (server.clientsConnected < cse125constants::NUM_PLAYERS);
+    std::cerr << cse125constants::NUM_PLAYERS << " clients connected!" << std::endl;
+
     try
     {
         while (true)
@@ -111,7 +117,7 @@ int main()
             cse125framing::ServerFrame serverFrame;
             serverFrame.ctr = frameCtr++;
 
-            std::cerr << "Sending packet with ctr: " << serverFrame.ctr << std::endl;
+            //std::cerr << "Sending packet with ctr: " << serverFrame.ctr << std::endl;
             server.writePackets(&serverFrame);
 
             ticker.tickEnd();

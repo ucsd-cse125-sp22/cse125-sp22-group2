@@ -118,7 +118,6 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     else {
         cse125framing::deserialize(&serverFrame, serverBuffer);
         std::cout << "Received reply from server." << std::endl;
-        std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
         std::cout << &serverFrame << std::endl;
 
         // Use the data
