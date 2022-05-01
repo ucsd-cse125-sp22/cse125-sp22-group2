@@ -154,7 +154,7 @@ int main()
             // Update the game state in player priority order
             for (auto it = sortedPriorities.begin(); it != sortedPriorities.end(); it++) {
                 const int& playerId = it->first;                
-                cse125gameaction::GameActionContainer* container = gameActionTracker.getGameActionContainer(playerId);
+                const cse125gameaction::GameActionContainer* container = gameActionTracker.getGameActionContainer(playerId);
                 GameAction gameAction = cse125gameaction::gameActionFromContainer(container);
                 gameLoop(manager, playerId, gameAction, container->cameraDirection);
             }

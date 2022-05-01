@@ -12,6 +12,7 @@
 #endif
 // Use of degrees is deprecated. Use radians for GLM functions
 #define GLM_FORCE_RADIANS
+#include "../../Definitions.hpp"
 #include "../../Frame.hpp"
 #include "Scene.h"
 #include "Screenshot.h"
@@ -36,9 +37,10 @@ boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 int clientId = -1; // this client's unique id
 int clientFrameCtr = 0;
 
-void sendDataToServer(cse125framing::MovementKey movementKey,
+void sendDataToServer(MovementKey movementKey,
                       vec3 cameraDirection);
 void receiveDataFromServer();
+void cleanupConnection();
 
 #include "hw3AutoScreenshots.h"
 
@@ -96,8 +98,7 @@ void requestClientId()
     }
 }
 
-void sendDataToServer(cse125framing::MovementKey movementKey,
-                      vec3 cameraDirection)
+void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 {
     cse125framing::ClientFrame frame;
     frame.id = clientId;
@@ -154,7 +155,7 @@ void receiveDataFromServer()
         std::cout << "Received reply from server." << std::endl;
         std::cout << &serverFrame << std::endl;
 
-        // Use the data
+        // Use the data. TODO: Use a player-specific object
         const glm::vec3 pos =
             glm::vec3(serverFrame.players[clientId].playerPosition);
         scene.node["car1"]->modeltransforms[0] =
@@ -278,23 +279,19 @@ void specialKey(int key, int x, int y)
     switch (key)
     {
     case GLUT_KEY_UP: // up
-        // scene.camera -> rotateUp(-10.0f);
-        sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
+        sendDataToServer(MovementKey::FORWARD, camera);
         glutPostRedisplay();
         break;
     case GLUT_KEY_DOWN: // down
-        // scene.camera -> rotateUp(10.0f);
-        sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
+        sendDataToServer(MovementKey::BACKWARD, camera);
         glutPostRedisplay();
         break;
     case GLUT_KEY_RIGHT: // right
-        // scene.camera -> rotateRight(-10.0f);
-        sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
+        sendDataToServer(MovementKey::RIGHT, camera);
         glutPostRedisplay();
         break;
     case GLUT_KEY_LEFT: // left
-        // scene.camera -> rotateRight(10.0f);
-        sendDataToServer(cse125framing::MovementKey::LEFT, camera);
+        sendDataToServer(MovementKey::LEFT, camera);
         glutPostRedisplay();
         break;
     }
@@ -331,23 +328,20 @@ int main(int argc, char** argv)
 #endif
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
-    boost::asio::connect(outgoingSocket, outgoingEndpoints);
 
+    // Network setup
+    boost::asio::connect(outgoingSocket, outgoingEndpoints);
     // Set this client's id
     requestClientId();
 
-    // Set up listening socket "server"
+
 
     initialize();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKey);
     glutIdleFunc(idle);
-
     glutMainLoop();
-    // if (threadSuccess) {
-    //     listenerThread.join();
-    // }
 
     return 0; /* ANSI C requires main to return int. */
 }

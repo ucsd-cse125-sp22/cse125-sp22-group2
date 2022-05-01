@@ -45,6 +45,9 @@
     <ClInclude Include="ClockTick.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameAction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Definitions.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClockTick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -79,6 +79,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\cse-125-include-directories</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -149,6 +151,7 @@
     <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
     <ClInclude Include="ClockTick.hpp" />
+    <ClInclude Include="GameAction.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
@@ -159,6 +162,7 @@
     <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
     <ClCompile Include="ClockTick.cpp" />
+    <ClCompile Include="GameAction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>

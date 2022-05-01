@@ -4,7 +4,7 @@
 
 cse125gameaction::GameActionTracker::GameActionTracker(unsigned int numPlayers)
 {
-	for (int i = 0; i < numPlayers; i++) {
+	for (unsigned int i = 0; i < numPlayers; i++) {
 		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer();
 		this->tracker.insert({ i, container });
 	}
@@ -69,7 +69,7 @@ void cse125gameaction::GameActionTracker::moveBackward(int playerId)
 	container->backward = 1;
 }
 
-cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
+const cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
 {
 	return this->tracker.at(playerId);
 }

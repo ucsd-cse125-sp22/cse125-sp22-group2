@@ -71,7 +71,7 @@ namespace cse125gameaction {
 		* 
 		* @return a pointer to the GameActionContainer for the player with the given id
 		*/
-		GameActionContainer* getGameActionContainer(int playerId);
+		const GameActionContainer* getGameActionContainer(int playerId);
 
 
 	private:

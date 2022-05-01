@@ -13,8 +13,22 @@ enum class MovementKey {
 	FORWARD,
 	BACKWARD,
 	RIGHT,
-	LEFT
+	LEFT,
+};
+
+enum class GameAction {
+	MOVE_FORWARD,
+	MOVE_BACKWARD,
+	MOVE_RIGHT,
+	MOVE_LEFT,
+	MOVE_FORWARD_RIGHT,
+	MOVE_FORWARD_LEFT,
+	MOVE_BACKWARD_LEFT,
+	MOVE_BACKWARD_RIGHT,
+	IDLE,
 };
 
 std::ostream& operator<<(std::ostream& os, const MovementKey& movementKey);
+
+
 
