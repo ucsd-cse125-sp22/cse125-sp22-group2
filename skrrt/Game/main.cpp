@@ -27,13 +27,11 @@ static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 
 boost::asio::io_context outgoingContext;
-boost::asio::ip::tcp::resolver outgoingResolver =
-    boost::asio::ip::tcp::resolver(outgoingContext);
+boost::asio::ip::tcp::resolver outgoingResolver(outgoingContext);
 boost::asio::ip::tcp::resolver::results_type outgoingEndpoints =
     outgoingResolver.resolve(cse125constants::SERVER_HOST,
                              cse125constants::SERVER_PORT);
-boost::asio::ip::tcp::socket outgoingSocket =
-    boost::asio::ip::tcp::socket(outgoingContext);
+boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 
 int clientId = -1; // this client's unique id
 int clientFrameCtr = 0;
