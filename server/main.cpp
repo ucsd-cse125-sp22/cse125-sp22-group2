@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -9,10 +10,10 @@
 #include "../Constants.hpp"
 #include "../Frame.hpp"
 #include "../GameLogic/PhysicalObjectManager.hpp"
+#include "GameAction.hpp"
 #include "Server.hpp"
 #include "ClockTick.hpp"
 
-const int NUM_CLIENTS = 1;
 int frameCtr = 0;
 int gameTime = 0;
 int clientCtr = 0;
@@ -40,19 +41,19 @@ PhysicalObjectManager* initializeGame() {
     return manager;
 }
 
-void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::MovementKey movementKey, vec3 cameraDirection) {
+void gameLoop(PhysicalObjectManager* manager, int clientID, MovementKey movementKey, vec3 cameraDirection) {
     PhysicalObject* player = manager->objects->at(clientID);
     switch (movementKey) {
-    case cse125framing::MovementKey::RIGHT:
+    case MovementKey::RIGHT:
         player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
         break;
-    case cse125framing::MovementKey::FORWARD:
+    case MovementKey::FORWARD:
         player->moveDirection(glm::normalize(cameraDirection));
         break;
-    case cse125framing::MovementKey::LEFT:
+    case MovementKey::LEFT:
         player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
         break;
-    case cse125framing::MovementKey::BACKWARD:
+    case MovementKey::BACKWARD:
         player->moveDirection(glm::normalize(-cameraDirection));
         break;
     }
@@ -87,31 +88,59 @@ int main()
             std::deque<cse125framing::ClientFrame> processQueue;
             std::unordered_set<int> usedIds;
 
-            // for i to queue size
+            cse125gameaction::GameActionTracker gameActionTracker(cse125constants::NUM_PLAYERS);
+            std::vector<int> playerPriorities(cse125constants::NUM_PLAYERS, 0); // index i stores player i's priority
+            unsigned int priorityCtr = 1;
+
+            // for i to current queue size
             for (auto it = serverQueue.crbegin(); it != serverQueue.crend(); it++)
             {
-                // check if id is already added
-                if (usedIds.count(it->id) == 0)
-                {
-                    // basic functionality for priority: only take last packet
-                    processQueue.push_front(*it); 
-                    usedIds.insert(it->id);
-                }
+                const cse125framing::ClientFrame& clientFrame = *it;
+                // Accumulate this player's action
+                gameActionTracker.setAction(clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
+                // Track the priority order for this player
+                if (!playerPriorities.at(clientFrame.id)) {
+                    playerPriorities.at(clientFrame.id) = priorityCtr++;
+                }                
+
+                //// check if id is already added
+                //if (usedIds.count(it->id) == 0)
+                //{
+                //    // basic functionality for priority: only take last packet
+                //    processQueue.push_front(*it); 
+                //    usedIds.insert(it->id);
+                //}
             }
+
+            // Empty the queue of all tasks
             serverQueue.clear();
 
             // deque, process frame, call physic logic
-            while (processQueue.size() > 0)
-            {
-                cse125framing::ClientFrame clientFrame = processQueue.front();
-			    // gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
-                processQueue.pop_front();
+       //     while (processQueue.size() > 0)
+       //     {
+       //         cse125framing::ClientFrame clientFrame = processQueue.front();
+			    //// gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
+       //         processQueue.pop_front();
+       //     }
 
+            // Determine the sorted priority order
+            std::vector<std::pair<int, int>> sortedPriorities; // <client id, priority> pairs
+            for (int i = 0; i < playerPriorities.size(); i++) {
+                sortedPriorities.push_back(std::make_pair(i, playerPriorities.at(i)));
+            }
+            // Note: Lower values indicate higher priority
+            std::sort(sortedPriorities.begin(), sortedPriorities.end(), [](auto& left, auto& right) {return left.second < right.second; });
+
+            // Update the game state in player priority order
+            for (auto it = sortedPriorities.begin(); it != sortedPriorities.end(); it++) {
+                std::pair<int, int> sp = *it;
+                const int& playerId = sp.first;
+                std::vector<cse125gameaction::GameAction> gameActions = gameActionTracker.getActions(playerId);
+                vec3 cameraDirection = gameActionTracker.getCameraDirection(playerId);
+                // Call game loop here
             }
 
-
-            // update game state
-
+            // Call Game loop even if no packets from any players to update score, etc. (might be a score-specific game loop)
 
             // write packet to clients
             cse125framing::ServerFrame serverFrame;
@@ -120,30 +149,32 @@ int main()
             //std::cerr << "Sending packet with ctr: " << serverFrame.ctr << std::endl;
             server.writePackets(&serverFrame);
 
-            ticker.tickEnd();
             /*
-            
-			// TODO: Update game state
-			// TODO: Game logic to prepare the correct response for the client
-			cse125framing::ServerFrame serverFrame;
-			// initializeServerFrame(manager, clientFrame.id, &serverFrame);
 
-			// Serialize the data
-			boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-			std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
+           // TODO: Update game state
+           // TODO: Game logic to prepare the correct response for the client
+           cse125framing::ServerFrame serverFrame;
+           // initializeServerFrame(manager, clientFrame.id, &serverFrame);
 
-			cse125framing::serialize(&serverFrame, serverBuffer);
+           // Serialize the data
+           boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+           std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
+
+           cse125framing::serialize(&serverFrame, serverBuffer);
 
 
-			cout << &serverFrame << endl;
-			cse125framing::deserialize(&serverFrame, serverBuffer);
-			cout << &serverFrame << endl;
+           cout << &serverFrame << endl;
+           cse125framing::deserialize(&serverFrame, serverBuffer);
+           cout << &serverFrame << endl;
 
-			// Send a response to the client
-			boost::system::error_code ignored_error;
-			boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
-			std::cout << "Responded to client" << std::endl;
-            */
+           // Send a response to the client
+           boost::system::error_code ignored_error;
+           boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
+           std::cout << "Responded to client" << std::endl;
+           */
+
+            ticker.tickEnd();
+   
         }
     
     }

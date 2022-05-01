@@ -9,3 +9,12 @@ using RealNumber = double; // can change "double" to "float" if needed; allows f
 std::ostream& operator<<(std::ostream& os, const vec3& v);
 std::ostream& operator<<(std::ostream& os, const vec4& v);
 
+enum class MovementKey {
+	FORWARD,
+	BACKWARD,
+	RIGHT,
+	LEFT
+};
+
+std::ostream& operator<<(std::ostream& os, const MovementKey& movementKey);
+

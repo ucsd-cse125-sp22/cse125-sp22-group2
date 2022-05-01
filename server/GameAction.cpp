@@ -1,57 +1,94 @@
 #include "GameAction.hpp"
 
-cse125gameaction::GameAction::GameAction()
-{
-	this->flags = 0;
-}
 
-cse125gameaction::GameAction::~GameAction()
-{
-}
 
-void cse125gameaction::GameAction::setAction(const unsigned int& action)
+cse125gameaction::GameActionTracker::GameActionTracker(unsigned int numPlayers)
 {
-	this->flags |= action;
-}
-
-void cse125gameaction::GameAction::clearAction(const unsigned int& action)
-{
-	this->flags &= (~action);
-}
-
-void cse125gameaction::GameAction::moveRight()
-{
-	this->setAction(cse125gameaction::MOVE_RIGHT);
-	this->clearAction(cse125gameaction::MOVE_LEFT);
-}
-
-void cse125gameaction::GameAction::moveFoward()
-{
-	this->setAction(cse125gameaction::MOVE_FORWARD);
-	this->clearAction(cse125gameaction::MOVE_BACKWARD);
-}
-
-void cse125gameaction::GameAction::moveLeft()
-{
-	this->setAction(cse125gameaction::MOVE_LEFT);
-	this->clearAction(cse125gameaction::MOVE_RIGHT);
-}
-
-void cse125gameaction::GameAction::moveBackward()
-{
-	this->setAction(cse125gameaction::MOVE_BACKWARD);
-	this->clearAction(cse125gameaction::MOVE_FORWARD);
-}
-
-std::vector<unsigned int> cse125gameaction::GameAction::getActions()
-{
-	// For each game action, check if it is set. If so, add it to the vector of actions that are active
-	std::vector<unsigned int> activeActions;
-	for (auto it = cse125gameaction::allActions.begin(); it != cse125gameaction::allActions.end(); it++) {
-		const unsigned int& action = *it;
-		if ((this->flags & action) == action) {
-			activeActions.push_back(action);
-		}
+	for (int i = 0; i < numPlayers; i++) {
+		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer();
+		this->tracker.insert({ i, container });
 	}
-	return activeActions;
+}
+
+cse125gameaction::GameActionTracker::~GameActionTracker()
+{
+	for (auto it = this->tracker.begin(); it != this->tracker.end(); it++) {
+		// Delete dynamically allocated GameAction containers
+		delete (it->second);
+	}
+}
+
+void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey movementKey, vec3 cameraDirection)
+{
+	// Set the camera direction. This is the same regardless of the movement key
+	cse125gameaction::GameActionContainer*& container = this->tracker.at(playerId);
+	container->cameraDirection = cameraDirection;
+	switch (movementKey) {
+	case MovementKey::RIGHT:
+		this->moveRight(playerId);
+		break;
+	case MovementKey::FORWARD:
+		this->moveForward(playerId);
+		break;
+	case MovementKey::LEFT:
+		this->moveLeft(playerId);
+		break;
+	case MovementKey::BACKWARD:
+		this->moveBackward(playerId);
+		break;
+	default:
+		break;		
+	}
+}
+
+void cse125gameaction::GameActionTracker::moveRight(int playerId)
+{
+	GameActionContainer*& container = this->tracker.at(playerId);
+	container->right = 1;
+	container->left = 0;
+}
+
+void cse125gameaction::GameActionTracker::moveForward(int playerId)
+{
+	GameActionContainer*& container = this->tracker.at(playerId);
+	container->forward = 1;
+	container->backward = 0;
+}
+
+void cse125gameaction::GameActionTracker::moveLeft(int playerId)
+{
+	GameActionContainer*& container = this->tracker.at(playerId);
+	container->right = 0;
+	container->left = 1;
+}
+
+void cse125gameaction::GameActionTracker::moveBackward(int playerId)
+{
+	GameActionContainer*& container = this->tracker.at(playerId);
+	container->forward = 0;
+	container->backward = 1;
+}
+
+std::vector<cse125gameaction::GameAction> cse125gameaction::GameActionTracker::getActions(int playerId)
+{
+	std::vector<GameAction> actions;
+	const GameActionContainer*& container = this->tracker.at(playerId);
+	if (container->right) {
+		actions.push_back(cse125gameaction::GameAction::MOVE_RIGHT);
+	}
+	if (container->forward) {
+		actions.push_back(cse125gameaction::GameAction::MOVE_FORWARD);
+	}
+	if (container->left) {
+		actions.push_back(cse125gameaction::GameAction::MOVE_LEFT);
+	}
+	if (container->backward) {
+		actions.push_back(cse125gameaction::GameAction::MOVE_BACKWARD);
+	}
+	return actions;
+}
+
+vec3 cse125gameaction::GameActionTracker::getCameraDirection(int playerId)
+{
+	return this->tracker.at(playerId)->cameraDirection;
 }

@@ -33,28 +33,6 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const Action& action)
 	return os;
 }
 
-std::ostream& cse125framing::operator<<(std::ostream& os, const MovementKey& movementKey)
-{
-	std::string str;
-	switch (movementKey) {
-	case MovementKey::FORWARD:
-		str = "FORWARD";
-		break;
-	case MovementKey::BACKWARD:
-		str = "BACKWARD";
-		break;
-	case MovementKey::RIGHT:
-		str = "RIGHT";
-		break;
-	case MovementKey::LEFT:
-		str = "LEFT";
-		break;
-	}
-
-	os << str;
-	return os;
-}
-
 std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* frame)
 {
 	const vec3& camera = frame->cameraDirection;

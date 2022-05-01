@@ -20,15 +20,6 @@ namespace cse125framing {
 
 	std::ostream& operator<<(std::ostream& os, const Action& action);
 
-	enum class MovementKey {
-		FORWARD,
-		BACKWARD,
-		RIGHT,
-		LEFT
-	};
-
-	std::ostream& operator<<(std::ostream& os, const MovementKey& movementKey);
-
 	typedef struct ClientFrame {
 		int id;
 		int ctr;
