@@ -38,6 +38,6 @@ public:
 	// glm::mat4 transform;
 
 	ObjMakeup();
-	ObjMakeup(vector<PhysicalObject*>* objects, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, unsigned int id, bool solid);
+	ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid);
 	~ObjMakeup();
 };

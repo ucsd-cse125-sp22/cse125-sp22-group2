@@ -49,5 +49,5 @@ public:
 
 	void movePosition(glm::vec3 pos);
 	void moveDirection(glm::vec3 dir);
-	virtual void step();
+	void step();
 };

@@ -29,7 +29,7 @@ void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing
 
 PhysicalObjectManager* initializeGame() {
     PhysicalObjectManager* manager = new PhysicalObjectManager();
-    manager->createObject();
+    //manager->createObject();
     return manager;
 }
 
