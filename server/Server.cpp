@@ -34,7 +34,7 @@ PhysicalObjectManager* initializeGame() {
 }
 
 void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::MovementKey movementKey, vec3 cameraDirection) {
-    PhysicalObject* player = manager->objects->at(clientID);
+    ObjPlayer* player = (ObjPlayer*) manager->objects->at(clientID);
     switch (movementKey) {
     case cse125framing::MovementKey::RIGHT:
         player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));

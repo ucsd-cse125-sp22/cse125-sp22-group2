@@ -41,11 +41,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
+    <IncludePath>C:\Users\Steven\Desktop\skrrt\skrrt\packages\boost_1_78_0;.\include;..\..\cse-125-include-directories</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\..\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
+    <IncludePath>C:\Users\Steven\Desktop\skrrt\skrrt\packages\boost_1_78_0;.\include;..\..\cse-125-include-directories</IncludePath>
     <LibraryPath>.\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

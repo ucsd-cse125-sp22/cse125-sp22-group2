@@ -148,6 +148,11 @@
     <ClCompile Include="..\Definitions.cpp" />
     <ClCompile Include="..\Frame.cpp" />
     <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
+    <ClCompile Include="..\GameLogic\ObjCrown.cpp" />
+    <ClCompile Include="..\GameLogic\ObjFloor.cpp" />
+    <ClCompile Include="..\GameLogic\ObjMakeup.cpp" />
+    <ClCompile Include="..\GameLogic\ObjPlayer.cpp" />
+    <ClCompile Include="..\GameLogic\ObjWall.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
     <ClCompile Include="Server.cpp" />
@@ -159,6 +164,11 @@
     <ClInclude Include="..\Frame.hpp" />
     <ClInclude Include="..\GameLogic\BoundingBox.hpp" />
     <ClInclude Include="..\GameLogic\core.h" />
+    <ClInclude Include="..\GameLogic\ObjCrown.hpp" />
+    <ClInclude Include="..\GameLogic\ObjFloor.hpp" />
+    <ClInclude Include="..\GameLogic\ObjMakeup.hpp" />
+    <ClInclude Include="..\GameLogic\ObjPlayer.hpp" />
+    <ClInclude Include="..\GameLogic\ObjWall.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
   </ItemGroup>

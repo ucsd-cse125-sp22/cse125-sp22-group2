@@ -17,7 +17,7 @@ PhysicalObject::PhysicalObject() {
 	this->solid = false;
 }
 
-PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, unsigned int id, bool solid) {
+PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
 	this->objects = objects;
 	this->id = id;
 
@@ -47,7 +47,6 @@ BoundingBox PhysicalObject::generateBoundingBox(glm::vec3 pos, glm::vec3 dir)
 bool PhysicalObject::checkPlaceFree(glm::vec3 pos, glm::vec3 dir) {
 	int objCount = this->objects->size();
 	BoundingBox bb = generateBoundingBox(pos, dir);
-	vector<int> collisions = vector<int>();
 	for (unsigned int i = 0; i < objCount; i++) {
 		if (i == id) {
 			continue;
@@ -59,8 +58,7 @@ bool PhysicalObject::checkPlaceFree(glm::vec3 pos, glm::vec3 dir) {
 	return false;
 }
 
-vector<int> PhysicalObject::findCollisionObjects(glm::vec3 pos, glm::vec3 dir)
-{
+vector<int> PhysicalObject::findCollisionObjects(glm::vec3 pos, glm::vec3 dir) {
 	int objCount = this->objects->size();
 	BoundingBox bb = generateBoundingBox(pos, dir);
 	vector<int> collisions = vector<int>();
@@ -73,6 +71,20 @@ vector<int> PhysicalObject::findCollisionObjects(glm::vec3 pos, glm::vec3 dir)
 		}
 	}
 	return collisions;
+}
+
+bool PhysicalObject::objectPosition(glm::vec3 pos, glm::vec3 dir, int type) {
+	int objCount = this->objects->size();
+	BoundingBox bb = generateBoundingBox(pos, dir);
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == id) {
+			continue;
+		}
+		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void PhysicalObject::movePosition(glm::vec3 pos) {

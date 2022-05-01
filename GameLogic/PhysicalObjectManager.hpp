@@ -3,6 +3,11 @@
 #include "core.h"
 #include "BoundingBox.hpp"
 #include "PhysicalObject.hpp"
+#include "ObjPlayer.hpp"
+#include "ObjWall.hpp"
+#include "ObjFloor.hpp"
+#include "ObjCrown.hpp"
+#include "ObjMakeup.hpp"
 
 class PhysicalObjectManager
 {
@@ -16,12 +21,18 @@ public:
 	// A list of vanancies in the objects vector, we shouldn't need this since we probably won't be deleting objects
 	// vector<unsigned int> vacancies;
 
+	// How much of the match remains
+	float gameTime;
+
 	PhysicalObjectManager();
 	~PhysicalObjectManager();
 
 	// Create an instance
 	// void createObject(object type, pos, dir);
-	void createObject();
+	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Update general game state once per tick
+	void step();
 	
 	// These will not be used for now
 	vector<vector<int>*>* createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes);

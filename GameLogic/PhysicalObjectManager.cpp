@@ -17,10 +17,32 @@ PhysicalObjectManager::~PhysicalObjectManager()
 	// delete uniformGrid;
 }
 
-void PhysicalObjectManager::createObject()
+void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up)
 {
 	unsigned int next_id = this->objects->size();
-	this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+
+	switch (objType) {
+	case (Player):
+		this->objects->push_back(new ObjPlayer(objects, next_id, pos, dir, up));
+		break;
+	case (Wall):
+		this->objects->push_back(new ObjWall(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+		break;
+	case (Floor):
+		this->objects->push_back(new ObjFloor(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+		break;
+	case (Crown):
+		this->objects->push_back(new ObjCrown(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+		break;
+	case (Makeup):
+		this->objects->push_back(new ObjMakeup(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+		break;
+	}
+	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+}
+
+void PhysicalObjectManager::step() {
+	gameTime -= 1.0f / 60.0f;
 }
 
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {
