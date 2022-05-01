@@ -41,11 +41,11 @@ public:
 	BoundingBox generateBoundingBox(glm::vec3 pos, glm::vec3 dir);
 
 	// Basic boolean collision check that terminates immediately if a collision with a solid object is found
-	bool checkPlaceFree(glm::vec3 pos, glm::vec3 dir);
+	bool checkPlaceFree(BoundingBox bb);
 	// Longer collision check that collects the id of every object collided with
-	vector<int> findCollisionObjects(glm::vec3 pos, glm::vec3 dir);
+	vector<int> findCollisionObjects(BoundingBox bb);
 	// Boolean collision check that terminates once a collision with the specified object is found
-	bool objectPosition(glm::vec3 pos, glm::vec3 dir, int type);
+	bool objectPosition(BoundingBox bb, int type);
 
 	void movePosition(glm::vec3 pos);
 	void moveDirection(glm::vec3 dir);

@@ -54,7 +54,7 @@ void ObjPlayer::step() {
 	if (stun) {
 		stun--;
 	}
-	if (makeupLevel && !booth && !objectPosition(position, direction, Makeup)) {
+	if (makeupLevel && !booth && !objectPosition(boundingBox, Makeup)) {
 		makeupLevel -= 1.0f / 60.0f;
 	}
 	if (hasCrown && !booth && !stun && !iframes) {
@@ -65,7 +65,7 @@ void ObjPlayer::step() {
 void ObjPlayer::moveSelf(glm::vec3 dir) {
 	if (!stun) {
 		glm::vec3 destination = this->position + this->speed * dir;
-		vector<int> collisions = findCollisionObjects(destination, dir);
+		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir));
 		for (unsigned int i = 0; i < collisions.size(); i++) {
 			if (this->objects->at(collisions[i])->solid) {
 				return;
