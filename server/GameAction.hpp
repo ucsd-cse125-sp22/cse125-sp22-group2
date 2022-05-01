@@ -6,16 +6,6 @@
 #include "../Frame.hpp"
 
 namespace cse125gameaction {
-
-	enum class GameAction {
-		MOVE_RIGHT,
-		MOVE_FORWARD,
-		MOVE_LEFT,
-		MOVE_BACKWARD,
-	};
-
-	
-
 	typedef struct GameActionContainer {
 		unsigned int right : 1;
 		unsigned int forward : 1;
@@ -23,6 +13,8 @@ namespace cse125gameaction {
 		unsigned int backward : 1;
 		vec3 cameraDirection;
 	} GameActionContainer;
+
+	GameAction gameActionFromContainer(const GameActionContainer*& gac);
 
 	/*
 	* @brief Container representing which game actions are performed in a single time step
@@ -36,7 +28,6 @@ namespace cse125gameaction {
 		*/
 		GameActionTracker(unsigned int numPlayers);
 		~GameActionTracker();
-
 
 		/*
 		* @brief Sets the player's GameActionContainer fields based on the given player id and movement key
@@ -76,24 +67,15 @@ namespace cse125gameaction {
 		void moveBackward(int playerId);
 
 		/*
-		* @brief Returns all the set actions for the player with the given id
+		* @brief Returns a pointer to the GameActionContainer for the player with the given id
 		* 
-		* @return vector of all of the set actions for the player with the given id
+		* @return a pointer to the GameActionContainer for the player with the given id
 		*/
-		std::vector<GameAction> getActions(int playerId);
+		GameActionContainer* getGameActionContainer(int playerId);
 
-		/*
-		 * @brief Returns the camera direction for the player with the given id
-		 *
-		 * @return camera direction player with the given id
-		 */
-		vec3 getCameraDirection(int playerId);
 
 	private:
-		std::unordered_map<int, GameActionContainer*> tracker;
-	
-	};	
-
-	
+		std::unordered_map<int, GameActionContainer*> tracker;	
+	};
 
 }

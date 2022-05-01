@@ -23,38 +23,74 @@ PhysicalObjectManager* manager;
 boost::asio::io_context io_context;
 GraphicsServer server(io_context, std::stoi(cse125constants::SERVER_PORT));
 
-void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing::ServerFrame* frame) {
-    frame->id = id;
-    PhysicalObject* player = manager->objects->at(id);
+
+// Initializes the frame the server will send back to all clients
+void initializeServerFrame(PhysicalObjectManager* manager, cse125framing::ServerFrame* frame) {
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
-    frame->players[id].hasCrown = false;
-    frame->players[id].makeupLevel = 0;
-    frame->players[id].playerDirection = player->direction;
-    frame->players[id].playerPosition = vec4(player->position, 1.0f);
-    frame->players[id].score = 0;
+
+    for (int id = 0; id < cse125constants::NUM_PLAYERS; id++) {
+        // TODO: Update PhysicalObjectManager to work with multiple players
+        PhysicalObject* player = manager->objects->at(id);
+        frame->players[id].hasCrown = false;
+        frame->players[id].makeupLevel = 0;
+        frame->players[id].playerDirection = player->direction;
+        frame->players[id].playerPosition = vec4(player->position, 1.0f);
+        frame->players[id].score = 0;
+
+        // TODO: Using break to make the code work when there is only one client
+        break;
+    }    
 }
 
+// Initializes and returns the PhysicalObjectManager
 PhysicalObjectManager* initializeGame() {
     PhysicalObjectManager* manager = new PhysicalObjectManager();
     manager->createObject();
     return manager;
 }
 
-void gameLoop(PhysicalObjectManager* manager, int clientID, MovementKey movementKey, vec3 cameraDirection) {
-    PhysicalObject* player = manager->objects->at(clientID);
-    switch (movementKey) {
-    case MovementKey::RIGHT:
+void gameLoop(PhysicalObjectManager* manager, int playerId, GameAction gameAction, vec3 cameraDirection) {
+    PhysicalObject* player = manager->objects->at(playerId);
+    switch (gameAction) {
+
+    // Basic directions
+    case GameAction::MOVE_RIGHT:
         player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
         break;
-    case MovementKey::FORWARD:
+    case GameAction::MOVE_FORWARD:
         player->moveDirection(glm::normalize(cameraDirection));
         break;
-    case MovementKey::LEFT:
+    case GameAction::MOVE_LEFT:
         player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
         break;
-    case MovementKey::BACKWARD:
+    case GameAction::MOVE_BACKWARD:
         player->moveDirection(glm::normalize(-cameraDirection));
+        break;
+
+    // Compound directions
+    case GameAction::MOVE_FORWARD_RIGHT:
+        player->moveDirection(glm::normalize(cameraDirection));
+        player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
+        break;
+    case GameAction::MOVE_FORWARD_LEFT:
+        player->moveDirection(glm::normalize(cameraDirection));
+        player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
+        break;
+    case GameAction::MOVE_BACKWARD_LEFT:
+        player->moveDirection(glm::normalize(-cameraDirection));
+        player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
+        break;
+    case GameAction::MOVE_BACKWARD_RIGHT:
+        player->moveDirection(glm::normalize(-cameraDirection));
+        player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
+        break;
+
+    // Other game actions
+    case GameAction::IDLE:
+        // TODO: Idle behavior ?
+        break;
+    default:
         break;
     }
 }
@@ -83,16 +119,16 @@ int main()
     {
         while (true)
         {
+            // Start the clock tick
             ticker.tickStart();
             std::deque<cse125framing::ClientFrame>& serverQueue = server.serverQueue;
-            std::deque<cse125framing::ClientFrame> processQueue;
-            std::unordered_set<int> usedIds;
 
+            // Track action information for each player
             cse125gameaction::GameActionTracker gameActionTracker(cse125constants::NUM_PLAYERS);
             std::vector<int> playerPriorities(cse125constants::NUM_PLAYERS, 0); // index i stores player i's priority
             unsigned int priorityCtr = 1;
 
-            // for i to current queue size
+            // Iterate from the end of where the queue currently is to the beginning
             for (auto it = serverQueue.crbegin(); it != serverQueue.crend(); it++)
             {
                 const cse125framing::ClientFrame& clientFrame = *it;
@@ -102,26 +138,10 @@ int main()
                 if (!playerPriorities.at(clientFrame.id)) {
                     playerPriorities.at(clientFrame.id) = priorityCtr++;
                 }                
-
-                //// check if id is already added
-                //if (usedIds.count(it->id) == 0)
-                //{
-                //    // basic functionality for priority: only take last packet
-                //    processQueue.push_front(*it); 
-                //    usedIds.insert(it->id);
-                //}
             }
 
             // Empty the queue of all tasks
             serverQueue.clear();
-
-            // deque, process frame, call physic logic
-       //     while (processQueue.size() > 0)
-       //     {
-       //         cse125framing::ClientFrame clientFrame = processQueue.front();
-			    //// gameLoop(manager, clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
-       //         processQueue.pop_front();
-       //     }
 
             // Determine the sorted priority order
             std::vector<std::pair<int, int>> sortedPriorities; // <client id, priority> pairs
@@ -133,48 +153,22 @@ int main()
 
             // Update the game state in player priority order
             for (auto it = sortedPriorities.begin(); it != sortedPriorities.end(); it++) {
-                std::pair<int, int> sp = *it;
-                const int& playerId = sp.first;
-                std::vector<cse125gameaction::GameAction> gameActions = gameActionTracker.getActions(playerId);
-                vec3 cameraDirection = gameActionTracker.getCameraDirection(playerId);
-                // Call game loop here
+                const int& playerId = it->first;                
+                cse125gameaction::GameActionContainer* container = gameActionTracker.getGameActionContainer(playerId);
+                GameAction gameAction = cse125gameaction::gameActionFromContainer(container);
+                gameLoop(manager, playerId, gameAction, container->cameraDirection);
             }
 
-            // Call Game loop even if no packets from any players to update score, etc. (might be a score-specific game loop)
+            // TODO: Call Game loop even if no packets from any players to update score, etc. (might be a score-specific game loop)
 
-            // write packet to clients
+            // Write data back to players
             cse125framing::ServerFrame serverFrame;
+            initializeServerFrame(manager, &serverFrame);
             serverFrame.ctr = frameCtr++;
-
-            //std::cerr << "Sending packet with ctr: " << serverFrame.ctr << std::endl;
             server.writePackets(&serverFrame);
 
-            /*
-
-           // TODO: Update game state
-           // TODO: Game logic to prepare the correct response for the client
-           cse125framing::ServerFrame serverFrame;
-           // initializeServerFrame(manager, clientFrame.id, &serverFrame);
-
-           // Serialize the data
-           boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
-           std::memcpy(&serverBuffer, &clientCtr, sizeof(cse125framing::ServerFrame));
-
-           cse125framing::serialize(&serverFrame, serverBuffer);
-
-
-           cout << &serverFrame << endl;
-           cse125framing::deserialize(&serverFrame, serverBuffer);
-           cout << &serverFrame << endl;
-
-           // Send a response to the client
-           boost::system::error_code ignored_error;
-           boost::asio::write(socket, boost::asio::buffer(serverBuffer), ignored_error);
-           std::cout << "Responded to client" << std::endl;
-           */
-
-            ticker.tickEnd();
-   
+            // Sleep until the end of the clock tick
+            ticker.tickEnd();   
         }
     
     }
@@ -183,6 +177,7 @@ int main()
         std::cerr << e.what() << std::endl;
     }
     
+    // Wait for the server thread to finish
     serverThread.join();
 
     return 0;

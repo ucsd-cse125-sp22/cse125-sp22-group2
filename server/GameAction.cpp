@@ -69,26 +69,39 @@ void cse125gameaction::GameActionTracker::moveBackward(int playerId)
 	container->backward = 1;
 }
 
-std::vector<cse125gameaction::GameAction> cse125gameaction::GameActionTracker::getActions(int playerId)
+cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
 {
-	std::vector<GameAction> actions;
-	const GameActionContainer*& container = this->tracker.at(playerId);
-	if (container->right) {
-		actions.push_back(cse125gameaction::GameAction::MOVE_RIGHT);
-	}
-	if (container->forward) {
-		actions.push_back(cse125gameaction::GameAction::MOVE_FORWARD);
-	}
-	if (container->left) {
-		actions.push_back(cse125gameaction::GameAction::MOVE_LEFT);
-	}
-	if (container->backward) {
-		actions.push_back(cse125gameaction::GameAction::MOVE_BACKWARD);
-	}
-	return actions;
+	return this->tracker.at(playerId);
 }
 
-vec3 cse125gameaction::GameActionTracker::getCameraDirection(int playerId)
+GameAction cse125gameaction::gameActionFromContainer(const GameActionContainer*& gac)
 {
-	return this->tracker.at(playerId)->cameraDirection;
+	if (gac->forward && gac->right) {
+		return GameAction::MOVE_FORWARD_RIGHT;
+	}
+	else if (gac->forward && gac->left) {
+		return GameAction::MOVE_FORWARD_LEFT;
+	}
+	else if (gac->backward && gac->left) {
+		return GameAction::MOVE_BACKWARD_LEFT;
+	}
+	else if (gac->backward && gac->right) {
+		return GameAction::MOVE_BACKWARD_RIGHT;
+	}
+	else if (gac->right) {
+		return GameAction::MOVE_RIGHT;
+	}
+	else if (gac->forward) {
+		return GameAction::MOVE_FORWARD;
+	}
+	else if (gac->left) {
+		return GameAction::MOVE_LEFT;
+	}
+	else if (gac->backward) {
+		return GameAction::MOVE_BACKWARD;
+	}
+	else {
+		return GameAction::IDLE;
+	}
+
 }
