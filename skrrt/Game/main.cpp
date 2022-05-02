@@ -277,12 +277,6 @@ void initialize(void){
     scene.init();
 
     // Set up players
-    /*
-    p0.setPlayer(scene.node["player0"]); 
-    p1.setPlayer(scene.node["player1"]); 
-    p2.setPlayer(scene.node["player2"]); 
-    p3.setPlayer(scene.node["player3"]);
-    */
     for (int i = 0; i < NUM_PLAYERS; i++) {
         players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
     }
