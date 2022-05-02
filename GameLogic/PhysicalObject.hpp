@@ -5,7 +5,10 @@
 
 using namespace bounding;
 
-enum ObjectType { Player, Wall, Floor, Crown, Makeup };
+// Object types
+// To add an object type, add it to the enum and make a class that inherits PhysicalObject (format is Obj + name of object)
+// Make sure its type in the .hpp is correct and add a case to createObject in PhysicalObjectManager for it
+enum ObjectType { Player, Wall, Floor, Crown, Makeup, Trail };
 
 class PhysicalObject
 {
@@ -18,7 +21,7 @@ public:
 	unsigned int id;
 	// Whether this object is solid (for now all objects will be solid)
 	bool solid;
-	// The current speed of this object
+	// The current speed of this object - might be moved to only player since that is currently the only object that moves
 	float speed;
 	// This object's bounding box
 	BoundingBox boundingBox;
@@ -47,7 +50,10 @@ public:
 	// Boolean collision check that terminates once a collision with the specified object is found
 	bool objectPosition(BoundingBox bb, int type);
 
+	// Move to a specified position if there is nothing blocking it
 	void movePosition(glm::vec3 pos);
+	// Move in the specified direction by this object's speed
 	void moveDirection(glm::vec3 dir);
+	// Update everything that needs to happen in a time step not influenced by input
 	void step();
 };

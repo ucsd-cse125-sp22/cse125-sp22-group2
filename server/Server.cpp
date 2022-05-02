@@ -17,14 +17,14 @@ PhysicalObjectManager* manager;
 
 void initializeServerFrame(PhysicalObjectManager* manager, int id, cse125framing::ServerFrame* frame) {
     frame->id = id;
-    PhysicalObject* player = manager->objects->at(id);
+    ObjPlayer* player = (ObjPlayer*)manager->objects->at(id);
     frame->ctr = frameCtr++;
-    frame->gameTime = gameTime++;
-    frame->hasCrown = false;
-    frame->makeupLevel = 0;
+    frame->gameTime = manager->gameTime;
+    frame->hasCrown = player->hasCrown;
+    frame->makeupLevel = player->makeupLevel;
     frame->playerDirection = player->direction;
     frame->playerPosition = vec4(player->position, 1.0f);
-    frame->score = 0;
+    frame->score = player->score;
 }
 
 PhysicalObjectManager* initializeGame() {
@@ -37,16 +37,16 @@ void gameLoop(PhysicalObjectManager* manager, int clientID, cse125framing::Movem
     ObjPlayer* player = (ObjPlayer*) manager->objects->at(clientID);
     switch (movementKey) {
     case cse125framing::MovementKey::RIGHT:
-        player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
+        player->action(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
         break;
     case cse125framing::MovementKey::FORWARD:
-        player->moveDirection(glm::normalize(cameraDirection));
+        player->action(glm::normalize(cameraDirection));
         break;
     case cse125framing::MovementKey::LEFT:
-        player->moveDirection(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
+        player->action(glm::normalize(vec3(cameraDirection.z, cameraDirection.y, -cameraDirection.x)));
         break;
     case cse125framing::MovementKey::BACKWARD:
-        player->moveDirection(glm::normalize(-cameraDirection));
+        player->action(glm::normalize(-cameraDirection));
         break;
     }
 }

@@ -37,6 +37,9 @@
     <ClCompile Include="..\GameLogic\ObjWall.cpp">
       <Filter>Source Files\GameLogic</Filter>
     </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjTrail.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ClockTick.hpp">
@@ -76,6 +79,9 @@
       <Filter>Header Files\GameLogic</Filter>
     </ClInclude>
     <ClInclude Include="..\GameLogic\core.h">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjTrail.hpp">
       <Filter>Header Files\GameLogic</Filter>
     </ClInclude>
   </ItemGroup>

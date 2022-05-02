@@ -17,8 +17,17 @@ PhysicalObjectManager::~PhysicalObjectManager()
 	// delete uniformGrid;
 }
 
-void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up)
-{
+void PhysicalObjectManager::startGame() {
+	// TODO: this is going to be map dependent, could add a int parameter and switch statement if we want multiple maps
+	// Create players
+	// Create crown
+	// Create makeup booths
+	// Create walls and floors
+	// 
+	// createObject(Player, glm::vec3(0.0f), glm::vec3(0.0f));
+}
+
+void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
 	unsigned int next_id = this->objects->size();
 
 	switch (objType) {
@@ -36,6 +45,9 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		break;
 	case (Makeup):
 		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		break;
+	case (Trail):
+		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
 	}
 	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));

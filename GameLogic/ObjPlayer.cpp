@@ -48,17 +48,34 @@ ObjPlayer::~ObjPlayer() {
 }
 
 void ObjPlayer::step() {
+	// Update iframes
 	if (iframes) {
 		iframes--;
 	}
+	// Update stun frames
 	if (stun) {
 		stun--;
 	}
+	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && !booth && !objectPosition(boundingBox, Makeup)) {
 		makeupLevel -= 1.0f / 60.0f;
 	}
+	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
+	// Eventually this will probably be based on the amount of time left in the match, which
+	// would probably be passed in as a parameter
 	if (hasCrown && !booth && !stun && !iframes) {
 		score += 1.0f / 60.0f;
+	}
+	// Adjust speed (these numbers are placeholders)
+	speed = 2.0f;
+	if (hasCrown) {
+		speed += 0.5f;
+	}
+	if (objectPosition(boundingBox, Trail)) {
+		speed -= 1.0f;
+	}
+	if (makeupLevel < 0.01f) {
+		speed -= 0.75f;
 	}
 }
 

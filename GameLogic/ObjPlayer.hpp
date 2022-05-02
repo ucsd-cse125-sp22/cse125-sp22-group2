@@ -31,5 +31,6 @@ public:
 	~ObjPlayer();
 
 	void step();
+	// Movement and crown transfer, anything that happens because of user input goes here
 	void action(glm::vec3 dir);
 };
