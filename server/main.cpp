@@ -121,7 +121,7 @@ int main()
         {
             // Start the clock tick
             ticker.tickStart();
-            std::deque<cse125framing::ClientFrame>& serverQueue = server.serverQueue;
+            std::deque<cse125framing::ClientFrame> serverQueue(server.serverQueue);
 
             // Track action information for each player
             cse125gameaction::GameActionTracker gameActionTracker(cse125constants::NUM_PLAYERS);
@@ -142,10 +142,10 @@ int main()
             }
 
             int sizeBefore = serverQueue.size();
-            std::cerr << "Queue size before: " << serverQueue.size() << std::endl;
+            // std::cerr << "Queue size before: " << serverQueue.size() << std::endl;
             // Empty the queue of all tasks
-            serverQueue.clear();
-            std::cerr << "Queue size after: " << serverQueue.size() << std::endl;
+            server.serverQueue.clear();
+            // std::cerr << "Queue size after: " << serverQueue.size() << std::endl;
 
 
             //// Determine the sorted priority order
@@ -175,7 +175,7 @@ int main()
             }    
 
             // Sleep until the end of the clock tick
-            ticker.tickEnd();   
+            // ticker.tickEnd();   
         }
     
     }

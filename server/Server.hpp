@@ -20,6 +20,8 @@ private:
     int id;
     unsigned int& clientsConnected;
     std::deque<cse125framing::ClientFrame>& serverQueue;
+	boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+	boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
 };
 
 class GraphicsServer

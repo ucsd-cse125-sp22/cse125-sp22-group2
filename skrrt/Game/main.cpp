@@ -111,6 +111,9 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
     cse125framing::serialize(&frame, clientBuffer);
     boost::system::error_code writeError;
+
+    std::cerr << "sending frame: " << std::endl << &frame << std::endl;
+
     size_t numWritten = boost::asio::write(
         outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
     if (writeError)
@@ -118,12 +121,6 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
         std::cerr << "Error sending packet to server, continuing ..."
                   << std::endl;
         std::cerr << writeError << std::endl;
-    }
-    else
-    {
-        //std::cout << "Successfully sent frame # " << clientFrameCtr
-        //          << " to server." << std::endl;
-        std::cerr << "Frame id sent was " << frame.id << std::endl;
     }
 
     receiveDataFromServer();
@@ -155,6 +152,8 @@ void receiveDataFromServer()
     else
     {
         cse125framing::deserialize(&serverFrame, serverBuffer);
+        // assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
+        // std::cout << "numread: " << numRead << std::endl;
         std::cout << "Received reply from server." << std::endl;
         std::cout << &serverFrame << std::endl;
 

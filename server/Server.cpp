@@ -35,17 +35,15 @@ void GraphicsSession::do_read()
 	std::cerr << "do_read()\n";
 	auto self(shared_from_this());
 
-	boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
-
-	socket.async_read_some(boost::asio::buffer(clientBuffer), 
-		[&clientBuffer, this, self](boost::system::error_code ec, std::size_t length)
+	socket.async_read_some(boost::asio::buffer(this->clientBuffer), 
+		[this, self](boost::system::error_code ec, std::size_t length)
 		{
 			if (!ec)
 			{
 				cse125framing::ClientFrame clientFrame;
 
 				// process data
-				cse125framing::deserialize(&clientFrame, clientBuffer);
+				cse125framing::deserialize(&clientFrame, this->clientBuffer);
 
 				std::cerr << "Frame from client: " << std::endl;
 				std::cerr << &clientFrame << std::endl;
@@ -63,10 +61,17 @@ void GraphicsSession::do_read()
 				else
 				{
 					// write to packet buffer (queue)
-					this->serverQueue.push_back(clientFrame);
-					std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
+					// this->serverQueue.push_back(clientFrame);
+					// std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
+
+
+					cse125framing::ServerFrame frame;
+					frame.id = clientFrame.id;
+
+					do_write(&frame);
 				}
 
+				
 				// read more packets
 				do_read();
 			}
@@ -76,23 +81,24 @@ void GraphicsSession::do_read()
 void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 {
 	auto self(shared_from_this());
-	boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
 
-	cse125framing::serialize(serverFrame, serverBuffer); 
+	cse125framing::serialize(serverFrame, this->serverBuffer); 
+	std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
 
-	boost::asio::async_write(socket, boost::asio::buffer(serverBuffer),
-		[&serverFrame, this, self](boost::system::error_code ec, std::size_t /*length*/)
+	boost::asio::async_write(socket, boost::asio::buffer(this->serverBuffer),
+		[this, self](boost::system::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
 			{				
-				std::cerr << "Frame written to client" << std::endl;
-
-				// TODO: Accessing serverFrame in this if statement throws an exception
+				cse125framing::ServerFrame debugframe;
+				cse125framing::deserialize(&debugframe, this->serverBuffer); 
+				std::cerr << "Frame written to client (async_write)" << std::endl;
+				std::cerr << &debugframe << std::endl;
 
 				if (this->clientsConnected < cse125constants::NUM_PLAYERS) {
 					this->clientsConnected++;
+					std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
 				}
-				std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
 			}
 			else
 			{

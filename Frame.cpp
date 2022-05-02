@@ -72,5 +72,4 @@ void cse125framing::serialize(const ServerFrame* frame, boost::array<char, SERVE
 void cse125framing::deserialize(ServerFrame* frame, const boost::array<char, SERVER_FRAME_BUFFER_SIZE>& buffer)
 {
 	std::memcpy(frame, &buffer, sizeof(ServerFrame));
-
 }
