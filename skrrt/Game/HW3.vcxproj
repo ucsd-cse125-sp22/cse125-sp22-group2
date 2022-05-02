@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\Frame.hpp" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Cube.h" />
+    <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\Geometry.h" />
     <ClInclude Include="include\Game.h" />

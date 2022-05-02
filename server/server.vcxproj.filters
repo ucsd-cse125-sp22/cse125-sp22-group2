@@ -1,77 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Game Logic">
-      <UniqueIdentifier>{8bae1b66-6e34-4945-b2f9-c02a0957f450}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Game Logic">
-      <UniqueIdentifier>{5f50c076-224f-4283-b441-4c8e79ef349a}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="..\ClockTick.cpp" />
+    <ClCompile Include="..\Definitions.cpp" />
+    <ClCompile Include="..\Frame.cpp" />
+    <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
+    <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
+    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
+    <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Definitions.cpp">
-    <ClCompile Include="..\GameLogic\PhysicalObject.cpp">
-      <Filter>Source Files\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp">
-      <Filter>Source Files\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\GameLogic\BoundingBox.cpp">
-      <Filter>Source Files\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ClockTick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Definitions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-
-    <ClInclude Include="..\GameLogic\BoundingBox.hpp">
-      <Filter>Header Files\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\GameLogic\core.h">
-      <Filter>Header Files\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\GameLogic\PhysicalObject.hpp">
-      <Filter>Header Files\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp">
-      <Filter>Header Files\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ClockTick.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Constants.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Definitions.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Frame.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="..\ClockTick.hpp" />
+    <ClInclude Include="..\Constants.hpp" />
+    <ClInclude Include="..\Definitions.hpp" />
+    <ClInclude Include="..\Frame.hpp" />
+    <ClInclude Include="..\GameLogic\BoundingBox.hpp" />
+    <ClInclude Include="..\GameLogic\core.h" />
+    <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
+    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
   </ItemGroup>
 </Project>
