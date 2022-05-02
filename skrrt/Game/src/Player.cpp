@@ -36,3 +36,18 @@ void Player::spinWheels(float rotationDegree) {
 		}
 	}
 }
+
+void Player::bobCrown(float time) {
+
+	Node* car_node = player_node->childnodes[0];
+
+	// Change position of the crown based on time 
+	mat4 offset = translate(vec3(0.0f, sin(time * float(M_PI) / 360.0f) / 2.0f, 0.0f));
+
+	for (Node* child : car_node->childnodes) {
+		if (child->name.find("crown") != std::string::npos) {
+			child->modeltransforms[0] = offset * initial_crown_transform;
+		}
+	}
+
+}

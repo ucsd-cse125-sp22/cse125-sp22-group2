@@ -7,6 +7,8 @@ Scene.inl contains the definition of the scene graph
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#define NUM_PLAYERS 4
+
 using namespace glm;
 void Scene::init(void){
     // Create a geometry palette
@@ -21,11 +23,13 @@ void Scene::init(void){
     geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 1);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 0);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", 2);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", 1);
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", 2);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["crown"] = new Obj; 
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", 1);
     
     // Create a material palette
     material["wood"] = new Material;
@@ -77,6 +81,10 @@ void Scene::init(void){
     model["tire"]->geometry = geometry["tire"]; 
     model["tire"]->material = material["ceramic"]; 
 
+    model["crown"] = new Model; 
+    model["crown"]->geometry = geometry["crown"];
+    model["crown"]->material = material["ceramic"]; 
+
     // Create a light palette
     light["sun"] = new Light;
     light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);
@@ -87,10 +95,16 @@ void Scene::init(void){
     light["bulb"] -> color = 1.5f * vec4(1.0f,0.2f,0.1f,1.0f);
     
     // Build the scene graph
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
+
+    }
+    /*
     node["player0"] = new Node("player0");
     node["player1"] = new Node("player1");
     node["player2"] = new Node("player2");
     node["player3"] = new Node("player3");
+    */
 
     node["pink_car"] = new Node("pink_car");
     node["pink_car"]->models.push_back(model["pink_car"]);
@@ -138,10 +152,18 @@ void Scene::init(void){
     node["g_tire_b"]->models.push_back(model["tire"]); 
     node["g_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 
+    // Crowns 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+		node["crown" + std::to_string(i)] = new Node("crown" + std::to_string(i)); 
+		node["crown" + std::to_string(i)]->models.push_back(model["crown"]);
+		node["crown" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
+    mat4 crown_transform = translate(vec3(0.0f, 1.25f, 0.0f)) * scale(vec3(0.8f, 0.8f, 0.8f));
 
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -151,6 +173,8 @@ void Scene::init(void){
     node["pink_car"] -> childtransforms.push_back( front_tire_transform);
     node["pink_car"]->childnodes.push_back(node["p_tire_b"]);
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
+    node["pink_car"]->childnodes.push_back(node["crown0"]);
+    node["pink_car"]->childtransforms.push_back(crown_transform);
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -160,6 +184,8 @@ void Scene::init(void){
     node["blue_car"] -> childtransforms.push_back(front_tire_transform );
     node["blue_car"]->childnodes.push_back(node["b_tire_b"]);
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
+    node["blue_car"]->childnodes.push_back(node["crown1"]);
+    node["blue_car"]->childtransforms.push_back(crown_transform);
 
     node["world"]->childnodes.push_back(node["player2"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -169,6 +195,8 @@ void Scene::init(void){
     node["yellow_car"] -> childtransforms.push_back(front_tire_transform );
     node["yellow_car"]->childnodes.push_back(node["y_tire_b"]);
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
+    node["yellow_car"]->childnodes.push_back(node["crown2"]);
+    node["yellow_car"]->childtransforms.push_back(crown_transform);
 
     node["world"]->childnodes.push_back(node["player3"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -178,6 +206,8 @@ void Scene::init(void){
     node["green_car"] -> childtransforms.push_back(front_tire_transform);
     node["green_car"]->childnodes.push_back(node["g_tire_b"]);
     node["green_car"]->childtransforms.push_back(back_tire_transform);
+    node["green_car"]->childnodes.push_back(node["crown3"]);
+    node["green_car"]->childtransforms.push_back(crown_transform);
     
     // Put a camera
     camera = new Camera;

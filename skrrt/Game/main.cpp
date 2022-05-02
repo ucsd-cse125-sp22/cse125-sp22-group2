@@ -294,6 +294,7 @@ void initialize(void){
     // Set up players
     for (int i = 0; i < NUM_PLAYERS; i++) {
         players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
+        players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
 
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
@@ -484,11 +485,8 @@ void specialKeyUp(int key, int x, int y){
 }
 
 void idle() {
-    // Idle loop for logic 
-    // Get's called anytime there isn't a keyboard event
-    // Packet receiving stuff 
 
-    int time = glutGet(GLUT_ELAPSED_TIME);
+    /*
 
     // Update wheel animation
     // Render every half second
@@ -499,7 +497,17 @@ void idle() {
         p2.spinWheels(speed);
         p3.spinWheels(speed);
         glutPostRedisplay();
-        lastRenderTime = time;
+    }
+    */
+    int time = glutGet(GLUT_ELAPSED_TIME);
+	float speed = 5.0f;
+    if (time - lastRenderTime > 50) {
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            players[i]->spinWheels(speed);
+            players[i]->bobCrown(time);
+        }
+        glutPostRedisplay();
+		lastRenderTime = time;
     }
 
     // Handle direction triggers 
