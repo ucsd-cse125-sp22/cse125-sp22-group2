@@ -71,7 +71,7 @@ void ObjPlayer::step() {
 	if (hasCrown) {
 		speed += 0.5f;
 	}
-	if (objectPosition(boundingBox, Trail)) {
+	if (objectPositionTagged(boundingBox, Trail, id)) {
 		speed -= 1.0f;
 	}
 	if (makeupLevel < 0.01f) {
@@ -122,4 +122,19 @@ void ObjPlayer::action(glm::vec3 dir) {
 			this->direction = dir;
 		}
 	}
+}
+
+bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) {
+	int objCount = this->objects->size();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == this->id) {
+			continue;
+		}
+		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			if (type == Trail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+				return true;
+			}
+		}
+	}
+	return false;
 }

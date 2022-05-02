@@ -3,6 +3,7 @@
 #include "core.h"
 #include "PhysicalObject.hpp"
 #include "ObjCrown.hpp"
+#include "ObjTrail.hpp"
 
 class ObjPlayer : public PhysicalObject
 {
@@ -33,4 +34,7 @@ public:
 	void step();
 	// Movement and crown transfer, anything that happens because of user input goes here
 	void action(glm::vec3 dir);
+
+	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
+	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 };
