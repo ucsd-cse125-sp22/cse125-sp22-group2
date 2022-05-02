@@ -9,7 +9,7 @@ ObjWall::ObjWall() {
 	this->height = 0.0f;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, this->up);
 
 	this->direction = glm::vec3(0.0f);
 	this->up = glm::vec3(0.0f);
@@ -27,7 +27,7 @@ ObjWall::ObjWall(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 po
 	this->height = height;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->direction = direction;
 	this->up = up;

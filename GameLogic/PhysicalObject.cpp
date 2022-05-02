@@ -9,7 +9,7 @@ PhysicalObject::PhysicalObject() {
 	this->height = 0.0f;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->direction = glm::vec3(0.0f);
 	this->up = glm::vec3(0.0f);
@@ -27,7 +27,7 @@ PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, unsigned int id
 	this->height = height;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->direction = direction;
 	this->up = up;
@@ -39,8 +39,8 @@ PhysicalObject::~PhysicalObject() {
 
 }
 
-BoundingBox PhysicalObject::generateBoundingBox(glm::vec3 pos, glm::vec3 dir) {
-	return BoundingBox(this->id, pos, dir, this->up, this->length, this->width, this->height);
+BoundingBox PhysicalObject::generateBoundingBox(glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
+	return BoundingBox(this->id, pos, dir, up, this->length, this->width, this->height);
 }
 
 bool PhysicalObject::checkPlaceFree(BoundingBox bb) {
@@ -84,7 +84,7 @@ bool PhysicalObject::objectPosition(BoundingBox bb, int type) {
 }
 
 void PhysicalObject::movePosition(glm::vec3 pos) {
-	vector<int> collisions = findCollisionObjects(generateBoundingBox(pos, glm::vec3(0.0f)));
+	vector<int> collisions = findCollisionObjects(generateBoundingBox(pos, glm::vec3(0.0f), this->up));
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
 			return;
@@ -95,7 +95,7 @@ void PhysicalObject::movePosition(glm::vec3 pos) {
 
 void PhysicalObject::moveDirection(glm::vec3 dir) {
 	glm::vec3 destination = this->position + this->speed * dir;
-	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir));
+	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
 			return;

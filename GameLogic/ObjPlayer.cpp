@@ -9,7 +9,7 @@ ObjPlayer::ObjPlayer() {
 	this->height = 0.0f;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, this->up);
 
 	this->direction = glm::vec3(0.0f);
 	this->up = glm::vec3(0.0f);
@@ -23,13 +23,14 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->id = id;
 
 	this->position = position;
+	// These values are the actual dimensions, might make constants for these
 	this->length = 2.0f;
 	this->width = 1.35f;
 	this->height = 0.98f;
 
 	this->direction = direction;
 	this->up = up;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->solid = true;
 
@@ -80,15 +81,17 @@ void ObjPlayer::step() {
 }
 
 void ObjPlayer::action(glm::vec3 dir) {
+	// Can't move when stunned
 	if (!stun) {
 		glm::vec3 destination = this->position + this->speed * dir;
-		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir));
+		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
 
 		bool free = true;
 
 		for (unsigned int i = 0; i < collisions.size(); i++) {
 			PhysicalObject*& obj = this->objects->at(collisions[i]);
 
+			// Object is blocking us
 			if (obj->solid) {
 				free = false;
 			}
@@ -117,6 +120,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 			}
 		}
 
+		// If we didn't collide, move
 		if (free) {
 			this->position = destination;
 			this->direction = dir;

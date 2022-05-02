@@ -23,8 +23,14 @@ void PhysicalObjectManager::startGame() {
 	// Create crown
 	// Create makeup booths
 	// Create walls and floors
-	// 
-	// createObject(Player, glm::vec3(0.0f), glm::vec3(0.0f));
+
+	// Very basic map
+	createObject(Player, glm::vec3(0.0f), glm::vec3(0.0f));
+	createObject(Crown, glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f));
+	createObject(Wall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	createObject(Wall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	createObject(Wall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
+	createObject(Wall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
 }
 
 void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
@@ -62,6 +68,8 @@ void PhysicalObjectManager::step() {
 	}
 }
 
+
+// TODO: Everything below this line is not used yet
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {
 	glm::vec3 numGrids = (gridMax - gridMin) / gridSizes;
 	vector<vector<int>*>* uniformGrid = new vector<vector<int>*>(numGrids.x * numGrids.y * numGrids.z);

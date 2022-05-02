@@ -9,7 +9,7 @@ ObjTrail::ObjTrail() {
 	this->height = 0.0f;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, this->up);
 
 	this->direction = glm::vec3(0.0f);
 	this->up = glm::vec3(0.0f);
@@ -30,7 +30,7 @@ ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 
 
 	this->direction = direction;
 	this->up = up;
-	this->boundingBox = generateBoundingBox(position, direction);
+	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->solid = false;
 

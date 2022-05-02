@@ -41,7 +41,7 @@ public:
 	~PhysicalObject();
 
 	// Create a bounding box
-	BoundingBox generateBoundingBox(glm::vec3 pos, glm::vec3 dir);
+	BoundingBox generateBoundingBox(glm::vec3 pos, glm::vec3 dir, glm::vec3 up);
 
 	// Basic boolean collision check that terminates immediately if a collision with a solid object is found
 	bool checkPlaceFree(BoundingBox bb);
