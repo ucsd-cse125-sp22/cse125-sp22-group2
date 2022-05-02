@@ -34,7 +34,7 @@ public:
 	Player() { player_node = NULL; score = 0; };
 	Player(Node* car) { player_node = car; score = 0; };
 
-	void moveCar(glm::vec3 target, glm::vec3 up, glm::vec3 offset);
+	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float ratationDegree);
 
 	void setPlayer(Node* player) { player_node = player; };

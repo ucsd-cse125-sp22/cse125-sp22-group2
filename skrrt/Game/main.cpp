@@ -146,7 +146,8 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
         const glm::vec3 dir = glm::vec3(serverFrame.playerDirection);
-        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
+        p0.moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        //scene.node["player0"]->childtransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
         scene.camera->setPosition(pos);
     }
 }
@@ -338,28 +339,18 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'a':
             handleMoveLeft();
-            std::cout << "left" << std::endl;
-            //glm::vec3 t = scene.camera->target - scene.camera->eye
-
-            //p0.moveCar(glm::vec3(scene.camera->), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
             glutPostRedisplay();
             break;
         case 'd':
             handleMoveRight();
-            std::cout << "right" << std::endl;
-            //p0.moveCar(glm::vec3(), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             glutPostRedisplay();
             break;
         case 'w':
             handleMoveForward();
-            std::cout << "forward" << std::endl;
-            //p0.moveCar(glm::vec3(), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
             glutPostRedisplay();
             break;
         case 's':
             handleMoveBackward();
-            std::cout << "back" << std::endl;
-            //p0.moveCar(glm::vec3(), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
             glutPostRedisplay();
             break;
         case 'z':
@@ -385,25 +376,6 @@ void keyboard(unsigned char key, int x, int y){
 void specialKey(int key, int x, int y){
     switch (key) {
         case GLUT_KEY_UP: // up
-/*
-            scene.camera -> rotateUp(-10.0f);
-            //sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_DOWN: // down
-            scene.camera -> rotateUp(10.0f);
-            //sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_RIGHT: // right
-            scene.camera -> rotateRight(-10.0f);
-            //sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_LEFT: // left
-            scene.camera -> rotateRight(10.0f);
-            //sendDataToServer(cse125framing::MovementKey::LEFT, camera);
-*/
             handleMoveForward();
             glutPostRedisplay();
             break;
