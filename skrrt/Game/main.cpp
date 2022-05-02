@@ -145,7 +145,8 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
 
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
-        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate( glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
+        const glm::vec3 dir = glm::vec3(serverFrame.playerDirection);
+        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
         scene.camera->setPosition(pos);
     }
 }
