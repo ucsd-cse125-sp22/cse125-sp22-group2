@@ -66,12 +66,36 @@ void ObjPlayer::moveSelf(glm::vec3 dir) {
 	if (!stun) {
 		glm::vec3 destination = this->position + this->speed * dir;
 		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir));
+
+		bool free = true;
+
 		for (unsigned int i = 0; i < collisions.size(); i++) {
-			if (this->objects->at(collisions[i])->solid) {
-				return;
+			PhysicalObject*& obj = this->objects->at(collisions[i]);
+
+			if (obj->solid) {
+				free = false;
+			}
+
+			// Check if crown is transferred
+			if (obj->type == Player) {
+				if (this->hasCrown && !iframes) {
+					((ObjPlayer*)obj)->hasCrown = true;
+					((ObjPlayer*)obj)->iframes = 60.0f;
+					this->hasCrown = false;
+					this->stun = 30.0f;
+				}
+				else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
+					this->hasCrown = true;
+					this->iframes = 60.0f;
+					((ObjPlayer*)obj)->hasCrown = false;
+					((ObjPlayer*)obj)->stun = 30.0f;
+				}
 			}
 		}
-		this->position = destination;
-		this->direction = dir;
+
+		if (free) {
+			this->position = destination;
+			this->direction = dir;
+		}
 	}
 }

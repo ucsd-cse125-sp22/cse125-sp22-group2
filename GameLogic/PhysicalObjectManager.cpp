@@ -80,9 +80,9 @@ void PhysicalObjectManager::removeFromGrid(PhysicalObject* obj) {
 
 	for (unsigned int i = 0; i < boundingBox.gridCells.size(); i++) {
 		vector<int>* cell = (*uniformGrid)[boundingBox.gridCells[i]];
-		for (unsigned int j = cell->size() - 1; j >= 0; j--) {
+		for (int j = cell->size() - 1; j >= 0; j--) {
 			if (cell->at(j) == id) {
-				cell->at(j) == cell->at(cell->size() - 1);
+				cell->at(j) = cell->at(cell->size() - 1);
 				cell->pop_back();
 			}
 		}
@@ -102,9 +102,9 @@ void PhysicalObjectManager::addToGrid(PhysicalObject* obj, glm::vec3 gridMin, gl
 	glm::vec3 lowestCell = (obj->boundingBox.bbMin - gridMin) / gridSizes;
 	glm::vec3 highestCell = (obj->boundingBox.bbMax - gridMin) / gridSizes;
 
-	for (unsigned int xi = lowestCell.x; xi <= highestCell.x; xi++) {
-		for (unsigned int yi = lowestCell.y; yi <= highestCell.y; yi++) {
-			for (unsigned int zi = lowestCell.z; zi <= highestCell.z; zi++) {
+	for (unsigned int xi = lowestCell.x; xi <= (unsigned int)highestCell.x; xi++) {
+		for (unsigned int yi = lowestCell.y; yi <= (unsigned int)highestCell.y; yi++) {
+			for (unsigned int zi = lowestCell.z; zi <= (unsigned int)highestCell.z; zi++) {
 				// For now just add, could add a collision check though
 				unsigned int cellNum = (xi * (unsigned int)numGrids.x * (unsigned int)numGrids.y) + (yi * (unsigned int)numGrids.y) + zi;
 				(*uniformGrid)[cellNum]->push_back(obj->id);
