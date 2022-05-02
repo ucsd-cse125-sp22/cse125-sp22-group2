@@ -2,6 +2,7 @@
 
 #include "core.h"
 #include "PhysicalObject.hpp"
+#include "ObjCrown.hpp"
 
 class ObjPlayer : public PhysicalObject
 {
@@ -30,5 +31,5 @@ public:
 	~ObjPlayer();
 
 	void step();
-	void moveSelf(glm::vec3 dir);
+	void action(glm::vec3 dir);
 };

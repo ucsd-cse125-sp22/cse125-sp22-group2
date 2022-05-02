@@ -43,6 +43,11 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 
 void PhysicalObjectManager::step() {
 	gameTime -= 1.0f / 60.0f;
+	for (unsigned int i = 0; i < objects->size(); i++) {
+		if (objects->at(i)->type == Player) {
+			objects->at(i)->step();
+		}
+	}
 }
 
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {

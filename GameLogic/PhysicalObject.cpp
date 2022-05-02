@@ -104,3 +104,6 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 	this->position = destination;
 	this->direction = dir;
 }
+
+void PhysicalObject::step() {
+}

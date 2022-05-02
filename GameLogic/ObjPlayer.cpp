@@ -62,7 +62,7 @@ void ObjPlayer::step() {
 	}
 }
 
-void ObjPlayer::moveSelf(glm::vec3 dir) {
+void ObjPlayer::action(glm::vec3 dir) {
 	if (!stun) {
 		glm::vec3 destination = this->position + this->speed * dir;
 		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir));
@@ -80,15 +80,22 @@ void ObjPlayer::moveSelf(glm::vec3 dir) {
 			if (obj->type == Player) {
 				if (this->hasCrown && !iframes) {
 					((ObjPlayer*)obj)->hasCrown = true;
-					((ObjPlayer*)obj)->iframes = 60.0f;
+					((ObjPlayer*)obj)->iframes = 60;
 					this->hasCrown = false;
-					this->stun = 30.0f;
+					this->stun = 30;
 				}
 				else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 					this->hasCrown = true;
-					this->iframes = 60.0f;
+					this->iframes = 60;
 					((ObjPlayer*)obj)->hasCrown = false;
-					((ObjPlayer*)obj)->stun = 30.0f;
+					((ObjPlayer*)obj)->stun = 30;
+				}
+			}
+			else if (obj->type == Crown) {
+				if (((ObjCrown*)obj)->loose) {
+					((ObjCrown*)obj)->loose = false;
+					this->hasCrown = true;
+					this->iframes = 30;
 				}
 			}
 		}
