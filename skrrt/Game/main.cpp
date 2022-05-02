@@ -34,6 +34,9 @@ static Player p0, p1, p2, p3;
 static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 static Game game(&p0, &p1, &p2, &p3);
 
+//static bool triggers[] = { false, false, false, false };
+static std::map<std::string, bool>triggers;
+
 static int lastRenderTime = 0;
 
 boost::asio::io_context outgoingContext;
@@ -251,6 +254,12 @@ void launchServer(short port) {
 }
 
 void printHelp(){
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
     std::cout << R"(
     Available commands:
       press 'H' to print this message again.
@@ -275,6 +284,12 @@ void initialize(void){
     
     // Initialize scene
     scene.init();
+
+    // Initialize triggers map 
+    triggers["up"] = false; 
+    triggers["left"] = false; 
+    triggers["down"] = false; 
+    triggers["right"] = false; 
 
     // Set up players
     for (int i = 0; i < NUM_PLAYERS; i++) {
@@ -329,6 +344,12 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'h': // print help
             printHelp();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
             break;
         case 'o': // save screenshot
             saveScreenShot();
@@ -339,24 +360,34 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            handleMoveLeft();
+            //handleMoveLeft();
+            triggers["left"] = true;
             glutPostRedisplay();
             break;
         case 'd':
-            handleMoveRight();
+            //handleMoveRight();
+            triggers["right"] = true;
             glutPostRedisplay();
             break;
         case 'w':
-            handleMoveForward();
+            //handleMoveForward();
+            triggers["up"] = true;
             glutPostRedisplay();
             break;
         case 's':
+            triggers["down"] = true;
             handleMoveBackward();
             glutPostRedisplay();
             break;
         case 'z':
             scene.camera -> zoom(1.1f);
             glutPostRedisplay();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
             break;
         case 'l':
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
@@ -374,22 +405,79 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
+void keyboardUp(unsigned char key, int x, int y){
+    switch(key){
+        case 'a':
+            //handleMoveLeft();
+            triggers["left"] = false;
+            glutPostRedisplay();
+            break;
+        case 'd':
+            //handleMoveRight();
+            triggers["right"] = false;
+            glutPostRedisplay();
+            break;
+        case 'w':
+            //handleMoveForward();
+            triggers["up"] = false;
+            glutPostRedisplay();
+            break;
+        case 's':
+            //handleMoveBackward();
+            triggers["down"] = false;
+            glutPostRedisplay();
+            break;
+        default:
+            glutPostRedisplay();
+            break;
+    }
+}
+
 void specialKey(int key, int x, int y){
     switch (key) {
         case GLUT_KEY_UP: // up
-            handleMoveForward();
+            //handleMoveForward();
+            triggers["up"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            handleMoveBackward();
+            //handleMoveBackward();
+            triggers["down"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            handleMoveRight();
+            //handleMoveRight();
+            triggers["right"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            handleMoveLeft();
+            //handleMoveLeft();
+            triggers["left"] = true;
+            glutPostRedisplay();
+            break;
+    }
+}
+
+void specialKeyUp(int key, int x, int y){
+    switch (key) {
+        case GLUT_KEY_UP: // up
+            //handleMoveForward();
+            triggers["up"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_DOWN: // down
+            //handleMoveBackward();
+            triggers["down"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_RIGHT: // right
+            //handleMoveRight();
+            triggers["right"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_LEFT: // left
+            //handleMoveLeft();
+            triggers["left"] = false;
             glutPostRedisplay();
             break;
     }
@@ -412,6 +500,20 @@ void idle() {
         p3.spinWheels(speed);
         glutPostRedisplay();
         lastRenderTime = time;
+    }
+
+    // Handle direction triggers 
+    if (triggers["up"]) {
+        handleMoveForward(); 
+    } 
+    if (triggers["down"]) {
+        handleMoveBackward();
+    }
+    if (triggers["left"]) {
+        handleMoveLeft();
+    }
+    if (triggers["right"]) {
+        handleMoveRight();
     }
 }
 
@@ -477,7 +579,9 @@ int main(int argc, char** argv)
     initialize();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
+    glutKeyboardUpFunc(keyboardUp);
     glutSpecialFunc(specialKey);
+    glutSpecialUpFunc(specialKeyUp);
     glutIdleFunc(idle);
     glutPassiveMotionFunc(mouseMovement);
     glutMotionFunc(mouseMovement);
