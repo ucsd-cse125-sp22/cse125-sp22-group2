@@ -17,25 +17,28 @@
 
 class Player {
 private:
-	// Car node 
-	Node* car_node; 
+	// player node 
+	Node* player_node; 
 
 	// Score
 	int score;
 
 	// Current world position 
 	// Current object's rotation 
+	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 current_direction = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	// Maybe a spawned position and rotation?
 
 public: 
-	Player() { car_node = NULL; score = 0; };
-	Player(Node* car) { car_node = car; score = 0; };
+	Player() { player_node = NULL; score = 0; };
+	Player(Node* car) { player_node = car; score = 0; };
 
-	void transformCar(glm::vec3 translation, glm::vec3 scale, float rotationDegree, glm::vec3 rotationAxis);
+	void moveCar(glm::vec3 target, glm::vec3 up, glm::vec3 offset);
 	void spinWheels(float ratationDegree);
 
-	void setCar(Node* car) { car_node = car; };
+	void setPlayer(Node* player) { player_node = player; };
+	void setPosition(glm::vec3 position) { current_position = position; };
 	
 	void updateScore(int s) { score = s; };
 	int getScore() { return score; };

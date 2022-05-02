@@ -274,10 +274,10 @@ void initialize(void){
     scene.init();
 
     // Set up players
-    p0.setCar(scene.node["world"]->childnodes[0]); 
-    p1.setCar(scene.node["world"]->childnodes[1]); 
-    p2.setCar(scene.node["world"]->childnodes[2]); 
-    p3.setCar(scene.node["world"]->childnodes[3]);
+    p0.setPlayer(scene.node["player0"]); 
+    p1.setPlayer(scene.node["player1"]); 
+    p2.setPlayer(scene.node["player2"]); 
+    p3.setPlayer(scene.node["player3"]);
 
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
 
