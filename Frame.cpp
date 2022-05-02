@@ -40,7 +40,6 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* fra
 	os << "id: " << frame->id << std::endl;
 	os << "ctr: " << frame->ctr << std::endl;
 	os << "camera: " << "(" << camera.x << ", " << camera.y << ", " << camera.z << ")" << std::endl;
-	os << "movement key: " << frame->movementKey << std::endl;
 	return os;
 }
 

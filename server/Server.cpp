@@ -84,12 +84,15 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 		[&serverFrame, this, self](boost::system::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
-			{
+			{				
 				std::cerr << "Frame written to client" << std::endl;
-				std::cerr << serverFrame << std::endl;
+
+				// TODO: Accessing serverFrame in this if statement throws an exception
+
 				if (this->clientsConnected < cse125constants::NUM_PLAYERS) {
 					this->clientsConnected++;
 				}
+				std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
 			}
 			else
 			{

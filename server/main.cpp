@@ -133,6 +133,7 @@ int main()
             {
                 const cse125framing::ClientFrame& clientFrame = *it;
                 // Accumulate this player's action
+                std::cerr << "Client id is " << clientFrame.id << std::endl;
                 gameActionTracker.setAction(clientFrame.id, clientFrame.movementKey, clientFrame.cameraDirection);
                 // Track the priority order for this player
                 if (!playerPriorities.at(clientFrame.id)) {
@@ -140,32 +141,38 @@ int main()
                 }                
             }
 
+            int sizeBefore = serverQueue.size();
+            std::cerr << "Queue size before: " << serverQueue.size() << std::endl;
             // Empty the queue of all tasks
             serverQueue.clear();
+            std::cerr << "Queue size after: " << serverQueue.size() << std::endl;
 
-            // Determine the sorted priority order
-            std::vector<std::pair<int, int>> sortedPriorities; // <client id, priority> pairs
-            for (int i = 0; i < playerPriorities.size(); i++) {
-                sortedPriorities.push_back(std::make_pair(i, playerPriorities.at(i)));
-            }
-            // Note: Lower values indicate higher priority
-            std::sort(sortedPriorities.begin(), sortedPriorities.end(), [](auto& left, auto& right) {return left.second < right.second; });
 
-            // Update the game state in player priority order
-            for (auto it = sortedPriorities.begin(); it != sortedPriorities.end(); it++) {
-                const int& playerId = it->first;                
-                const cse125gameaction::GameActionContainer* container = gameActionTracker.getGameActionContainer(playerId);
-                GameAction gameAction = cse125gameaction::gameActionFromContainer(container);
-                gameLoop(manager, playerId, gameAction, container->cameraDirection);
-            }
+            //// Determine the sorted priority order
+            //std::vector<std::pair<int, int>> sortedPriorities; // <client id, priority> pairs
+            //for (int i = 0; i < playerPriorities.size(); i++) {
+            //    sortedPriorities.push_back(std::make_pair(i, playerPriorities.at(i)));
+            //}
+            //// Note: Lower values indicate higher priority
+            //std::sort(sortedPriorities.begin(), sortedPriorities.end(), [](auto& left, auto& right) {return left.second < right.second; });
+
+            //// Update the game state in player priority order
+            //for (auto it = sortedPriorities.begin(); it != sortedPriorities.end(); it++) {
+            //    const int& playerId = it->first;                
+            //    const cse125gameaction::GameActionContainer* container = gameActionTracker.getGameActionContainer(playerId);
+            //    GameAction gameAction = cse125gameaction::gameActionFromContainer(container);
+            //    gameLoop(manager, playerId, gameAction, container->cameraDirection);
+            //}
 
             // TODO: Call Game loop even if no packets from any players to update score, etc. (might be a score-specific game loop)
 
             // Write data back to players
             cse125framing::ServerFrame serverFrame;
-            initializeServerFrame(manager, &serverFrame);
-            serverFrame.ctr = frameCtr++;
-            server.writePackets(&serverFrame);
+            // initializeServerFrame(manager, &serverFrame);
+            if (sizeBefore > 0) {
+                serverFrame.ctr = frameCtr++;
+                server.writePackets(&serverFrame);
+            }    
 
             // Sleep until the end of the clock tick
             ticker.tickEnd();   

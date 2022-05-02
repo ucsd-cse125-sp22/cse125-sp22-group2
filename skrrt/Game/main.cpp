@@ -12,14 +12,16 @@
 #endif
 // Use of degrees is deprecated. Use radians for GLM functions
 #define GLM_FORCE_RADIANS
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+#include <glm/glm.hpp>
+
 #include "../../Definitions.hpp"
 #include "../../Frame.hpp"
 #include "Scene.h"
 #include "Screenshot.h"
 
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
-#include <glm/glm.hpp>
+// IMPORTANT: Include Screenshot.h before the boost inclusion to prevent a compiler error
 
 static const int width = 800;
 static const int height = 600;
@@ -119,8 +121,9 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
     }
     else
     {
-        std::cout << "Successfully sent frame # " << clientFrameCtr
-                  << " to server." << std::endl;
+        //std::cout << "Successfully sent frame # " << clientFrameCtr
+        //          << " to server." << std::endl;
+        std::cerr << "Frame id sent was " << frame.id << std::endl;
     }
 
     receiveDataFromServer();
@@ -146,7 +149,7 @@ void receiveDataFromServer()
     }
     else if (error)
     {
-        std::cerr << "Error reading from server."
+        std::cerr << "Error reading from server: " << error 
                   << std::endl; // Some other error.
     }
     else
@@ -299,10 +302,11 @@ void specialKey(int key, int x, int y)
 
 void idle()
 {
-    // Idle loop for logic
-    // Get's called anytime there isn't a keyboard event
-    // Packet receiving stuff
-    receiveDataFromServer();
+    // Gets called anytime there isn't a keyboard event
+    // Only connect to server once the client has been registered
+    if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
+        // receiveDataFromServer();
+    }
 }
 
 int main(int argc, char** argv)
@@ -333,8 +337,6 @@ int main(int argc, char** argv)
     boost::asio::connect(outgoingSocket, outgoingEndpoints);
     // Set this client's id
     requestClientId();
-
-
 
     initialize();
     glutDisplayFunc(display);

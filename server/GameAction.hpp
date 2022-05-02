@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <unordered_map>
 
 #include "../Definitions.hpp"
 #include "../Frame.hpp"
@@ -67,15 +66,15 @@ namespace cse125gameaction {
 		void moveBackward(int playerId);
 
 		/*
-		* @brief Returns a pointer to the GameActionContainer for the player with the given id
+		* @brief Returns the GameActionContainer for the player with the given id
 		* 
-		* @return a pointer to the GameActionContainer for the player with the given id
+		* @return the GameActionContainer for the player with the given id
 		*/
-		const GameActionContainer* getGameActionContainer(int playerId);
+		const GameActionContainer getGameActionContainer(int playerId);
 
 
 	private:
-		std::unordered_map<int, GameActionContainer*> tracker;	
+		std::vector<GameActionContainer> tracker;	
 	};
 
 }
