@@ -45,14 +45,14 @@ void GraphicsSession::do_read()
 				// process data
 				cse125framing::deserialize(&clientFrame, this->clientBuffer);
 
-				std::cerr << "Frame from client: " << std::endl;
-				std::cerr << &clientFrame << std::endl;
+				// std::cerr << "Frame from client: " << std::endl;
+				// std::cerr << &clientFrame << std::endl;
 
 				// Check if ID needs to be sent back
 				if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID)
 				{
 					// lock
-					std::cerr << "Giving client id: " << this->id << std::endl;
+					// std::cerr << "Giving client id: " << this->id << std::endl;
 					cse125framing::ServerFrame frame;
 					frame.id = this->id;
 					do_write(&frame);
@@ -61,17 +61,10 @@ void GraphicsSession::do_read()
 				else
 				{
 					// write to packet buffer (queue)
-					// this->serverQueue.push_back(clientFrame);
-					// std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
-
-
-					cse125framing::ServerFrame frame;
-					frame.id = clientFrame.id;
-
-					do_write(&frame);
+					this->serverQueue.push_back(clientFrame);
+					std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
 				}
 
-				
 				// read more packets
 				do_read();
 			}
@@ -83,18 +76,13 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 	auto self(shared_from_this());
 
 	cse125framing::serialize(serverFrame, this->serverBuffer); 
-	std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
+	// std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
 
 	boost::asio::async_write(socket, boost::asio::buffer(this->serverBuffer),
 		[this, self](boost::system::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
 			{				
-				cse125framing::ServerFrame debugframe;
-				cse125framing::deserialize(&debugframe, this->serverBuffer); 
-				std::cerr << "Frame written to client (async_write)" << std::endl;
-				std::cerr << &debugframe << std::endl;
-
 				if (this->clientsConnected < cse125constants::NUM_PLAYERS) {
 					this->clientsConnected++;
 					std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
@@ -107,8 +95,6 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			}
 		});
 }
-
-
 
 GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 	: acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))

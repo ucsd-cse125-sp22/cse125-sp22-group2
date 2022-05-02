@@ -112,7 +112,7 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
     cse125framing::serialize(&frame, clientBuffer);
     boost::system::error_code writeError;
 
-    std::cerr << "sending frame: " << std::endl << &frame << std::endl;
+    // std::cerr << "sending frame: " << std::endl << &frame << std::endl;
 
     size_t numWritten = boost::asio::write(
         outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
@@ -136,9 +136,6 @@ void receiveDataFromServer()
     size_t numRead =
         outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
-    // size_t numRead = boost::asio::read(outgoingSocket,
-    // boost::asio::buffer(serverBuffer));
-
     if (error == boost::asio::error::eof)
     {
         std::cout << "EOF from server."
@@ -152,8 +149,8 @@ void receiveDataFromServer()
     else
     {
         cse125framing::deserialize(&serverFrame, serverBuffer);
-        // assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
-        // std::cout << "numread: " << numRead << std::endl;
+        assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
+        std::cout << "numread: " << numRead << std::endl;
         std::cout << "Received reply from server." << std::endl;
         std::cout << &serverFrame << std::endl;
 
@@ -304,7 +301,7 @@ void idle()
     // Gets called anytime there isn't a keyboard event
     // Only connect to server once the client has been registered
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
-        // receiveDataFromServer();
+        receiveDataFromServer();
     }
 }
 

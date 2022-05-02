@@ -5,20 +5,24 @@
 cse125gameaction::GameActionTracker::GameActionTracker(unsigned int numPlayers)
 {
 	for (unsigned int i = 0; i < numPlayers; i++) {
-		cse125gameaction::GameActionContainer container = cse125gameaction::GameActionContainer();
+		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer();
 		this->tracker.push_back(container);
 	}
 }
 
 cse125gameaction::GameActionTracker::~GameActionTracker()
 {
+	for (cse125gameaction::GameActionContainer* container : this->tracker)
+	{
+		delete container;
+	}
 }
 
 void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey movementKey, vec3 cameraDirection)
 {
 	// Set the camera direction. This is the same regardless of the movement key
-	cse125gameaction::GameActionContainer& container = this->tracker.at(playerId);
-	container.cameraDirection = cameraDirection;
+	cse125gameaction::GameActionContainer* container = this->tracker.at(playerId);
+	container->cameraDirection = cameraDirection;
 	switch (movementKey) {
 	case MovementKey::RIGHT:
 		this->moveRight(playerId);
@@ -39,33 +43,33 @@ void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey mo
 
 void cse125gameaction::GameActionTracker::moveRight(int playerId)
 {
-	GameActionContainer& container = this->tracker.at(playerId);
-	container.right = 1;
-	container.left = 0;
+	GameActionContainer* container = this->tracker.at(playerId);
+	container->right = 1;
+	container->left = 0;
 }
 
 void cse125gameaction::GameActionTracker::moveForward(int playerId)
 {
-	GameActionContainer& container = this->tracker.at(playerId);
-	container.forward = 1;
-	container.backward = 0;
+	GameActionContainer* container = this->tracker.at(playerId);
+	container->forward = 1;
+	container->backward = 0;
 }
 
 void cse125gameaction::GameActionTracker::moveLeft(int playerId)
 {
-	GameActionContainer& container = this->tracker.at(playerId);
-	container.right = 0;
-	container.left = 1;
+	GameActionContainer* container = this->tracker.at(playerId);
+	container->right = 0;
+	container->left = 1;
 }
 
 void cse125gameaction::GameActionTracker::moveBackward(int playerId)
 {
-	GameActionContainer& container = this->tracker.at(playerId);
-	container.forward = 0;
-	container.backward = 1;
+	GameActionContainer* container = this->tracker.at(playerId);
+	container->forward = 0;
+	container->backward = 1;
 }
 
-const cse125gameaction::GameActionContainer cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
+const cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
 {
 	return this->tracker.at(playerId);
 }

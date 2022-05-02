@@ -70,11 +70,11 @@ namespace cse125gameaction {
 		* 
 		* @return the GameActionContainer for the player with the given id
 		*/
-		const GameActionContainer getGameActionContainer(int playerId);
+		const GameActionContainer* getGameActionContainer(int playerId);
 
 
 	private:
-		std::vector<GameActionContainer> tracker;	
+		std::vector<GameActionContainer*> tracker;	
 	};
 
 }
