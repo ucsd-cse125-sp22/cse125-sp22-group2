@@ -3,10 +3,12 @@
 #include <math.h>
 
 using namespace glm;
+
 // reserving the up vector for potential ramp movements
 void Player::moveCar(vec3 target, vec3 up, vec3 offset) {
 
-	// rotate the car to face direction 
+	// rotate the car to face direction it will move
+	//mat4 rotate = inverse(lookAt(current_position, target, glm::vec3(0.0f, 1.0f, 0.0f)));
 	mat4 rotate = inverse(lookAt(current_position, target, glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	// translate the car based on offset

@@ -146,7 +146,7 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player0"]->childnodes.push_back(node["pink_car"]);
-    node["player0"]->childtransforms.push_back(translate(vec3(-3.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["pink_car"]->childnodes.push_back(node["p_tire_f"]);
     node["pink_car"] -> childtransforms.push_back( front_tire_transform);
     node["pink_car"]->childnodes.push_back(node["p_tire_b"]);
@@ -155,7 +155,7 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player1"]->childnodes.push_back(node["blue_car"]);
-    node["player1"]->childtransforms.push_back(translate(vec3(-1.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
     node["blue_car"] -> childtransforms.push_back(front_tire_transform );
     node["blue_car"]->childnodes.push_back(node["b_tire_b"]);
@@ -164,7 +164,7 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["player2"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player2"]->childnodes.push_back(node["yellow_car"]);
-    node["player2"]->childtransforms.push_back(translate(vec3(1.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player2"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["yellow_car"]->childnodes.push_back(node["y_tire_f"]);
     node["yellow_car"] -> childtransforms.push_back(front_tire_transform );
     node["yellow_car"]->childnodes.push_back(node["y_tire_b"]);
@@ -173,7 +173,7 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["player3"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player3"]->childnodes.push_back(node["green_car"]);
-    node["player3"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player3"]->childtransforms.push_back(translate(vec3(6.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["green_car"]->childnodes.push_back(node["g_tire_f"]);
     node["green_car"] -> childtransforms.push_back(front_tire_transform);
     node["green_car"]->childnodes.push_back(node["g_tire_b"]);

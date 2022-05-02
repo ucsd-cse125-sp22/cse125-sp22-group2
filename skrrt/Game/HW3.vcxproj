@@ -41,8 +41,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\..\cse-125-libraries</LibraryPath>
+    <IncludePath>.\include;$(IncludePath);..\cse-125-include-directories</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\cse-125-libraries;C:\ez\cse125-sp22-group2\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>

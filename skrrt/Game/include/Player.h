@@ -26,7 +26,7 @@ private:
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 current_direction = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 current_direction = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	// Maybe a spawned position and rotation?
 
