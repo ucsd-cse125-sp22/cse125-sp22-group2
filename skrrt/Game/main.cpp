@@ -23,6 +23,7 @@
 #include "../../Frame.hpp"
 #include "Debug.h"
 
+#define NUM_PLAYERS 4
 
 static const int width = 1600;
 static const int height = 1100;
@@ -30,6 +31,7 @@ static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 static Player p0, p1, p2, p3;
+static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 static Game game(&p0, &p1, &p2, &p3);
 
 static int lastRenderTime = 0;
@@ -275,10 +277,15 @@ void initialize(void){
     scene.init();
 
     // Set up players
+    /*
     p0.setPlayer(scene.node["player0"]); 
     p1.setPlayer(scene.node["player1"]); 
     p2.setPlayer(scene.node["player2"]); 
     p3.setPlayer(scene.node["player3"]);
+    */
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
+    }
 
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
 
