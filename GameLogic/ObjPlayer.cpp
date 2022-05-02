@@ -24,8 +24,8 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 
 	this->position = position;
 	this->length = 2.0f;
-	this->width = 2.0f;
-	this->height = 2.0f;
+	this->width = 1.35f;
+	this->height = 0.98f;
 
 	this->direction = direction;
 	this->up = up;
