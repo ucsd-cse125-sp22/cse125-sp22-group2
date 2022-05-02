@@ -17,15 +17,27 @@
 #include <boost/asio.hpp>
 #include "Screenshot.h"
 #include "Scene.h"
+#include "Game.h"
+#include "Player.h"
+
 #include "../../Frame.hpp"
 #include "Debug.h"
 
+#define NUM_PLAYERS 4
 
-static const int width = 800;
-static const int height = 600;
+static const int width = 1600;
+static const int height = 1100;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
+static Player p0, p1, p2, p3;
+static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
+static Game game(&p0, &p1, &p2, &p3);
+
+//static bool triggers[] = { false, false, false, false };
+static std::map<std::string, bool>triggers;
+
+static int lastRenderTime = 0;
 
 boost::asio::io_context outgoingContext;
 boost::asio::ip::tcp::resolver outgoingResolver = boost::asio::ip::tcp::resolver(outgoingContext);
@@ -139,7 +151,8 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
         const glm::vec3 dir = glm::vec3(serverFrame.playerDirection);
-        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
+        p0.moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        //scene.node["player0"]->childtransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
         scene.camera->setPosition(pos);
     }
 }
@@ -160,88 +173,93 @@ void cleanupConnection() {
     }
 }
 
-//class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
-//{
-//public:
-//    GraphicsSession(boost::asio::ip::tcp::socket socket)
-//        : socket(std::move(socket))
-//    {
-//    }
-//
-//    void start()
-//    {
-//        do_read();
-//    }
-//
-//private:
-//    void do_read()
-//    {
-//        auto self(shared_from_this());
-//        socket.async_read_some(boost::asio::buffer(data, max_length),
-//            [this, self](boost::system::error_code ec, std::size_t length)
-//            {
-//                if (!ec)
-//                {
-//                    do_write(length);
-//                }
-//            });
-//    }
-//
-//    void do_write(std::size_t length)
-//    {
-//        auto self(shared_from_this());
-//        boost::asio::async_write(socket, boost::asio::buffer(data, length),
-//            [this, self](boost::system::error_code ec, std::size_t /*length*/)
-//            {
-//                if (!ec)
-//                {
-//                    do_read();
-//                }
-//            });
-//    }
-//
-//    boost::asio::ip::tcp::socket socket;
-//    enum { max_length = 1024 };
-//    char data[max_length];
-//};
-//
-//class GraphicsServer
-//{
-//public:
-//    GraphicsServer(boost::asio::io_context& io_context, short port)
-//        : acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
-//    {
-//        do_accept();
-//    }
-//
-//private:
-//    void do_accept()
-//    {
-//        acceptor.async_accept(
-//            [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
-//            {
-//                if (!ec)
-//                {
-//                    std::make_shared<GraphicsSession>(std::move(socket))->start();
-//                }
-//
-//                do_accept();
-//            });
-//    }
-//
-//    boost::asio::ip::tcp::acceptor acceptor;
-//};
-//
-//void launchServer(short port) {
-//    boost::asio::io_context io_context;
-//
-//    GraphicsServer s(io_context, port);
-//
-//    std::cout << "Before io_context.run()" << std::endl;
-//    io_context.run();
-//}
+class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
+{
+public:
+    GraphicsSession(boost::asio::ip::tcp::socket socket)
+        : socket(std::move(socket))
+    {
+    }
+
+    void start()
+    {
+        do_read();
+    }
+
+private:
+    void do_read()
+    {
+        auto self(shared_from_this());
+        socket.async_read_some(boost::asio::buffer(data, max_length),
+            [this, self](boost::system::error_code ec, std::size_t length)
+            {
+                if (!ec)
+                {
+                    do_write(length);
+                }
+            });
+    }
+
+    void do_write(std::size_t length)
+    {
+        auto self(shared_from_this());
+        boost::asio::async_write(socket, boost::asio::buffer(data, length),
+            [this, self](boost::system::error_code ec, std::size_t /*length*/)
+            {
+                if (!ec)
+                {
+                    do_read();
+                }
+            });
+    }
+
+    boost::asio::ip::tcp::socket socket;
+    enum { max_length = 1024 };
+    char data[max_length];
+};
+
+class GraphicsServer
+{
+public:
+    GraphicsServer(boost::asio::io_context& io_context, short port)
+        : acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+    {
+        do_accept();
+    }
+
+private:
+    void do_accept()
+    {
+        acceptor.async_accept(
+            [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
+            {
+                if (!ec)
+                {
+                    std::make_shared<GraphicsSession>(std::move(socket))->start();
+                }
+
+                do_accept();
+            });
+    }
+
+    boost::asio::ip::tcp::acceptor acceptor;
+};
+void launchServer(short port) {
+    boost::asio::io_context io_context;
+
+    GraphicsServer s(io_context, port);
+
+    std::cout << "Before io_context.run()" << std::endl;
+    io_context.run();
+}
 
 void printHelp(){
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
     std::cout << R"(
     Available commands:
       press 'H' to print this message again.
@@ -267,13 +285,27 @@ void initialize(void){
     // Initialize scene
     scene.init();
 
+    // Initialize triggers map 
+    triggers["up"] = false; 
+    triggers["left"] = false; 
+    triggers["down"] = false; 
+    triggers["right"] = false; 
+
+    // Set up players
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
+        players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+    }
+
+    lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
+
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
 }
 
 void display(void){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
+
     scene.draw();
     
     glutSwapBuffers();
@@ -308,11 +340,17 @@ void handleMoveLeft() {
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
-            cleanupConnection();
+            //cleanupConnection();
             exit(0);
             break;
         case 'h': // print help
             printHelp();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
             break;
         case 'o': // save screenshot
             saveScreenShot();
@@ -323,24 +361,34 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            handleMoveLeft();
+            //handleMoveLeft();
+            triggers["left"] = true;
             glutPostRedisplay();
             break;
         case 'd':
-            handleMoveRight();
+            //handleMoveRight();
+            triggers["right"] = true;
             glutPostRedisplay();
             break;
         case 'w':
-            handleMoveForward();
+            //handleMoveForward();
+            triggers["up"] = true;
             glutPostRedisplay();
             break;
         case 's':
+            triggers["down"] = true;
             handleMoveBackward();
             glutPostRedisplay();
             break;
         case 'z':
             scene.camera -> zoom(1.1f);
             glutPostRedisplay();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
             break;
         case 'l':
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
@@ -358,31 +406,123 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
+void keyboardUp(unsigned char key, int x, int y){
+    switch(key){
+        case 'a':
+            //handleMoveLeft();
+            triggers["left"] = false;
+            glutPostRedisplay();
+            break;
+        case 'd':
+            //handleMoveRight();
+            triggers["right"] = false;
+            glutPostRedisplay();
+            break;
+        case 'w':
+            //handleMoveForward();
+            triggers["up"] = false;
+            glutPostRedisplay();
+            break;
+        case 's':
+            //handleMoveBackward();
+            triggers["down"] = false;
+            glutPostRedisplay();
+            break;
+        default:
+            glutPostRedisplay();
+            break;
+    }
+}
+
 void specialKey(int key, int x, int y){
     switch (key) {
         case GLUT_KEY_UP: // up
-            handleMoveForward();
+            //handleMoveForward();
+            triggers["up"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            handleMoveBackward();
+            //handleMoveBackward();
+            triggers["down"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            handleMoveRight();
+            //handleMoveRight();
+            triggers["right"] = true;
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            handleMoveLeft();
+            //handleMoveLeft();
+            triggers["left"] = true;
+            glutPostRedisplay();
+            break;
+    }
+}
+
+void specialKeyUp(int key, int x, int y){
+    switch (key) {
+        case GLUT_KEY_UP: // up
+            //handleMoveForward();
+            triggers["up"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_DOWN: // down
+            //handleMoveBackward();
+            triggers["down"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_RIGHT: // right
+            //handleMoveRight();
+            triggers["right"] = false;
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_LEFT: // left
+            //handleMoveLeft();
+            triggers["left"] = false;
             glutPostRedisplay();
             break;
     }
 }
 
 void idle() {
-    // Idle loop for logic 
-    // Get's called anytime there isn't a keyboard event
-    // Packet receiving stuff 
+
+    /*
+
+    // Update wheel animation
+    // Render every half second
+    if (time - lastRenderTime > 50) {
+        float speed = 5.0f;
+        p0.spinWheels(speed);
+        p1.spinWheels(speed);
+        p2.spinWheels(speed);
+        p3.spinWheels(speed);
+        glutPostRedisplay();
+    }
+    */
+    int time = glutGet(GLUT_ELAPSED_TIME);
+	float speed = 5.0f;
+    if (time - lastRenderTime > 50) {
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            players[i]->spinWheels(speed);
+            players[i]->bobCrown(time);
+        }
+        glutPostRedisplay();
+		lastRenderTime = time;
+    }
+
+    // Handle direction triggers 
+    if (triggers["up"]) {
+        handleMoveForward(); 
+    } 
+    if (triggers["down"]) {
+        handleMoveBackward();
+    }
+    if (triggers["left"]) {
+        handleMoveLeft();
+    }
+    if (triggers["right"]) {
+        handleMoveRight();
+    }
 }
 
 void mouseMovement(int x, int y) {
@@ -428,34 +568,39 @@ int main(int argc, char** argv)
     requestClientId();
 
     // Set up listening socket "server"
-
+    /*
     // Specify the port on which the client will listen
-    //short port = 8000;
+    short port = 8000;
     //// Launch a thread in which to run the listener
-    //bool threadSuccess = true;
-    //boost::thread listenerThread;
-    //try {
-    //    listenerThread = boost::thread(launchServer, port);
-    //}
-    //catch (std::exception& e)
-    //{
-    //    threadSuccess = false;
-    //    std::cerr << "Exception: " << e.what() << "\n";
-    //}
+    bool threadSuccess = true;
+    boost::thread listenerThread;
+    try {
+        listenerThread = boost::thread(launchServer, port);
+    }
+    catch (std::exception& e)
+    { 
+		threadSuccess = false;
+		std::cerr << "Exception: " << e.what() << "\n";
+    }
+    */
     
     initialize();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
+    glutKeyboardUpFunc(keyboardUp);
     glutSpecialFunc(specialKey);
+    glutSpecialUpFunc(specialKeyUp);
     glutIdleFunc(idle);
     glutPassiveMotionFunc(mouseMovement);
     glutMotionFunc(mouseMovement);
     
     
     glutMainLoop();
-    //if (threadSuccess) {
-    //    listenerThread.join();
-    //}
+    /*
+    if (threadSuccess) {
+        listenerThread.join();
+    }
+    */
 
  
 

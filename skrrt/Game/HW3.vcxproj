@@ -21,7 +21,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -41,8 +41,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\..\cse-125-libraries</LibraryPath>
+    <IncludePath>.\include;$(IncludePath);..\cse-125-include-directories</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);..\cse-125-libraries;C:\ez\cse125-sp22-group2\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>.\include;$(IncludePath);..\..\cse-125-include-directories</IncludePath>
@@ -86,8 +86,10 @@
     <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Obj.cpp" />
     <ClCompile Include="src\objloader.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
@@ -101,12 +103,14 @@
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\Geometry.h" />
+    <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\hw3AutoScreenshots.h" />
     <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Obj.h" />
     <ClInclude Include="include\objloader.h" />
+    <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Screenshot.h" />
     <ClInclude Include="include\Shader.h" />
