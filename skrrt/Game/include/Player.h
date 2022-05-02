@@ -23,12 +23,19 @@ private:
 	// Score
 	int score;
 
+	// Current world position 
+	// Current object's rotation 
+
+	// Maybe a spawned position and rotation?
+
 public: 
 	Player() { car_node = NULL; score = 0; };
 	Player(Node* car) { car_node = car; score = 0; };
 
 	void transformCar(glm::vec3 translation, glm::vec3 scale, float rotationDegree, glm::vec3 rotationAxis);
 	void spinWheels(float ratationDegree);
+
+	void setCar(Node* car) { car_node = car; };
 	
 	void updateScore(int s) { score = s; };
 	int getScore() { return score; };

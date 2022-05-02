@@ -17,6 +17,9 @@
 #include <boost/asio.hpp>
 #include "Screenshot.h"
 #include "Scene.h"
+#include "Game.h"
+#include "Player.h"
+
 #include "../../Frame.hpp"
 
 
@@ -26,6 +29,10 @@ static const int height = 600;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
+static Player p0, p1, p2, p3;
+static Game game(&p0, &p1, &p2, &p3);
+
+static int lastRenderTime = 0;
 
 boost::asio::io_context outgoingContext;
 boost::asio::ip::tcp::resolver outgoingResolver = boost::asio::ip::tcp::resolver(outgoingContext);
@@ -241,13 +248,21 @@ void initialize(void){
     // Initialize scene
     scene.init();
 
+    // Set up players
+    p0.setCar(scene.node["world"]->childnodes[0]); 
+    p1.setCar(scene.node["world"]->childnodes[1]); 
+    p2.setCar(scene.node["world"]->childnodes[2]); 
+    p3.setCar(scene.node["world"]->childnodes[3]);
+
+    lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
+
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
 }
 
 void display(void){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
+
     scene.draw();
     
     glutSwapBuffers();
@@ -334,8 +349,19 @@ void idle() {
     // Get's called anytime there isn't a keyboard event
     // Packet receiving stuff 
 
+    int time = glutGet(GLUT_ELAPSED_TIME);
+
     // Update wheel animation
-     
+    // Render every half second
+    if (time - lastRenderTime > 50) {
+        float speed = 5.0f;
+		p0.spinWheels(speed);
+		p1.spinWheels(speed);
+		p2.spinWheels(speed);
+		p3.spinWheels(speed);
+        glutPostRedisplay(); 
+        lastRenderTime = time; 
+    }
 }
 
 int main(int argc, char** argv)
