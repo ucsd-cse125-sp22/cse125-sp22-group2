@@ -63,7 +63,9 @@ void Scene::draw(void){
 
             // The draw command
             shader->setUniforms();
-            (cur->models[i])->geometry->draw();
+            if (cur->visible) {
+				(cur->models[i])->geometry->draw();
+            }
         }
 
         // Continue the DFS: put all the child nodes of the current node in the stack

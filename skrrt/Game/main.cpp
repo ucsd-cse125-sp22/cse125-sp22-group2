@@ -287,6 +287,82 @@ void handleMoveLeft() {
     sendDataToServer(MovementKey::LEFT, scene.camera->forwardVectorXZ());
 }
 
+void keyboard(unsigned char key, int x, int y){
+    switch(key){
+        case 27: // Escape to quit
+            //cleanupConnection();
+            exit(0);
+            break;
+        case 'h': // print help
+            printHelp();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
+            break;
+        case 'o': // save screenshot
+            saveScreenShot();
+            break;
+        case 'r':
+            scene.camera -> aspect_default = float(glutGet(GLUT_WINDOW_WIDTH))/float(glutGet(GLUT_WINDOW_HEIGHT));
+            scene.camera -> reset();
+            glutPostRedisplay();
+            break;
+        case 'a':
+            //handleMoveLeft();
+            triggers["left"] = true;
+            glutPostRedisplay();
+            break;
+        case 'd':
+            //handleMoveRight();
+            triggers["right"] = true;
+            glutPostRedisplay();
+            break;
+        case 'w':
+            //handleMoveForward();
+            triggers["up"] = true;
+            glutPostRedisplay();
+            break;
+        case 's':
+            triggers["down"] = true;
+            handleMoveBackward();
+            glutPostRedisplay();
+            break;
+        case 'z':
+            //scene.camera -> zoom(1.1f);
+            players[0]->setCrownStatus(true);
+            std::cout << players[0]->getCrownStatus() << std::endl;
+            glutPostRedisplay();
+            break;
+        case 'x':
+            players[0]->setCrownStatus(false);
+            std::cout << players[0]->getCrownStatus() << std::endl;
+            glutPostRedisplay();
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
+            break;
+        case 'l':
+            scene.shader -> enablelighting = !(scene.shader -> enablelighting);
+            glutPostRedisplay();
+            break;
+        /*
+        case ' ':
+            hw3AutoScreenshots();
+            glutPostRedisplay();
+            break;
+        */
+        default:
+            glutPostRedisplay();
+            break;
+    }
+}
+
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
         case 'a':
@@ -381,7 +457,7 @@ void idle() {
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);
-            // players[i]->bobCrown(time);
+            players[i]->bobCrown(time);
         }
         glutPostRedisplay();
 		lastRenderTime = time;

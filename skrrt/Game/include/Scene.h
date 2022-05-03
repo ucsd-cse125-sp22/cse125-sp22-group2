@@ -25,15 +25,16 @@
 
 class Node {
 public:
-    Node() { name = ""; };
-    Node(std::string n) { name = n; };
+    Node(std::string n = "", bool v = true) { name = n; visible = v; };
 
     std::string name; 
+    bool visible;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
     std::vector< Model* > models;
     std::vector< glm::mat4 > modeltransforms;
+
 };
 
 class Scene {
