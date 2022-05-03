@@ -47,7 +47,7 @@ void Scene::init(void){
     material["ceramic"] -> diffuse = vec4(0.1f, 0.25f, 0.7f, 1.0f);
     material["ceramic"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["ceramic"] -> shininess = 150.0f;
- ceramic
+ 
     material["silver"] = new Material;
     material["silver"] -> ambient = vec4(0.1f, 0.1f, 0.1f, 1.0f);
     material["silver"] -> diffuse = vec4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -95,7 +95,7 @@ void Scene::init(void){
 
     // Create a light palette
     light["sun"] = new Light;
-    light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);ceramic
+    light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);
     light["sun"] -> color = 1.0f*vec4(1.0f,1.0f,1.0f,1.0f);
     
     light["bulb"] = new Light;
@@ -143,7 +143,7 @@ void Scene::init(void){
     node["b_tire_f"]->models.push_back(model["tire"]); 
     node["b_tire_f"]->modeltransforms.push_back(mat4(1.0f));
     node["b_tire_b"] = new Node("b_tire_b"); 
-    node["b_tire_b"]->models.push_back(model["tire"]); ceramic
+    node["b_tire_b"]->models.push_back(model["tire"]); 
     node["b_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 
     node["y_tire_f"] = new Node("y_tire_f"); 
@@ -191,7 +191,7 @@ void Scene::init(void){
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
-    node["player1"]->childnodes.push_back(node["blue_car"]);ceramic
+    node["player1"]->childnodes.push_back(node["blue_car"]);
     node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
     node["blue_car"] -> childtransforms.push_back(front_tire_transform );
