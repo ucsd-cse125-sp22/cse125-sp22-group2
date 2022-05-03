@@ -381,7 +381,14 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'z':
-            scene.camera -> zoom(1.1f);
+            //scene.camera -> zoom(1.1f);
+            players[0]->setCrownStatus(true);
+            std::cout << players[0]->getCrownStatus() << std::endl;
+            glutPostRedisplay();
+            break;
+        case 'x':
+            players[0]->setCrownStatus(false);
+            std::cout << players[0]->getCrownStatus() << std::endl;
             glutPostRedisplay();
         /*
         case ' ':
