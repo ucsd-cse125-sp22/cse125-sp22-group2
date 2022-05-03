@@ -21,7 +21,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -98,6 +98,7 @@
     <ClInclude Include="..\..\Frame.hpp" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Cube.h" />
+    <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\Geometry.h" />
     <ClInclude Include="include\hw3AutoScreenshots.h" />

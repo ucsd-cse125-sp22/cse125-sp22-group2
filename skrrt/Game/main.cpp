@@ -18,7 +18,7 @@
 #include "Screenshot.h"
 #include "Scene.h"
 #include "../../Frame.hpp"
-
+#include "Debug.h"
 
 
 static const int width = 800;
@@ -34,6 +34,8 @@ boost::asio::ip::tcp::socket outgoingSocket = boost::asio::ip::tcp::socket(outgo
 
 int clientId = -1; // this client's unique id
 int clientFrameCtr = 0;
+static int mouseX = 0.0f;
+static int mouseY = 0.0f;
 
 #include "hw3AutoScreenshots.h"
 
@@ -53,7 +55,9 @@ void requestClientId() {
         boost::system::error_code writeError;
         size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
         if (writeError) {
-            std::cerr << "Error contacting server, retrying ..." << std::endl;
+            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+                std::cerr << "Error contacting server, retrying ..." << std::endl;
+            }
             continue;
         }
         boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
@@ -61,7 +65,9 @@ void requestClientId() {
         size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
         if (error == boost::asio::error::eof) {
-            std::cout << "EOF from server:" << std::endl; // Server closed connection
+            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+                std::cout << "EOF from server:" << std::endl; // Server closed connection
+            }
             break;
         }
         else if (error) {
@@ -71,7 +77,9 @@ void requestClientId() {
             // Parse the id provided by the server
             // TODO: Account for endianess differences
             std::memcpy(&clientId, &serverBuffer, sizeof(int));
-            std::cout << "Client id is now " << clientId << std::endl;
+            if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+                std::cout << "Client id is now " << clientId << std::endl;
+            }
             break;
         }
     }
@@ -89,11 +97,15 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     boost::system::error_code writeError;
     size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
     if (writeError) {
-        std::cerr << "Error sending packet to server, continuing ..." << std::endl;
-        std::cerr << writeError << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error sending packet to server, continuing ..." << std::endl;
+            std::cerr << writeError << std::endl;
+        }
     }
     else {
-        std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+            std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
+        }
     }
 
     // Wait for server to respond. With multiple clients, this listening step must be
@@ -107,20 +119,28 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
 
 
     if (error == boost::asio::error::eof) {
-        std::cout << "EOF from server." << std::endl; // Server closed connection
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cout << "EOF from server." << std::endl; // Server closed connection
+        }
     }
     else if (error) {
-        std::cerr << "Error reading from server." << std::endl; // Some other error.
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error reading from server." << std::endl; // Some other error.
+        }
     }
     else {
         cse125framing::deserialize(&serverFrame, serverBuffer);
-        std::cout << "Received reply from server." << std::endl;
-        std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
-        std::cout << &serverFrame << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+            std::cout << "Received reply from server." << std::endl;
+            std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
+            std::cout << &serverFrame << std::endl;
+        }
 
         // Use the data
         const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
-        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * scene.node["car1"]->modeltransforms[0];
+        const glm::vec3 dir = glm::vec3(serverFrame.playerDirection);
+        scene.node["car1"]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
+        scene.camera->setPosition(pos);
     }
 }
 
@@ -128,11 +148,15 @@ void cleanupConnection() {
     boost::system::error_code errorCode;
     outgoingSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
     if (errorCode) {
-        std::cerr << "Error shutting down socket" << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error shutting down socket" << std::endl;
+        }
     }
     outgoingSocket.close(errorCode);
     if (errorCode) {
-        std::cerr << "Error closing socket" << std::endl;
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error closing socket" << std::endl;
+        }
     }
 }
 
@@ -224,10 +248,12 @@ void printHelp(){
       press Esc to quit.
       press 'O' to save a screenshot.
       press the arrow keys to rotate camera.
-      press 'A'/'Z' to zoom.
+      press 'Z' to zoom.
       press 'R' to reset camera.
       press 'L' to turn on/off the lighting.
     
+      press 'W' 'A' 'S' 'D' to move. 
+
       press Spacebar to generate images for hw3 submission.
     
 )";
@@ -262,6 +288,23 @@ void saveScreenShot(const char* filename = "test.png"){
     imag.save(filename);
 }
 
+void handleMoveForward() {
+    sendDataToServer(cse125framing::MovementKey::FORWARD, scene.camera->forwardVectorXZ());
+}
+
+void handleMoveBackward() {
+    sendDataToServer(cse125framing::MovementKey::BACKWARD, scene.camera->forwardVectorXZ());
+}
+
+void handleMoveRight() {
+    sendDataToServer(cse125framing::MovementKey::RIGHT, scene.camera->forwardVectorXZ());
+
+}
+
+void handleMoveLeft() {
+    sendDataToServer(cse125framing::MovementKey::LEFT, scene.camera->forwardVectorXZ());
+}
+
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
@@ -280,7 +323,19 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case 'a':
-            scene.camera -> zoom(0.9f);
+            handleMoveLeft();
+            glutPostRedisplay();
+            break;
+        case 'd':
+            handleMoveRight();
+            glutPostRedisplay();
+            break;
+        case 'w':
+            handleMoveForward();
+            glutPostRedisplay();
+            break;
+        case 's':
+            handleMoveBackward();
             glutPostRedisplay();
             break;
         case 'z':
@@ -304,26 +359,21 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 void specialKey(int key, int x, int y){
-    glm::vec3 camera = (scene.camera->target - scene.camera->eye) * glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
-            //scene.camera -> rotateUp(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::FORWARD, camera);
+            handleMoveForward();
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
-            //scene.camera -> rotateUp(10.0f);
-            sendDataToServer(cse125framing::MovementKey::BACKWARD, camera);
+            handleMoveBackward();
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
-            //scene.camera -> rotateRight(-10.0f);
-            sendDataToServer(cse125framing::MovementKey::RIGHT, camera);
+            handleMoveRight();
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
-            //scene.camera -> rotateRight(10.0f);
-            sendDataToServer(cse125framing::MovementKey::LEFT, camera);
+            handleMoveLeft();
             glutPostRedisplay();
             break;
     }
@@ -333,7 +383,21 @@ void idle() {
     // Idle loop for logic 
     // Get's called anytime there isn't a keyboard event
     // Packet receiving stuff 
+}
 
+void mouseMovement(int x, int y) {
+	int maxDelta = 100;
+	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
+	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
+
+	mouseX = x;
+	mouseY = y;
+
+    if (dx != 0 || dy != 0) {
+        scene.camera->rotateRight(dx);
+        scene.camera->rotateUp(dy);
+        glutPostRedisplay();
+    }
 }
 
 int main(int argc, char** argv)
@@ -384,6 +448,9 @@ int main(int argc, char** argv)
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKey);
     glutIdleFunc(idle);
+    glutPassiveMotionFunc(mouseMovement);
+    glutMotionFunc(mouseMovement);
+    
     
     glutMainLoop();
     //if (threadSuccess) {

@@ -1,4 +1,5 @@
 #include "objloader.h"
+#include "Debug.h"
 
 // Very, VERY simple OBJ loader.
 // Here is a short list of features a real function would provide : 
@@ -17,7 +18,10 @@ bool objloader::loadOBJ(
 	std::vector<glm::vec3> & out_normals, 
 	std::vector<unsigned int> & out_indices
 ){
-	printf("Loading OBJ file %s...\n", path);
+	
+	if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+		printf("Loading OBJ file %s...\n", path);
+	}
 
 	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	std::vector<glm::vec3> temp_vertices; 
