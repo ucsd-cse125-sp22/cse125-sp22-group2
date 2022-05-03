@@ -7,13 +7,29 @@ Scene.inl contains the definition of the scene graph
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#define NUM_PLAYERS 4
+
 using namespace glm;
 void Scene::init(void){
     // Create a geometry palette
-    geometry["car1"] = new Obj;
-    geometry["car1"]->init("models/Car.obj", "textures/pink_car.png", 0);
-    geometry["car2"] = new Obj;
-    geometry["car2"]->init("models/Car.obj", "textures/fake_blue_car.png", 1);
+    geometry["pink_car"] = new Obj;
+    //geometry["pink_car"]->init("models/CarPink.obj", "textures/car_textures.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", 0);
+    geometry["blue_car"] = new Obj;
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
+    geometry["yellow_car"] = new Obj;
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
+    geometry["green_car"] = new Obj;
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
+
+    geometry["tire"] = new Obj;
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 0);
+    geometry["spotlight"] = new Obj;
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["traffic_light"] = new Obj;
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["crown"] = new Obj; 
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", 1);
     
     // Create a material palette
     material["wood"] = new Material;
@@ -22,7 +38,6 @@ void Scene::init(void){
     material["wood"] -> specular = vec4(0.3f,0.15f,0.1f,1.0f);
     material["wood"] -> shininess = 100.0f;
     
-    /*
     material["ceramic"] = new Material;
     material["ceramic"] -> ambient = vec4(0.02f, 0.07f, 0.2f, 1.0f);
     material["ceramic"] -> diffuse = vec4(0.1f, 0.25f, 0.7f, 1.0f);
@@ -47,17 +62,29 @@ void Scene::init(void){
     material["bulb"] -> specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
-    */
     
     // Create a model palette
-    model["car1"] = new Model; 
-    model["car1"]->geometry = geometry["car1"]; 
-    model["car1"]->material = material["wood"];
+    model["pink_car"] = new Model; 
+    model["pink_car"]->geometry = geometry["pink_car"]; 
+    model["pink_car"]->material = material["silver"];
+    model["blue_car"] = new Model; 
+    model["blue_car"]->geometry = geometry["blue_car"]; 
+    model["blue_car"]->material = material["silver"];
+    model["yellow_car"] = new Model; 
+    model["yellow_car"]->geometry = geometry["yellow_car"]; 
+    model["yellow_car"]->material = material["silver"];
+    model["green_car"] = new Model; 
+    model["green_car"]->geometry = geometry["green_car"]; 
+    model["green_car"]->material = material["silver"];
 
-    model["car2"] = new Model; 
-    model["car2"]->geometry = geometry["car2"]; 
-    model["car2"]->material = material["wood"];
-    
+    model["tire"] = new Model; 
+    model["tire"]->geometry = geometry["tire"]; 
+    model["tire"]->material = material["ceramic"]; 
+
+    model["crown"] = new Model; 
+    model["crown"]->geometry = geometry["crown"];
+    model["crown"]->material = material["ceramic"]; 
+
     // Create a light palette
     light["sun"] = new Light;
     light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);
@@ -68,19 +95,119 @@ void Scene::init(void){
     light["bulb"] -> color = 1.5f * vec4(1.0f,0.2f,0.1f,1.0f);
     
     // Build the scene graph
-    node["car1"] = new Node;
-    node["car1"]->models.push_back(model["car1"]);
-    node["car1"]->modeltransforms.push_back(translate(vec3(1.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
 
-    node["car2"] = new Node;
-    node["car2"]->models.push_back(model["car2"]);
-    node["car2"]->modeltransforms.push_back(translate(vec3(-1.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    }
+    /*
+    node["player0"] = new Node("player0");
+    node["player1"] = new Node("player1");
+    node["player2"] = new Node("player2");
+    node["player3"] = new Node("player3");
+    */
+
+    node["pink_car"] = new Node("pink_car");
+    node["pink_car"]->models.push_back(model["pink_car"]);
+    node["pink_car"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["blue_car"] = new Node("pink_car");
+    node["blue_car"]->models.push_back(model["blue_car"]);
+    node["blue_car"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["yellow_car"] = new Node("yellow_car");
+    node["yellow_car"]->models.push_back(model["yellow_car"]);
+    node["yellow_car"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["green_car"] = new Node("green_car");
+    node["green_car"]->models.push_back(model["green_car"]);
+    node["green_car"]->modeltransforms.push_back(mat4(1.0f));
+
+    // Tires
+    node["p_tire_f"] = new Node("p_tire_f"); 
+    node["p_tire_f"]->models.push_back(model["tire"]); 
+    node["p_tire_f"]->modeltransforms.push_back(mat4(1.0f));
+    //node["p_tire_f"]->modeltransforms.push_back(rotate(135.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)));
+    node["p_tire_b"] = new Node("p_tire_b"); 
+    node["p_tire_b"]->models.push_back(model["tire"]); 
+    node["p_tire_b"]->modeltransforms.push_back(mat4(1.0f));
     
-    node["world"]->childnodes.push_back(node["car1"]);
-    node["world"] -> childtransforms.push_back( mat4(1.0f) );
+    node["b_tire_f"] = new Node("b_tire_f"); 
+    node["b_tire_f"]->models.push_back(model["tire"]); 
+    node["b_tire_f"]->modeltransforms.push_back(mat4(1.0f));
+    node["b_tire_b"] = new Node("b_tire_b"); 
+    node["b_tire_b"]->models.push_back(model["tire"]); 
+    node["b_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["world"]->childnodes.push_back(node["car2"]);
-    node["world"] -> childtransforms.push_back( mat4(1.0f) );
+    node["y_tire_f"] = new Node("y_tire_f"); 
+    node["y_tire_f"]->models.push_back(model["tire"]); 
+    node["y_tire_f"]->modeltransforms.push_back(mat4(1.0f));
+    node["y_tire_b"] = new Node("y_tire_b"); 
+    node["y_tire_b"]->models.push_back(model["tire"]); 
+    node["y_tire_b"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["g_tire_f"] = new Node("g_tire_f"); 
+    node["g_tire_f"]->models.push_back(model["tire"]); 
+    node["g_tire_f"]->modeltransforms.push_back(mat4(1.0f));
+    node["g_tire_b"] = new Node("g_tire_b"); 
+    node["g_tire_b"]->models.push_back(model["tire"]); 
+    node["g_tire_b"]->modeltransforms.push_back(mat4(1.0f));
+
+    // Crowns 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+		node["crown" + std::to_string(i)] = new Node("crown" + std::to_string(i)); 
+		node["crown" + std::to_string(i)]->models.push_back(model["crown"]);
+		node["crown" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
+    vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
+    mat4 front_tire_transform = translate(front_tire_translate); 
+    mat4 back_tire_transform = translate(back_tire_translate);
+    mat4 crown_transform = translate(vec3(0.0f, 1.25f, 0.0f)) * scale(vec3(0.8f, 0.8f, 0.8f));
+
+    node["world"]->childnodes.push_back(node["player0"]);
+    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["player0"]->childnodes.push_back(node["pink_car"]);
+    node["player0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["pink_car"]->childnodes.push_back(node["p_tire_f"]);
+    node["pink_car"] -> childtransforms.push_back( front_tire_transform);
+    node["pink_car"]->childnodes.push_back(node["p_tire_b"]);
+    node["pink_car"]->childtransforms.push_back(back_tire_transform);
+    node["pink_car"]->childnodes.push_back(node["crown0"]);
+    node["pink_car"]->childtransforms.push_back(crown_transform);
+    
+    node["world"]->childnodes.push_back(node["player1"]);
+    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["player1"]->childnodes.push_back(node["blue_car"]);
+    node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
+    node["blue_car"] -> childtransforms.push_back(front_tire_transform );
+    node["blue_car"]->childnodes.push_back(node["b_tire_b"]);
+    node["blue_car"]->childtransforms.push_back(back_tire_transform);
+    node["blue_car"]->childnodes.push_back(node["crown1"]);
+    node["blue_car"]->childtransforms.push_back(crown_transform);
+
+    node["world"]->childnodes.push_back(node["player2"]);
+    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["player2"]->childnodes.push_back(node["yellow_car"]);
+    node["player2"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["yellow_car"]->childnodes.push_back(node["y_tire_f"]);
+    node["yellow_car"] -> childtransforms.push_back(front_tire_transform );
+    node["yellow_car"]->childnodes.push_back(node["y_tire_b"]);
+    node["yellow_car"]->childtransforms.push_back(back_tire_transform);
+    node["yellow_car"]->childnodes.push_back(node["crown2"]);
+    node["yellow_car"]->childtransforms.push_back(crown_transform);
+
+    node["world"]->childnodes.push_back(node["player3"]);
+    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["player3"]->childnodes.push_back(node["green_car"]);
+    node["player3"]->childtransforms.push_back(translate(vec3(6.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["green_car"]->childnodes.push_back(node["g_tire_f"]);
+    node["green_car"] -> childtransforms.push_back(front_tire_transform);
+    node["green_car"]->childnodes.push_back(node["g_tire_b"]);
+    node["green_car"]->childtransforms.push_back(back_tire_transform);
+    node["green_car"]->childnodes.push_back(node["crown3"]);
+    node["green_car"]->childtransforms.push_back(crown_transform);
     
     // Put a camera
     camera = new Camera;

@@ -1,4 +1,5 @@
 #include "objloader.h"
+#include "Debug.h"
 
 // Very, VERY simple OBJ loader.
 // Here is a short list of features a real function would provide : 
@@ -17,12 +18,25 @@ bool objloader::loadOBJ(
 	std::vector<glm::vec3> & out_normals, 
 	std::vector<unsigned int> & out_indices
 ){
-	printf("Loading OBJ file %s...\n", path);
+	
+	if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+		printf("Loading OBJ file %s...\n", path);
+	}
 
 	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	std::vector<glm::vec3> temp_vertices; 
 	std::vector<glm::vec2> temp_uvs;
 	std::vector<glm::vec3> temp_normals;
+
+	//*****************
+	float xMin = std::numeric_limits<float>::max();
+	float yMin = std::numeric_limits<float>::max();
+	float zMin = std::numeric_limits<float>::max();
+
+	float xMax = std::numeric_limits<float>::min();
+	float yMax = std::numeric_limits<float>::min();
+	float zMax = std::numeric_limits<float>::min();
+	//*****************
 
 
 	FILE * file = fopen(path, "r");
@@ -46,6 +60,30 @@ bool objloader::loadOBJ(
 			glm::vec3 vertex;
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
 			temp_vertices.push_back(vertex);
+
+			//*********************
+			// Get min's and max's 
+			if (vertex.x < xMin) {
+				xMin = vertex.x;
+			} 
+			if (vertex.x > xMax) {
+				xMax = vertex.x;
+			}
+
+			if (vertex.y < yMin) {
+				yMin = vertex.y;
+			} 
+			if (vertex.y > yMax) {
+				yMax = vertex.y;
+			}
+
+			if (vertex.z < zMin) {
+				zMin = vertex.z;
+			} 
+			if (vertex.z > zMax) {
+				zMax = vertex.z;
+			}
+			//*********************
 		}else if ( strcmp( lineHeader, "vt" ) == 0 ){
 			glm::vec2 uv;
 			fscanf(file, "%f %f\n", &uv.x, &uv.y );
@@ -102,6 +140,14 @@ bool objloader::loadOBJ(
 	
 	}
 	fclose(file);
+
+	//*********************************
+	// Print mins and maxes
+	printf("xMin: %f \t xMax: %f\n", xMin, xMax);
+	printf("yMin: %f \t yMax: %f\n", yMin, yMax);
+	printf("zMin: %f \t zMax: %f\n", zMin, zMax);
+
+	//*********************************
 	return true;
 }
 

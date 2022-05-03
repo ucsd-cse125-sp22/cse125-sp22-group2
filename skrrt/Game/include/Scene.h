@@ -25,6 +25,11 @@
 
 class Node {
 public:
+    Node() { name = ""; };
+    Node(std::string n) { name = n; };
+
+    std::string name; 
+
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
     std::vector< Model* > models;
@@ -47,7 +52,7 @@ public:
     
     Scene(){
         // the default scene graph already has one node named "world."
-        node["world"] = new Node;
+        node["world"] = new Node("word");
     }
     
     void init( void );
