@@ -18,10 +18,10 @@
 class Player {
 private:
 	// player node 
-	Node* crown_node;
 	Node* player_node; 
 
 	// crown node 
+	Node* crown_node;
 
 	// Score
 	int score;
