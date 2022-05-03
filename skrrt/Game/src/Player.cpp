@@ -46,7 +46,12 @@ void Player::bobCrown(float time) {
 
 	for (Node* child : car_node->childnodes) {
 		if (child->name.find("crown") != std::string::npos) {
-			child->modeltransforms[0] = offset * initial_crown_transform;
+			if (has_crown) {
+				child->modeltransforms[0] = offset * initial_crown_transform;
+			}
+			else {
+				// child->modeltransforms[0] = scale(glm::vec3(0.0001f, 0.0001f, 0.0001f)) * initial_crown_transform;
+			}
 		}
 	}
 
