@@ -58,7 +58,7 @@ void ObjPlayer::step() {
 		stun--;
 	}
 	// Reduce makeup level if not currently fixing makeup
-	if (makeupLevel && !booth && !objectPosition(boundingBox, Makeup)) {
+	if (makeupLevel && !booth && !objectPosition(boundingBox, oMakeup)) {
 		makeupLevel -= 1.0f / 60.0f;
 	}
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
@@ -72,7 +72,7 @@ void ObjPlayer::step() {
 	if (hasCrown) {
 		speed += 0.5f;
 	}
-	if (objectPositionTagged(boundingBox, Trail, id)) {
+	if (objectPositionTagged(boundingBox, oTrail, id)) {
 		speed -= 1.0f;
 	}
 	if (makeupLevel < 0.01f) {
@@ -97,7 +97,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 			}
 
 			// Check if crown is transferred
-			if (obj->type == Player) {
+			if (obj->type == oPlayer) {
 				if (this->hasCrown && !iframes) {
 					((ObjPlayer*)obj)->hasCrown = true;
 					((ObjPlayer*)obj)->iframes = 60;
@@ -111,7 +111,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 					((ObjPlayer*)obj)->stun = 30;
 				}
 			}
-			else if (obj->type == Crown) {
+			else if (obj->type == oCrown) {
 				if (((ObjCrown*)obj)->loose) {
 					((ObjCrown*)obj)->loose = false;
 					this->hasCrown = true;
@@ -135,7 +135,7 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 			continue;
 		}
 		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
-			if (type == Trail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+			if (type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
 				return true;
 			}
 		}

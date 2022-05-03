@@ -25,35 +25,38 @@ void PhysicalObjectManager::startGame() {
 	// Create walls and floors
 
 	// Very basic map
-	createObject(Player, glm::vec3(0.0f), glm::vec3(0.0f));
-	createObject(Crown, glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f));
-	createObject(Wall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
-	createObject(Wall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
-	createObject(Wall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
-	createObject(Wall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
+	createObject(oPlayer, glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//createObject(Crown, glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f));
+	//createObject(Wall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(Wall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(Wall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
+	//createObject(Wall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
 }
 
 void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
 	unsigned int next_id = this->objects->size();
 
 	switch (objType) {
-	case (Player):
+	case (oPlayer):
 		this->objects->push_back(new ObjPlayer(objects, next_id, pos, dir, up));
 		break;
-	case (Wall):
+	case (oWall):
 		this->objects->push_back(new ObjWall(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		break;
-	case (Floor):
+	case (oFloor):
 		this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		break;
-	case (Crown):
+	case (oCrown):
 		this->objects->push_back(new ObjCrown(objects, next_id, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		break;
-	case (Makeup):
+	case (oMakeup):
 		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		break;
-	case (Trail):
+	case (oTrail):
 		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
+		break;
+	default:
 		break;
 	}
 	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
@@ -62,7 +65,7 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 void PhysicalObjectManager::step() {
 	gameTime -= 1.0f / 60.0f;
 	for (unsigned int i = 0; i < objects->size(); i++) {
-		if (objects->at(i)->type == Player) {
+		if (objects->at(i)->type == oPlayer) {
 			objects->at(i)->step();
 		}
 	}

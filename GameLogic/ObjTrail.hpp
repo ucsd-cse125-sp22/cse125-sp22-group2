@@ -8,7 +8,7 @@ class ObjTrail : public PhysicalObject
 private:
 
 public:
-	int type = Trail;
+	int type = oTrail;
 
 	// How many frames this trail has left before disappearing
 	int life;

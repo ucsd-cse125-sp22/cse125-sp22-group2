@@ -8,7 +8,7 @@ class ObjMakeup : public PhysicalObject
 private:
 
 public:
-	int type = Makeup;
+	int type = oMakeup;
 
 	// This is pointer back to the vector containing all objects
 	vector<PhysicalObject*>* objects;

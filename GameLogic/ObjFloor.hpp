@@ -10,7 +10,7 @@ class ObjFloor : public PhysicalObject
 private:
 
 public:
-	int type = Floor;
+	int type = oFloor;
 
 	// This is pointer back to the vector containing all objects
 	vector<PhysicalObject*>* objects;

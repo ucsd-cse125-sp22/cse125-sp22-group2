@@ -10,10 +10,10 @@ class ObjPlayer : public PhysicalObject
 private:
 
 public:
-	int type = Player;
+	int type = oPlayer;
 
 	// The current speed of this object
-	float speed;
+	//float speed;
 	// Invincibility frames
 	int iframes;
 	// Stun frame

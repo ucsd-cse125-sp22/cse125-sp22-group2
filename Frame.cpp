@@ -33,28 +33,6 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const Action& action)
 	return os;
 }
 
-std::ostream& cse125framing::operator<<(std::ostream& os, const MovementKey& movementKey)
-{
-	std::string str;
-	switch (movementKey) {
-	case MovementKey::FORWARD:
-		str = "FORWARD";
-		break;
-	case MovementKey::BACKWARD:
-		str = "BACKWARD";
-		break;
-	case MovementKey::RIGHT:
-		str = "RIGHT";
-		break;
-	case MovementKey::LEFT:
-		str = "LEFT";
-		break;
-	}
-
-	os << str;
-	return os;
-}
-
 std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* frame)
 {
 	const vec3& camera = frame->cameraDirection;
@@ -62,7 +40,6 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* fra
 	os << "id: " << frame->id << std::endl;
 	os << "ctr: " << frame->ctr << std::endl;
 	os << "camera: " << "(" << camera.x << ", " << camera.y << ", " << camera.z << ")" << std::endl;
-	os << "movement key: " << frame->movementKey << std::endl;
 	return os;
 }
 
@@ -71,8 +48,8 @@ std::ostream& cse125framing::operator<<(std::ostream& os, const ServerFrame* fra
 	os << "Server frame:" << std::endl;
 	os << "id: " << frame->id << std::endl;
 	os << "Server frame ctr: " << frame->ctr << std::endl;
-	os << "Position: " << "(" << frame->playerPosition.x << ", " << frame->playerPosition.y << ", " << frame->playerPosition.z << ")" << std::endl;
-	os << "Direction: " << "(" << frame->playerDirection.x << ", " << frame->playerDirection.y << ", " << frame->playerDirection.z << ")" << std::endl;
+	//os << "Position: " << "(" << frame->playerPosition.x << ", " << frame->playerPosition.y << ", " << frame->playerPosition.z << ")" << std::endl;
+	//os << "Direction: " << "(" << frame->playerDirection.x << ", " << frame->playerDirection.y << ", " << frame->playerDirection.z << ")" << std::endl;
 	return os;
 }
 
@@ -95,5 +72,4 @@ void cse125framing::serialize(const ServerFrame* frame, boost::array<char, SERVE
 void cse125framing::deserialize(ServerFrame* frame, const boost::array<char, SERVER_FRAME_BUFFER_SIZE>& buffer)
 {
 	std::memcpy(frame, &buffer, sizeof(ServerFrame));
-
 }

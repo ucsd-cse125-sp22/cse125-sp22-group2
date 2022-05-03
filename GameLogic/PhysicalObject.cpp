@@ -1,20 +1,20 @@
 #include "PhysicalObject.hpp"
 PhysicalObject::PhysicalObject() {
-	this->objects = nullptr;
-	this->id = 0;
+	//this->objects = nullptr;
+	//this->id = 0;
 
-	this->position = glm::vec3(0.0f);
-	this->length = 0.0f;
-	this->width = 0.0f;
-	this->height = 0.0f;
+	//this->position = glm::vec3(0.0f);
+	//this->length = 0.0f;
+	//this->width = 0.0f;
+	//this->height = 0.0f;
 
-	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction, up);
+	//this->speed = 1.0f;
+	//this->boundingBox = generateBoundingBox(position, direction, up);
 
-	this->direction = glm::vec3(0.0f);
-	this->up = glm::vec3(0.0f);
+	//this->direction = glm::vec3(0.0f);
+	//this->up = glm::vec3(0.0f);
 
-	this->solid = false;
+	//this->solid = false;
 }
 
 PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
@@ -95,12 +95,15 @@ void PhysicalObject::movePosition(glm::vec3 pos) {
 
 void PhysicalObject::moveDirection(glm::vec3 dir) {
 	glm::vec3 destination = this->position + this->speed * dir;
+	// cout << this->speed << " (" << dir.x << ", " << dir.y << ", " << dir.z << ")\n";
+	// cout << "This might be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
 	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
 			return;
 		}
 	}
+	// cout << "This should be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
 	this->position = destination;
 	this->direction = dir;
 }

@@ -139,21 +139,23 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 
 	// Go through each of the axes we found above
 	for (unsigned int i = 0; i < axes.size(); i++) {
-		float a_min = 0.f;
-		float a_max = 0.f;
-		float b_min = 0.f;
-		float b_max = 0.f;
+		float a_min = 0.0f;
+		float a_max = 0.0f;
+		float b_min = 0.0f;
+		float b_max = 0.0f;
+		// cout << "!NEW AXIS!\n";
 
 		// Get the min/max for a
 		for (unsigned int j = 0; j < a.vertices.size(); j++) {
 			// Project onto the normal
 			float proj = glm::dot(axes[i], a.vertices[j]);
+			// cout << "Bounding box a vertex " << j << "(" << a.vertices[j].x << ", " << a.vertices[j].y << ", " << a.vertices[j].z << ") projection: " << proj << "\n";
 			// Set min
-			if (i == 0 || proj < a_min) {
+			if (j == 0 || proj < a_min) {
 				a_min = proj;
 			}
 			// Set max
-			if (i == 0 || proj > a_max) {
+			if (j == 0 || proj > a_max) {
 				a_max = proj;
 			}
 		}
@@ -162,12 +164,13 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 		for (unsigned int j = 0; j < b.vertices.size(); j++) {
 			// Project onto the normal
 			float proj = glm::dot(axes[i], b.vertices[j]);
+			// cout << "Bounding box b vertex " << j << "(" << b.vertices[j].x << ", " << b.vertices[j].y << ", " << b.vertices[j].z << ") projection: " << proj << "\n";
 			// Set min
-			if (i == 0 || proj < b_min) {
+			if (j == 0 || proj < b_min) {
 				b_min = proj;
 			}
 			// Set max
-			if (i == 0 || proj > b_max) {
+			if (j == 0 || proj > b_max) {
 				b_max = proj;
 			}
 		}
@@ -175,6 +178,7 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 		// Check for a gap
 		if (a_max < b_min || a_min > b_max) {
 			// Found an axis where they don't overlap, so no collision
+			// cout << "DONE! Max a: " << a_max << " b: " << b_max << " Min a: " << a_min << " b: " << b_min << "\n";
 			return false;
 		}
 	}

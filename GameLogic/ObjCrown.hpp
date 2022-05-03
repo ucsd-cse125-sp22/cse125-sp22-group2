@@ -8,7 +8,7 @@ class ObjCrown : public PhysicalObject
 private:
 
 public:
-	int type = Crown;
+	int type = oCrown;
 
 	// Whether the crown is not bound to a player
 	bool loose;

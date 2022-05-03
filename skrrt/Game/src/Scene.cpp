@@ -53,14 +53,19 @@ void Scene::draw(void){
             // Prepare to draw the geometry. Assign the modelview and the material.
 
             shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
+            //shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
             shader->material = (cur->models[i])->material;
             shader->texture_id = (cur->models[i])->geometry->object_number;
+
             if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
                 std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
             }
+
             // The draw command
             shader->setUniforms();
-            (cur->models[i])->geometry->draw();
+            if (cur->visible) {
+				(cur->models[i])->geometry->draw();
+            }
         }
 
         // Continue the DFS: put all the child nodes of the current node in the stack

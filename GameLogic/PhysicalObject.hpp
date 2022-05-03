@@ -8,7 +8,7 @@ using namespace bounding;
 // Object types
 // To add an object type, add it to the enum and make a class that inherits PhysicalObject (format is Obj + name of object)
 // Make sure its type in the .hpp is correct and add a case to createObject in PhysicalObjectManager for it
-enum ObjectType { Player, Wall, Floor, Crown, Makeup, Trail };
+enum ObjectType { oPlayer, oWall, oFloor, oCrown, oMakeup, oTrail };
 
 class PhysicalObject
 {
