@@ -47,7 +47,7 @@ void Scene::init(void){
     material["ceramic"] -> diffuse = vec4(0.1f, 0.25f, 0.7f, 1.0f);
     material["ceramic"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["ceramic"] -> shininess = 150.0f;
- 
+ ceramic
     material["silver"] = new Material;
     material["silver"] -> ambient = vec4(0.1f, 0.1f, 0.1f, 1.0f);
     material["silver"] -> diffuse = vec4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -83,19 +83,19 @@ void Scene::init(void){
 
     model["tire"] = new Model; 
     model["tire"]->geometry = geometry["tire"]; 
-    model["tire"]->material = material["ceramic"]; 
+    model["tire"]->material = material["silver"]; 
 
     model["crown"] = new Model; 
     model["crown"]->geometry = geometry["crown"];
-    model["crown"]->material = material["ceramic"]; 
+    model["crown"]->material = material["silver"]; 
 
     model["map"] = new Model; 
     model["map"]->geometry = geometry["map"];
-    model["map"]->material = material["ceramic"];
+    model["map"]->material = material["silver"];
 
     // Create a light palette
     light["sun"] = new Light;
-    light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);
+    light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);ceramic
     light["sun"] -> color = 1.0f*vec4(1.0f,1.0f,1.0f,1.0f);
     
     light["bulb"] = new Light;
@@ -143,7 +143,7 @@ void Scene::init(void){
     node["b_tire_f"]->models.push_back(model["tire"]); 
     node["b_tire_f"]->modeltransforms.push_back(mat4(1.0f));
     node["b_tire_b"] = new Node("b_tire_b"); 
-    node["b_tire_b"]->models.push_back(model["tire"]); 
+    node["b_tire_b"]->models.push_back(model["tire"]); ceramic
     node["b_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 
     node["y_tire_f"] = new Node("y_tire_f"); 
@@ -176,7 +176,7 @@ void Scene::init(void){
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
-    mat4 crown_transform = translate(vec3(0.0f, 1.25f, 0.0f)) * scale(vec3(0.8f, 0.8f, 0.8f));
+    mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
 
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -191,7 +191,7 @@ void Scene::init(void){
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
-    node["player1"]->childnodes.push_back(node["blue_car"]);
+    node["player1"]->childnodes.push_back(node["blue_car"]);ceramic
     node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
     node["blue_car"] -> childtransforms.push_back(front_tire_transform );

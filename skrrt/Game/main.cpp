@@ -507,7 +507,7 @@ void idle() {
     }
     */
     int time = glutGet(GLUT_ELAPSED_TIME);
-	float speed = 5.0f;
+	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);
