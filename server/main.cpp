@@ -107,7 +107,7 @@ int main()
 
     short port = 8000;
     boost::thread serverThread(launchServer, port);
-    cse125clocktick::ClockTick ticker(1);
+    cse125clocktick::ClockTick ticker(30);
 
     std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS << " clients to connect..." << std::endl;
 
@@ -151,7 +151,7 @@ int main()
 
             // Determine the sorted priority order
             std::vector<std::pair<int, int>> sortedPriorities; // <client id, priority> pairs
-            for (int i = 0; i < playerPriorities.size(); i++) {
+            for (size_t i = 0; i < playerPriorities.size(); i++) {
                 sortedPriorities.push_back(std::make_pair(i, playerPriorities.at(i)));
             }
             // Note: Lower values indicate higher priority
@@ -171,7 +171,6 @@ int main()
             cse125framing::ServerFrame serverFrame;
             initializeServerFrame(manager, &serverFrame);
             // if (sizeBefore > 0) {
-                serverFrame.ctr = frameCtr++;
                 server.writePackets(&serverFrame);
             // }    
 

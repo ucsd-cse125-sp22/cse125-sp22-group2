@@ -36,7 +36,7 @@ boost::asio::ip::tcp::resolver::results_type outgoingEndpoints =
                              cse125constants::SERVER_PORT);
 boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 
-int clientId = -1; // this client's unique id
+int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
 
 void sendDataToServer(MovementKey movementKey,
@@ -92,8 +92,10 @@ void requestClientId()
         else
         {
             // Parse the id provided by the server
+            cse125framing::ServerFrame frame;
+            cse125framing::deserialize(&frame, serverBuffer);
+            clientId = frame.id;
             // TODO: Account for endianess differences
-            std::memcpy(&clientId, &serverBuffer, sizeof(int));
             std::cout << "Client id is now " << clientId << std::endl;
             break;
         }
@@ -123,7 +125,7 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
         std::cerr << writeError << std::endl;
     }
 
-    receiveDataFromServer();
+    // receiveDataFromServer();
 }
 
 void receiveDataFromServer()
@@ -149,16 +151,20 @@ void receiveDataFromServer()
     else
     {
         cse125framing::deserialize(&serverFrame, serverBuffer);
-        assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
-        std::cout << "numread: " << numRead << std::endl;
-        std::cout << "Received reply from server." << std::endl;
-        std::cout << &serverFrame << std::endl;
 
-        // Use the data. TODO: Use a player-specific object
-        const glm::vec3 pos =
-            glm::vec3(serverFrame.players[clientId].playerPosition);
-        scene.node["car1"]->modeltransforms[0] =
-            glm::translate(pos) * scene.node["car1"]->modeltransforms[0];
+        assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
+        // std::cout << "numread: " << numRead << std::endl;
+        // std::cout << "Received reply from server." << std::endl;
+        // std::cout << &serverFrame << std::endl;
+
+        // Use the data. 
+        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+        {
+			const glm::vec3 pos = glm::vec3(serverFrame.players[0].playerPosition);
+			const glm::vec3 dir = glm::vec3(serverFrame.players[0].playerDirection);
+			scene.node["car" + std::to_string(i)]->modeltransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
+			// scene.camera->setPosition(pos);
+        }
     }
 }
 
@@ -228,6 +234,7 @@ void saveScreenShot(const char* filename = "test.png")
 }
 
 void keyboard(unsigned char key, int x, int y)
+
 {
     switch (key)
     {
@@ -303,6 +310,7 @@ void idle()
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         receiveDataFromServer();
     }
+    glutPostRedisplay();
 }
 
 int main(int argc, char** argv)
