@@ -37,9 +37,6 @@ void initializeServerFrame(PhysicalObjectManager* manager, cse125framing::Server
         frame->players[id].playerDirection = player->direction;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = 0;
-
-        // TODO: Using break to make the code work when there is only one client
-        break;
     }    
 }
 
@@ -67,7 +64,8 @@ void gameLoop(PhysicalObjectManager* manager, int playerId, GameAction gameActio
     case GameAction::MOVE_BACKWARD:
         player->moveDirection(glm::normalize(-cameraDirection));
         break;
-
+    
+    /*
     // Compound directions
     case GameAction::MOVE_FORWARD_RIGHT:
         player->moveDirection(glm::normalize(cameraDirection));
@@ -85,6 +83,7 @@ void gameLoop(PhysicalObjectManager* manager, int playerId, GameAction gameActio
         player->moveDirection(glm::normalize(-cameraDirection));
         player->moveDirection(glm::normalize(vec3(-cameraDirection.z, cameraDirection.y, cameraDirection.x)));
         break;
+        */
 
     // Other game actions
     case GameAction::IDLE:

@@ -243,7 +243,7 @@ void initialize(void)
     // Set up players
     for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
         players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
-        // players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+        players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
 
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
