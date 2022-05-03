@@ -21,7 +21,10 @@ void PhysicalObjectManager::createObject()
 {
 	unsigned int next_id = this->objects->size();
 	this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
-	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+	// Comment out to match the correct number of players
+	this->objects->push_back(new PhysicalObject(objects, glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+	this->objects->push_back(new PhysicalObject(objects, glm::vec3(4.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+	this->objects->push_back(new PhysicalObject(objects, glm::vec3(6.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
 }
 
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {

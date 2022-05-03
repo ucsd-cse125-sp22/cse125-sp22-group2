@@ -90,7 +90,7 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 	vector<int> collisions = findCollisionObjects(destination, dir);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
-			return;
+			// return;
 		}
 	}
 	this->position = destination;
