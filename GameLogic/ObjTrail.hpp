@@ -8,8 +8,6 @@ class ObjTrail : public PhysicalObject
 private:
 
 public:
-	int type = oTrail;
-
 	// How many frames this trail has left before disappearing
 	int life;
 	// The player that spawned the trail

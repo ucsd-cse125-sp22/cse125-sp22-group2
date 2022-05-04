@@ -18,6 +18,8 @@ ObjPlayer::ObjPlayer() {
 }
 
 ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
+	this->type = oPlayer;
+
 	// General object properties
 	this->objects = objects;
 	this->id = id;
@@ -68,15 +70,15 @@ void ObjPlayer::step() {
 		score += 1.0f / 60.0f;
 	}
 	// Adjust speed (these numbers are placeholders)
-	speed = 2.0f;
+	speed = 0.1f;
 	if (hasCrown) {
-		speed += 0.5f;
+		//speed += 0.5f;
 	}
 	if (objectPositionTagged(boundingBox, oTrail, id)) {
-		speed -= 1.0f;
+		//speed -= 1.0f;
 	}
 	if (makeupLevel < 0.01f) {
-		speed -= 0.75f;
+		//speed -= 0.75f;
 	}
 }
 
@@ -84,7 +86,8 @@ void ObjPlayer::action(glm::vec3 dir) {
 	// Can't move when stunned
 	if (!stun) {
 		glm::vec3 destination = this->position + this->speed * dir;
-		vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
+		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
+		vector<int> collisions = findCollisionObjects(bb);
 
 		bool free = true;
 
@@ -112,6 +115,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 				}
 			}
 			else if (obj->type == oCrown) {
+				cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 				if (((ObjCrown*)obj)->loose) {
 					((ObjCrown*)obj)->loose = false;
 					this->hasCrown = true;
@@ -124,8 +128,10 @@ void ObjPlayer::action(glm::vec3 dir) {
 		if (free) {
 			this->position = destination;
 			this->direction = dir;
+			this->boundingBox = bb;
 		}
 	}
+	cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
 }
 
 bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) {

@@ -8,8 +8,6 @@ class ObjMakeup : public PhysicalObject
 private:
 
 public:
-	int type = oMakeup;
-
 	// This is pointer back to the vector containing all objects
 	vector<PhysicalObject*>* objects;
 	// This is the index of this objects in the vector of all objects

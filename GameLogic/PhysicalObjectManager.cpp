@@ -27,11 +27,14 @@ void PhysicalObjectManager::startGame() {
 	// Very basic map
 	createObject(oPlayer, glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//createObject(Crown, glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f));
-	//createObject(Wall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
-	//createObject(Wall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
-	//createObject(Wall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
-	//createObject(Wall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
+	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//createObject(oWall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
+	//cout << objects->at(4)->position.x << " " << objects->at(4)->position.z << "\n";
 }
 
 void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
@@ -48,7 +51,7 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		break;
 	case (oCrown):
-		this->objects->push_back(new ObjCrown(objects, next_id, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
 		break;
 	case (oMakeup):
 		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
@@ -66,7 +69,7 @@ void PhysicalObjectManager::step() {
 	gameTime -= 1.0f / 60.0f;
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
-			objects->at(i)->step();
+			((ObjPlayer*)objects->at(i))->step();
 		}
 	}
 }

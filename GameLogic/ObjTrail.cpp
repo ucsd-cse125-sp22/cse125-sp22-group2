@@ -18,6 +18,8 @@ ObjTrail::ObjTrail() {
 }
 
 ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
+	int type = oTrail;
+
 	this->objects = objects;
 	this->id = id;
 

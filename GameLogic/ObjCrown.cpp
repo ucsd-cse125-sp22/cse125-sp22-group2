@@ -18,6 +18,8 @@ ObjCrown::ObjCrown() {
 }
 
 ObjCrown::ObjCrown(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
+	this->type = oCrown;
+
 	this->objects = objects;
 	this->id = id;
 

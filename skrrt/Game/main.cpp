@@ -25,8 +25,10 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1600;
-static const int height = 1100;
+//static const int width = 1600;
+//static const int height = 1100;
+static const int width = 640;
+static const int height = 480;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -148,6 +150,7 @@ void receiveDataFromServer()
     cse125framing::ServerFrame serverFrame;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
+
     size_t numRead =
         outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
@@ -178,6 +181,7 @@ void receiveDataFromServer()
             const glm::vec3 pos = glm::vec3(serverFrame.players[i].playerPosition);
             const glm::vec3 dir = glm::vec3(serverFrame.players[i].playerDirection);
             players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+            players[i]->setCrownStatus(serverFrame.players[i].hasCrown);
         }
         scene.camera->setPosition(glm::vec3(serverFrame.players[clientId].playerPosition));
     }

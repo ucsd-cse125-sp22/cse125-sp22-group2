@@ -65,6 +65,7 @@ vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 		}
 		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
 			collisions.push_back(i);
+			cout << i << " Collided!!!\n";
 		}
 	}
 	return collisions;
@@ -84,19 +85,22 @@ bool PhysicalObject::objectPosition(BoundingBox bb, int type) {
 }
 
 void PhysicalObject::movePosition(glm::vec3 pos) {
-	vector<int> collisions = findCollisionObjects(generateBoundingBox(pos, glm::vec3(0.0f), this->up));
+	BoundingBox bb = generateBoundingBox(pos, this->direction, this->up);
+	vector<int> collisions = findCollisionObjects(bb);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
 			return;
 		}
 	}
 	this->position = pos;
+	this->boundingBox = bb;
 }
 
 void PhysicalObject::moveDirection(glm::vec3 dir) {
 	glm::vec3 destination = this->position + this->speed * dir;
 	// cout << this->speed << " (" << dir.x << ", " << dir.y << ", " << dir.z << ")\n";
 	// cout << "This might be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
+	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
@@ -106,6 +110,7 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 	// cout << "This should be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
 	this->position = destination;
 	this->direction = dir;
+	this->boundingBox = bb;
 }
 
 void PhysicalObject::step() {
