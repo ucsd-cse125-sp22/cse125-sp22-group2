@@ -68,6 +68,7 @@
       <DisableSpecificWarnings>4101;4099;4819;4996;4305;4018</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,6 +84,7 @@
     <None Include="src\Scene.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
@@ -95,6 +97,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Config.hpp" />
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />

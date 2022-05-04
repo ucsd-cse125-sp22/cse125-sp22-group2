@@ -1,0 +1,6 @@
+{
+    "host": "localhost",
+    "port": "8000",
+    "numPlayers": 1,
+    "tickRate": 30
+}

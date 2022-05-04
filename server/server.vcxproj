@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Config.hpp" />
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\Definitions.hpp" />
     <ClInclude Include="..\Frame.hpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Config.cpp" />
     <ClCompile Include="..\Definitions.cpp" />
     <ClCompile Include="..\Frame.cpp" />
     <ClCompile Include="..\GameLogic\BoundingBox.cpp" />

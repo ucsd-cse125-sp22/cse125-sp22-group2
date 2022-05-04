@@ -21,6 +21,7 @@
 #include "Game.h"
 #include "Player.h"
 
+#include "../../Config.hpp"
 #include "../../Frame.hpp"
 #include "../../Definitions.hpp"
 #include "Debug.h"
@@ -40,11 +41,15 @@ static std::map<std::string, bool>triggers;
 static int lastRenderTime = 0;
 
 boost::asio::io_context outgoingContext;
-boost::asio::ip::tcp::resolver outgoingResolver(outgoingContext);
-boost::asio::ip::tcp::resolver::results_type outgoingEndpoints =
-    outgoingResolver.resolve(cse125constants::SERVER_HOST,
-                             cse125constants::SERVER_PORT);
-boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
+std::unique_ptr<boost::asio::ip::tcp::resolver> outgoingResolver;
+boost::asio::ip::tcp::resolver::results_type outgoingEndpoints;
+std::unique_ptr<boost::asio::ip::tcp::socket> outgoingSocket;
+
+//boost::asio::ip::tcp::resolver outgoingResolver(outgoingContext);
+//boost::asio::ip::tcp::resolver::results_type outgoingEndpoints =
+//    outgoingResolver.resolve(cse125constants::SERVER_HOST,
+//                             cse125constants::SERVER_PORT);
+//boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
@@ -80,7 +85,7 @@ void requestClientId()
             std::cerr << "sending frame: \n" << &frame << std::endl;
 
         size_t numWritten = boost::asio::write(
-            outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
+            *outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
         if (writeError) {
             if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
                 std::cerr << "Error contacting server, retrying ..." << std::endl;
@@ -91,7 +96,7 @@ void requestClientId()
             serverBuffer;
         boost::system::error_code error;
         size_t numRead =
-            outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+            outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
 
         if (error == boost::asio::error::eof) {
             if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
@@ -132,7 +137,7 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 
     // std::cerr << "sending frame: " << std::endl << &frame << std::endl;
 
-    size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
+    size_t numWritten = boost::asio::write(*outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
     if (writeError) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error sending packet to server, continuing ..." << std::endl;
@@ -150,7 +155,7 @@ void receiveDataFromServer()
     boost::system::error_code error;
 
     size_t numRead =
-        outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+        outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
 
     if (error == boost::asio::error::eof) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
@@ -188,13 +193,13 @@ void receiveDataFromServer()
 void cleanupConnection()
 {
     boost::system::error_code errorCode;
-    outgoingSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
+    outgoingSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
     if (errorCode) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error shutting down socket" << std::endl;
         }
     }
-    outgoingSocket.close(errorCode);
+    outgoingSocket->close(errorCode);
     if (errorCode) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error closing socket" << std::endl;
@@ -525,7 +530,11 @@ int main(int argc, char** argv)
     // END CREATE WINDOW
 
     // Network setup
-    boost::asio::connect(outgoingSocket, outgoingEndpoints);
+    cse125config::initializeConfig("../../config.json");
+    outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
+    outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
+    outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
+    boost::asio::connect(*outgoingSocket, outgoingEndpoints);
     requestClientId();
     
     initialize();
