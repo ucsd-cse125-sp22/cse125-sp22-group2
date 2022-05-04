@@ -52,7 +52,7 @@ int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
-static bool mouseLocked = true;
+static bool mouseLocked = false;
 
 void sendDataToServer(MovementKey movementKey,
                       vec3 cameraDirection);
@@ -257,7 +257,7 @@ void initialize(void)
     glEnable(GL_DEPTH_TEST);
     
     // Make the cursor invisible
-    glutSetCursor(GLUT_CURSOR_NONE);
+    // glutSetCursor(GLUT_CURSOR_NONE);
 }
 
 void display(void)
