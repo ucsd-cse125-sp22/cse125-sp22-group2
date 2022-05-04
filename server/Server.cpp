@@ -62,7 +62,7 @@ void GraphicsSession::do_read()
 				{
 					// write to packet buffer (queue)
 					this->serverQueue.push_back(clientFrame);
-					std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
+					//std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
 				}
 
 				// read more packets
@@ -76,7 +76,7 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 	auto self(shared_from_this());
 
 	cse125framing::serialize(serverFrame, this->serverBuffer); 
-	// std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
+	std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
 
 	boost::asio::async_write(socket, boost::asio::buffer(this->serverBuffer),
 		[this, self](boost::system::error_code ec, std::size_t /*length*/)

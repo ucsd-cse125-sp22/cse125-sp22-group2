@@ -55,8 +55,8 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 
 	this->corner = pos - (0.5f * l * aVec) - (0.5f * w * bVec) - (0.5f * h * cVec);
 	glm::vec3 a = aVec * l;
-	glm::vec3 b = bVec * w;
-	glm::vec3 c = cVec * h;
+	glm::vec3 b = bVec * h;
+	glm::vec3 c = cVec * w;
 
 	this->vertices = vector<glm::vec3>();
 	this->vertices.push_back(corner);
@@ -67,6 +67,10 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 	this->vertices.push_back(corner + a + c);
 	this->vertices.push_back(corner + b + c);
 	this->vertices.push_back(corner + a + b + c);
+
+	//for (int i = 0; i < 8; i++) {
+	//	cout << "(" << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ")\n";
+	//}
 
 	this->computeMinMax();
 	gridCells = vector<int>();
@@ -139,21 +143,23 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 
 	// Go through each of the axes we found above
 	for (unsigned int i = 0; i < axes.size(); i++) {
-		float a_min = 0.f;
-		float a_max = 0.f;
-		float b_min = 0.f;
-		float b_max = 0.f;
+		float a_min = 0.0f;
+		float a_max = 0.0f;
+		float b_min = 0.0f;
+		float b_max = 0.0f;
+		// cout << "!NEW AXIS!\n";
 
 		// Get the min/max for a
 		for (unsigned int j = 0; j < a.vertices.size(); j++) {
 			// Project onto the normal
 			float proj = glm::dot(axes[i], a.vertices[j]);
+			// cout << "Bounding box a vertex " << j << "(" << a.vertices[j].x << ", " << a.vertices[j].y << ", " << a.vertices[j].z << ") projection: " << proj << "\n";
 			// Set min
-			if (i == 0 || proj < a_min) {
+			if (j == 0 || proj < a_min) {
 				a_min = proj;
 			}
 			// Set max
-			if (i == 0 || proj > a_max) {
+			if (j == 0 || proj > a_max) {
 				a_max = proj;
 			}
 		}
@@ -162,12 +168,13 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 		for (unsigned int j = 0; j < b.vertices.size(); j++) {
 			// Project onto the normal
 			float proj = glm::dot(axes[i], b.vertices[j]);
+			// cout << "Bounding box b vertex " << j << "(" << b.vertices[j].x << ", " << b.vertices[j].y << ", " << b.vertices[j].z << ") projection: " << proj << "\n";
 			// Set min
-			if (i == 0 || proj < b_min) {
+			if (j == 0 || proj < b_min) {
 				b_min = proj;
 			}
 			// Set max
-			if (i == 0 || proj > b_max) {
+			if (j == 0 || proj > b_max) {
 				b_max = proj;
 			}
 		}
@@ -175,10 +182,104 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 		// Check for a gap
 		if (a_max < b_min || a_min > b_max) {
 			// Found an axis where they don't overlap, so no collision
+			// cout << "DONE! Max a: " << a_max << " b: " << b_max << " Min a: " << a_min << " b: " << b_min << "\n";
 			return false;
 		}
 	}
 
 	// We found no axis along which they do not overlap, so there is a collision
 	return true;
+}
+
+glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
+{
+	// SAT collision test
+	// Get all the axes along which we check for a gap between the objects
+	vector<glm::vec3> axes;
+	axes.push_back(a.aVec);
+	axes.push_back(a.bVec);
+	axes.push_back(a.cVec);
+	axes.push_back(b.aVec);
+	axes.push_back(b.bVec);
+	axes.push_back(b.cVec);
+	axes.push_back(glm::cross(a.aVec, b.aVec));
+	axes.push_back(glm::cross(a.aVec, b.bVec));
+	axes.push_back(glm::cross(a.aVec, b.cVec));
+	axes.push_back(glm::cross(a.bVec, b.aVec));
+	axes.push_back(glm::cross(a.bVec, b.bVec));
+	axes.push_back(glm::cross(a.bVec, b.cVec));
+	axes.push_back(glm::cross(a.cVec, b.aVec));
+	axes.push_back(glm::cross(a.cVec, b.bVec));
+	axes.push_back(glm::cross(a.cVec, b.cVec));
+
+	float min_overlap = 9999.0f;
+	glm::vec3 min_axis = glm::vec3(0.0f);
+	
+	// Go through each of the axes we found above
+	for (unsigned int i = 0; i < axes.size(); i++) {
+		float a_min = 0.0f;
+		float a_max = 0.0f;
+		float b_min = 0.0f;
+		float b_max = 0.0f;
+		// cout << "!NEW AXIS!\n";
+
+		// Get the min/max for a
+		for (unsigned int j = 0; j < a.vertices.size(); j++) {
+			// Project onto the normal
+			float proj = glm::dot(glm::normalize(axes[i]), a.vertices[j]);
+			// cout << "Bounding box a vertex " << j << "(" << a.vertices[j].x << ", " << a.vertices[j].y << ", " << a.vertices[j].z << ") projection: " << proj << "\n";
+			// Set min
+			if (j == 0 || proj < a_min) {
+				a_min = proj;
+			}
+			// Set max
+			if (j == 0 || proj > a_max) {
+				a_max = proj;
+			}
+		}
+
+		// Get the min/max for b
+		for (unsigned int j = 0; j < b.vertices.size(); j++) {
+			// Project onto the normal
+			float proj = glm::dot(glm::normalize(axes[i]), b.vertices[j]);
+			// cout << "Bounding box b vertex " << j << "(" << b.vertices[j].x << ", " << b.vertices[j].y << ", " << b.vertices[j].z << ") projection: " << proj << "\n";
+			// Set min
+			if (j == 0 || proj < b_min) {
+				b_min = proj;
+			}
+			// Set max
+			if (j == 0 || proj > b_max) {
+				b_max = proj;
+			}
+		}
+
+		// Check for a gap
+		if (a_max < b_min || a_min > b_max) {
+			// Found an axis where they don't overlap, so no collision
+			// cout << "DONE! Max a: " << a_max << " b: " << b_max << " Min a: " << a_min << " b: " << b_min << "\n";
+			//cout << "Potential adjustment: ???\n";
+			return glm::vec3(0.0f);
+		}
+		else {
+			float overlap = 0.0f;
+			if (a_max > b_max) {
+				overlap = max(b_max - a_min + 0.0001f, 0.0001f);
+				//if (overlap <= min_overlap || !i) {
+				//	min_overlap = overlap;
+				//	min_axis = -glm::normalize(axes[i]);
+				//}
+			}
+			else {
+				overlap = max(a_max - b_min + 0.0001f, 0.0001f);
+			}
+			if (overlap <= min_overlap || !i) {
+				min_overlap = overlap;
+				min_axis = glm::normalize(axes[i]);
+			}
+		}
+	}
+
+	// We found no axis along which they do not overlap, so there is a collision
+	//cout << "Potential adjustment: " << min_axis.x << ", " << min_axis.y << ", " << min_axis.z << ": " << min_overlap << "\n";
+	return min_overlap * min_axis;
 }
