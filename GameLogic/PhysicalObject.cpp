@@ -50,10 +50,10 @@ bool PhysicalObject::checkPlaceFree(BoundingBox bb) {
 			continue;
 		}
 		if (this->objects->at(i)->solid && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
@@ -65,7 +65,6 @@ vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 		}
 		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
 			collisions.push_back(i);
-			cout << i << " Collided!!!\n";
 		}
 	}
 	return collisions;

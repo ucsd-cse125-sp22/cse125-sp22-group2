@@ -42,6 +42,8 @@ namespace bounding {
 
 	// Check whether two bounding boxes overlap
 	bool checkCollision(BoundingBox a, BoundingBox b);
+	// Check whether two bounding boxes overlap and return a potential value to adjust by
+	glm::vec3 checkCollisionAdjust(BoundingBox a, BoundingBox b);
 }
 ////////////////////////////////////////////////////////////////////////////////
 

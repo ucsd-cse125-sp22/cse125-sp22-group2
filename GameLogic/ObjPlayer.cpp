@@ -26,8 +26,8 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 
 	this->position = position;
 	// These values are the actual dimensions, might make constants for these
-	this->length = 2.0f;
-	this->width = 1.35f;
+	this->length = 2.1f;
+	this->width = 1.15f;
 	this->height = 0.98f;
 
 	this->direction = direction;
@@ -70,7 +70,7 @@ void ObjPlayer::step() {
 		score += 1.0f / 60.0f;
 	}
 	// Adjust speed (these numbers are placeholders)
-	speed = 0.1f;
+	speed = 0.5f;
 	if (hasCrown) {
 		//speed += 0.5f;
 	}
@@ -90,13 +90,40 @@ void ObjPlayer::action(glm::vec3 dir) {
 		vector<int> collisions = findCollisionObjects(bb);
 
 		bool free = true;
+		bool adjusted = false;
 
 		for (unsigned int i = 0; i < collisions.size(); i++) {
 			PhysicalObject*& obj = this->objects->at(collisions[i]);
 
-			// Object is blocking us
-			if (obj->solid) {
+			// A solid object is blocking us
+			if (obj->solid && !adjusted) {
 				free = false;
+				cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+				glm::vec3 adjust = checkCollisionAdjust(bb, obj->boundingBox);
+				cout <<  " Shifting " << glm::length(adjust) << " ";
+				if (glm::length(adjust) < 0.5f) {
+					cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+					if (glm::dot(dir, adjust) > 0) {
+						cout << " FLIPPING ";
+						adjust = -adjust;
+					}
+					BoundingBox temp = generateBoundingBox(destination + adjust, dir, this->up);
+					if (checkPlaceFree(temp)) {
+						cout << "Adjusted\n";
+						destination += adjust;
+						bb = temp;
+						free = true;
+						adjusted = true;
+					}
+					else {
+						cout << "Cancelled\n";
+						free = false;
+					}
+				}
+				else {
+					cout << "Confirmed\n";
+					free = false;
+				}
 			}
 
 			// Check if crown is transferred
@@ -115,7 +142,6 @@ void ObjPlayer::action(glm::vec3 dir) {
 				}
 			}
 			else if (obj->type == oCrown) {
-				cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 				if (((ObjCrown*)obj)->loose) {
 					((ObjCrown*)obj)->loose = false;
 					this->hasCrown = true;

@@ -25,11 +25,11 @@ void PhysicalObjectManager::startGame() {
 	// Create walls and floors
 
 	// Very basic map
-	createObject(oPlayer, glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	//createObject(oWall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
 	//createObject(oWall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
 	//createObject(oWall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
