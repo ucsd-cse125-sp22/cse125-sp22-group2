@@ -1,15 +1,3 @@
-#include "Server.hpp"
-
-//
-// async_tcp_echo_server.cpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -19,6 +7,8 @@
 
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
+#include "Server.hpp"
+
 
 GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue, unsigned int& clientsConnected)
 	: socket(std::move(socket)), id(myid), serverQueue(serverQueue), clientsConnected(clientsConnected)
@@ -100,10 +90,6 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 	: acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
 	numConnections = 0;
-	// boost::asio::ip::tcp::endpoint endpoint = acceptor.local_endpoint();
-	// std::cout << endpoint.address() << std::endl;
-	// std::cout << endpoint.port() << std::endl;
-
 	do_accept();
 }
 

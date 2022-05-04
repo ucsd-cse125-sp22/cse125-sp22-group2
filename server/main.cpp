@@ -109,8 +109,8 @@ int main()
     cse125clocktick::ClockTick ticker(cse125config::TICK_RATE);
 
     // Block until 4 clients connected
-    std::cerr << "Waiting for " << cse125config::NUM_PLAYERS << " clients to connect..." << std::endl;
-    while (server.clientsConnected < cse125config::NUM_PLAYERS);
+    std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS << " clients to connect..." << std::endl;
+    while (server.clientsConnected < cse125constants::NUM_PLAYERS);
     std::cerr << cse125constants::NUM_PLAYERS << " clients connected!" << std::endl;
 
     try

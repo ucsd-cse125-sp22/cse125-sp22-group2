@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
 namespace cse125config {
+	const std::string DEFAULT_SERVER_HOST = "localhost";
+	const std::string DEFAULT_SERVER_PORT = "8000";
+	const unsigned int DEFAULT_TICK_RATE = 30;
 	extern std::string SERVER_HOST;
 	extern std::string SERVER_PORT;
-	extern int NUM_PLAYERS;
 	extern int TICK_RATE;
 
 	/*
