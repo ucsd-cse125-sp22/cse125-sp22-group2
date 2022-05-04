@@ -98,30 +98,30 @@ void ObjPlayer::action(glm::vec3 dir) {
 			// A solid object is blocking us
 			if (obj->solid && !adjusted) {
 				free = false;
-				cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 				glm::vec3 adjust = checkCollisionAdjust(bb, obj->boundingBox);
-				cout <<  " Shifting " << glm::length(adjust) << " ";
+				//cout <<  " Shifting " << glm::length(adjust) << " ";
 				if (glm::length(adjust) < 0.5f) {
-					cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
 					if (glm::dot(dir, adjust) > 0) {
-						cout << " FLIPPING ";
+						//cout << " FLIPPING ";
 						adjust = -adjust;
 					}
 					BoundingBox temp = generateBoundingBox(destination + adjust, dir, this->up);
 					if (checkPlaceFree(temp)) {
-						cout << "Adjusted\n";
+						//cout << "Adjusted\n";
 						destination += adjust;
 						bb = temp;
 						free = true;
 						adjusted = true;
 					}
 					else {
-						cout << "Cancelled\n";
+						//cout << "Cancelled\n";
 						free = false;
 					}
 				}
 				else {
-					cout << "Confirmed\n";
+					//cout << "Confirmed\n";
 					free = false;
 				}
 			}
@@ -157,7 +157,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 			this->boundingBox = bb;
 		}
 	}
-	cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
+	//cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
 }
 
 bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) {

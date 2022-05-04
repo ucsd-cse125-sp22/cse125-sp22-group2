@@ -257,7 +257,7 @@ glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
 		if (a_max < b_min || a_min > b_max) {
 			// Found an axis where they don't overlap, so no collision
 			// cout << "DONE! Max a: " << a_max << " b: " << b_max << " Min a: " << a_min << " b: " << b_min << "\n";
-			cout << "Potential adjustment: ???\n";
+			//cout << "Potential adjustment: ???\n";
 			return glm::vec3(0.0f);
 		}
 		else {
@@ -280,6 +280,6 @@ glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
 	}
 
 	// We found no axis along which they do not overlap, so there is a collision
-	cout << "Potential adjustment: " << min_axis.x << ", " << min_axis.y << ", " << min_axis.z << ": " << min_overlap << "\n";
+	//cout << "Potential adjustment: " << min_axis.x << ", " << min_axis.y << ", " << min_axis.z << ": " << min_overlap << "\n";
 	return min_overlap * min_axis;
 }

@@ -103,7 +103,7 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
-			return;
+			// return;
 		}
 	}
 	// cout << "This should be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
