@@ -254,6 +254,9 @@ void initialize(void)
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
+    
+    // Make the cursor invisible
+    glutSetCursor(GLUT_CURSOR_NONE);
 }
 
 void display(void)
@@ -492,8 +495,12 @@ void mouseMovement(int x, int y) {
 	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
 	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
 
-	mouseX = x;
-	mouseY = y;
+    // Set cursor to the center of the screen
+    glutWarpPointer(width / 2, height / 2);
+	//mouseX = x;
+	//mouseY = y;
+    mouseX = width / 2;
+    mouseY = height / 2;
 
     if (dx != 0 || dy != 0) {
         scene.camera->rotateRight(dx);
