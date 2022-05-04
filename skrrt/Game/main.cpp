@@ -52,6 +52,7 @@ int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
+static bool mouseLocked = true;
 
 void sendDataToServer(MovementKey movementKey,
                       vec3 cameraDirection);
@@ -364,6 +365,15 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         */
+        case '`':
+            mouseLocked = !mouseLocked;
+            if (mouseLocked) {
+                glutSetCursor(GLUT_CURSOR_NONE);
+            }
+            else {
+                glutSetCursor(GLUT_CURSOR_INHERIT);
+            }
+            break;
         default:
             glutPostRedisplay();
             break;
@@ -496,11 +506,15 @@ void mouseMovement(int x, int y) {
 	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
 
     // Set cursor to the center of the screen
-    glutWarpPointer(width / 2, height / 2);
-	//mouseX = x;
-	//mouseY = y;
-    mouseX = width / 2;
-    mouseY = height / 2;
+    if (mouseLocked) {
+        mouseX = width / 2;
+        mouseY = height / 2;
+        glutWarpPointer(mouseX, mouseY);
+    }
+    else {
+	    mouseX = x;
+	    mouseY = y;
+    }
 
     if (dx != 0 || dy != 0) {
         scene.camera->rotateRight(dx);
