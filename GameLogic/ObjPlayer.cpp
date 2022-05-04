@@ -95,6 +95,11 @@ void ObjPlayer::action(glm::vec3 dir) {
 		for (unsigned int i = 0; i < collisions.size(); i++) {
 			PhysicalObject*& obj = this->objects->at(collisions[i]);
 
+			if (obj->type == oPlayer) {
+				glm::vec3 d = glm::normalize(obj->position - this->position);
+				((ObjPlayer*) obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			}
+
 			// A solid object is blocking us
 			if (obj->solid && !adjusted) {
 				free = false;
@@ -173,4 +178,17 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 		}
 	}
 	return false;
+}
+
+void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
+	glm::vec3 destination = this->position + pushSpeed * dir;
+	BoundingBox bb = generateBoundingBox(destination, this->direction, this->up);
+	vector<int> collisions = findCollisionObjects(bb);
+	for (unsigned int i = 0; i < collisions.size(); i++) {
+		if (this->objects->at(collisions[i])->solid) {
+			return;
+		}
+	}
+	this->position = destination;
+	this->boundingBox = bb;
 }

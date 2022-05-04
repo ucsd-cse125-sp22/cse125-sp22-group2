@@ -32,7 +32,7 @@ void GraphicsSession::start()
 
 void GraphicsSession::do_read()
 {
-	std::cerr << "do_read()\n";
+	//std::cerr << "do_read()\n";
 	auto self(shared_from_this());
 
 	socket.async_read_some(boost::asio::buffer(this->clientBuffer), 
@@ -76,7 +76,7 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 	auto self(shared_from_this());
 
 	cse125framing::serialize(serverFrame, this->serverBuffer); 
-	std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
+	//std::cerr << "writing frame: " << std::endl << serverFrame << std::endl;
 
 	boost::asio::async_write(socket, boost::asio::buffer(this->serverBuffer),
 		[this, self](boost::system::error_code ec, std::size_t /*length*/)
@@ -85,12 +85,12 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			{				
 				if (this->clientsConnected < cse125constants::NUM_PLAYERS) {
 					this->clientsConnected++;
-					std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
+					//std::cerr << "Clients connected: " << this->clientsConnected << std::endl;
 				}
 			}
 			else
 			{
-				std::cerr << "Write failed.. NOT rewriting" << std::endl;
+				//std::cerr << "Write failed.. NOT rewriting" << std::endl;
 				// do_write(serverFrame);
 			}
 		});

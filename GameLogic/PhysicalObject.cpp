@@ -97,16 +97,13 @@ void PhysicalObject::movePosition(glm::vec3 pos) {
 
 void PhysicalObject::moveDirection(glm::vec3 dir) {
 	glm::vec3 destination = this->position + this->speed * dir;
-	// cout << this->speed << " (" << dir.x << ", " << dir.y << ", " << dir.z << ")\n";
-	// cout << "This might be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
 	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
-	vector<int> collisions = findCollisionObjects(generateBoundingBox(destination, dir, this->up));
+	vector<int> collisions = findCollisionObjects(bb);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
-			// return;
+			return;
 		}
 	}
-	// cout << "This should be moving to: (" << destination.x << ", " << destination.y << ", " << destination.z << ")\n";
 	this->position = destination;
 	this->direction = dir;
 	this->boundingBox = bb;
