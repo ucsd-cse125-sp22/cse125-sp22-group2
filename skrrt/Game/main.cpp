@@ -16,6 +16,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <glm/glm.hpp>
+#include <chrono>
 #include "Screenshot.h"
 #include "Scene.h"
 #include "Game.h"
@@ -50,6 +51,7 @@ boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
+static std::chrono::time_point<std::chrono::system_clock> startTime;
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
 static bool mouseLocked = true;
@@ -238,7 +240,7 @@ void initialize(void)
 
     // Initialize scene
     scene.init();
-
+    
     // Initialize triggers map 
     triggers["up"] = false; 
     triggers["left"] = false; 
@@ -251,7 +253,10 @@ void initialize(void)
         players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
 
-    lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
+    // Initialize time
+    startTime = std::chrono::system_clock::now();
+    //lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
+    lastRenderTime = -50;
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -469,7 +474,8 @@ void idle() {
         glutPostRedisplay();
     }
     */
-    int time = glutGet(GLUT_ELAPSED_TIME);
+    //int time = glutGet(GLUT_ELAPSED_TIME);
+    int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 5.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
