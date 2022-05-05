@@ -95,8 +95,8 @@ void requestClientId()
         boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE>
             serverBuffer;
         boost::system::error_code error;
-        size_t numRead =
-            outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+        //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+        size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
 
         if (error == boost::asio::error::eof) {
             if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
@@ -154,8 +154,8 @@ void receiveDataFromServer()
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
 
-    size_t numRead =
-        outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+    //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+    size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
 
     if (error == boost::asio::error::eof) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
