@@ -108,7 +108,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 				//cout <<  " Shifting " << glm::length(adjust) << " ";
 				if (glm::length(adjust) < 0.5f) {
 					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
-					if (glm::dot(dir, adjust) > 0) {
+					if (glm::dot(obj->position - this->position, adjust) > 0) {
 						//cout << " FLIPPING ";
 						adjust = -adjust;
 					}
