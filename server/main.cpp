@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+#include "../Config.hpp"
 #include "../Constants.hpp"
 #include "../Frame.hpp"
 #include "../GameLogic/PhysicalObjectManager.hpp"
@@ -19,9 +20,7 @@ int gameTime = 0;
 int clientCtr = 0;
 
 PhysicalObjectManager* manager;
-
 boost::asio::io_context io_context;
-GraphicsServer server(io_context, std::stoi(cse125constants::SERVER_PORT));
 
 
 // Initializes the frame the server will send back to all clients
@@ -87,7 +86,7 @@ void gameLoop(PhysicalObjectManager* manager, int playerId, GameAction gameActio
     }
 }
 
-void launchServer(short port) {
+void launchServer() {
 
     std::cout << "Before io_context.run()" << std::endl;
     io_context.run();
@@ -95,15 +94,22 @@ void launchServer(short port) {
 
 int main()
 {
+    // Initialize configured variables
+    cse125config::initializeConfig("../config.json");
+
+    // Initialize object manager
     manager = initializeGame();
 
-    short port = 8000;
-    boost::thread serverThread(launchServer, port);
-    cse125clocktick::ClockTick ticker(30);
+    // Initialize network server
+    GraphicsServer server(io_context, std::stoi(cse125config::SERVER_PORT));
+    // Launch server communication in separate thread
+    boost::thread serverThread(launchServer);
 
-    std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS << " clients to connect..." << std::endl;
+    // Initialize ticker
+    cse125clocktick::ClockTick ticker(cse125config::TICK_RATE);
 
     // Block until 4 clients connected
+    std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS << " clients to connect..." << std::endl;
     while (server.clientsConnected < cse125constants::NUM_PLAYERS);
     std::cerr << cse125constants::NUM_PLAYERS << " clients connected!" << std::endl;
 
@@ -135,7 +141,7 @@ int main()
                 }                
             }
 
-            int sizeBefore = serverQueue.size();
+            size_t sizeBefore = serverQueue.size();
             // std::cerr << "Queue size before: " << serverQueue.size() << std::endl;
             // Empty the queue of all tasks
             server.serverQueue.clear();

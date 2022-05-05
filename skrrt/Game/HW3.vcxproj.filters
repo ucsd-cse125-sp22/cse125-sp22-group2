@@ -11,6 +11,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="..\..\Config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Constants.hpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+    <ClInclude Include="..\..\Config.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
