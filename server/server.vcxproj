@@ -162,7 +162,6 @@
     <ClInclude Include="ClockTick.hpp" />
     <ClInclude Include="GameAction.hpp" />
     <ClInclude Include="Server.hpp" />
-    <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Config.cpp" />
