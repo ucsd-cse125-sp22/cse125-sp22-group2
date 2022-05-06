@@ -13,6 +13,7 @@
 GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue, std::mutex& queueMtx, unsigned int& clientsConnected)
 	: socket(std::move(socket)), id(myid), serverQueue(serverQueue), queueMtx(queueMtx), clientsConnected(clientsConnected)
 {
+	this->sessionTerminated = false;
 }
 
 void GraphicsSession::start()
@@ -22,7 +23,6 @@ void GraphicsSession::start()
 
 void GraphicsSession::do_read()
 {
-	std::cerr << "do_read()\n";
 	auto self(shared_from_this());
 
 	socket.async_read_some(boost::asio::buffer(this->clientBuffer), 
@@ -60,6 +60,14 @@ void GraphicsSession::do_read()
 				// read more packets
 				do_read();
 			}
+			else {
+				// Check if the client closed the connection. If so, remember this and stop
+				// future writes to this session.
+				if (ec == boost::asio::error::connection_reset) {
+					sessionTerminated = true;
+				}
+				std::cerr << "Read failed with error " << ec << std::endl;
+			}
 		});
 }
 
@@ -82,8 +90,7 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			}
 			else
 			{
-				std::cerr << "Write failed.. NOT rewriting" << std::endl;
-				// do_write(serverFrame);
+				std::cerr << "Write failed with error code " << ec << std::endl;
 			}
 		});
 }
@@ -127,6 +134,9 @@ void GraphicsServer::writePackets(cse125framing::ServerFrame* serverFrame)
 	// write to every connection
 	for (std::shared_ptr<GraphicsSession>& session : sessions)
 	{
-		session->do_write(serverFrame);
+		// Only write to the sessions that aren't closed
+		if (!session->sessionTerminated) {
+			session->do_write(serverFrame);
+		}
 	}
 } 

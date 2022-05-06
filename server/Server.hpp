@@ -9,6 +9,7 @@
 class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
 {
 public:
+    bool sessionTerminated;
     GraphicsSession(boost::asio::ip::tcp::socket socket, int id, std::deque<cse125framing::ClientFrame>& serverQueue, std::mutex& queueMtx, unsigned int& clientsConnected);
 
     void start();
