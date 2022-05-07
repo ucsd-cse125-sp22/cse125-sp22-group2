@@ -25,8 +25,8 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1600;
-static const int height = 1100;
+static const int width = 800;
+static const int height = 600;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -250,6 +250,8 @@ void initialize(void)
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
+    glLineWidth(4.0f);
+    glEnable(GL_CULL_FACE); 
 }
 
 void display(void)

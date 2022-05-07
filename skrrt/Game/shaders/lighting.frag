@@ -14,6 +14,8 @@ uniform vec4 specular;
 uniform vec4 emision;
 uniform float shininess;
 
+const float levels = 4.0f;
+
 // Light source parameters
 const int maximal_allowed_lights = 10;
 uniform bool enablelighting;
@@ -35,19 +37,19 @@ void main (void){
     if (!enablelighting){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
-        //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
+        fragColor = vec4(0.0f, 0.0f, 0.0f , 1.0f);
         //fragColor = texture(ourTexture, TexCoord);
 
-        if (texture_id == 0) {
-			fragColor = texture(texture1, TexCoord);
-        } else {
-			fragColor = texture(texture2, TexCoord);
-        }
+        
+        //if (texture_id == 0) {
+		//	fragColor = texture(texture1, TexCoord);
+        //} else {
+		//	fragColor = texture(texture2, TexCoord);
+        //}
 
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
         
-        // HW3: You will compute the lighting here.
         //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
         //fragColor = texture(ourTexture, TexCoord);
         if (texture_id == 0) {
@@ -56,7 +58,7 @@ void main (void){
 			fragColor = texture(texture2, TexCoord);
         }
 
-        //make 3x3 matrix to transform normal
+        //make 3x3 matrix to transform normal (needed for non-uniform transforms)
         mat3 a_modelview = mat3(modelview);
         a_modelview = transpose(inverse(a_modelview));
         vec3 n_eye_norm = normalize(a_modelview * normal);
@@ -81,5 +83,11 @@ void main (void){
             fragColor += acum;
         }
         fragColor += emision; 
+
     }
+
+
+    fragColor = floor(fragColor * levels) / levels;
+
+
 }

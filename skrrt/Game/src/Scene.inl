@@ -100,7 +100,7 @@ void Scene::init(void){
     
     light["bulb"] = new Light;
     light["bulb"] -> position = vec4(0.0f,2.0f,0.0f,0.0f);
-    light["bulb"] -> color = 1.5f * vec4(1.0f,0.2f,0.1f,1.0f);
+    light["bulb"] -> color = 1.0f * vec4(1.0f,0.2f,0.1f,1.0f);
     
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {

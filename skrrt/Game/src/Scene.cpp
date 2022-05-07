@@ -64,7 +64,7 @@ void Scene::draw(void){
             // The draw command
             shader->setUniforms();
             if (cur->visible) {
-				(cur->models[i])->geometry->draw();
+				(cur->models[i])->geometry->draw(shader);
             }
         }
 
