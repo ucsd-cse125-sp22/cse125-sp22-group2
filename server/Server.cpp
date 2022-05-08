@@ -63,7 +63,7 @@ void GraphicsSession::do_read()
 			else {
 				// Check if the client closed the connection. If so, remember this and stop
 				// future writes to this session.
-				if (ec == boost::asio::error::connection_reset) {
+				if (ec == boost::asio::error::connection_reset || ec == boost::asio::error::misc_errors::eof) {
 					sessionTerminated = true;
 				}
 				std::cerr << "Read failed with error " << ec << std::endl;
@@ -90,6 +90,10 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
 			}
 			else
 			{
+				// Happens when the client closes the game with the ESC key
+				if (ec == boost::asio::error::connection_aborted) {
+					this->sessionTerminated = true;
+				}
 				std::cerr << "Write failed with error code " << ec << std::endl;
 			}
 		});
