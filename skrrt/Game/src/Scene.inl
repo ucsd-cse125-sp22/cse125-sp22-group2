@@ -166,6 +166,9 @@ void Scene::init(void){
 		node["crown" + std::to_string(i)]->models.push_back(model["crown"]);
 		node["crown" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
+    node["crown_world"] = new Node("crown_world", true); 
+    node["crown_world"]->models.push_back(model["crown"]);
+    node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
 
     // Map
     node["map"] = new Node("map");
@@ -224,6 +227,9 @@ void Scene::init(void){
 
     node["world"]->childnodes.push_back(node["map"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -1.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["crown_world"]); 
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 1.0f, 0.0f)));
     
     // Put a camera
     camera = new Camera;
