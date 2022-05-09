@@ -6,6 +6,7 @@ Scene.inl contains the definition of the scene graph
 #include "Obj.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+//#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
 
@@ -35,8 +36,10 @@ void Scene::init(void){
     geometry["map"] = new Obj; 
     geometry["map"]->init("models/Map(not finished).obj", "textures/grey.png", 2);
 
-    geometry["cube"] = new Cube;
-    geometry["cube"]->init();
+    //geometry["cube"] = new Cube;
+    //geometry["cube"]->init();
+    geometry["cube"] = new Obj;
+    geometry["cube"]->init("models/Spotlight.obj", "texture/fake_blue_car.png", 3);
     
     // Create a material palette
     material["wood"] = new Material;
@@ -182,6 +185,12 @@ void Scene::init(void){
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
+    //********************************************
+    node["test_cube"] = new Node("test_cube");
+    node["test_cube"]->models.push_back(model["cube"]); 
+    node["test_cube"]->modeltransforms.push_back(mat4(1.0f));
+    //********************************************
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
@@ -237,6 +246,9 @@ void Scene::init(void){
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["test_cube"]); 
+    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)));
     
     // Put a camera
     camera = new Camera;

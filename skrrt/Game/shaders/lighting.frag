@@ -24,8 +24,10 @@ uniform vec4 lightcolors[ maximal_allowed_lights ];
 // Texture sampler 
 uniform int texture_id;
 //uniform sampler2D ourTexture;
+uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform sampler2D texture2;
+uniform sampler2D texture3;
 
 // Output the frag color
 out vec4 fragColor;
@@ -39,9 +41,17 @@ void main (void){
         //fragColor = texture(ourTexture, TexCoord);
 
         if (texture_id == 0) {
+			fragColor = texture(texture0, TexCoord);
+        } else if (texture_id == 1) {
 			fragColor = texture(texture1, TexCoord);
-        } else {
+        } else if (texture_id == 2) {
 			fragColor = texture(texture2, TexCoord);
+        } else {
+            // test for UI elements 
+			fragColor = texture(texture3, TexCoord);
+            if (fragColor.t < 0.1) {
+                discard;
+            }
         }
 
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);

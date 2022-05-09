@@ -38,8 +38,10 @@ struct SurfaceShader : Shader {
     GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
     
-    GLuint pinkcar_texture_loc; 
-    GLuint bluecar_texture_loc; 
+    GLuint texture0_loc; 
+    GLuint texture1_loc; 
+    GLuint texture2_loc; 
+    GLuint texture3_loc; 
     
     void initUniforms(){
         view_loc  = glGetUniformLocation( program, "view" );
@@ -57,8 +59,10 @@ struct SurfaceShader : Shader {
 
         texture_id_loc = glGetUniformLocation( program, "texture_id" );
         
-        pinkcar_texture_loc = glGetUniformLocation(program, "texture1");
-        bluecar_texture_loc = glGetUniformLocation(program, "texture2");
+        texture0_loc = glGetUniformLocation(program, "texture0");
+        texture1_loc = glGetUniformLocation(program, "texture1");
+        texture2_loc = glGetUniformLocation(program, "texture2");
+        texture3_loc = glGetUniformLocation(program, "texture3");
     }
     void setUniforms(){
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
@@ -76,9 +80,10 @@ struct SurfaceShader : Shader {
 
         glUniform1i(texture_id_loc, texture_id);
 
-        glUniform1i(pinkcar_texture_loc, 0);
-        glUniform1i(bluecar_texture_loc, 1);
-        
+        glUniform1i(texture0_loc, 0);
+        glUniform1i(texture1_loc, 1);
+        glUniform1i(texture2_loc, 2);
+        glUniform1i(texture3_loc, 3);
     }
 };
 

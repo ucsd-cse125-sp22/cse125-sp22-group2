@@ -19,16 +19,27 @@
 #include "Geometry.h"
 #include "Material.h"
 #include "Model.h"
+#include "ParticleSource.h"
 
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
 class Node {
 public:
-    Node(std::string n = "", bool v = true) { name = n; visible = v; };
+    Node(std::string n = "", bool v = true) { 
+        name = n; 
+        visible = v; 
+        /*
+        if (p) {
+			particles = ParticleSource(); 
+        }
+        */
+    };
 
     std::string name; 
     bool visible;
+
+    ParticleSource particles;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
