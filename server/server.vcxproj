@@ -126,6 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\cse-125-libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,7 +163,6 @@
     <ClInclude Include="ClockTick.hpp" />
     <ClInclude Include="GameAction.hpp" />
     <ClInclude Include="Server.hpp" />
-    <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Config.cpp" />

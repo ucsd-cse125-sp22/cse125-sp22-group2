@@ -10,8 +10,8 @@
 #include "Server.hpp"
 
 
-GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue, unsigned int& clientsConnected)
-	: socket(std::move(socket)), id(myid), serverQueue(serverQueue), clientsConnected(clientsConnected)
+GraphicsSession::GraphicsSession(boost::asio::ip::tcp::socket socket, int myid, std::deque<cse125framing::ClientFrame>& serverQueue, std::mutex& queueMtx, unsigned int& clientsConnected)
+	: socket(std::move(socket)), id(myid), serverQueue(serverQueue), queueMtx(queueMtx), clientsConnected(clientsConnected)
 {
 }
 
@@ -51,7 +51,9 @@ void GraphicsSession::do_read()
 				else
 				{
 					// write to packet buffer (queue)
+					this->queueMtx.lock();
 					this->serverQueue.push_back(clientFrame);
+					this->queueMtx.unlock();
 					//std::cerr << "Server queue size: " << this->serverQueue.size() << std::endl;
 				}
 
@@ -104,6 +106,7 @@ void GraphicsServer::do_accept()
 						std::make_shared<GraphicsSession>(std::move(socket), 
 														  this->numConnections, 
 							                              this->serverQueue,
+														  this->queueMtx,
 														  this->clientsConnected);
 				sessions.push_back(session);
 				session->start();
