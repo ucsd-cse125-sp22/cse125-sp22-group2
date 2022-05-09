@@ -49,7 +49,7 @@ void Camera::rotateUp(const float degrees){
     //make sure we don't go over y pole
     float angleFromXZ = glm::asin(-1.0f * targetToEye.y / glm::length(targetToEye)); // in rad, positive is above xz plane
     angleFromXZ = angleFromXZ * 180.0f/(float)M_PI; // convert to degreees
-    float newAngleFromXZ = angleFromXZ - degrees;
+    float newAngleFromXZ = degrees - angleFromXZ;
     if (newAngleFromXZ > MAX_Y_ANGLE || newAngleFromXZ < MIN_Y_ANGLE) {
         return;
     }

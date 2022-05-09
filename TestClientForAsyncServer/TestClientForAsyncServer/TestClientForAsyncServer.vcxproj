@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a46b28ed-7c5d-48a5-9d99-5b90ff8c1f97}</ProjectGuid>
-    <RootNamespace>server</RootNamespace>
+    <ProjectGuid>{04b3571e-1ff6-4e9f-9808-f02ee0d49414}</ProjectGuid>
+    <RootNamespace>TestClientForAsyncServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -72,32 +72,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\cse-125-include-directories\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\cse-125-include-directories</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\cse-125-include-directories</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\cse-125-include-directories</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\cse-125-libraries</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\cse-125-libraries\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +121,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\cse-125-libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,42 +140,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Config.hpp" />
-    <ClInclude Include="..\Constants.hpp" />
-    <ClInclude Include="..\Definitions.hpp" />
-    <ClInclude Include="..\Frame.hpp" />
-    <ClInclude Include="..\GameLogic\BoundingBox.hpp" />
-    <ClInclude Include="..\GameLogic\core.h" />
-    <ClInclude Include="..\GameLogic\ObjCrown.hpp" />
-    <ClInclude Include="..\GameLogic\ObjFloor.hpp" />
-    <ClInclude Include="..\GameLogic\ObjMakeup.hpp" />
-    <ClInclude Include="..\GameLogic\ObjPlayer.hpp" />
-    <ClInclude Include="..\GameLogic\ObjTrail.hpp" />
-    <ClInclude Include="..\GameLogic\ObjWall.hpp" />
-    <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
-    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
-    <ClInclude Include="ClockTick.hpp" />
-    <ClInclude Include="GameAction.hpp" />
-    <ClInclude Include="Server.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Config.cpp" />
-    <ClCompile Include="..\Definitions.cpp" />
-    <ClCompile Include="..\Frame.cpp" />
-    <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
-    <ClCompile Include="..\GameLogic\ObjCrown.cpp" />
-    <ClCompile Include="..\GameLogic\ObjFloor.cpp" />
-    <ClCompile Include="..\GameLogic\ObjMakeup.cpp" />
-    <ClCompile Include="..\GameLogic\ObjPlayer.cpp" />
-    <ClCompile Include="..\GameLogic\ObjTrail.cpp" />
-    <ClCompile Include="..\GameLogic\ObjWall.cpp" />
-    <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
-    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
-    <ClCompile Include="ClockTick.cpp" />
-    <ClCompile Include="GameAction.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

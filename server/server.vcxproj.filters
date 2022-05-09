@@ -1,22 +1,126 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\ClockTick.cpp" />
-    <ClCompile Include="..\Definitions.cpp" />
-    <ClCompile Include="..\Frame.cpp" />
-    <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
-    <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />
-    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GameLogic">
+      <UniqueIdentifier>{c76568da-2129-45dd-8441-45bd07b9192e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameLogic">
+      <UniqueIdentifier>{82fd5672-6317-4641-a869-127999899871}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ClockTick.hpp" />
-    <ClInclude Include="..\Constants.hpp" />
-    <ClInclude Include="..\Definitions.hpp" />
-    <ClInclude Include="..\Frame.hpp" />
-    <ClInclude Include="..\GameLogic\BoundingBox.hpp" />
-    <ClInclude Include="..\GameLogic\core.h" />
-    <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
-    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
+    <ClInclude Include="..\Constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Definitions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Frame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClockTick.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameAction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\BoundingBox.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\PhysicalObject.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjCrown.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjFloor.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjMakeup.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjPlayer.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjTrail.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjWall.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameLogic\core.h">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClockTick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\BoundingBox.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\PhysicalObject.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjCrown.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjFloor.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjMakeup.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjPlayer.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjTrail.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjWall.cpp">
+      <Filter>Source Files\GameLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

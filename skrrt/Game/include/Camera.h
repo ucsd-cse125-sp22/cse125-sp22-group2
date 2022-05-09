@@ -18,7 +18,7 @@ public:
     float farPlane; // far clipping distance
 
     const float MAX_Y_ANGLE = 86.0f; // Camera will not rotate above this angle
-    const float MIN_Y_ANGLE = -1.0f * MAX_Y_ANGLE; // Camera will not rotate below this angle
+    const float MIN_Y_ANGLE = 0.0f; // -1.0f * 86.0f; // Camera will not rotate below this angle
     
     // default values for reset
     glm::vec3 eye_default = glm::vec3(0.0f, 0.0f, 0.0f);

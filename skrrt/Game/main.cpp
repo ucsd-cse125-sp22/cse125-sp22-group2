@@ -1,29 +1,30 @@
-#include <stdlib.h>
 #include <iostream>
+#include <stdlib.h>
 #include <string>
 // OSX systems need their own headers
 #ifdef __APPLE__
+#include <GLUT/glut.h>
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
-#include <GLUT/glut.h>
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
 #endif
 // Use of degrees is deprecated. Use radians for GLM functions
 #define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
+
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <glm/glm.hpp>
 #include "Screenshot.h"
 #include "Scene.h"
 #include "Game.h"
 #include "Player.h"
 
+#include "../../Config.hpp"
 #include "../../Frame.hpp"
+#include "../../Definitions.hpp"
 #include "Debug.h"
-
-#define NUM_PLAYERS 4
 
 static const int width = 1600;
 static const int height = 1100;
@@ -40,41 +41,57 @@ static std::map<std::string, bool>triggers;
 static int lastRenderTime = 0;
 
 boost::asio::io_context outgoingContext;
-boost::asio::ip::tcp::resolver outgoingResolver = boost::asio::ip::tcp::resolver(outgoingContext);
-boost::asio::ip::tcp::resolver::results_type outgoingEndpoints = outgoingResolver.resolve(cse125constants::SERVER_HOST, cse125constants::SERVER_PORT);
-boost::asio::ip::tcp::socket outgoingSocket = boost::asio::ip::tcp::socket(outgoingContext);
+std::unique_ptr<boost::asio::ip::tcp::resolver> outgoingResolver;
+boost::asio::ip::tcp::resolver::results_type outgoingEndpoints;
+std::unique_ptr<boost::asio::ip::tcp::socket> outgoingSocket;
 
-int clientId = -1; // this client's unique id
+
+int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
 
+void sendDataToServer(MovementKey movementKey,
+                      vec3 cameraDirection);
+void receiveDataFromServer();
+void cleanupConnection();
+
 #include "hw3AutoScreenshots.h"
 
-// Asks the server to provide this client with its unique id that the client can use for all future communication
-// with the server
-void requestClientId() {
+// Asks the server to provide this client with its unique id that the client can
+// use for all future communication with the server
+void requestClientId()
+{
     // Set up connection to server for outgoing data
 
     cse125framing::ClientFrame frame;
     frame.id = cse125constants::DEFAULT_CLIENT_ID;
 
     // Get this client's id from the server
-    while (true) {
+    while (true)
+    {
         // Send a frame with an id of -1
-        boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+        boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE>
+            clientBuffer;
         cse125framing::serialize(&frame, clientBuffer);
         boost::system::error_code writeError;
-        size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
+
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR)
+            std::cerr << "sending frame: \n" << &frame << std::endl;
+
+        size_t numWritten = boost::asio::write(
+            *outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
         if (writeError) {
             if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
                 std::cerr << "Error contacting server, retrying ..." << std::endl;
             }
             continue;
         }
-        boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
+        boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE>
+            serverBuffer;
         boost::system::error_code error;
-        size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
+        //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+        size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
 
         if (error == boost::asio::error::eof) {
             if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
@@ -82,13 +99,17 @@ void requestClientId() {
             }
             break;
         }
-        else if (error) {
+        else if (error)
+        {
             throw boost::system::system_error(error); // Some other error.
         }
-        else {
+        else
+        {
             // Parse the id provided by the server
+            cse125framing::ServerFrame frame;
+            cse125framing::deserialize(&frame, serverBuffer);
+            clientId = frame.id;
             // TODO: Account for endianess differences
-            std::memcpy(&clientId, &serverBuffer, sizeof(int));
             if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
                 std::cout << "Client id is now " << clientId << std::endl;
             }
@@ -97,7 +118,8 @@ void requestClientId() {
     }
 }
 
-void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirection) {
+void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
+{
     cse125framing::ClientFrame frame;
     frame.id = clientId;
     frame.ctr = clientFrameCtr++;
@@ -107,28 +129,27 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
     cse125framing::serialize(&frame, clientBuffer);
     boost::system::error_code writeError;
-    size_t numWritten = boost::asio::write(outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
+
+    // std::cerr << "sending frame: " << std::endl << &frame << std::endl;
+
+    size_t numWritten = boost::asio::write(*outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
     if (writeError) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error sending packet to server, continuing ..." << std::endl;
             std::cerr << writeError << std::endl;
         }
     }
-    else {
-        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
-            std::cout << "Successfully sent frame # " << clientFrameCtr << " to server." << std::endl;
-        }
-    }
+}
 
-    // Wait for server to respond. With multiple clients, this listening step must be
-    // moved into a separate, asynchronous thread.
+void receiveDataFromServer()
+{
+    // Wait for server to respond.
     cse125framing::ServerFrame serverFrame;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
-    //size_t numRead = outgoingSocket.read_some(boost::asio::buffer(serverBuffer), error);
 
-    size_t numRead = boost::asio::read(outgoingSocket, boost::asio::buffer(serverBuffer));
-
+    //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
+    size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
 
     if (error == boost::asio::error::eof) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
@@ -137,120 +158,47 @@ void sendDataToServer(cse125framing::MovementKey movementKey, vec3 cameraDirecti
     }
     else if (error) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error reading from server." << std::endl; // Some other error.
+            std::cerr << "Error reading from server: " << error << std::endl; // Some other error.
         }
     }
-    else {
+    else
+    {
         cse125framing::deserialize(&serverFrame, serverBuffer);
+
+        assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
         if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
             std::cout << "Received reply from server." << std::endl;
             std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
             std::cout << &serverFrame << std::endl;
         }
 
-        // Use the data
-        const glm::vec3 pos = glm::vec3(serverFrame.playerPosition);
-        const glm::vec3 dir = glm::vec3(serverFrame.playerDirection);
-        p0.moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-        //scene.node["player0"]->childtransforms[0] = glm::translate(pos)  * glm::scale(vec3(0.5f, 0.5f, 0.5)) * glm::rotate(-1.0f* glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * glm::inverse(glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0)));
-        scene.camera->setPosition(pos);
+        // Use the data. 
+        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+        {
+            const glm::vec3 pos = glm::vec3(serverFrame.players[i].playerPosition);
+            const glm::vec3 dir = glm::vec3(serverFrame.players[i].playerDirection);
+            players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+            players[i]->setCrownStatus(serverFrame.players[i].hasCrown);
+        }
+        scene.camera->setPosition(glm::vec3(serverFrame.players[clientId].playerPosition));
     }
 }
 
-void cleanupConnection() {
+void cleanupConnection()
+{
     boost::system::error_code errorCode;
-    outgoingSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
+    outgoingSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
     if (errorCode) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error shutting down socket" << std::endl;
         }
     }
-    outgoingSocket.close(errorCode);
+    outgoingSocket->close(errorCode);
     if (errorCode) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
             std::cerr << "Error closing socket" << std::endl;
         }
     }
-}
-
-class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
-{
-public:
-    GraphicsSession(boost::asio::ip::tcp::socket socket)
-        : socket(std::move(socket))
-    {
-    }
-
-    void start()
-    {
-        do_read();
-    }
-
-private:
-    void do_read()
-    {
-        auto self(shared_from_this());
-        socket.async_read_some(boost::asio::buffer(data, max_length),
-            [this, self](boost::system::error_code ec, std::size_t length)
-            {
-                if (!ec)
-                {
-                    do_write(length);
-                }
-            });
-    }
-
-    void do_write(std::size_t length)
-    {
-        auto self(shared_from_this());
-        boost::asio::async_write(socket, boost::asio::buffer(data, length),
-            [this, self](boost::system::error_code ec, std::size_t /*length*/)
-            {
-                if (!ec)
-                {
-                    do_read();
-                }
-            });
-    }
-
-    boost::asio::ip::tcp::socket socket;
-    enum { max_length = 1024 };
-    char data[max_length];
-};
-
-class GraphicsServer
-{
-public:
-    GraphicsServer(boost::asio::io_context& io_context, short port)
-        : acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
-    {
-        do_accept();
-    }
-
-private:
-    void do_accept()
-    {
-        acceptor.async_accept(
-            [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket)
-            {
-                if (!ec)
-                {
-                    std::make_shared<GraphicsSession>(std::move(socket))->start();
-                }
-
-                do_accept();
-            });
-    }
-
-    boost::asio::ip::tcp::acceptor acceptor;
-};
-void launchServer(short port) {
-    boost::asio::io_context io_context;
-
-    GraphicsServer s(io_context, port);
-
-    std::cout << "Before io_context.run()" << std::endl;
-    io_context.run();
 }
 
 void printHelp(){
@@ -274,14 +222,16 @@ void printHelp(){
 
       press Spacebar to generate images for hw3 submission.
     
-)";
+        )";
 }
 
-void initialize(void){
+void initialize(void)
+{
     printHelp();
-    glClearColor(background[0], background[1], background[2], background[3]); // background color
-    glViewport(0,0,width,height);
-    
+    glClearColor(background[0], background[1], background[2],
+                 background[3]); // background color
+    glViewport(0, 0, width, height);
+
     // Initialize scene
     scene.init();
 
@@ -292,7 +242,7 @@ void initialize(void){
     triggers["right"] = false; 
 
     // Set up players
-    for (int i = 0; i < NUM_PLAYERS; i++) {
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
         players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
         players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
@@ -303,38 +253,39 @@ void initialize(void){
     glEnable(GL_DEPTH_TEST);
 }
 
-void display(void){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw();
-    
+
     glutSwapBuffers();
     glFlush();
-    
 }
 
-void saveScreenShot(const char* filename = "test.png"){
+void saveScreenShot(const char* filename = "test.png")
+{
     int currentwidth = glutGet(GLUT_WINDOW_WIDTH);
     int currentheight = glutGet(GLUT_WINDOW_HEIGHT);
-    Screenshot imag = Screenshot(currentwidth,currentheight);
+    Screenshot imag = Screenshot(currentwidth, currentheight);
     imag.save(filename);
 }
 
+
 void handleMoveForward() {
-    sendDataToServer(cse125framing::MovementKey::FORWARD, scene.camera->forwardVectorXZ());
+    sendDataToServer(MovementKey::FORWARD, scene.camera->forwardVectorXZ());
 }
 
 void handleMoveBackward() {
-    sendDataToServer(cse125framing::MovementKey::BACKWARD, scene.camera->forwardVectorXZ());
+    sendDataToServer(MovementKey::BACKWARD, scene.camera->forwardVectorXZ());
 }
 
 void handleMoveRight() {
-    sendDataToServer(cse125framing::MovementKey::RIGHT, scene.camera->forwardVectorXZ());
+    sendDataToServer(MovementKey::RIGHT, scene.camera->forwardVectorXZ());
 
 }
 
 void handleMoveLeft() {
-    sendDataToServer(cse125framing::MovementKey::LEFT, scene.camera->forwardVectorXZ());
+    sendDataToServer(MovementKey::LEFT, scene.camera->forwardVectorXZ());
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -416,22 +367,18 @@ void keyboard(unsigned char key, int x, int y){
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
         case 'a':
-            //handleMoveLeft();
             triggers["left"] = false;
             glutPostRedisplay();
             break;
         case 'd':
-            //handleMoveRight();
             triggers["right"] = false;
             glutPostRedisplay();
             break;
         case 'w':
-            //handleMoveForward();
             triggers["up"] = false;
             glutPostRedisplay();
             break;
         case 's':
-            //handleMoveBackward();
             triggers["down"] = false;
             glutPostRedisplay();
             break;
@@ -441,32 +388,32 @@ void keyboardUp(unsigned char key, int x, int y){
     }
 }
 
-void specialKey(int key, int x, int y){
+void specialKey(int key, int x, int y) {
+    glm::vec3 camera = (scene.camera->target - scene.camera->eye) *
+        glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
-        case GLUT_KEY_UP: // up
-            //handleMoveForward();
-            triggers["up"] = true;
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_DOWN: // down
-            //handleMoveBackward();
-            triggers["down"] = true;
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_RIGHT: // right
-            //handleMoveRight();
-            triggers["right"] = true;
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_LEFT: // left
-            //handleMoveLeft();
-            triggers["left"] = true;
-            glutPostRedisplay();
-            break;
+    case GLUT_KEY_UP: // up
+        triggers["up"] = true;
+        glutPostRedisplay();
+        break;
+    case GLUT_KEY_DOWN: // down
+        triggers["down"] = true;
+        glutPostRedisplay();
+        break;
+    case GLUT_KEY_RIGHT: // right
+        triggers["right"] = true;
+        glutPostRedisplay();
+        break;
+    case GLUT_KEY_LEFT: // left
+        triggers["left"] = true;
+        glutPostRedisplay();
+        break;
     }
 }
 
 void specialKeyUp(int key, int x, int y){
+    glm::vec3 camera = (scene.camera->target - scene.camera->eye) *
+        glm::vec3(1.0f, 0.0f, 1.0f);
     switch (key) {
         case GLUT_KEY_UP: // up
             //handleMoveForward();
@@ -509,7 +456,7 @@ void idle() {
     int time = glutGet(GLUT_ELAPSED_TIME);
 	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
-        for (int i = 0; i < NUM_PLAYERS; i++) {
+        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);
             players[i]->bobCrown(time);
         }
@@ -530,6 +477,11 @@ void idle() {
     if (triggers["right"]) {
         handleMoveRight();
     }
+
+    if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
+        receiveDataFromServer();
+    }
+    glutPostRedisplay();
 }
 
 void mouseMovement(int x, int y) {
@@ -551,45 +503,33 @@ int main(int argc, char** argv)
 {
     // BEGIN CREATE WINDOW
     glutInit(&argc, argv);
-    
+
 #ifdef __APPLE__
-    glutInitDisplayMode( GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGBA |
+                        GLUT_DEPTH);
 #else
-    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 #endif
     glutInitWindowSize(width, height);
     glutCreateWindow(title);
 #ifndef __APPLE__
     glewExperimental = GL_TRUE;
-    GLenum err = glewInit() ;
-    if (GLEW_OK != err) {
+    GLenum err = glewInit();
+    if (GLEW_OK != err)
+    {
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
 #endif
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
-    boost::asio::connect(outgoingSocket, outgoingEndpoints);
 
-
-    // Set this client's id
+    // Network setup
+    cse125config::initializeConfig("../../config.json");
+    outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
+    outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
+    outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
+    boost::asio::connect(*outgoingSocket, outgoingEndpoints);
     requestClientId();
-
-    // Set up listening socket "server"
-    /*
-    // Specify the port on which the client will listen
-    short port = 8000;
-    //// Launch a thread in which to run the listener
-    bool threadSuccess = true;
-    boost::thread listenerThread;
-    try {
-        listenerThread = boost::thread(launchServer, port);
-    }
-    catch (std::exception& e)
-    { 
-		threadSuccess = false;
-		std::cerr << "Exception: " << e.what() << "\n";
-    }
-    */
     
     initialize();
     glutDisplayFunc(display);
@@ -599,18 +539,7 @@ int main(int argc, char** argv)
     glutSpecialUpFunc(specialKeyUp);
     glutIdleFunc(idle);
     glutPassiveMotionFunc(mouseMovement);
-    glutMotionFunc(mouseMovement);
-    
-    
+    glutMotionFunc(mouseMovement);  
     glutMainLoop();
-    /*
-    if (threadSuccess) {
-        listenerThread.join();
-    }
-    */
-
- 
-
-  
-	return 0;   /* ANSI C requires main to return int. */
+    return 0; /* ANSI C requires main to return int. */
 }
