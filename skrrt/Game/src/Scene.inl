@@ -34,6 +34,9 @@ void Scene::init(void){
 
     geometry["map"] = new Obj; 
     geometry["map"]->init("models/Map(not finished).obj", "textures/grey.png", 2);
+
+    geometry["cube"] = new Cube;
+    geometry["cube"]->init();
     
     // Create a material palette
     material["wood"] = new Material;
@@ -92,6 +95,10 @@ void Scene::init(void){
     model["map"] = new Model; 
     model["map"]->geometry = geometry["map"];
     model["map"]->material = material["silver"];
+
+    model["cube"] = new Model; 
+    model["cube"]->geometry = geometry["cube"];
+    model["cube"]->material = material["silver"];
 
     // Create a light palette
     light["sun"] = new Light;
@@ -229,7 +236,7 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -1.0f, 0.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 1.0f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
     
     // Put a camera
     camera = new Camera;
