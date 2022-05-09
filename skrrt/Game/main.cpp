@@ -45,11 +45,6 @@ std::unique_ptr<boost::asio::ip::tcp::resolver> outgoingResolver;
 boost::asio::ip::tcp::resolver::results_type outgoingEndpoints;
 std::unique_ptr<boost::asio::ip::tcp::socket> outgoingSocket;
 
-//boost::asio::ip::tcp::resolver outgoingResolver(outgoingContext);
-//boost::asio::ip::tcp::resolver::results_type outgoingEndpoints =
-//    outgoingResolver.resolve(cse125constants::SERVER_HOST,
-//                             cse125constants::SERVER_PORT);
-//boost::asio::ip::tcp::socket outgoingSocket(outgoingContext);
 
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 int clientFrameCtr = 0;
@@ -148,8 +143,7 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 
 void receiveDataFromServer()
 {
-    // Wait for server to respond. With multiple clients, this listening step
-    // must be moved into a separate, asynchronous thread.
+    // Wait for server to respond.
     cse125framing::ServerFrame serverFrame;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
@@ -164,7 +158,7 @@ void receiveDataFromServer()
     }
     else if (error) {
         if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error reading from server." << std::endl; // Some other error.
+            std::cerr << "Error reading from server: " << error << std::endl; // Some other error.
         }
     }
     else

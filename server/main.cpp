@@ -127,7 +127,6 @@ int main()
             std::vector<int> playerPriorities(cse125constants::NUM_PLAYERS, 0); // index i stores player i's priority
             unsigned int priorityCtr = 1;
 
-            server.queueMtx.lock();
             // Iterate from the end of where the queue currently is to the beginning
             for (auto it = serverQueue.crbegin(); it != serverQueue.crend(); it++)
             {
@@ -145,6 +144,7 @@ int main()
             size_t sizeBefore = serverQueue.size();
             // std::cerr << "Queue size before: " << serverQueue.size() << std::endl;
             // Empty the queue of all tasks
+            server.queueMtx.lock();
             server.serverQueue.clear();
             server.queueMtx.unlock();
             // std::cerr << "Queue size after: " << serverQueue.size() << std::endl;
