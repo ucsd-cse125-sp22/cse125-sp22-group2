@@ -42,7 +42,7 @@ private:
 public:
 	ParticleSource(float createRate = 1, float lifeSp = 100,
 					float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-					float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+					float airDen = 1.225, float d = 0.47, float particleRad = 1,
 					float colElast = 0, float colFrict = 0) {
 		position = glm::vec3(6.0f, 1.0f, 6.0f); 
 		velocity = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -69,7 +69,7 @@ public:
 	ParticleSource(glm::vec3 p, glm::vec3 v, float m, float windSp,
 					glm::vec3 windDir, float createRate = 1, float lifeSp = 100,
 					float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-					float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+					float airDen = 1.225, float d = 0.47, float particleRad = 1,
 					float colElast = 0, float colFrict = 0) {
 		position = p; 
 		velocity = v; 
@@ -103,7 +103,7 @@ public:
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
 		float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-		float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+		float airDen = 1.225, float d = 0.47, float particleRad = 1,
 		float colElast = 0, float colFrict = 0);
 	/*
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,

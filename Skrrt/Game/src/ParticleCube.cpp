@@ -154,8 +154,8 @@ ParticleCube::ParticleCube(glm::vec3 cubeMin, glm::vec3 cubeMax)
 	// Generate EBO, bind the EBO to the bound VAO and send the data
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,(void*)0);
+    //glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,(void*)0);
 
 	// Unbind the VBOs.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -178,18 +178,16 @@ ParticleCube::~ParticleCube()
 void ParticleCube::draw(const glm::mat4& viewProjMtx, GLuint shader)
 {
 	// actiavte the shader program 
-	glUseProgram(shader);
+	//glUseProgram(shader);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_CULL_FACE); 
-	//glCullFace(GL_BACK); 
-	glCullFace(GL_FRONT); 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glEnable(GL_CULL_FACE); 
+	//glCullFace(GL_FRONT); 
 
 	// get the locations and send the uniforms to the shader 
-	glUniformMatrix4fv(glGetUniformLocation(shader, "viewProj"), 1, false, (float*)&viewProjMtx);
-	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, (float*)&model);
-	glUniform3fv(glGetUniformLocation(shader, "DiffuseColor"), 1, &color[0]);
+	//glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, false, (float*)&viewProjMtx);
+	//glUniformMatrix4fv(glGetUniformLocation(shader, "modelview"), 1, GL_FALSE, (float*)&model);
+	//glUniform3fv(glGetUniformLocation(shader, "DiffuseColor"), 1, &color[0]);
 
 	// Bind the VAO
 	glBindVertexArray(VAO);
@@ -200,8 +198,8 @@ void ParticleCube::draw(const glm::mat4& viewProjMtx, GLuint shader)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Unbind the VAO and shader program
-	glBindVertexArray(0);
-	glUseProgram(0);
+	//glBindVertexArray(0);
+	//glUseProgram(0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

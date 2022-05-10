@@ -42,7 +42,9 @@ void main (void){
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
         //fragColor = texture(ourTexture, TexCoord);
 
-        if (texture_id == 0) {
+        if (is_particle == 1) {
+            fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        } else if (texture_id == 0) {
 			fragColor = texture(texture0, TexCoord);
         } else if (texture_id == 1) {
 			fragColor = texture(texture1, TexCoord);

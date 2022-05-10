@@ -12,6 +12,7 @@ Scene.cpp contains the implementation of the draw command
 
 using namespace glm;
 void Scene::draw(void){
+
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
     camera -> computeMatrices();
     shader -> view = camera -> view;
@@ -25,6 +26,8 @@ void Scene::draw(void){
         shader -> lightcolors[ count ] = (entry.second) -> color;
         count++;
     }
+
+    testcube->draw(glm::mat4(1.0f), shader->program);
     
     // Define stacks for depth-first search (DFS)
     std::stack < Node* > dfs_stack;
@@ -66,7 +69,7 @@ void Scene::draw(void){
             if (cur->isParticleSource) {
                 shader->is_particle = 1;
                 // Update position of particle source and direction 
-                cur->particles->Update(1, vec3(6.0f, 1.0f, 6.0f), vec3(0.0f, 0.0f, 1.0f), 0.1f, 5.0f, vec3(0.0f, 0.0f, 1.0f));
+                cur->particles->Update(1, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), 0.1f, 5.0f, vec3(0.0f, 0.0f, 1.0f));
 
                 // Draw particles
                 cur->particles->Draw(mat4(1.0f), shader->program);

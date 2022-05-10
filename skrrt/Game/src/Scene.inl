@@ -12,19 +12,21 @@ Scene.inl contains the definition of the scene graph
 
 using namespace glm;
 void Scene::init(void){
+
+
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    //geometry["pink_car"]->init("models/CarPink.obj", "textures/car_textures.png", 0);
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/fake_blue_car.png", 3);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", 0);
+    //geometry["pink_car"]->init("models/Car_Pink.obj", "textures/fake_blue_car.png", 3);
     geometry["blue_car"] = new Obj;
-    //geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/fake_blue_car.png", 3);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
+    //geometry["blue_car"]->init("models/Car_Blue.obj", "textures/fake_blue_car.png", 3);
     geometry["yellow_car"] = new Obj;
-    //geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/fake_blue_car.png", 3);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
+    //geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/fake_blue_car.png", 3);
     geometry["green_car"] = new Obj;
-    //geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/fake_blue_car.png", 3);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
+    //geometry["green_car"]->init("models/Car_Green.obj", "textures/fake_blue_car.png", 3);
 
     geometry["tire"] = new Obj;
     geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 0);
@@ -216,6 +218,7 @@ void Scene::init(void){
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
     
+    /*
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player1"]->childnodes.push_back(node["blue_car"]);
@@ -257,6 +260,7 @@ void Scene::init(void){
 
     node["world"]->childnodes.push_back(node["test_cube"]); 
     node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)));
+    */
     
     // Put a camera
     camera = new Camera;
@@ -271,4 +275,6 @@ void Scene::init(void){
     shader -> compile();
     glUseProgram(shader -> program);
     shader -> initUniforms();
+
+    testcube = &ParticleCube(glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 }
