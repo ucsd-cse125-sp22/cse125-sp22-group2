@@ -4,6 +4,7 @@
 cse125networkclient::NetworkClient::NetworkClient(std::string host, std::string port)
 {
     this->clientId = cse125constants::DEFAULT_CLIENT_ID;
+    this->clientFrameCtr = 0;
     this->resolver = std::make_unique<boost::asio::ip::tcp::resolver>(this->context);
     this->endpoints = this->resolver->resolve(host, port);
     this->socket = std::make_unique<boost::asio::ip::tcp::socket>(this->context);
@@ -60,7 +61,7 @@ int cse125networkclient::NetworkClient::getId()
         // TODO: Handle fatal error from server
         else if (readError)
         {
-            throw boost::system::system_error(readError); // Some other error.
+            throw boost::system::system_error(readError); 
         }
         // Successful read
         else
