@@ -15,13 +15,16 @@ void Scene::init(void){
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
     //geometry["pink_car"]->init("models/CarPink.obj", "textures/car_textures.png", 0);
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/fake_blue_car.png", 3);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
+    //geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/fake_blue_car.png", 3);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
+    //geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/fake_blue_car.png", 3);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
+    //geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/fake_blue_car.png", 3);
 
     geometry["tire"] = new Obj;
     geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 0);
@@ -191,11 +194,14 @@ void Scene::init(void){
     node["test_cube"]->modeltransforms.push_back(mat4(1.0f));
     //********************************************
 
+    node["particles0"] = new Node("test_cube", true, true);
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
+    mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
 
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -207,6 +213,8 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
+    node["pink_car"]->childnodes.push_back(node["particles0"]);
+    node["pink_car"]->childtransforms.push_back(particle_transform);
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));

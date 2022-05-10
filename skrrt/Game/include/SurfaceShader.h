@@ -37,6 +37,9 @@ struct SurfaceShader : Shader {
     // Texture id 
     GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
+
+    GLuint is_particle; 
+    GLuint is_particle_loc;
     
     GLuint texture0_loc; 
     GLuint texture1_loc; 
@@ -58,6 +61,7 @@ struct SurfaceShader : Shader {
         lightcolors_loc = glGetUniformLocation( program, "lightcolors" );
 
         texture_id_loc = glGetUniformLocation( program, "texture_id" );
+        is_particle_loc = glGetUniformLocation( program, "particle_loc" );
         
         texture0_loc = glGetUniformLocation(program, "texture0");
         texture1_loc = glGetUniformLocation(program, "texture1");
@@ -79,6 +83,7 @@ struct SurfaceShader : Shader {
         glUniform4fv( lightcolors_loc, GLsizei(nlights), &lightcolors[0][0] );
 
         glUniform1i(texture_id_loc, texture_id);
+        glUniform1i(is_particle_loc, is_particle);
 
         glUniform1i(texture0_loc, 0);
         glUniform1i(texture1_loc, 1);

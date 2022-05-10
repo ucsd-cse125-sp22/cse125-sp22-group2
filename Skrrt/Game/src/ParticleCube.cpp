@@ -102,6 +102,7 @@ ParticleCube::ParticleCube(glm::vec3 cubeMin, glm::vec3 cubeMax)
 
 
 	// Generate a vertex array (VAO) and two vertex buffer objects (VBO).
+	/*
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO_positions);
 	glGenBuffers(1, &VBO_normals);
@@ -125,6 +126,36 @@ ParticleCube::ParticleCube(glm::vec3 cubeMin, glm::vec3 cubeMax)
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+	// Unbind the VBOs.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	*/
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO_positions);
+	glGenBuffers(1, &VBO_normals);
+	glGenBuffers(1, &EBO);
+
+	// Bind to the VAO.
+	glBindVertexArray(VAO);
+
+	// Bind to the first VBO - We will use it to store the vertices
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_positions);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * positions.size(), positions.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+
+	// Bind to the second VBO - We will use it to store the normals
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_normals);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)* normals.size(), normals.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+
+	// Generate EBO, bind the EBO to the bound VAO and send the data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,(void*)0);
 
 	// Unbind the VBOs.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

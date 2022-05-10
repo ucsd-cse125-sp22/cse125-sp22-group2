@@ -12,6 +12,9 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="..\..\Config.cpp" />
+    <ClCompile Include="src\ParticleSource.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleCube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Constants.hpp" />
@@ -36,6 +39,9 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
     <ClInclude Include="..\..\Config.hpp" />
+    <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\ParticleSource.h" />
+    <ClInclude Include="include\ParticleCube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

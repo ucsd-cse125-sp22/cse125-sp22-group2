@@ -56,9 +56,20 @@ void Scene::draw(void){
             //shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
             shader->material = (cur->models[i])->material;
             shader->texture_id = (cur->models[i])->geometry->object_number;
+            shader->is_particle = 0;
 
             if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
                 std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
+            }
+
+            // Check if the node is a particle source 
+            if (cur->isParticleSource) {
+                shader->is_particle = 1;
+                // Update position of particle source and direction 
+                cur->particles->Update(1, vec3(6.0f, 1.0f, 6.0f), vec3(0.0f, 0.0f, 1.0f), 0.1f, 5.0f, vec3(0.0f, 0.0f, 1.0f));
+
+                // Draw particles
+                cur->particles->Draw(mat4(1.0f), shader->program);
             }
 
             // The draw command

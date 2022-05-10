@@ -29,6 +29,8 @@ uniform sampler2D texture1;
 uniform sampler2D texture2;
 uniform sampler2D texture3;
 
+uniform int is_particle;
+
 // Output the frag color
 out vec4 fragColor;
 
@@ -49,9 +51,10 @@ void main (void){
         } else {
             // test for UI elements 
 			fragColor = texture(texture3, TexCoord);
-            if (fragColor.t < 0.1) {
+            if (fragColor.a < 0.1) {
                 discard;
             }
+            fragColor = texture(texture3, TexCoord);
         }
 
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);

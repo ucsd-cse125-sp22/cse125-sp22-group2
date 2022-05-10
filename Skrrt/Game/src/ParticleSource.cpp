@@ -1,10 +1,17 @@
 #include "ParticleSource.h"
 
-void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp, 
-	                        glm::vec3 windDir, float createRate, float lifeSp, 
-							float posVar, float velVar, float lifespVar, float g, 
-	                        float airDen, float d, float particleRad, 
-						    float colElast, float colFrict, float floor) {
+/*
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
+							glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
+							float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
+							float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+							float colElast = 0, float colFrict = 0) {
+							*/
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
+							glm::vec3 windDir, float floor, float createRate, float lifeSp,
+							float posVar, float velVar, float lifespVar, float g,
+							float airDen, float d, float particleRad,
+							float colElast, float colFrict) {
 
 	// Update values 
 	position = p; 

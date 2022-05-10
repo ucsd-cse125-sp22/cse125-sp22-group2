@@ -26,20 +26,23 @@
 
 class Node {
 public:
-    Node(std::string n = "", bool v = true) { 
+    Node(std::string n = "", bool v = true, bool p = false) { 
         name = n; 
         visible = v; 
-        /*
+        isParticleSource = p;
         if (p) {
-			particles = ParticleSource(); 
+			particles = &ParticleSource(); 
         }
-        */
+        else {
+            particles = NULL;
+        }
     };
 
     std::string name; 
     bool visible;
+    bool isParticleSource; 
 
-    ParticleSource particles;
+    ParticleSource* particles;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;

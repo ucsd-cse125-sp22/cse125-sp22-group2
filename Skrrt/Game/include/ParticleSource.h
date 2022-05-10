@@ -40,6 +40,31 @@ private:
 	std::normal_distribution<float> distribution{0.0f, 1.0f};
 
 public:
+	ParticleSource(float createRate = 1, float lifeSp = 100,
+					float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
+					float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+					float colElast = 0, float colFrict = 0) {
+		position = glm::vec3(6.0f, 1.0f, 6.0f); 
+		velocity = glm::vec3(0.0f, 0.0f, 1.0f);
+		mass = 2.0f; 
+		windSpeed = 5.0f; 
+		windDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+
+		creationRate = createRate;
+		lifeSpan = lifeSp;
+		numParticles = 0;
+		roundOffError = 0;
+
+		positionVariance = posVar; 
+		velocityVariance = velVar;
+		lifespanVariance = lifespVar; 
+		gravity = g; 
+		airDensity = airDen; 
+		drag = d; 
+		particleRadius = particleRad; 
+		collisionElasticity = colElast; 
+		collisionFriction = colFrict;
+	}
 
 	ParticleSource(glm::vec3 p, glm::vec3 v, float m, float windSp,
 					glm::vec3 windDir, float createRate = 1, float lifeSp = 100,
@@ -67,11 +92,26 @@ public:
 		collisionFriction = colFrict;
 	}
 
+	void UpdatePosition(glm::vec3 p) {
+		position = p; 
+	}
+	 
+	void UpdateVelocity(glm::vec3 v) {
+		velocity = v;
+	}
+
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
-		glm::vec3 windDir, float createRate, float lifeSp,
-		float posVar, float velVar, float lifespVar, float gravity,
-		float airDensity, float drag, float particleRad,
-		float collisionElasticity, float collisionFriction, float floor);
+		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
+		float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
+		float airDen = 1.225, float d = 0.47, float particleRad = 0.01,
+		float colElast = 0, float colFrict = 0);
+	/*
+	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
+		glm::vec3 windDir, float floor, float createRate, float lifeSp,
+		float posVar, float velVar, float lifespVar, float g,
+		float airDen, float d, float particleRad,
+		float colElast, float colFrict);
+		*/
 	void Draw(const glm::mat4& viewProjMtx, GLuint shader);
 
 	void CleanUp();

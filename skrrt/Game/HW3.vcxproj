@@ -91,6 +91,9 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Obj.cpp" />
     <ClCompile Include="src\objloader.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleCube.cpp" />
+    <ClCompile Include="src\ParticleSource.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
@@ -113,6 +116,9 @@
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\Obj.h" />
     <ClInclude Include="include\objloader.h" />
+    <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\ParticleCube.h" />
+    <ClInclude Include="include\ParticleSource.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Screenshot.h" />
