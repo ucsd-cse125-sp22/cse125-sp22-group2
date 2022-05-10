@@ -275,6 +275,4 @@ void Scene::init(void){
     shader -> compile();
     glUseProgram(shader -> program);
     shader -> initUniforms();
-
-    testcube = &ParticleCube(glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 }

@@ -154,8 +154,8 @@ ParticleCube::ParticleCube(glm::vec3 cubeMin, glm::vec3 cubeMax)
 	// Generate EBO, bind the EBO to the bound VAO and send the data
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(2);
-    //glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,(void*)0);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2,1,GL_INT,GL_FALSE,0,(void*)0);
 
 	// Unbind the VBOs.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -185,9 +185,15 @@ void ParticleCube::draw(const glm::mat4& viewProjMtx, GLuint shader)
 	//glCullFace(GL_FRONT); 
 
 	// get the locations and send the uniforms to the shader 
-	//glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, false, (float*)&viewProjMtx);
-	//glUniformMatrix4fv(glGetUniformLocation(shader, "modelview"), 1, GL_FALSE, (float*)&model);
-	//glUniform3fv(glGetUniformLocation(shader, "DiffuseColor"), 1, &color[0]);
+
+	//**********
+	//glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, false, (float*)&viewProjMtx);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "modelview"), 1, GL_FALSE, (float*)&model);
+	glUniform1i( glGetUniformLocation(shader, "enablelighting"), 0);
+
+	glUniform1i(glGetUniformLocation(shader, "is_particle"), 1);
+	//************
 
 	// Bind the VAO
 	glBindVertexArray(VAO);

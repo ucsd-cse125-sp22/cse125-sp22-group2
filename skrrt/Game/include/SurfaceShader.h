@@ -61,7 +61,7 @@ struct SurfaceShader : Shader {
         lightcolors_loc = glGetUniformLocation( program, "lightcolors" );
 
         texture_id_loc = glGetUniformLocation( program, "texture_id" );
-        is_particle_loc = glGetUniformLocation( program, "particle_loc" );
+        is_particle_loc = glGetUniformLocation( program, "is_particle" );
         
         texture0_loc = glGetUniformLocation(program, "texture0");
         texture1_loc = glGetUniformLocation(program, "texture1");

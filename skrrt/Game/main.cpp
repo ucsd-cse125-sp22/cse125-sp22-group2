@@ -31,6 +31,7 @@ static const int height = 1100;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
+static ParticleCube* testcube;
 static Player p0, p1, p2, p3;
 static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 static Game game(&p0, &p1, &p2, &p3);
@@ -235,6 +236,9 @@ void initialize(void)
     // Initialize scene
     scene.init();
 
+    testcube = &ParticleCube(glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+
     // Initialize triggers map 
     triggers["up"] = false; 
     triggers["left"] = false; 
@@ -257,6 +261,8 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw();
+
+    testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
     glutSwapBuffers();
     glFlush();

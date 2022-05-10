@@ -27,8 +27,6 @@ void Scene::draw(void){
         count++;
     }
 
-    testcube->draw(glm::mat4(1.0f), shader->program);
-    
     // Define stacks for depth-first search (DFS)
     std::stack < Node* > dfs_stack;
     std::stack < mat4 >  matrix_stack;

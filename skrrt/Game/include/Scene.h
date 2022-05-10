@@ -64,9 +64,6 @@ public:
     
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
     std::map< std::string, Node* > node;
-
-    //ParticleCube testcube = ParticleCube(glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-    ParticleCube* testcube;
     
     Scene(){
         // the default scene graph already has one node named "world."

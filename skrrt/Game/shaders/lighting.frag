@@ -40,7 +40,6 @@ void main (void){
         // Default normal coloring (you don't need to modify anything here)
         vec3 N = normalize(normal);
         //fragColor = vec4(0.5f*N + 0.5f , 1.0f);
-        //fragColor = texture(ourTexture, TexCoord);
 
         if (is_particle == 1) {
             fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -53,10 +52,9 @@ void main (void){
         } else {
             // test for UI elements 
 			fragColor = texture(texture3, TexCoord);
-            if (fragColor.a < 0.1) {
+            if (fragColor.a < 0.01) {
                 discard;
             }
-            fragColor = texture(texture3, TexCoord);
         }
 
         //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
