@@ -171,6 +171,7 @@ int main()
                 // Track the priority order for this player
                 if (!playerPriorities.at(clientFrame.id))
                 {
+                    // Note: Lower values indicate higher priority
                     playerPriorities.at(clientFrame.id) = priorityCtr++;
                 }
             }
@@ -181,17 +182,12 @@ int main()
             server.queueMtx.unlock();
 
             // Determine the sorted priority order
-            // <client id, priority> pairs
-            std::vector<std::pair<int, int>> sortedPriorities;
+            // <priority, client_id> pairs
+            std::map<int, int> sortedPriorities;
             for (size_t i = 0; i < playerPriorities.size(); i++)
             {
-                sortedPriorities.push_back(
-                    std::make_pair(i, playerPriorities.at(i)));
+                sortedPriorities[playerPriorities[i]] = i;
             }
-            // Note: Lower values indicate higher priority
-            std::sort(sortedPriorities.begin(), sortedPriorities.end(),
-                      [](auto& left, auto& right)
-                      { return left.second < right.second; });
 
             // Update basic game state (not dependent on input)
             manager->step();
@@ -199,11 +195,14 @@ int main()
             for (auto it = sortedPriorities.begin();
                  it != sortedPriorities.end(); it++)
             {
-                const int& playerId = it->first;
+                const int& playerId = it->second;
+
                 const cse125gameaction::GameActionContainer* container =
                     gameActionTracker.getGameActionContainer(playerId);
+
                 GameAction gameAction =
                     cse125gameaction::gameActionFromContainer(container);
+
                 gameLoop(manager, playerId, gameAction,
                          container->cameraDirection);
             }
