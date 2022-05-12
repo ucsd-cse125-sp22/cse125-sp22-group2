@@ -103,9 +103,12 @@ void Scene::draw(Node* current_node){
 
 void Scene::updateScreen(void) {
 
+    // Initial screen transformation 
+    mat4 initial = translate(vec3(0.0f, 0.0f, camera->nearPlane - 0.1f)) * scale(vec3(0.001f, 0.001f, 0.001f));
+
     // Get camera transform 
     mat4 cur_VM = inverse(camera->view);
 
     // Update transform of UI root 
-    node["UI_root"]->childtransforms[0] = cur_VM;
+    node["UI_root"]->childtransforms[0] = cur_VM * initial;
 }

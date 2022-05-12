@@ -275,10 +275,12 @@ void Scene::init(void){
     node["UI_root"]->childnodes.push_back(node["screen"]); 
     // camera transforms that we need to apply to all screen elements
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
+    //node["UI_root"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
 
     node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
     // transform UI elements to be placed at a specific location on the "screen"
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
+    //node["screen"]->childtransforms.push_back(mat4(1.0f));
 
     // Create camera tree
     
