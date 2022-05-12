@@ -23,15 +23,11 @@ void launchServer()
 
 int main()
 {
-    // Initialize configured variables
+    // Initialize server and game
     cse125config::initializeConfig("../config.json");
-
-    // Initialize object manager
     manager = initializeGame();
-
-    // Initialize network server
-    GraphicsServer server(io_context, std::stoi(cse125config::SERVER_PORT));
-    // Launch server communication in separate thread
+    GraphicsServer* server =
+        new GraphicsServer(io_context, std::stoi(cse125config::SERVER_PORT));
     boost::thread serverThread(launchServer);
 
     // Initialize ticker
@@ -41,12 +37,12 @@ int main()
     std::cerr << "Waiting for " << cse125constants::NUM_PLAYERS
               << " clients to connect..." << std::endl;
 
-    while (server.clientsConnected < cse125constants::NUM_PLAYERS)
+    while (server->clientsConnected < cse125constants::NUM_PLAYERS)
     {
         // idle wait for clients
     }
 
-    std::cerr << server.clientsConnected << " clients connected!" << std::endl;
+    std::cerr << "Starting Skrrt Skirt!" << std::endl;
 
     // server loop
     try
@@ -57,7 +53,7 @@ int main()
             ticker.tickStart();
 
             const std::deque<cse125framing::ClientFrame> serverQueue(
-                server.serverQueue);
+                server->serverQueue);
 
             // Track action information for each player
             cse125gameaction::GameActionTracker gameActionTracker(
@@ -80,21 +76,18 @@ int main()
                                             clientFrame.cameraDirection);
 
                 // Track the priority order for this player
-                if (!playerPriorities.at(clientFrame.id))
-                {
-                    // Note: Lower values indicate higher priority
-                    playerPriorities.at(clientFrame.id) = priorityCtr++;
-                }
+                // Note: Higher values indicate higher priority
+                playerPriorities.at(clientFrame.id) = priorityCtr++;
             }
 
             // Empty the queue of all tasks
-            server.queueMtx.lock();
-            server.serverQueue.clear();
-            server.queueMtx.unlock();
+            server->queueMtx.lock();
+            server->serverQueue.clear();
+            server->queueMtx.unlock();
 
             // Determine the sorted priority order
             // <priority, client_id> pairs
-            std::map<int, int> sortedPriorities;
+            std::map<int, int, std::greater<int>> sortedPriorities;
             for (size_t i = 0; i < playerPriorities.size(); i++)
             {
                 sortedPriorities[playerPriorities[i]] = i;
@@ -124,7 +117,7 @@ int main()
             // Write data back to players
             cse125framing::ServerFrame serverFrame;
             initializeServerFrame(manager, &serverFrame);
-            server.writePackets(&serverFrame);
+            server->writePackets(&serverFrame);
 
             // Sleep until the end of the clock tick
             ticker.tickEnd();
@@ -135,6 +128,7 @@ int main()
         std::cerr << e.what() << std::endl;
     }
 
+    delete manager;
     // Wait for the server thread to finish
     serverThread.join();
 

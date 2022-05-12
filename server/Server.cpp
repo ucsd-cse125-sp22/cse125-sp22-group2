@@ -95,7 +95,7 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
                 if (this->clientsConnected < cse125constants::NUM_PLAYERS)
                 {
                     this->clientsConnected++;
-                    std::cerr << "Clients connected: " << this->clientsConnected
+                    std::cerr << clientsConnected << " client(s) connected..."
                               << std::endl;
                 }
             }
