@@ -41,10 +41,8 @@ void Scene::init(void){
     geometry["map"] = new Obj; 
     geometry["map"]->init("models/Map(not finished).obj", "textures/grey.png", 2);
 
-    //geometry["cube"] = new Cube;
-    //geometry["cube"]->init();
-    geometry["cube"] = new Obj;
-    geometry["cube"]->init("models/Spotlight.obj", "texture/fake_blue_car.png", 3);
+    geometry["plane"] = new Obj;
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", 3);
     
     // Create a material palette
     material["wood"] = new Material;
@@ -104,9 +102,10 @@ void Scene::init(void){
     model["map"]->geometry = geometry["map"];
     model["map"]->material = material["silver"];
 
-    model["cube"] = new Model; 
-    model["cube"]->geometry = geometry["cube"];
-    model["cube"]->material = material["silver"];
+    model["plane"] = new Model; 
+    model["plane"]->geometry = geometry["plane"];
+    model["plane"]->material = material["ceramic"];
+
 
     // Create a light palette
     light["sun"] = new Light;
@@ -191,9 +190,9 @@ void Scene::init(void){
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
     //********************************************
-    node["test_cube"] = new Node("test_cube");
-    node["test_cube"]->models.push_back(model["cube"]); 
-    node["test_cube"]->modeltransforms.push_back(mat4(1.0f));
+    node["plane"] = new Node("plane");
+    node["plane"]->models.push_back(model["plane"]); 
+    node["plane"]->modeltransforms.push_back(mat4(1.0f));
     //********************************************
 
     node["particles0"] = new Node("test_cube", true, true);
@@ -215,10 +214,9 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
-    node["pink_car"]->childnodes.push_back(node["particles0"]);
-    node["pink_car"]->childtransforms.push_back(particle_transform);
+    //node["pink_car"]->childnodes.push_back(node["particles0"]);
+    //node["pink_car"]->childtransforms.push_back(particle_transform);
     
-    /*
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
     node["player1"]->childnodes.push_back(node["blue_car"]);
@@ -258,9 +256,8 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
 
-    node["world"]->childnodes.push_back(node["test_cube"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)));
-    */
+    node["world"]->childnodes.push_back(node["plane"]); 
+    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     // Put a camera
     camera = new Camera;

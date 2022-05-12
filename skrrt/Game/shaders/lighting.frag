@@ -52,8 +52,10 @@ void main (void){
         } else {
             // test for UI elements 
 			fragColor = texture(texture3, TexCoord);
-            if (fragColor.a < 0.01) {
+			//fragColor = vec4(fragColor[3], 1.0f, 1.0f, 1.0f);
+            if (fragColor.w < 0.01) {
                 discard;
+                //fragColor = vec4(fragColor.a, 1.0f, 1.0f, 1.0f);
             }
         }
 
