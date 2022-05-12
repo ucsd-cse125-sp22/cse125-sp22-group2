@@ -49,35 +49,45 @@ void Scene::draw(void){
         // top-pop the stacks
         cur = dfs_stack.top();        dfs_stack.pop();
         cur_VM = matrix_stack.top(); matrix_stack.pop();
-        // draw all the models at the current node
-        for (unsigned int i = 0; i < cur->models.size(); i++) {
-            // Prepare to draw the geometry. Assign the modelview and the material.
 
-            shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
-            //shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
-            shader->material = (cur->models[i])->material;
-            shader->texture_id = (cur->models[i])->geometry->object_number;
-            shader->is_particle = 0;
+		// Check if the node is a particle source 
+		if (cur->isParticleSource == 1) {
+			std::cout << "Recognized a Particle Source node" << std::endl;
 
-            if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
-                std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
-            }
+            shader->modelview = cur_VM;
+			shader->texture_id = 0;
 
-            // Check if the node is a particle source 
-            if (cur->isParticleSource) {
-                shader->is_particle = 1;
-                // Update position of particle source and direction 
-                cur->particles->Update(1, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), 0.1f, 5.0f, vec3(0.0f, 0.0f, 1.0f));
+			shader->is_particle = 1;
 
-                // Draw particles
-                cur->particles->Draw(mat4(1.0f), shader->program);
-            }
+			// The draw command
+			shader->setUniforms();
 
-            // The draw command
-            shader->setUniforms();
-            if (cur->visible) {
-				(cur->models[i])->geometry->draw();
-            }
+			// Draw particles
+			cur->particles->Draw(mat4(1.0f), shader->program);
+        }
+        else {
+			// draw all the models at the current node
+			for (unsigned int i = 0; i < cur->models.size(); i++) {
+				// Prepare to draw the geometry. Assign the modelview and the material.
+
+				shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
+				//shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
+				shader->material = (cur->models[i])->material;
+				shader->texture_id = (cur->models[i])->geometry->object_number;
+				shader->is_particle = 0;
+
+				if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
+					std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
+				}
+
+				// The draw command
+				shader->setUniforms();
+
+				if (cur->visible) {
+					(cur->models[i])->geometry->draw();
+				}
+			}
+
         }
 
         // Continue the DFS: put all the child nodes of the current node in the stack

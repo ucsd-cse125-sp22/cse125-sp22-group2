@@ -11,6 +11,7 @@
 #include <stack>
 
 #include "Scene.h"
+#include "ParticleSource.h"
 
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
@@ -35,6 +36,8 @@ private:
 
 	glm::mat4 initial_crown_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)) * glm::scale(glm::vec3(0.8f, 0.8f, 0.8f));
 
+	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)); 
+
 	// Maybe a spawned position and rotation?
 
 public: 
@@ -45,6 +48,7 @@ public:
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
 	void bobCrown(float time);
+	void updateParticles(float time);
 
 	void setPlayer(Node* player) { player_node = player; };
 	void setCrown(Node* crown) { crown_node = crown; };

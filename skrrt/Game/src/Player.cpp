@@ -51,3 +51,20 @@ void Player::bobCrown(float time) {
 	}
 
 }
+
+void Player::updateParticles(float time) {
+	Node* car_node = player_node->childnodes[0]; 
+
+	// Take car's transform and transform the offset of the particles 
+
+	mat4 new_particle_transform = initial_particle_transform * player_node->childtransforms[0]; 
+	vec3 position = vec3(new_particle_transform[3][0], new_particle_transform[3][1], new_particle_transform[3][2]);
+	vec3 velocity = vec3(0.3f, 0.0f, -0.0f); 
+
+	// Call update for the particle source 
+	for (Node* child : car_node->childnodes) {
+		if (child->isParticleSource) {
+			child->particles->Update(time, position, velocity);
+		}
+	}
+}

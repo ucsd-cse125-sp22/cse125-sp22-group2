@@ -32,6 +32,7 @@ public:
         isParticleSource = p;
         if (p) {
 			particles = &ParticleSource(); 
+            std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
             particles = NULL;

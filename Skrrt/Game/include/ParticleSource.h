@@ -13,7 +13,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_PARTICLES 1000
+#define MAX_PARTICLES 100
 
 class ParticleSource
 {
@@ -42,9 +42,9 @@ private:
 public:
 	ParticleSource(float createRate = 1, float lifeSp = 100,
 					float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-					float airDen = 1.225, float d = 0.47, float particleRad = 1,
+					float airDen = 1.225, float d = 0.47, float particleRad = 0.1,
 					float colElast = 0, float colFrict = 0) {
-		position = glm::vec3(6.0f, 1.0f, 6.0f); 
+		position = glm::vec3(0.0f, 1.0f, 0.0f); 
 		velocity = glm::vec3(0.0f, 0.0f, 1.0f);
 		mass = 2.0f; 
 		windSpeed = 5.0f; 
@@ -64,12 +64,14 @@ public:
 		particleRadius = particleRad; 
 		collisionElasticity = colElast; 
 		collisionFriction = colFrict;
+
+		std::cout << "Initialized Particle Source" << std::endl;
 	}
 
 	ParticleSource(glm::vec3 p, glm::vec3 v, float m, float windSp,
-					glm::vec3 windDir, float createRate = 1, float lifeSp = 100,
+					glm::vec3 windDir, float createRate = 30, float lifeSp = 100,
 					float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-					float airDen = 1.225, float d = 0.47, float particleRad = 1,
+					float airDen = 1.225, float d = 0.47, float particleRad = 0.2,
 					float colElast = 0, float colFrict = 0) {
 		position = p; 
 		velocity = v; 
@@ -99,11 +101,13 @@ public:
 	void UpdateVelocity(glm::vec3 v) {
 		velocity = v;
 	}
+	
+	void Update(float deltaTime, glm::vec3 p, glm::vec3 v);
 
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
-		float posVar = 0, float velVar = 0, float lifespVar = 0, float g = 9.8,
-		float airDen = 1.225, float d = 0.47, float particleRad = 1,
+		float posVar = 3, float velVar = 5, float lifespVar = 50, float g = 0.5,
+		float airDen = 5.225, float d = 0.1, float particleRad = 0.05,
 		float colElast = 0, float colFrict = 0);
 	/*
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,

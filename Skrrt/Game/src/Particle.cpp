@@ -25,6 +25,7 @@ void Particle::draw(const glm::mat4& viewProjMtx, GLuint shader) {
 	// Stop rendering until clean up
 	if (lifespan > 0) {
 		//Cube cube = Cube(Position, glm::vec3(Position.x + 0.02, Position.y + 0.02, Position.z + 0.02));
+
 		ParticleCube cube = ParticleCube(Position, glm::vec3(Position.x + radius, Position.y + radius, Position.z + radius));
 		cube.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 

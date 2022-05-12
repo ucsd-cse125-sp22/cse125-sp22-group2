@@ -5,6 +5,7 @@
 #include <glm/gtx/transform.hpp>
 #include <vector>
 #include <GL/glew.h>
+#include "SurfaceShader.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -27,6 +28,7 @@ public:
 	~ParticleCube();
 
 	void draw(const glm::mat4& viewProjMtx, GLuint shader);
+	//void draw(const glm::mat4& viewProjMtx, SurfaceShader* shader);
 	void update();
 	void setColor(glm::vec3 c) { color = c; }
 

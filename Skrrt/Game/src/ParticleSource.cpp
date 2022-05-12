@@ -1,5 +1,9 @@
 #include "ParticleSource.h"
 
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v) {
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f));
+}
+
 /*
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 							glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
@@ -12,6 +16,8 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 							float posVar, float velVar, float lifespVar, float g,
 							float airDen, float d, float particleRad,
 							float colElast, float colFrict) {
+
+	//std::cout << "Called Particle Source Update" << std::endl;
 
 	// Update values 
 	position = p; 
@@ -38,7 +44,9 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	roundOffError = num - float(newParticles);
 
 	// Create particles
-	for (int i = 0; i < newParticles; i++) {
+	for (int i = 0; i < newParticles && numParticles < MAX_PARTICLES; i++) {
+	//for (int i = 0; i < newParticles; i++) {
+		std::cout << "particle " << i << " created" << std::endl;
 
 		// Add variance in position, velocity, and lifespan
 		glm::vec3 deltaPos = glm::vec3(position.x + distribution(gen) * positionVariance, position.y + distribution(gen) * positionVariance, position.z + distribution(gen) * positionVariance);
@@ -151,6 +159,8 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 }
 
 void ParticleSource::Draw(const glm::mat4& viewProjMtx, GLuint shader) {
+
+	//std::cout << "Print Particle Source" << std::endl;
 
 	// Draw all particles 
 	for (int i = 0; i < numParticles; i++) {
