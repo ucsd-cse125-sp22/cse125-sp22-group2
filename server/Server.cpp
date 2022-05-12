@@ -72,7 +72,7 @@ void GraphicsSession::do_read()
                 if (ec == boost::asio::error::connection_reset ||
                     ec == boost::asio::error::misc_errors::eof)
                 {
-                    sessionTerminated = true;
+                    this->sessionTerminated = true;
                 }
                 std::cerr << "Read failed with error " << ec << std::endl;
             }
@@ -92,6 +92,8 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
         {
             if (!ec)
             {
+                // do_write will be called once per client until all clients are
+                // connected
                 if (this->clientsConnected < cse125constants::NUM_PLAYERS)
                 {
                     this->clientsConnected++;
@@ -121,12 +123,14 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 
 void GraphicsServer::do_accept()
 {
+    // accept a connection
     acceptor.async_accept(
         [this](boost::system::error_code ec,
                boost::asio::ip::tcp::socket socket)
         {
             if (!ec)
             {
+                // create new session for the connection
                 std::shared_ptr<GraphicsSession> session =
                     std::make_shared<GraphicsSession>(
                         std::move(socket), this->numConnections,
