@@ -10,6 +10,10 @@ as it plays.
 ==============================================================================*/
 #include "fmod.hpp"
 #include "common.h"
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 int FMOD_Main()
 {
@@ -27,7 +31,7 @@ int FMOD_Main()
     result = FMOD::System_Create(&system);
     ERRCHECK(result);
 
-    result = system->init(32, FMOD_INIT_NORMAL, extradriverdata);
+    result = system->init(32, FMOD_INIT_NORMAL, 0);
     ERRCHECK(result);
 
     result = system->createSound(Common_MediaPath("drumloop.wav"), FMOD_DEFAULT, 0, &sound1);
@@ -36,7 +40,8 @@ int FMOD_Main()
     result = sound1->setMode(FMOD_LOOP_OFF);    /* drumloop.wav has embedded loop points which automatically makes looping turn on, */
     ERRCHECK(result);                           /* so turn it off here.  We could have also just put FMOD_LOOP_OFF in the above CreateSound call. */
 
-    result = system->createSound(Common_MediaPath("jaguar.wav"), FMOD_DEFAULT, 0, &sound2);
+    //result = system->createSound(Common_MediaPath("jaguar.wav"), FMOD_DEFAULT, 0, &sound2);
+    result = system->createSound("d:/hi.wav", FMOD_DEFAULT, 0, &sound2);
     ERRCHECK(result);
 
     result = system->createSound(Common_MediaPath("swish.wav"), FMOD_DEFAULT, 0, &sound3);
@@ -48,6 +53,10 @@ int FMOD_Main()
     do
     {
         Common_Update();
+    string s = Common_MediaPath("swish.wav");
+    Common_Draw("hi");
+    cout << s << endl;
+    cout << "hi" << endl;
 
         if (Common_BtnPress(BTN_ACTION1))
         {

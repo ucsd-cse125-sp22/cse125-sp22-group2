@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>.\lib\x64;D:\tf\3D Objects\cse125-sp22-group2\cse-125-include-directories\core\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>.\inc;D:\tf\3D Objects\cse125-sp22-group2\cse-125-include-directories\core\inc;$(IncludePath)</IncludePath>
+    <IncludePath>../../cse-125-include-directories\core\inc</IncludePath>
+    <LibraryPath>../../lib/x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -120,12 +120,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\cse-125-include-directories\core\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\cse-125-include-directories\core\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\cse-125-include-directories\core\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>fmodL_vc.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
@@ -148,7 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="..\Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

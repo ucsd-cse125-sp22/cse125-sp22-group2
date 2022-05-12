@@ -92,6 +92,9 @@ F_EXPORT FMOD_OUTPUT_DESCRIPTION* F_CALL FMODGetOutputDescription()
 
 
 /*
+    result = system->close();
+    ERRCHECK(result);
+    result = system->release();
 [
     [DESCRIPTION]
 
