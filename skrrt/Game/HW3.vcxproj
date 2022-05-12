@@ -89,6 +89,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\NetworkClient.cpp" />
     <ClCompile Include="src\Obj.cpp" />
     <ClCompile Include="src\objloader.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\NetworkClient.hpp" />
     <ClInclude Include="include\Obj.h" />
     <ClInclude Include="include\objloader.h" />
     <ClInclude Include="include\Player.h" />
