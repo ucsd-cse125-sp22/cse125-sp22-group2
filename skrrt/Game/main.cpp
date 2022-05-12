@@ -34,7 +34,8 @@ static Scene scene;
 //static ParticleCube* testcube;
 static Player p0, p1, p2, p3;
 static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
-static Game game(&p0, &p1, &p2, &p3);
+//static Game game(&p0, &p1, &p2, &p3);
+static Game game(cse125constants::NUM_PLAYERS);
 
 //static bool triggers[] = { false, false, false, false };
 static std::map<std::string, bool>triggers;
@@ -237,9 +238,6 @@ void initialize(void)
     // Initialize scene
     scene.init();
 
-    //testcube = &ParticleCube(glm::vec3(-10.0f,-10.0f,-10.0f), glm::vec3(10.0f, 10.0f, 10.0f));
-
-
     // Initialize triggers map 
     triggers["up"] = false; 
     triggers["left"] = false; 
@@ -261,7 +259,9 @@ void initialize(void)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw();
+    scene.draw(scene.node["world"]);
+    scene.updateScreen();
+    scene.draw(scene.node["UI_root"]);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
@@ -322,22 +322,22 @@ void keyboard(unsigned char key, int x, int y){
         case 'a':
             //handleMoveLeft();
             triggers["left"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'd':
             //handleMoveRight();
             triggers["right"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'w':
             //handleMoveForward();
             triggers["up"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 's':
             triggers["down"] = true;
-            handleMoveBackward();
-            glutPostRedisplay();
+            //handleMoveBackward();
+            //glutPostRedisplay();
             break;
         case 'z':
             //scene.camera -> zoom(1.1f);
@@ -367,7 +367,7 @@ void keyboard(unsigned char key, int x, int y){
             break;
         */
         default:
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -376,22 +376,22 @@ void keyboardUp(unsigned char key, int x, int y){
     switch(key){
         case 'a':
             triggers["left"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'd':
             triggers["right"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'w':
             triggers["up"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 's':
             triggers["down"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         default:
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -402,19 +402,19 @@ void specialKey(int key, int x, int y) {
     switch (key) {
     case GLUT_KEY_UP: // up
         triggers["up"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_DOWN: // down
         triggers["down"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_RIGHT: // right
         triggers["right"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_LEFT: // left
         triggers["left"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     }
 }
@@ -426,22 +426,22 @@ void specialKeyUp(int key, int x, int y){
         case GLUT_KEY_UP: // up
             //handleMoveForward();
             triggers["up"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
             //handleMoveBackward();
             triggers["down"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
             //handleMoveRight();
             triggers["right"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
             //handleMoveLeft();
             triggers["left"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -461,6 +461,9 @@ void idle() {
         glutPostRedisplay();
     }
     */
+
+    bool render = false;
+
     int time = glutGet(GLUT_ELAPSED_TIME);
 	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
@@ -468,8 +471,9 @@ void idle() {
             players[i]->spinWheels(speed);
             players[i]->bobCrown(time);
         }
-        glutPostRedisplay();
 		lastRenderTime = time;
+
+        render = true;
     }
 
     if (time - particleTime > 300) {
@@ -477,14 +481,10 @@ void idle() {
             players[i]->updateParticles(1);
         }
 
-        glutPostRedisplay(); 
         particleTime = time; 
-    }
 
-    //else {
-        //players[0]->updateParticles(1); 
-        //glutPostRedisplay();
-    //}
+        render = true;
+    }
 
     // Handle direction triggers 
     if (triggers["up"]) {
@@ -503,7 +503,10 @@ void idle() {
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         receiveDataFromServer();
     }
-    glutPostRedisplay();
+
+    if (render) {
+        glutPostRedisplay();
+    }
 }
 
 void mouseMovement(int x, int y) {

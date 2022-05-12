@@ -68,11 +68,14 @@ public:
     
     Scene(){
         // the default scene graph already has one node named "world."
-        node["world"] = new Node("word");
+        node["world"] = new Node("world");
+        node["UI_root"] = new Node("UI_root");
     }
     
     void init( void );
-    void draw( void );
+    void draw(Node* current_node);
+
+    void updateScreen(void);
     
     // destructor
     ~Scene(){

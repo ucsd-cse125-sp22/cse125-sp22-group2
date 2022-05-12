@@ -265,6 +265,22 @@ void Scene::init(void){
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> reset(); 
+
+    node["screen"] = new Node("screen");
+
+    node["test_UI_elem"] = new Node("test_UI_elem"); 
+    node["test_UI_elem"]->models.push_back(model["plane"]);
+    node["test_UI_elem"]->modeltransforms.push_back(rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    
+    node["UI_root"]->childnodes.push_back(node["screen"]); 
+    // camera transforms that we need to apply to all screen elements
+    node["UI_root"]->childtransforms.push_back(mat4(1.0f));
+
+    node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
+    // transform UI elements to be placed at a specific location on the "screen"
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
+
+    // Create camera tree
     
     // Initialize shader
     shader = new SurfaceShader;

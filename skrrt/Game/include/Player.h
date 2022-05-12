@@ -23,10 +23,6 @@ private:
 
 	// crown node 
 	Node* crown_node;
-
-	// Score
-	int score;
-
 	bool has_crown;
 
 	// Current world position 
@@ -42,8 +38,8 @@ private:
 
 public: 
 
-	Player() { player_node = NULL; score = 0; has_crown = false; };
-	Player(Node* car) { player_node = car; score = 0; has_crown = false; };
+	Player() { player_node = NULL; has_crown = false; };
+	Player(Node* car) { player_node = car; has_crown = false; };
 
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
@@ -62,10 +58,6 @@ public:
 	bool getCrownStatus() {
 		return has_crown;
 	};
-	
-	void updateScore(int s) { score = s; };
-	int getScore() { return score; };
-
 };
 
 #endif

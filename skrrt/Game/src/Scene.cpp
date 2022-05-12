@@ -11,7 +11,7 @@ Scene.cpp contains the implementation of the draw command
 
 
 using namespace glm;
-void Scene::draw(void){
+void Scene::draw(Node* current_node){
 
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
     camera -> computeMatrices();
@@ -32,7 +32,8 @@ void Scene::draw(void){
     std::stack < mat4 >  matrix_stack;
 
     // Initialize the current state variable for DFS
-    Node* cur = node["world"]; // root of the tree
+    //Node* cur = node["world"]; // root of the tree
+    Node* cur = current_node; // root of the tree
     mat4 cur_VM = camera->view; // update this current modelview during the depth first search.  Initially, we are at the "world" node, whose modelview matrix is just camera's view matrix.
 
     // The following is the beginning of the depth-first search algorithm.
@@ -98,4 +99,13 @@ void Scene::draw(void){
 
     } // End of DFS while loop.
 
+}
+
+void Scene::updateScreen(void) {
+
+    // Get camera transform 
+    mat4 cur_VM = inverse(camera->view);
+
+    // Update transform of UI root 
+    node["UI_root"]->childtransforms[0] = cur_VM;
 }
