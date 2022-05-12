@@ -24,10 +24,10 @@ uniform vec4 lightpositions[ maximal_allowed_lights ];
 uniform vec4 lightcolors[ maximal_allowed_lights ];
 
 // Texture sampler 
-uniform int texture_id;
-//uniform sampler2D ourTexture;
-uniform sampler2D texture1;
-uniform sampler2D texture2;
+uniform sampler2D texture_id;
+//uniform sampler2D texture2d;
+//uniform sampler2D texture1;
+//uniform sampler2D texture2;
 
 // Output the frag color
 out vec4 fragColor;
@@ -35,28 +35,16 @@ out vec4 fragColor;
 
 void main (void){
     if (!enablelighting){
-        // Default normal coloring (you don't need to modify anything here)
+        //Shades everything in black.
         vec3 N = normalize(normal);
         fragColor = vec4(0.0f, 0.0f, 0.0f , 1.0f);
-        //fragColor = texture(ourTexture, TexCoord);
-
-        
-        //if (texture_id == 0) {
-		//	fragColor = texture(texture1, TexCoord);
-        //} else {
-		//	fragColor = texture(texture2, TexCoord);
-        //}
-
-        //fragColor = vec4(TexCoord.x, TexCoord.y, 0.0f, 1.0f);
     } else {
-        
-        //fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
-        //fragColor = texture(ourTexture, TexCoord);
-        if (texture_id == 0) {
-			fragColor = texture(texture1, TexCoord);
-        } else {
-			fragColor = texture(texture2, TexCoord);
-        }
+        //Shades everything normally.
+        fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
+
+        vec4 texColor = texture(texture_id, TexCoord);
+
+        //fragColor = texColor;
 
         //make 3x3 matrix to transform normal (needed for non-uniform transforms)
         mat3 a_modelview = mat3(modelview);
@@ -77,17 +65,23 @@ void main (void){
             vec3 h_eye_norm = normalize(v_eye_norm + l_eye_norm);
             float nh = dot(n_eye_norm, h_eye_norm);
 
-            vec4 coef = ambient + diffuse * max(nl,0) + specular * pow(max(nh,0), shininess);
+            //ambient
+
+            //diffuse
+
+            //Specular
+
+            vec4 coef = texColor * max(nl,0) + specular * pow(max(nh,0), shininess);
             //component wise multiply lightcolors[i] and coef
             vec4 acum = vec4(coef[0] * lightcolors[i][0], coef[1] * lightcolors[i][1], coef[2] * lightcolors[i][2], coef[3] * lightcolors[i][3]);
             fragColor += acum;
         }
         fragColor += emision; 
 
+		// Cel shading
+		//fragColor = floor(fragColor * levels) / levels;
     }
 
-
-    fragColor = floor(fragColor * levels) / levels;
 
 
 }

@@ -250,7 +250,7 @@ void initialize(void)
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
-    glLineWidth(4.0f);
+    glLineWidth(3.0f);
     glEnable(GL_CULL_FACE); 
 }
 

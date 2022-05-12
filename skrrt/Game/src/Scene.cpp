@@ -62,7 +62,7 @@ void Scene::draw(void){
             }
 
             // The draw command
-            shader->setUniforms();
+            //update texture here
             if (cur->visible) {
 				(cur->models[i])->geometry->draw(shader);
             }
