@@ -64,7 +64,7 @@ int main(int argc, const char** argv)
 		// play a single sound
 		engine->play2D("../../media/bell.wav");
 	}
-	while(getch() != 'q');
+	while(getchar() != 'q');
 
 	// After we are finished, we have to delete the irrKlang Device created earlier
 	// with createIrrKlangDevice(). Use ::drop() to do that. In irrKlang, you should
