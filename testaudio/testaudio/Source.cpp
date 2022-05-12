@@ -18,5 +18,5 @@ int main(void) {
 
 	// Load sound
 	FMOD::Sound* sound;
-	result = system->createSound(".. / audio / Skrrt.wav", FMOD_DEFAULT, 0, &sound);
+	result = system->createSound(".. /audio/Skrrt.wav", FMOD_DEFAULT, 0, &sound);
 }
