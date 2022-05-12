@@ -470,21 +470,23 @@ void idle() {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);
             players[i]->bobCrown(time);
+            players[i]->updateParticles(1);
         }
 		lastRenderTime = time;
 
         render = true;
     }
 
+    /*
     if (time - particleTime > 300) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            players[i]->updateParticles(1);
         }
 
         particleTime = time; 
 
         render = true;
     }
+    */
 
     // Handle direction triggers 
     if (triggers["up"]) {

@@ -15,6 +15,15 @@
 
 #define MAX_PARTICLES 100
 
+
+//std::default_random_engine gen;
+//std::uniform_real_distribution<float> distribution = std::uniform_real_distribution<float>( 0.0f, 1.0f );
+
+namespace this_sucks {
+	extern std::default_random_engine gen;
+	extern std::uniform_real_distribution<float> distribution;
+}
+
 class ParticleSource
 {
 private:
@@ -36,8 +45,10 @@ private:
 	Particle* particles[MAX_PARTICLES];
 	int numParticles;
 
-	std::default_random_engine gen;
-	std::normal_distribution<float> distribution{0.0f, 1.0f};
+	//std::default_random_engine gen;
+	//std::normal_distribution<float> distribution{ 0.0f, 1.0f };
+	//std::uniform_real_distribution<float> distribution = std::uniform_real_distribution<float>( 0.0f, 1.0f );
+	//std::random::normal_distribution<float> distribution(0.0, 1.0);
 
 public:
 	ParticleSource(float createRate = 1, float lifeSp = 100,
@@ -66,6 +77,8 @@ public:
 		collisionFriction = colFrict;
 
 		std::cout << "Initialized Particle Source" << std::endl;
+		//gen = std::default_random_engine();
+		//distribution = std::normal_distribution<float>(0.0f, 1.0f);
 	}
 
 	ParticleSource(glm::vec3 p, glm::vec3 v, float m, float windSp,
@@ -105,10 +118,10 @@ public:
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v);
 
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
-		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 100,
-		float posVar = 3, float velVar = 5, float lifespVar = 50, float g = 0.5,
+		glm::vec3 windDir, float floor = -5, float createRate = 1, float lifeSp = 20,
+		float posVar = 2.0f, float velVar = 5.0f, float lifespVar = 0, float g = 0,
 		float airDen = 5.225, float d = 0.1, float particleRad = 0.05,
-		float colElast = 0, float colFrict = 0);
+		float colElast = -1, float colFrict = 0);
 	/*
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 		glm::vec3 windDir, float floor, float createRate, float lifeSp,

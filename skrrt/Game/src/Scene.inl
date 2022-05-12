@@ -214,8 +214,8 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
-    //node["pink_car"]->childnodes.push_back(node["particles0"]);
-    //node["pink_car"]->childtransforms.push_back(particle_transform);
+    node["pink_car"]->childnodes.push_back(node["particles0"]);
+    node["pink_car"]->childtransforms.push_back(particle_transform);
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));

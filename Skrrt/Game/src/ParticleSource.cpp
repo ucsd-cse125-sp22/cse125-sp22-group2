@@ -1,5 +1,14 @@
 #include "ParticleSource.h"
 
+namespace this_sucks {
+	std::default_random_engine gen;
+	std::uniform_real_distribution<float> distribution = std::uniform_real_distribution<float>(0.0f, 1.0f);;
+
+	//gen = std::default_random_engine(); 
+}
+
+using namespace this_sucks;
+
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v) {
 	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f));
 }
@@ -48,10 +57,22 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	//for (int i = 0; i < newParticles; i++) {
 		std::cout << "particle " << i << " created" << std::endl;
 
+		/*
+		if (numParticles >= 1) {
+			std::cout << "break loop because already initialized a particle" << std::endl;
+			break;
+		}
+		*/
+
 		// Add variance in position, velocity, and lifespan
 		glm::vec3 deltaPos = glm::vec3(position.x + distribution(gen) * positionVariance, position.y + distribution(gen) * positionVariance, position.z + distribution(gen) * positionVariance);
 		glm::vec3 deltaVel = glm::vec3(velocity.x + distribution(gen) * velocityVariance, velocity.y + distribution(gen) * velocityVariance, velocity.z + distribution(gen) * velocityVariance);
-		float deltaLifeSpan = lifeSpan + distribution(gen) * lifespanVariance;
+
+		std::cout << "distrubution gen: " << distribution(gen) << std::endl;
+		std::cout << "distribution gen min: " << distribution.min() << std::endl;
+		std::cout << "distribution gen max: " << distribution.max() << std::endl;
+		//float deltaLifeSpan = lifeSpan + distribution(gen) * lifespanVariance;
+		float deltaLifeSpan = lifeSpan; 
 
 		//std::cout << "Varied position: " << deltaPos.x << ", " << deltaPos.y << ", " << deltaPos.z << std::endl;
 
