@@ -55,7 +55,8 @@ void Scene::draw(Node* current_node){
 		if (cur->isParticleSource == 1) {
 			std::cout << "Recognized a Particle Source node" << std::endl;
 
-            shader->modelview = cur_VM;
+            //shader->modelview = cur_VM;
+            shader->modelview = camera->view;
 			shader->texture_id = 0;
 
 			shader->is_particle = 1;

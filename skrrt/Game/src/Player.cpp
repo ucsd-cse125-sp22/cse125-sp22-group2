@@ -18,10 +18,21 @@ void Player::moveCar(vec3 dir, vec3 up, vec3 pos) {
 
 	player_node->childtransforms[0] = t * s * correction * r;
 
-	//current_position = glm::vec3(player_node->childtransforms[0][3][0], 
-		//player_node->childtransforms[0][3][1], player_node->childtransforms[0][3][2]);
-	current_position = glm::vec3(player_node->childtransforms[0][0][3], 
-		player_node->childtransforms[0][1][3], player_node->childtransforms[0][2][3]);
+	mat4 car_transform = player_node->childtransforms[0];
+
+	/*
+	std::cout << "car transform: " << std::endl;
+	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+	*/
+
+	//current_position = glm::vec3(player_node->childtransforms[0][0][3], 
+		//player_node->childtransforms[0][1][3], player_node->childtransforms[0][2][3]);
+	current_position = glm::vec3(car_transform[3][0], car_transform[3][1], car_transform[3][2]);
+
+	std::cout << "current car position: " << current_position.x << " " << current_position.y << " " << current_position.z << std::endl;
 }
 
 void Player::spinWheels(float rotationDegree) {
