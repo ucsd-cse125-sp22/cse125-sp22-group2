@@ -18,8 +18,10 @@ void Player::moveCar(vec3 dir, vec3 up, vec3 pos) {
 
 	player_node->childtransforms[0] = t * s * correction * r;
 
-	current_position = glm::vec3(player_node->childtransforms[0][3][0], 
-		player_node->childtransforms[0][3][1], player_node->childtransforms[0][3][2]);
+	//current_position = glm::vec3(player_node->childtransforms[0][3][0], 
+		//player_node->childtransforms[0][3][1], player_node->childtransforms[0][3][2]);
+	current_position = glm::vec3(player_node->childtransforms[0][0][3], 
+		player_node->childtransforms[0][1][3], player_node->childtransforms[0][2][3]);
 }
 
 void Player::spinWheels(float rotationDegree) {

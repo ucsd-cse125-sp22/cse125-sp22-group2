@@ -72,11 +72,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 		glm::vec3 deltaPos = glm::vec3(position.x + distribution(gen) * positionVariance, position.y + distribution(gen) * positionVariance, position.z + distribution(gen) * positionVariance);
 		glm::vec3 deltaVel = glm::vec3(velocity.x + distribution(gen) * velocityVariance, velocity.y + distribution(gen) * velocityVariance, velocity.z + distribution(gen) * velocityVariance);
 
-		std::cout << "distrubution gen: " << distribution(gen) << std::endl;
-		std::cout << "distribution gen min: " << distribution.min() << std::endl;
-		std::cout << "distribution gen max: " << distribution.max() << std::endl;
-		//float deltaLifeSpan = lifeSpan + distribution(gen) * lifespanVariance;
-		float deltaLifeSpan = lifeSpan; 
+		float deltaLifeSpan = lifeSpan + distribution(gen) * lifespanVariance;
 
 		//std::cout << "Varied position: " << deltaPos.x << ", " << deltaPos.y << ", " << deltaPos.z << std::endl;
 
