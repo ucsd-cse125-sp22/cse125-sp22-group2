@@ -1,13 +1,15 @@
 #include "ParticleSource.h"
 
+/*
 namespace this_sucks {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<float> distribution = std::uniform_real_distribution<float>(0.0f, 1.0f);;
 
 	//gen = std::default_random_engine(); 
 }
+*/
 
-using namespace this_sucks;
+//using namespace this_sucks;
 
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v) {
 	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f));
@@ -46,6 +48,8 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	collisionElasticity = colElast; 
 	collisionFriction = colFrict;
 	glm::vec3 n = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	std::normal_distribution<float> distribution{ 0.0, 1.0 };
 
 	// Determine how many new particles to create this frame
 	float num = deltaTime * creationRate + roundOffError;

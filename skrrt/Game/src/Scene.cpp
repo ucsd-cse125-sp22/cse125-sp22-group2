@@ -64,7 +64,8 @@ void Scene::draw(Node* current_node){
 			shader->setUniforms();
 
 			// Draw particles
-			cur->particles->Draw(mat4(1.0f), shader->program);
+			cur->particles->Draw(cur_VM, shader->program);
+			//cur->particles->Draw(camera->view, shader->program);
         }
         else {
 			// draw all the models at the current node

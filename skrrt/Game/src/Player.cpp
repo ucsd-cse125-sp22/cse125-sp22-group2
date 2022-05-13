@@ -57,9 +57,12 @@ void Player::updateParticles(float time) {
 
 	// Take car's transform and transform the offset of the particles 
 
-	mat4 new_particle_transform = initial_particle_transform * player_node->childtransforms[0]; 
-	vec3 position = vec3(new_particle_transform[3][0], new_particle_transform[3][1], new_particle_transform[3][2]);
-	vec3 velocity = vec3(0.3f, 0.0f, -0.0f); 
+	//mat4 new_particle_transform = initial_particle_transform * player_node->childtransforms[0]; 
+	//mat4 new_particle_transform = player_node->childtransforms[0] * initial_particle_transform; 
+	//vec3 position = vec3(new_particle_transform[3][0], new_particle_transform[3][1], new_particle_transform[3][2]);
+
+	vec3 position = vec3(0.6f, -0.4f, 0.0f) + current_position;
+	vec3 velocity = vec3(0.06f, 0.0f, -0.0f); 
 
 	// Call update for the particle source 
 	for (Node* child : car_node->childnodes) {

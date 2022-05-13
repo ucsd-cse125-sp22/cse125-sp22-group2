@@ -557,7 +557,7 @@ int main(int argc, char** argv)
     outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
     boost::asio::connect(*outgoingSocket, outgoingEndpoints);
     requestClientId();
-    
+
     initialize();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);

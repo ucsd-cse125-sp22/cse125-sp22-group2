@@ -32,7 +32,7 @@ private:
 
 	glm::mat4 initial_crown_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)) * glm::scale(glm::vec3(0.8f, 0.8f, 0.8f));
 
-	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)); 
+	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.6f, -0.4f, 0.0f)); 
 
 	// Maybe a spawned position and rotation?
 
