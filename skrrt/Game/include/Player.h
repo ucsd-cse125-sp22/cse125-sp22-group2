@@ -28,7 +28,8 @@ private:
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 current_direction = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 initial_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
+	glm::vec3 current_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
 
 	glm::mat4 initial_crown_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)) * glm::scale(glm::vec3(0.8f, 0.8f, 0.8f));
 
