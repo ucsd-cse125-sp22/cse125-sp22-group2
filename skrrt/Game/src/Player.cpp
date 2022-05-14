@@ -28,12 +28,10 @@ void Player::moveCar(vec3 dir, vec3 up, vec3 pos) {
 	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
 	*/
 
-	//current_position = glm::vec3(player_node->childtransforms[0][0][3], 
-		//player_node->childtransforms[0][1][3], player_node->childtransforms[0][2][3]);
 	current_position = glm::vec3(car_transform[3][0], car_transform[3][1], car_transform[3][2]);
 	current_direction = vec3(car_transform * vec4(initial_direction, 0.0f));
 
-	std::cout << "current car position: " << current_position.x << " " << current_position.y << " " << current_position.z << std::endl;
+	//std::cout << "current car position: " << current_position.x << " " << current_position.y << " " << current_position.z << std::endl;
 }
 
 void Player::spinWheels(float rotationDegree) {
@@ -75,10 +73,10 @@ void Player::updateParticles(float time) {
 	//mat4 new_particle_transform = player_node->childtransforms[0] * initial_particle_transform; 
 	//vec3 position = vec3(new_particle_transform[3][0], new_particle_transform[3][1], new_particle_transform[3][2]);
 
-	vec3 position = vec3(0.6f, -0.4f, 0.0f) + current_position;
-	//vec3 velocity = vec3(player_node->childtransforms[0] * vec4(0.06f, 0.0f, -0.0f, 0.0f)); 
-	//vec3 velocity = vec3(0.06f, 0.0f, -0.0f); 
-	vec3 velocity = 0.06f * normalize(-current_direction); 
+	//vec3 position = vec3(0.6f, -0.4f, 0.0f) + current_position;
+	vec3 particle_direction = normalize(-current_direction);
+	vec3 position = particle_direction - vec3(0.0f, 0.4f, 0.0f) + current_position;
+	vec3 velocity = 0.06f * particle_direction; 
 
 	// Call update for the particle source 
 	for (Node* child : car_node->childnodes) {
