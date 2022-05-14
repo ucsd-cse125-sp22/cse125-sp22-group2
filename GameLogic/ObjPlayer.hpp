@@ -4,6 +4,7 @@
 #include "PhysicalObject.hpp"
 #include "ObjCrown.hpp"
 #include "ObjTrail.hpp"
+#include "ObjMakeup.hpp"
 
 class ObjPlayer : public PhysicalObject
 {
@@ -22,8 +23,10 @@ public:
 	float score;
 	// Whether we have the crown
 	bool hasCrown;
-	// Whether we are in a makeup booth
-	bool booth;
+	// The makeup booth we are in, or -1 if we aren't in any
+	int booth;
+	// How much longer we are stuck in the booth
+	float boothTime;
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);

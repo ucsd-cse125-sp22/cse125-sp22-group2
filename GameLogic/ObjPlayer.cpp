@@ -43,7 +43,8 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->makeupLevel = 0.0f;
 	this->score = 0.0f;
 	this->hasCrown = false;
-	this->booth = false;
+	this->booth = -1;
+	this->boothTime = 0.0f;
 }
 
 ObjPlayer::~ObjPlayer() {
@@ -55,20 +56,39 @@ void ObjPlayer::step() {
 	if (iframes) {
 		iframes--;
 	}
+
 	// Update stun frames
 	if (stun) {
 		stun--;
 	}
+
+	// Check if we are in a 
+
 	// Reduce makeup level if not currently fixing makeup
-	if (makeupLevel && !booth && !objectPosition(boundingBox, oMakeup)) {
+	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
 		makeupLevel -= 1.0f / 60.0f;
 	}
+
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which
 	// would probably be passed in as a parameter
-	if (hasCrown && !booth && !stun && !iframes) {
+	if (hasCrown && booth == -1 && !stun && !iframes) {
 		score += 1.0f / 60.0f;
 	}
+
+	// Makeup station
+	if (booth != -1 && boothTime) {
+		glm::vec3 destination = (position + objects->at(booth)->position) / 2.0f;
+		glm::vec3 dir = (direction + objects->at(booth)->direction) / 2.0f;
+		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
+		if (checkPlaceFree(bb)) {
+			this->position = destination;
+			this->direction = dir;
+			this->boundingBox = bb;
+		}
+		makeupLevel += 1.0f;
+	}
+
 	// Adjust speed (these numbers are placeholders)
 	speed = 0.5f;
 	if (hasCrown) {
@@ -84,25 +104,40 @@ void ObjPlayer::step() {
 
 void ObjPlayer::action(glm::vec3 dir) {
 	// Can't move when stunned
-	if (!stun) {
+	if (!stun || !boothTime) {
+		// Where we are trying to move (might change during collision loop)
 		glm::vec3 destination = this->position + this->speed * dir;
+		// Generate a bounding box at our destination and check what we would collide with
 		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 		vector<int> collisions = findCollisionObjects(bb);
 
-		bool free = true;
+		// Use to determine whether to cancel the move
+		bool destinationFree = true;
+		// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
 		bool adjusted = false;
+		// The booth at our destination
+		int potentialBooth = -1;
 
+		// Go through every object we collided with (this includes non-solids that we can overlap with)
 		for (unsigned int i = 0; i < collisions.size(); i++) {
 			PhysicalObject*& obj = this->objects->at(collisions[i]);
 
+			// Push other players
 			if (obj->type == oPlayer) {
 				glm::vec3 d = glm::normalize(obj->position - this->position);
 				((ObjPlayer*) obj)->movePushed(dir, glm::dot(d, dir * this->speed));
 			}
 
+			// Try to enter a makeup station
+			if (obj->type == oMakeup) {
+				if (!((ObjMakeup*)obj)->occupied) {
+					potentialBooth = obj->id;
+				}
+			}
+
 			// A solid object is blocking us
 			if (obj->solid && !adjusted) {
-				free = false;
+				destinationFree = false;
 				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 				glm::vec3 adjust = checkCollisionAdjust(bb, obj->boundingBox);
 				//cout <<  " Shifting " << glm::length(adjust) << " ";
@@ -117,28 +152,30 @@ void ObjPlayer::action(glm::vec3 dir) {
 						//cout << "Adjusted\n";
 						destination += adjust;
 						bb = temp;
-						free = true;
+						destinationFree = true;
 						adjusted = true;
 					}
 					else {
 						//cout << "Cancelled\n";
-						free = false;
+						destinationFree = false;
 					}
 				}
 				else {
 					//cout << "Confirmed\n";
-					free = false;
+					destinationFree = false;
 				}
 			}
 
-			// Check if crown is transferred
+			// Transfer/take the crown
 			if (obj->type == oPlayer) {
+				// We have the crown, pass it to the other player
 				if (this->hasCrown && !iframes) {
 					((ObjPlayer*)obj)->hasCrown = true;
 					((ObjPlayer*)obj)->iframes = 60;
 					this->hasCrown = false;
 					this->stun = 30;
 				}
+				// The other player has the crown, take it
 				else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 					this->hasCrown = true;
 					this->iframes = 60;
@@ -146,6 +183,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 					((ObjPlayer*)obj)->stun = 30;
 				}
 			}
+			// The crown is loose, take it
 			else if (obj->type == oCrown) {
 				if (((ObjCrown*)obj)->loose) {
 					((ObjCrown*)obj)->loose = false;
@@ -155,14 +193,25 @@ void ObjPlayer::action(glm::vec3 dir) {
 			}
 		}
 
-		// If we didn't collide, move
-		if (free) {
+		// If our destination is free, complete the move
+		if (destinationFree) {
 			this->position = destination;
 			this->direction = dir;
 			this->boundingBox = bb;
+
+			// Enter the makeup station if there is one at our destination
+			if (potentialBooth != -1) {
+				PhysicalObject*& obj = this->objects->at(potentialBooth);
+				if (!((ObjMakeup*)obj)->occupied) {
+					((ObjMakeup*)obj)->occupied = true;
+					this->booth = obj->id;
+					// Placeholder value
+					this->boothTime = 60.0f;
+				}
+			}
 		}
 	}
-	//cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
+	// cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
 }
 
 bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) {

@@ -49,6 +49,8 @@ public:
 	vector<int> findCollisionObjects(BoundingBox bb);
 	// Boolean collision check that terminates once a collision with the specified object is found
 	bool objectPosition(BoundingBox bb, int type);
+	// Collision check that terminates once a collision with the specified object is found and returns its id (-1 if not found)
+	int findObjectPosition(BoundingBox bb, int type);
 
 	// Move to a specified position if there is nothing blocking it
 	void movePosition(glm::vec3 pos);

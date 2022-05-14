@@ -83,6 +83,19 @@ bool PhysicalObject::objectPosition(BoundingBox bb, int type) {
 	return false;
 }
 
+int PhysicalObject::findObjectPosition(BoundingBox bb, int type) {
+	int objCount = this->objects->size();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == id) {
+			continue;
+		}
+		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 void PhysicalObject::movePosition(glm::vec3 pos) {
 	BoundingBox bb = generateBoundingBox(pos, this->direction, this->up);
 	vector<int> collisions = findCollisionObjects(bb);
