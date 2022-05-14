@@ -12,9 +12,13 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="..\..\Config.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="src\ParticleSource.cpp" />
     <ClCompile Include="src\Particle.cpp" />
     <ClCompile Include="src\ParticleCube.cpp" />
+=======
+    <ClCompile Include="src\NetworkClient.cpp" />
+>>>>>>> 2cda747c74b6cc2a5dde346e689d0c9da06fea2c
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Constants.hpp" />
@@ -39,9 +43,13 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
     <ClInclude Include="..\..\Config.hpp" />
+<<<<<<< HEAD
     <ClInclude Include="include\Particle.h" />
     <ClInclude Include="include\ParticleSource.h" />
     <ClInclude Include="include\ParticleCube.h" />
+=======
+    <ClInclude Include="include\NetworkClient.hpp" />
+>>>>>>> 2cda747c74b6cc2a5dde346e689d0c9da06fea2c
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

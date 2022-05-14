@@ -58,15 +58,6 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 
 	// Create particles
 	for (int i = 0; i < newParticles && numParticles < MAX_PARTICLES; i++) {
-	//for (int i = 0; i < newParticles; i++) {
-		std::cout << "particle " << i << " created" << std::endl;
-
-		/*
-		if (numParticles >= 1) {
-			std::cout << "break loop because already initialized a particle" << std::endl;
-			break;
-		}
-		*/
 
 		// Add variance in position, velocity, and lifespan
 		glm::vec3 deltaPos = glm::vec3(position.x + distribution(gen) * positionVariance, position.y + distribution(gen) * positionVariance, position.z + distribution(gen) * positionVariance);
@@ -76,7 +67,6 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 
 		//std::cout << "Varied position: " << deltaPos.x << ", " << deltaPos.y << ", " << deltaPos.z << std::endl;
 
-		//particles[numParticles] = new Particle(position, velocity, glm::vec3(0.0f), mass, false, lifeSpan, particleRadius);
 		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, particleRadius);
 
 		float random = ((float)rand() / INT_MAX);

@@ -162,6 +162,7 @@
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
     <ClInclude Include="ClockTick.hpp" />
     <ClInclude Include="GameAction.hpp" />
+    <ClInclude Include="GameUtils.h" />
     <ClInclude Include="Server.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +180,7 @@
     <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
     <ClCompile Include="ClockTick.cpp" />
     <ClCompile Include="GameAction.cpp" />
+    <ClCompile Include="GameUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>

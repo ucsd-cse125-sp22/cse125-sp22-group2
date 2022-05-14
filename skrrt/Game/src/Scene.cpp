@@ -53,7 +53,6 @@ void Scene::draw(Node* current_node){
 
 		// Check if the node is a particle source 
 		if (cur->isParticleSource == 1) {
-			std::cout << "Recognized a Particle Source node" << std::endl;
 
             //shader->modelview = cur_VM;
             shader->modelview = camera->view;
@@ -66,7 +65,6 @@ void Scene::draw(Node* current_node){
 
 			// Draw particles
 			cur->particles->Draw(cur_VM, shader->program);
-			//cur->particles->Draw(camera->view, shader->program);
         }
         else {
 			// draw all the models at the current node
@@ -74,7 +72,6 @@ void Scene::draw(Node* current_node){
 				// Prepare to draw the geometry. Assign the modelview and the material.
 
 				shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
-				//shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
 				shader->material = (cur->models[i])->material;
 				shader->texture_id = (cur->models[i])->geometry->object_number;
 				shader->is_particle = 0;

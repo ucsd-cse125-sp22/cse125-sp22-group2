@@ -20,6 +20,7 @@
 #include "Scene.h"
 #include "Game.h"
 #include "Player.h"
+#include "NetworkClient.hpp"
 
 #include "../../Config.hpp"
 #include "../../Frame.hpp"
@@ -37,171 +38,45 @@ static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 //static Game game(&p0, &p1, &p2, &p3);
 static Game game(cse125constants::NUM_PLAYERS);
 
-//static bool triggers[] = { false, false, false, false };
 static std::map<std::string, bool>triggers;
 
 static int lastRenderTime = 0;
 static int particleTime = 0;
 
-boost::asio::io_context outgoingContext;
-std::unique_ptr<boost::asio::ip::tcp::resolver> outgoingResolver;
-boost::asio::ip::tcp::resolver::results_type outgoingEndpoints;
-std::unique_ptr<boost::asio::ip::tcp::socket> outgoingSocket;
-
-
+// Network related variables
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
-int clientFrameCtr = 0;
+std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
+
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
 
-void sendDataToServer(MovementKey movementKey,
-                      vec3 cameraDirection);
-void receiveDataFromServer();
-void cleanupConnection();
-
 #include "hw3AutoScreenshots.h"
 
-// Asks the server to provide this client with its unique id that the client can
-// use for all future communication with the server
-void requestClientId()
-{
-    // Set up connection to server for outgoing data
-
-    cse125framing::ClientFrame frame;
-    frame.id = cse125constants::DEFAULT_CLIENT_ID;
-
-    // Get this client's id from the server
-    while (true)
-    {
-        // Send a frame with an id of -1
-        boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE>
-            clientBuffer;
-        cse125framing::serialize(&frame, clientBuffer);
-        boost::system::error_code writeError;
-
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR)
-            std::cerr << "sending frame: \n" << &frame << std::endl;
-
-        size_t numWritten = boost::asio::write(
-            *outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
-        if (writeError) {
-            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-                std::cerr << "Error contacting server, retrying ..." << std::endl;
-            }
-            continue;
-        }
-        boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE>
-            serverBuffer;
-        boost::system::error_code error;
-        //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
-        size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
-
-        if (error == boost::asio::error::eof) {
-            if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-                std::cout << "EOF from server:" << std::endl; // Server closed connection
-            }
-            break;
-        }
-        else if (error)
-        {
-            throw boost::system::system_error(error); // Some other error.
-        }
-        else
-        {
-            // Parse the id provided by the server
-            cse125framing::ServerFrame frame;
-            cse125framing::deserialize(&frame, serverBuffer);
-            clientId = frame.id;
-            // TODO: Account for endianess differences
-            if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
-                std::cout << "Client id is now " << clientId << std::endl;
-            }
-            break;
-        }
-    }
-}
 
 void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 {
-    cse125framing::ClientFrame frame;
-    frame.id = clientId;
-    frame.ctr = clientFrameCtr++;
-    frame.movementKey = movementKey;
-    frame.cameraDirection = glm::vec3(cameraDirection);
-
-    boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
-    cse125framing::serialize(&frame, clientBuffer);
-    boost::system::error_code writeError;
-
-    // std::cerr << "sending frame: " << std::endl << &frame << std::endl;
-
-    size_t numWritten = boost::asio::write(*outgoingSocket, boost::asio::buffer(clientBuffer), writeError);
-    if (writeError) {
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error sending packet to server, continuing ..." << std::endl;
-            std::cerr << writeError << std::endl;
-        }
-    }
-}
-
-void receiveDataFromServer()
-{
-    // Wait for server to respond.
-    cse125framing::ServerFrame serverFrame;
-    boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
     boost::system::error_code error;
-
-    //size_t numRead = outgoingSocket->read_some(boost::asio::buffer(serverBuffer), error);
-    size_t numRead = boost::asio::read(*outgoingSocket ,boost::asio::buffer(serverBuffer), error);
-
-    if (error == boost::asio::error::eof) {
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cout << "EOF from server." << std::endl; // Server closed connection
-        }
-    }
-    else if (error) {
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error reading from server: " << error << std::endl; // Some other error.
-        }
-    }
-    else
-    {
-        cse125framing::deserialize(&serverFrame, serverBuffer);
-
-        assert(numRead == cse125framing::SERVER_FRAME_BUFFER_SIZE);
-        if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
-            std::cout << "Received reply from server." << std::endl;
-            std::cout << numRead << " " << sizeof(cse125framing::ServerFrame) << std::endl;
-            std::cout << &serverFrame << std::endl;
-        }
-
-        // Use the data. 
-        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
-        {
-            const glm::vec3 pos = glm::vec3(serverFrame.players[i].playerPosition);
-            const glm::vec3 dir = glm::vec3(serverFrame.players[i].playerDirection);
-            players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-            players[i]->setCrownStatus(serverFrame.players[i].hasCrown);
-        }
-        scene.camera->setPosition(glm::vec3(serverFrame.players[clientId].playerPosition));
-    }
+    size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
 }
 
-void cleanupConnection()
+cse125framing::ServerFrame* receiveDataFromServer()
 {
-    boost::system::error_code errorCode;
-    outgoingSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorCode);
-    if (errorCode) {
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error shutting down socket" << std::endl;
-        }
+    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
+    boost::system::error_code error;
+    size_t numRead = networkClient->receive(frame, &error);
+    return frame;    
+}
+
+void updatePlayerState(cse125framing::ServerFrame* frame) {
+    // Use the data to update the player's game state
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
+        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
+        players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        players[i]->setCrownStatus(frame->players[i].hasCrown);
     }
-    outgoingSocket->close(errorCode);
-    if (errorCode) {
-        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
-            std::cerr << "Error closing socket" << std::endl;
-        }
-    }
+    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
 }
 
 void printHelp(){
@@ -298,7 +173,7 @@ void handleMoveLeft() {
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
-            //cleanupConnection();
+            networkClient->closeConnection();
             exit(0);
             break;
         case 'h': // print help
@@ -477,17 +352,6 @@ void idle() {
         render = true;
     }
 
-    /*
-    if (time - particleTime > 300) {
-        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        }
-
-        particleTime = time; 
-
-        render = true;
-    }
-    */
-
     // Handle direction triggers 
     if (triggers["up"]) {
         handleMoveForward(); 
@@ -502,8 +366,14 @@ void idle() {
         handleMoveRight();
     }
 
+    // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
-        receiveDataFromServer();
+        // Get data from server and allocate a new frame variable
+        cse125framing::ServerFrame* frame = receiveDataFromServer();
+        // Use the frame to update the player's state
+        updatePlayerState(frame);
+        // Delete the frame
+        delete frame;       
     }
 
     if (render) {
@@ -550,14 +420,22 @@ int main(int argc, char** argv)
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     // END CREATE WINDOW
 
-    // Network setup
+    // Read in config file and set variables
     cse125config::initializeConfig("../../config.json");
+    /*
     outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
     outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
     boost::asio::connect(*outgoingSocket, outgoingEndpoints);
     requestClientId();
+    */
 
+    // Initialize the network client
+    networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
+    // Connect to the server and set the client's id
+    clientId = networkClient->getId();
+    
+    // Graphics binding
     initialize();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
