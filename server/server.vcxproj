@@ -126,6 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\cse-125-libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Config.hpp" />
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\Definitions.hpp" />
     <ClInclude Include="..\Frame.hpp" />
@@ -160,10 +162,11 @@
     <ClInclude Include="..\GameLogic\PhysicalObjectManager.hpp" />
     <ClInclude Include="ClockTick.hpp" />
     <ClInclude Include="GameAction.hpp" />
+    <ClInclude Include="GameUtils.h" />
     <ClInclude Include="Server.hpp" />
-    <ClInclude Include="ServerQueue.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Config.cpp" />
     <ClCompile Include="..\Definitions.cpp" />
     <ClCompile Include="..\Frame.cpp" />
     <ClCompile Include="..\GameLogic\BoundingBox.cpp" />
@@ -177,6 +180,7 @@
     <ClCompile Include="..\GameLogic\PhysicalObjectManager.cpp" />
     <ClCompile Include="ClockTick.cpp" />
     <ClCompile Include="GameAction.cpp" />
+    <ClCompile Include="GameUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
