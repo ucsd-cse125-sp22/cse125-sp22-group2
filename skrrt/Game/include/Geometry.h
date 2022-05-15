@@ -42,17 +42,19 @@ public:
     virtual void init(const char* s){};
     virtual void init(const char* s, const char* t){};
     virtual void init(const char* s, const char* t, int obj_num){};
+    virtual void init(const char* s, const char* t, const char* spec, int obj_num){};
     
     void draw(SurfaceShader *shader){
         glBindVertexArray(vao);
-
+        
         //draw black wire mesh
+        /*
         shader->enablelighting = GL_FALSE;
         shader->setUniforms();
 		glCullFace(GL_FRONT); 
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
         glDrawElements(mode,count,type,0);
-        
+        */
         // draw normaly
         //glEnable(GL_LINE_SMOOTH);
         shader->enablelighting = GL_TRUE;
