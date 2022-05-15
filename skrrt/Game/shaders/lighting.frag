@@ -14,7 +14,6 @@ const float levels = 4.0f; // How many color levels when cel shading
 /////////////////////////
 
 struct Material {
-    vec4 specular;
     vec4 emission;
     float shininess;
 };
@@ -61,6 +60,35 @@ struct PointLight {
 const int maxNumPointLights = 10;
 uniform int numPointLights;
 uniform PointLight pointLights[maxNumPointLights];
+
+struct SpotLight {
+    // Position of the light in world space
+    vec4 position;
+
+    //vector that points from position in the direction of the SpotLight
+    vec3 direction; 
+
+    //Full brightness if inside inner cutoff, lerp decreasing brightness between inner and outer, no brightness outside of outer.
+    // Write as cos(angle), inner less than outer. i.e glm::cos(glm::radians(angle in degrees));
+    float innerCutoff;
+    float outerCutoff;
+
+
+    // Attenuation (How the light fades with distance)
+    // for no attenuation, set to (1.0f, 0.0f, 0.0f)
+    float constant;
+    float linear;
+    float quadradic;
+
+    // How the light looks (color, shininess, ...)
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+};
+
+const int maxNumSpotLights = 10;
+uniform int numSpotLights;
+uniform SpotLight spotLights[maxNumSpotLights];
 
 // Output the frag color
 out vec4 fragColor;
@@ -139,7 +167,44 @@ void main (void){
             fragColor += acum;
         }
 
-        //fragColor += material.emission; 
+		//////////////////////
+		// Calc Spot Lights //
+		//////////////////////
+
+        for(int i = 0; i < numSpotLights; i++) {
+            vec4 lightpos_eye = view * spotLights[i].position;
+            // avoid divide by zero
+            vec3 l_eye_norm = normalize((pos_eye.w * lightpos_eye.xyz) - (lightpos_eye.w * pos_eye.xyz));
+            float nl = dot(n_eye_norm, l_eye_norm);
+
+            vec3 h_eye_norm = normalize(v_eye_norm + l_eye_norm);
+            float nh = dot(n_eye_norm, h_eye_norm);
+
+            // Calculate ambient
+            vec4 acum = spotLights[i].ambient * texColor;
+
+            // Calculate diffuse
+            acum += spotLights[i].diffuse * max(nl,0) * texColor;
+
+            // Calculate specular
+            acum += (spotLights[i].specular * specColor) * pow(max(nh,0), material.shininess);
+
+            // Calculate attenuation
+            float lenFragLight = length(spotLights[i].position - (inverse(view) * pos_eye)); // inverse view matrix to get fragment world pos
+            float attenuation = 1.0f / (spotLights[i].constant + spotLights[i].linear * lenFragLight + spotLights[i].quadradic * lenFragLight * lenFragLight);
+            acum *= attenuation;
+
+            // Check if frag is in the spotlight
+            vec3 spotlightDirView = normalize((view * vec4(-1.0f * spotLights[i].direction,0.0f)).xyz);
+            float angleLightFrag = dot(l_eye_norm, spotlightDirView);
+            float intensity = (angleLightFrag - spotLights[i].outerCutoff) / (spotLights[i].innerCutoff - spotLights[i].outerCutoff);
+            intensity = clamp(intensity, 0.0f, 1.0f);
+            acum *= intensity;
+
+            fragColor += acum;
+        }
+
+        fragColor += material.emission; 
 
         // idk if this is needed
         //fragColor.w = 1.0f;

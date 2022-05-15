@@ -177,6 +177,14 @@ void receiveDataFromServer()
         {
             const glm::vec3 pos = glm::vec3(serverFrame.players[i].playerPosition);
             const glm::vec3 dir = glm::vec3(serverFrame.players[i].playerDirection);
+
+            //TODO remove stuff below this line, just a test
+            if (i == 0) {
+                scene.spotLights["player0Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
+                scene.spotLights["player0Headlight"]->direction = dir;
+            }
+            //TODO remove stuff above this line
+
             players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
         }
         scene.camera->setPosition(glm::vec3(serverFrame.players[clientId].playerPosition));

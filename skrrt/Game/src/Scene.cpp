@@ -16,12 +16,21 @@ void Scene::draw(void){
     camera -> computeMatrices();
     shader -> view = camera -> view;
     shader -> projection = camera -> proj;
+    shader->sun = sun;
+
     shader -> numPointLights = pointLights.size();
     shader -> pointLights.resize( shader -> numPointLights );
-    shader->sun = sun;
     int count = 0;
     for ( std::pair<std::string,PointLight*> entry : pointLights ){
         shader->pointLights[count] = entry.second;
+        count++;
+    }
+    
+    shader -> numSpotLights = spotLights.size();
+    shader -> spotLights.resize( shader -> numSpotLights );
+    count = 0;
+    for ( std::pair<std::string,SpotLight*> entry : spotLights ){
+        shader->spotLights[count] = entry.second;
         count++;
     }
     

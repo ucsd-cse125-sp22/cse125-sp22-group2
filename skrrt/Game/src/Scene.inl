@@ -38,23 +38,18 @@ void Scene::init(void){
     
     // Create a material palette
     material["wood"] = new Material;
-    material["wood"] -> specular = vec4(0.3f,0.15f,0.1f,1.0f);
     material["wood"] -> shininess = 100.0f;
     
     material["ceramic"] = new Material;
-    material["ceramic"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["ceramic"] -> shininess = 150.0f;
  
     material["silver"] = new Material;
-    material["silver"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["silver"] -> shininess = 50.0f;
     
     material["turquoise"] = new Material;
-    material["turquoise"] -> specular = vec4(0.3f, 0.3f, 0.3f, 1.0f);
     material["turquoise"] -> shininess = 100.0f;
     
     material["bulb"] = new Material;
-    material["bulb"] -> specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
     
@@ -120,6 +115,18 @@ void Scene::init(void){
 	pointLights["bulb"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
 	pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 	pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+	spotLights["player0Headlight"] = new SpotLight;
+	spotLights["player0Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+	spotLights["player0Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
+	spotLights["player0Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
+	spotLights["player0Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
+	spotLights["player0Headlight"]->constant = 1.0f;
+	spotLights["player0Headlight"]->linear = 0.045f;
+	spotLights["player0Headlight"]->quadradic = 0.0075f;
+	spotLights["player0Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	spotLights["player0Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	spotLights["player0Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {

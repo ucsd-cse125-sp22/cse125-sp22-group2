@@ -14,13 +14,29 @@ SurfaceShader is a shader that has the uniform
 #define __SURFACESHADER_H__
 
 struct Material_Locs {
-    GLuint specular;
     GLuint emission;
     GLuint shininess;
 };
 
 struct PointLight_Locs {
     GLuint position;
+
+    GLuint constant;
+    GLuint linear;
+    GLuint quadradic;
+
+    GLuint diffuse;
+    GLuint ambient;
+    GLuint specular;
+    GLuint shininess;
+};
+
+struct SpotLight_Locs {
+    GLuint position;
+
+    GLuint direction;
+    GLuint innerCutoff;
+    GLuint outerCutoff;
 
     GLuint constant;
     GLuint linear;
@@ -41,6 +57,7 @@ struct DirectionalLight_Locs {
 };
 
 #define MAX_NUM_POINT_LIGHTS 10
+#define MAX_NUM_SPOT_LIGHTS 10
 
 struct SurfaceShader : Shader {
     // modelview and projection
@@ -53,11 +70,21 @@ struct SurfaceShader : Shader {
     
     // lights
     GLboolean enablelighting = GL_FALSE; // are we lighting at all (global).
+    GLuint enablelighting_loc;
+
+    //point lights
     GLint numPointLights = 0;               // number of lights used
     std::vector<PointLight*> pointLights; 
-    GLuint enablelighting_loc;
     GLuint numPointLights_loc;
     std::vector<PointLight_Locs> pointLights_loc = std::vector<PointLight_Locs>(MAX_NUM_POINT_LIGHTS);
+
+    //spot lights
+    GLint numSpotLights = 0;               // number of lights used
+    std::vector<SpotLight*> spotLights; 
+    GLuint numSpotLights_loc;
+    std::vector<SpotLight_Locs> spotLights_loc = std::vector<SpotLight_Locs>(MAX_NUM_SPOT_LIGHTS);
+
+    //directional light
     DirectionalLight* sun;
     DirectionalLight_Locs sun_loc;
 
@@ -65,6 +92,7 @@ struct SurfaceShader : Shader {
     GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
     
+    // specular map
     GLuint specular_id;
     GLuint specular_id_loc;
     
@@ -73,11 +101,10 @@ struct SurfaceShader : Shader {
         modelview_loc  = glGetUniformLocation( program, "modelview" );
         projection_loc = glGetUniformLocation( program, "projection" );
         material_loc.emission    = glGetUniformLocation( program, "material.emission" );
-        material_loc.specular    = glGetUniformLocation( program, "material.specular" );
         material_loc.shininess    = glGetUniformLocation( program, "material.shininess" );
         enablelighting_loc = glGetUniformLocation( program, "enablelighting" );
-        numPointLights_loc = glGetUniformLocation( program, "numPointLights" );
         
+        numPointLights_loc = glGetUniformLocation( program, "numPointLights" );
         for (int i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
             pointLights_loc[i].position = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].position").c_str());
             pointLights_loc[i].constant = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].constant").c_str());
@@ -87,10 +114,30 @@ struct SurfaceShader : Shader {
             pointLights_loc[i].ambient = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].ambient").c_str());
             pointLights_loc[i].specular = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].specular").c_str());
             pointLights_loc[i].shininess = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].shininess").c_str());
-            if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+            if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
                 std::cout << "pointLights_loc[" << i << "].position: " << pointLights_loc[i].position << "\n";
                 std::cout << "pointLights_loc[" << i << "].constant: " << pointLights_loc[i].constant << "\n";
                 std::cout << "pointLights_loc[" << i << "].specular: " << pointLights_loc[i].specular << "\n";
+            }
+        }
+
+        numSpotLights_loc = glGetUniformLocation( program, "numSpotLights" );
+        for (int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++) {
+            spotLights_loc[i].position = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].position").c_str());
+            spotLights_loc[i].direction = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].direction").c_str());
+            spotLights_loc[i].innerCutoff = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].innerCutoff").c_str());
+            spotLights_loc[i].outerCutoff = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].outerCutoff").c_str());
+            spotLights_loc[i].constant = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].constant").c_str());
+            spotLights_loc[i].linear = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].linear").c_str());
+            spotLights_loc[i].quadradic = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].quadradic").c_str());
+            spotLights_loc[i].diffuse = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].diffuse").c_str());
+            spotLights_loc[i].ambient = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].ambient").c_str());
+            spotLights_loc[i].specular = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].specular").c_str());
+            spotLights_loc[i].shininess = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].shininess").c_str());
+            if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+                std::cout << "spotLights_loc[" << i << "].position: " << spotLights_loc[i].position << "\n";
+                std::cout << "spotLights_loc[" << i << "].constant: " << spotLights_loc[i].constant << "\n";
+                std::cout << "spotLights_loc[" << i << "].specular: " << spotLights_loc[i].specular << "\n";
             }
         }
         
@@ -111,7 +158,6 @@ struct SurfaceShader : Shader {
        
         // set material
         glUniform4fv( material_loc.emission ,1, &(material->emision[0]));
-        glUniform4fv( material_loc.specular ,1, &(material->specular[0]));
         glUniform1f( material_loc.shininess,  material->shininess);
 
         glUniform1i( enablelighting_loc, enablelighting );
@@ -127,6 +173,21 @@ struct SurfaceShader : Shader {
             glUniform1f( pointLights_loc[i].quadradic, pointLights[i]->quadradic);
         }
         glUniform1i( numPointLights_loc, numPointLights );
+
+        //set spot lights
+        for (int i = 0; i < numSpotLights; i++) {
+            glUniform4fv( spotLights_loc[i].position, 1, &(spotLights[i]->position[0]));
+            glUniform4fv( spotLights_loc[i].ambient, 1, &(spotLights[i]->ambient[0]));
+            glUniform4fv( spotLights_loc[i].diffuse, 1, &(spotLights[i]->diffuse[0]));
+            glUniform4fv( spotLights_loc[i].specular, 1, &(spotLights[i]->specular[0]));
+            glUniform3fv( spotLights_loc[i].direction, 1, &(spotLights[i]->direction[0]));
+            glUniform1f( spotLights_loc[i].outerCutoff, (spotLights[i]->outerCutoff) );
+            glUniform1f( spotLights_loc[i].innerCutoff, (spotLights[i]->innerCutoff) );
+            glUniform1f( spotLights_loc[i].constant, spotLights[i]->constant);
+            glUniform1f( spotLights_loc[i].linear, spotLights[i]->linear);
+            glUniform1f( spotLights_loc[i].quadradic, spotLights[i]->quadradic);
+        }
+        glUniform1i( numSpotLights_loc, numSpotLights );
         
         //set sun
         glUniform3fv( sun_loc.direction, 1, &(sun->direction[0]));

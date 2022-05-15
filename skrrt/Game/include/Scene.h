@@ -47,6 +47,7 @@ public:
     std::map< std::string, Material* > material;
     std::map< std::string, Model* > model;
     std::map< std::string, PointLight* > pointLights;
+    std::map< std::string, SpotLight* > spotLights;
     DirectionalLight* sun;
     
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
