@@ -42,8 +42,17 @@ namespace bounding {
 
 	// Check whether two bounding boxes overlap
 	bool checkCollision(BoundingBox a, BoundingBox b);
-	// Check whether two bounding boxes overlap and return a potential value to adjust by
+	// Check whether two bounding boxes overlap and return a potential value to adjust a by
 	glm::vec3 checkCollisionAdjust(BoundingBox a, BoundingBox b);
+	// Check whether a bounding box is within a radius and return a potential value to adjust a by
+	glm::vec3 checkCollisionRadius(BoundingBox a, glm::vec3 center, float r);
+	// Check whether a vertex is colliding with the floor and return a potential value to adjust it by
+	glm::vec3 checkCollisionPointFloor(glm::vec3 v, BoundingBox floor);
+	// Try to align the bounding box to the terrain
+	BoundingBox checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset);
+	//
+	BoundingBox matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset);
+	
 }
 ////////////////////////////////////////////////////////////////////////////////
 

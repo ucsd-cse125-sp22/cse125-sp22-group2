@@ -1,38 +1,22 @@
 #include "PhysicalObject.hpp"
 PhysicalObject::PhysicalObject() {
-	//this->objects = nullptr;
-	//this->id = 0;
+	this->type = oOther;
+	this->objects = nullptr;
+	this->id = 0;
 
-	//this->position = glm::vec3(0.0f);
-	//this->length = 0.0f;
-	//this->width = 0.0f;
-	//this->height = 0.0f;
-
-	//this->speed = 1.0f;
-	//this->boundingBox = generateBoundingBox(position, direction, up);
-
-	//this->direction = glm::vec3(0.0f);
-	//this->up = glm::vec3(0.0f);
-
-	//this->solid = false;
-}
-
-PhysicalObject::PhysicalObject(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
-	this->objects = objects;
-	this->id = id;
-
-	this->position = position;
-	this->length = length;
-	this->width = width;
-	this->height = height;
+	this->position = glm::vec3(0.0f);
+	this->length = 0.0f;
+	this->width = 0.0f;
+	this->height = 0.0f;
 
 	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction, up);
 
-	this->direction = direction;
-	this->up = up;
+	this->direction = glm::vec3(0.0f);
+	this->up = glm::vec3(0.0f);
 
-	this->solid = solid;
+	//this->boundingBox = generateBoundingBox(position, direction, up);
+
+	this->solid = false;
 }
 
 PhysicalObject::~PhysicalObject() {
@@ -46,7 +30,7 @@ BoundingBox PhysicalObject::generateBoundingBox(glm::vec3 pos, glm::vec3 dir, gl
 bool PhysicalObject::checkPlaceFree(BoundingBox bb) {
 	int objCount = this->objects->size();
 	for (unsigned int i = 0; i < objCount; i++) {
-		if (i == id) {
+		if (i == this->id) {
 			continue;
 		}
 		if (this->objects->at(i)->solid && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {

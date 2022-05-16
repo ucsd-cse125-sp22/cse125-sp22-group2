@@ -27,6 +27,8 @@ public:
 	int booth;
 	// How much longer we are stuck in the booth
 	float boothTime;
+	// Current gravity force (represented as a positive float)
+	float gravity;
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);
@@ -40,4 +42,8 @@ public:
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 	// Special movement function for when another player is pushing you
 	void movePushed(glm::vec3 dir, float pushSpeed);
+	// Apply gravity if there is no object directly below us
+	void applyGravity();
+	// 
+	BoundingBox matchTerrain(BoundingBox bb);
 };

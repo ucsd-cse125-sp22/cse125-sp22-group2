@@ -26,9 +26,9 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 
 	this->position = position;
 	// These values are the actual dimensions, might make constants for these
-	this->length = 2.1f;
-	this->width = 1.15f;
-	this->height = 0.98f;
+	this->length = PLAYER_LENGTH;
+	this->width = PLAYER_WIDTH;
+	this->height = PLAYER_HEIGHT;
 
 	this->direction = direction;
 	this->up = up;
@@ -61,8 +61,6 @@ void ObjPlayer::step() {
 	if (stun) {
 		stun--;
 	}
-
-	// Check if we are in a 
 
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
@@ -100,6 +98,8 @@ void ObjPlayer::step() {
 	if (makeupLevel < 0.01f) {
 		//speed -= 0.75f;
 	}
+
+	applyGravity();
 }
 
 void ObjPlayer::action(glm::vec3 dir) {
@@ -109,6 +109,15 @@ void ObjPlayer::action(glm::vec3 dir) {
 		glm::vec3 destination = this->position + this->speed * dir;
 		// Generate a bounding box at our destination and check what we would collide with
 		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
+
+		// Make sure we don't drive out of the arena
+		glm::vec3 arenaAdjustment = bounding::checkCollisionRadius(bb, MAP_CENTER, MAP_RADIUS);
+		if (glm::length(arenaAdjustment) > 0.0f) {
+			destination += arenaAdjustment;
+			bb = generateBoundingBox(destination, dir, this->up);
+		}
+
+		// Get the collisions for our destination
 		vector<int> collisions = findCollisionObjects(bb);
 
 		// Use to determine whether to cancel the move
@@ -139,7 +148,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 			if (obj->solid && !adjusted) {
 				destinationFree = false;
 				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
-				glm::vec3 adjust = checkCollisionAdjust(bb, obj->boundingBox);
+				glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 				//cout <<  " Shifting " << glm::length(adjust) << " ";
 				if (glm::length(adjust) < 0.5f) {
 					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
@@ -232,6 +241,14 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	glm::vec3 destination = this->position + pushSpeed * dir;
 	BoundingBox bb = generateBoundingBox(destination, this->direction, this->up);
+
+	// Make sure we don't get pushed out of the arena
+	glm::vec3 arenaAdjustment = bounding::checkCollisionRadius(bb, MAP_CENTER, MAP_RADIUS);
+	if (glm::length(arenaAdjustment) > 0.0f) {
+		destination += arenaAdjustment;
+		bb = generateBoundingBox(destination, dir, this->up);
+	}
+
 	vector<int> collisions = findCollisionObjects(bb);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
@@ -240,4 +257,99 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	}
 	this->position = destination;
 	this->boundingBox = bb;
+}
+
+void ObjPlayer::applyGravity() {
+	BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
+
+	// Check whether we are in the air
+	if (checkPlaceFree(bb) && position.y > -12.0f) {
+
+		// Increase the amount gravity is pulling us
+		this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
+		glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+
+		// Generate a bounding box at our destination and check what we would collide with
+		bb = generateBoundingBox(destination, this->direction, this->up);
+
+		// Get the collisions for our destination
+		vector<int> collisions = findCollisionObjects(bb);
+
+		// Use to determine whether to cancel the move
+		bool destinationFree = true;
+		// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
+		bool adjusted = false;
+
+		// Go through every object we collided with (this includes non-solids that we can overlap with)
+		for (unsigned int i = 0; i < collisions.size(); i++) {
+			PhysicalObject*& obj = this->objects->at(collisions[i]);
+
+			// A solid object is blocking us
+			if (obj->solid && !adjusted) {
+				destinationFree = false;
+				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+				glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
+				//cout <<  " Shifting " << glm::length(adjust) << " ";
+				if (glm::length(adjust) < 0.5f) {
+					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+					if (glm::dot(obj->position - this->position, adjust) > 0) {
+						//cout << " FLIPPING ";
+						adjust = -adjust;
+					}
+					BoundingBox temp = generateBoundingBox(destination + adjust, this->direction, this->up);
+					if (checkPlaceFree(temp)) {
+						//cout << "Adjusted\n";
+						destination += adjust;
+						bb = temp;
+						destinationFree = true;
+						adjusted = true;
+					}
+					else {
+						//cout << "Cancelled\n";
+						destinationFree = false;
+					}
+				}
+				else {
+					//cout << "Confirmed\n";
+					destinationFree = false;
+				}
+			}
+
+			// Transfer/take the crown
+			if (obj->type == oPlayer) {
+				// We have the crown, pass it to the other player
+				if (this->hasCrown && !iframes) {
+					((ObjPlayer*)obj)->hasCrown = true;
+					((ObjPlayer*)obj)->iframes = 60;
+					this->hasCrown = false;
+					this->stun = 30;
+				}
+				// The other player has the crown, take it
+				else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
+					this->hasCrown = true;
+					this->iframes = 60;
+					((ObjPlayer*)obj)->hasCrown = false;
+					((ObjPlayer*)obj)->stun = 30;
+				}
+			}
+			// The crown is loose, take it
+			else if (obj->type == oCrown) {
+				if (((ObjCrown*)obj)->loose) {
+					((ObjCrown*)obj)->loose = false;
+					this->hasCrown = true;
+					this->iframes = 30;
+				}
+			}
+		}
+
+		// If our destination is free, complete the move
+		if (destinationFree) {
+			this->position = destination;
+			this->boundingBox = bb;
+		}
+	}
+	else {
+		// We have something solid beneath us, so reset gravity
+		this->gravity = 0.0f;
+	}
 }

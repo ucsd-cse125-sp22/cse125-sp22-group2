@@ -17,13 +17,16 @@ ObjWall::ObjWall() {
 	this->solid = false;
 }
 
-ObjWall::ObjWall(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
-	int type = oWall;
+ObjWall::ObjWall(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up) {
+	this->type = oWall;
 
 	this->objects = objects;
 	this->id = id;
 
 	this->position = position;
+	this->direction = direction;
+	this->up = up;
+
 	this->length = length;
 	this->width = width;
 	this->height = height;
@@ -31,10 +34,7 @@ ObjWall::ObjWall(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 po
 	this->speed = 1.0f;
 	this->boundingBox = generateBoundingBox(position, direction, up);
 
-	this->direction = direction;
-	this->up = up;
-
-	this->solid = solid;
+	this->solid = true;
 }
 
 ObjWall::~ObjWall() {

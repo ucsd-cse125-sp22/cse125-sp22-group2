@@ -8,7 +8,7 @@ using namespace bounding;
 // Object types
 // To add an object type, add it to the enum and make a class that inherits PhysicalObject (format is Obj + name of object)
 // Make sure its type in the .hpp is correct and add a case to createObject in PhysicalObjectManager for it
-enum ObjectType { oPlayer, oWall, oFloor, oCrown, oMakeup, oTrail };
+enum ObjectType { oPlayer, oWall, oFloor, oCrown, oMakeup, oTrail, oOther };
 
 class PhysicalObject
 {
@@ -37,7 +37,6 @@ public:
 	// glm::mat4 transform;
 
 	PhysicalObject();
-	PhysicalObject(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid);
 	~PhysicalObject();
 
 	// Create a bounding box
