@@ -141,7 +141,7 @@ void Scene::init(void){
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
-
+		node["particles" + std::to_string(i)] = new Node("particles"+std::to_string(i), true, true);
     }
     /*
     node["player0"] = new Node("player0");
@@ -217,7 +217,7 @@ void Scene::init(void){
     node["plane"]->modeltransforms.push_back(mat4(1.0f));
     //********************************************
 
-    node["particles0"] = new Node("test_cube", true, true);
+    //node["particles0"] = new Node("test_cube", true, true);
 
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
@@ -249,6 +249,8 @@ void Scene::init(void){
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
     node["blue_car"]->childnodes.push_back(node["crown1"]);
     node["blue_car"]->childtransforms.push_back(crown_transform);
+    node["blue_car"]->childnodes.push_back(node["particles1"]);
+    node["blue_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player2"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -260,6 +262,8 @@ void Scene::init(void){
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["crown2"]);
     node["yellow_car"]->childtransforms.push_back(crown_transform);
+    node["yellow_car"]->childnodes.push_back(node["particles2"]);
+    node["yellow_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player3"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -271,6 +275,8 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(back_tire_transform);
     node["green_car"]->childnodes.push_back(node["crown3"]);
     node["green_car"]->childtransforms.push_back(crown_transform);
+    node["green_car"]->childnodes.push_back(node["particles3"]);
+    node["green_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
