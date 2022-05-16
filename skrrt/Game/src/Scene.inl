@@ -39,7 +39,7 @@ void Scene::init(void){
     geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
     
     geometry["plane"] = new Obj;
-    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", 3);
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -273,7 +273,7 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(crown_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -1.0f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
@@ -292,7 +292,7 @@ void Scene::init(void){
 
     node["test_UI_elem"] = new Node("test_UI_elem"); 
     node["test_UI_elem"]->models.push_back(model["plane"]);
-    node["test_UI_elem"]->modeltransforms.push_back(rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     node["UI_root"]->childnodes.push_back(node["screen"]); 
     // camera transforms that we need to apply to all screen elements

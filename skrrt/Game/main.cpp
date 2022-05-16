@@ -27,8 +27,8 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 800;
-static const int height = 600;
+static const int width = 1200;
+static const int height = 900;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
