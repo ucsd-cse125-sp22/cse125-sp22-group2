@@ -58,6 +58,7 @@ namespace cse125framing {
 		int ctr;
 		PlayerData players[cse125constants::NUM_PLAYERS];
 		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
+		AnimationTrigger animations;
 		RealNumber gameTime;
 	} ServerFrame;
 
