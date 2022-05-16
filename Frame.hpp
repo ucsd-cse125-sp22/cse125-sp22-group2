@@ -9,7 +9,7 @@
 namespace cse125framing {
 
 	enum class Action {
-		NO_ACTION,
+		NO_ACTION = -1,
 		MOVE,
 		JUMP,
 		LEAVE_TRAIL,
@@ -18,8 +18,6 @@ namespace cse125framing {
 		TAKE_CROWN
 	};
 
-	std::ostream& operator<<(std::ostream& os, const Action& action);
-
 	typedef struct ClientFrame {
 		int id;
 		int ctr;
@@ -27,9 +25,48 @@ namespace cse125framing {
 		vec3 cameraDirection;
 	} ClientFrame;
 
-	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);
+	enum class AudioId {
+		COLLISION = 0,
+		MAKEUP,
+		CROWN_CHANGE,
+		NUM_AUDIO,
+		NO_AUDIO = -1
+	};
 
+	typedef struct AudioTrigger {
+		AudioId id;
+		vec3 position;
+	} AudioTrigger;
+
+	typedef struct AnimationTrigger {
+		bool makeupBooth[cse125constants::NUM_MAKEUP_BOOTHS];
+		bool playerCrash[cse125constants::NUM_PLAYERS];
+	} AnimationTrigger;
+
+	// Data for individual player
+	typedef struct PlayerData {
+		vec4 playerPosition;
+		vec3 playerDirection;
+		RealNumber playerSpeed;
+		RealNumber makeupLevel;
+		RealNumber score;
+		bool hasCrown;
+	} PlayerData;
+
+	typedef struct ServerFrame {
+		int id; // index in players
+		int ctr;
+		PlayerData players[cse125constants::NUM_PLAYERS];
+		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
+		RealNumber gameTime;
+	} ServerFrame;
+
+	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);
+	const size_t SERVER_FRAME_BUFFER_SIZE = sizeof(ServerFrame);
+
+	std::ostream& operator<<(std::ostream& os, const Action& action);
 	std::ostream& operator<<(std::ostream& os, const ClientFrame* frame);
+	std::ostream& operator<<(std::ostream& os, const ServerFrame* frame);
 
 	/**
 	 * @brief Serializes the Frame into the given buffer
@@ -46,28 +83,6 @@ namespace cse125framing {
 	 * @param buffer  game state data byte array input
 	 */
 	void deserialize(ClientFrame* frame, const boost::array<char, CLIENT_FRAME_BUFFER_SIZE>& buffer);
-
-	// Data for individual player
-	typedef struct PlayerData {
-		vec4 playerPosition;
-		vec3 playerDirection;
-		RealNumber makeupLevel;
-		RealNumber score;
-		bool hasCrown;
-	} PlayerData;
-
-	// Only handles 1 client at a time currently
-	// To extend, make each type a vector (e.g. of ids, player positions)
-	typedef struct ServerFrame {
-		int id; // index in players
-		int ctr;
-		PlayerData players[cse125constants::NUM_PLAYERS];
-		RealNumber gameTime;
-	} ServerFrame;
-
-	const size_t SERVER_FRAME_BUFFER_SIZE = sizeof(ServerFrame);
-
-	std::ostream& operator<<(std::ostream& os, const ServerFrame* frame);
 
 	/**
 	 * @brief Serializes the Frame into the given buffer
