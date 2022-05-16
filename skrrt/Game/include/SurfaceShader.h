@@ -5,11 +5,60 @@ SurfaceShader is a shader that has the uniform
 *****************************************************/
 #include "Shader.h"
 #include "Material.h"
+#include "Light.h"
 #include <vector>
+#include <string>
+#include "Debug.h"
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #ifndef __SURFACESHADER_H__
 #define __SURFACESHADER_H__
+
+struct Material_Locs {
+    GLuint emission;
+    GLuint shininess;
+};
+
+struct PointLight_Locs {
+    GLuint position;
+
+    GLuint constant;
+    GLuint linear;
+    GLuint quadradic;
+
+    GLuint diffuse;
+    GLuint ambient;
+    GLuint specular;
+    GLuint shininess;
+};
+
+struct SpotLight_Locs {
+    GLuint position;
+
+    GLuint direction;
+    GLuint innerCutoff;
+    GLuint outerCutoff;
+
+    GLuint constant;
+    GLuint linear;
+    GLuint quadradic;
+
+    GLuint diffuse;
+    GLuint ambient;
+    GLuint specular;
+    GLuint shininess;
+};
+
+struct DirectionalLight_Locs {
+    GLuint direction;
+    GLuint diffuse;
+    GLuint ambient;
+    GLuint specular;
+    GLuint shininess;
+};
+
+#define MAX_NUM_POINT_LIGHTS 10
+#define MAX_NUM_SPOT_LIGHTS 10
 
 struct SurfaceShader : Shader {
     // modelview and projection
@@ -18,21 +67,27 @@ struct SurfaceShader : Shader {
     glm::mat4 projection = glm::mat4(1.0f); GLuint projection_loc;
     // material parameters
     Material* material;
-    GLuint ambient_loc;
-    GLuint diffuse_loc;
-    GLuint specular_loc;
-    GLuint emision_loc;
-    GLuint shininess_loc;
+    Material_Locs material_loc;
     
     // lights
     GLboolean enablelighting = GL_FALSE; // are we lighting at all (global).
-    GLint nlights = 0;               // number of lights used
-    std::vector<glm::vec4> lightpositions; // positions of lights
-    std::vector<glm::vec4> lightcolors; // colors of lights
     GLuint enablelighting_loc;
-    GLuint nlights_loc;
-    GLuint lightpositions_loc;
-    GLuint lightcolors_loc;
+
+    //point lights
+    GLint numPointLights = 0;               // number of lights used
+    std::vector<PointLight*> pointLights; 
+    GLuint numPointLights_loc;
+    std::vector<PointLight_Locs> pointLights_loc = std::vector<PointLight_Locs>(MAX_NUM_POINT_LIGHTS);
+
+    //spot lights
+    GLint numSpotLights = 0;               // number of lights used
+    std::vector<SpotLight*> spotLights; 
+    GLuint numSpotLights_loc;
+    std::vector<SpotLight_Locs> spotLights_loc = std::vector<SpotLight_Locs>(MAX_NUM_SPOT_LIGHTS);
+
+    //directional light
+    DirectionalLight* sun;
+    DirectionalLight_Locs sun_loc;
 
     // Texture id 
     GLuint texture_id;          // indicates which texture to render on object
@@ -41,54 +96,134 @@ struct SurfaceShader : Shader {
     GLuint is_particle; 
     GLuint is_particle_loc;
     
+    /*
     GLuint texture0_loc; 
     GLuint texture1_loc; 
     GLuint texture2_loc; 
     GLuint texture3_loc; 
+    */
+
+    // specular map
+    GLuint specular_id;
+    GLuint specular_id_loc;
     
     void initUniforms(){
         view_loc  = glGetUniformLocation( program, "view" );
         modelview_loc  = glGetUniformLocation( program, "modelview" );
         projection_loc = glGetUniformLocation( program, "projection" );
-        ambient_loc    = glGetUniformLocation( program, "ambient" );
-        diffuse_loc    = glGetUniformLocation( program, "diffuse" );
-        specular_loc   = glGetUniformLocation( program, "specular" );
-        emision_loc    = glGetUniformLocation( program, "emision" );
-        shininess_loc  = glGetUniformLocation( program, "shininess" );
+        material_loc.emission    = glGetUniformLocation( program, "material.emission" );
+        material_loc.shininess    = glGetUniformLocation( program, "material.shininess" );
         enablelighting_loc = glGetUniformLocation( program, "enablelighting" );
-        nlights_loc = glGetUniformLocation( program, "nlights" );
-        lightpositions_loc = glGetUniformLocation( program, "lightpositions" );
-        lightcolors_loc = glGetUniformLocation( program, "lightcolors" );
+        
+        numPointLights_loc = glGetUniformLocation( program, "numPointLights" );
+        for (int i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
+            pointLights_loc[i].position = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].position").c_str());
+            pointLights_loc[i].constant = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].constant").c_str());
+            pointLights_loc[i].linear = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].linear").c_str());
+            pointLights_loc[i].quadradic = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].quadradic").c_str());
+            pointLights_loc[i].diffuse = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].diffuse").c_str());
+            pointLights_loc[i].ambient = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].ambient").c_str());
+            pointLights_loc[i].specular = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].specular").c_str());
+            pointLights_loc[i].shininess = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].shininess").c_str());
+            if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+                std::cout << "pointLights_loc[" << i << "].position: " << pointLights_loc[i].position << "\n";
+                std::cout << "pointLights_loc[" << i << "].constant: " << pointLights_loc[i].constant << "\n";
+                std::cout << "pointLights_loc[" << i << "].specular: " << pointLights_loc[i].specular << "\n";
+            }
+        }
+
+        numSpotLights_loc = glGetUniformLocation( program, "numSpotLights" );
+        for (int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++) {
+            spotLights_loc[i].position = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].position").c_str());
+            spotLights_loc[i].direction = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].direction").c_str());
+            spotLights_loc[i].innerCutoff = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].innerCutoff").c_str());
+            spotLights_loc[i].outerCutoff = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].outerCutoff").c_str());
+            spotLights_loc[i].constant = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].constant").c_str());
+            spotLights_loc[i].linear = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].linear").c_str());
+            spotLights_loc[i].quadradic = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].quadradic").c_str());
+            spotLights_loc[i].diffuse = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].diffuse").c_str());
+            spotLights_loc[i].ambient = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].ambient").c_str());
+            spotLights_loc[i].specular = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].specular").c_str());
+            spotLights_loc[i].shininess = glGetUniformLocation(program, ("spotLights[" + std::to_string(i) + "].shininess").c_str());
+            if (DEBUG_LEVEL >= LOG_LEVEL_FINE) {
+                std::cout << "spotLights_loc[" << i << "].position: " << spotLights_loc[i].position << "\n";
+                std::cout << "spotLights_loc[" << i << "].constant: " << spotLights_loc[i].constant << "\n";
+                std::cout << "spotLights_loc[" << i << "].specular: " << spotLights_loc[i].specular << "\n";
+            }
+        }
+        
+        
+        sun_loc.direction = glGetUniformLocation(program, "sun.direction");
+        sun_loc.diffuse = glGetUniformLocation(program, "sun.diffuse");
+        sun_loc.ambient = glGetUniformLocation(program, "sun.ambient");
+        sun_loc.specular = glGetUniformLocation(program, "sun.specular");
+        sun_loc.shininess = glGetUniformLocation(program, "sun.shininess");
 
         texture_id_loc = glGetUniformLocation( program, "texture_id" );
         is_particle_loc = glGetUniformLocation( program, "is_particle" );
         
+        /*
         texture0_loc = glGetUniformLocation(program, "texture0");
         texture1_loc = glGetUniformLocation(program, "texture1");
         texture2_loc = glGetUniformLocation(program, "texture2");
         texture3_loc = glGetUniformLocation(program, "texture3");
+        */
+        specular_id_loc = glGetUniformLocation(program, "specular_id");
     }
     void setUniforms(){
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &modelview[0][0]);
         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &projection[0][0]);
-        glUniform4fv( ambient_loc  , 1, &(material -> ambient[0])  );
-        glUniform4fv( diffuse_loc  , 1, &(material -> diffuse[0])  );
-        glUniform4fv( specular_loc , 1, &(material -> specular[0]) );
-        glUniform4fv( emision_loc  , 1, &(material -> emision[0])  );
-        glUniform1fv( shininess_loc, 1, &(material -> shininess)   );
+       
+        // set material
+        glUniform4fv( material_loc.emission ,1, &(material->emision[0]));
+        glUniform1f( material_loc.shininess,  material->shininess);
+
         glUniform1i( enablelighting_loc, enablelighting );
-        glUniform1i( nlights_loc, nlights );
-        glUniform4fv( lightpositions_loc, GLsizei(nlights), &lightpositions[0][0] );
-        glUniform4fv( lightcolors_loc, GLsizei(nlights), &lightcolors[0][0] );
+
+        //set point lights
+        for (int i = 0; i < numPointLights; i++) {
+            glUniform4fv( pointLights_loc[i].position, 1, &(pointLights[i]->position[0]));
+            glUniform4fv( pointLights_loc[i].ambient, 1, &(pointLights[i]->ambient[0]));
+            glUniform4fv( pointLights_loc[i].diffuse, 1, &(pointLights[i]->diffuse[0]));
+            glUniform4fv( pointLights_loc[i].specular, 1, &(pointLights[i]->specular[0]));
+            glUniform1f( pointLights_loc[i].constant, pointLights[i]->constant);
+            glUniform1f( pointLights_loc[i].linear, pointLights[i]->linear);
+            glUniform1f( pointLights_loc[i].quadradic, pointLights[i]->quadradic);
+        }
+        glUniform1i( numPointLights_loc, numPointLights );
+
+        //set spot lights
+        for (int i = 0; i < numSpotLights; i++) {
+            glUniform4fv( spotLights_loc[i].position, 1, &(spotLights[i]->position[0]));
+            glUniform4fv( spotLights_loc[i].ambient, 1, &(spotLights[i]->ambient[0]));
+            glUniform4fv( spotLights_loc[i].diffuse, 1, &(spotLights[i]->diffuse[0]));
+            glUniform4fv( spotLights_loc[i].specular, 1, &(spotLights[i]->specular[0]));
+            glUniform3fv( spotLights_loc[i].direction, 1, &(spotLights[i]->direction[0]));
+            glUniform1f( spotLights_loc[i].outerCutoff, (spotLights[i]->outerCutoff) );
+            glUniform1f( spotLights_loc[i].innerCutoff, (spotLights[i]->innerCutoff) );
+            glUniform1f( spotLights_loc[i].constant, spotLights[i]->constant);
+            glUniform1f( spotLights_loc[i].linear, spotLights[i]->linear);
+            glUniform1f( spotLights_loc[i].quadradic, spotLights[i]->quadradic);
+        }
+        glUniform1i( numSpotLights_loc, numSpotLights );
+        
+        //set sun
+        glUniform3fv( sun_loc.direction, 1, &(sun->direction[0]));
+        glUniform4fv( sun_loc.diffuse, 1, &(sun->diffuse[0]));
+        glUniform4fv( sun_loc.ambient, 1, &(sun->ambient[0]));
+        glUniform4fv( sun_loc.specular, 1, &(sun->specular[0]));
 
         glUniform1i(texture_id_loc, texture_id);
         glUniform1i(is_particle_loc, is_particle);
 
+        /*
         glUniform1i(texture0_loc, 0);
         glUniform1i(texture1_loc, 1);
         glUniform1i(texture2_loc, 2);
         glUniform1i(texture3_loc, 3);
+        */
+        glUniform1i(specular_id_loc, specular_id);
     }
 };
 
