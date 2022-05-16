@@ -6,6 +6,8 @@ PhysicalObjectManager::PhysicalObjectManager()
 	// Note: gridMin, gridMax are based on the size of the scene
 	this->uniformGrid = nullptr;
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
+
+	gameTime = MATCH_LENGTH;
 }
 
 PhysicalObjectManager::~PhysicalObjectManager()
@@ -26,9 +28,9 @@ void PhysicalObjectManager::startGame() {
 
 	// Very basic map
 	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	//createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	//createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	//createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	//createObject(oWall, glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	createObject(oWall, glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -40,6 +42,20 @@ void PhysicalObjectManager::startGame() {
 	//createObject(oWall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
 	//createObject(oWall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
 	//createObject(oWall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
+}
+
+void PhysicalObjectManager::endGame() {
+	unsigned int winner = 0;
+	float winner_score = 0.0f;
+	for (unsigned int i = 0; i < objects->size(); i++) {
+		if (objects->at(i)->type == oPlayer) {
+			if (((ObjPlayer*)objects->at(i))->score > winner_score) {
+				winner = i;
+				winner_score = ((ObjPlayer*)objects->at(i))->score;
+			}
+		}
+	}
+	cout << "The game has ended!  Player " << winner + 1 << " has won!\n";
 }
 
 void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
@@ -71,7 +87,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 }
 
 void PhysicalObjectManager::step() {
-	gameTime -= 1.0f / 60.0f;
+	if (gameTime > 0.0f) {
+		gameTime -= 1.0f / cse125config::DEFAULT_TICK_RATE;
+		if (gameTime <= 0.0f) {
+			gameTime = 0.0f;
+			endGame();
+		}
+	}
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
 			((ObjPlayer*)objects->at(i))->step();

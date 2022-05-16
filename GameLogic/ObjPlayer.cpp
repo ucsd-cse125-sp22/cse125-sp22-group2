@@ -88,18 +88,18 @@ void ObjPlayer::step() {
 	}
 
 	// Adjust speed (these numbers are placeholders)
-	speed = 0.5f;
+	speed = DEFAULT_SPEED;
 	if (hasCrown) {
-		//speed += 0.5f;
+		speed += CROWN_SPEED_BOOST;
 	}
 	if (objectPositionTagged(boundingBox, oTrail, id)) {
-		//speed -= 1.0f;
+		speed -= TRAIL_SPEED_PENALTY;
 	}
 	if (makeupLevel < 0.01f) {
-		//speed -= 0.75f;
+		speed -= MAKEUP_SPEED_PENALTY;
 	}
 
-	applyGravity();
+	//applyGravity();
 }
 
 void ObjPlayer::action(glm::vec3 dir) {

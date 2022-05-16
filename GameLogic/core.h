@@ -7,11 +7,12 @@
 #include <ctype.h>
 #include <algorithm>
 #include "../Constants.hpp"
+#include "../Config.hpp"
 
 using namespace std;
 
 // Game parameters
-const float MATCH_LENGTH = 180.0f;
+const float MATCH_LENGTH = 10.0f; //180.0f
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
@@ -23,10 +24,10 @@ const float MAKEUP_DECREASE_RATE = 1.0f;
 const float MAKEUP_BOOTH_TIME = 10.0f;
 
 // Speeds
-const float DEFAULT_SPEED = 2.0f;
-const float CROWN_SPEED_BOOST = 1.0f;
-const float MAKEUP_SPEED_PENALTY = 1.0f;
-const float TRAIL_SPEED_PENALTY = 1.0f;
+const float DEFAULT_SPEED = 0.5f;
+const float CROWN_SPEED_BOOST = 0.0f;
+const float MAKEUP_SPEED_PENALTY = 0.25f;
+const float TRAIL_SPEED_PENALTY = 0.25f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
