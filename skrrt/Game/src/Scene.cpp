@@ -16,13 +16,21 @@ void Scene::draw(void){
     camera -> computeMatrices();
     shader -> view = camera -> view;
     shader -> projection = camera -> proj;
-    shader -> nlights = light.size();
-    shader -> lightpositions.resize( shader -> nlights );
-    shader -> lightcolors.resize( shader -> nlights );
+    shader->sun = sun;
+
+    shader -> numPointLights = pointLights.size();
+    shader -> pointLights.resize( shader -> numPointLights );
     int count = 0;
-    for ( std::pair<std::string,Light*> entry : light ){
-        shader -> lightpositions[ count ] = (entry.second) -> position;
-        shader -> lightcolors[ count ] = (entry.second) -> color;
+    for ( std::pair<std::string,PointLight*> entry : pointLights ){
+        shader->pointLights[count] = entry.second;
+        count++;
+    }
+    
+    shader -> numSpotLights = spotLights.size();
+    shader -> spotLights.resize( shader -> numSpotLights );
+    count = 0;
+    for ( std::pair<std::string,SpotLight*> entry : spotLights ){
+        shader->spotLights[count] = entry.second;
         count++;
     }
     
@@ -55,16 +63,17 @@ void Scene::draw(void){
             shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
             //shader->modelview = cur_VM * cur->modeltransforms[i] * translate(vec3(cur_VM[3][0], cur_VM[3][1], cur_VM[3][2])); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
             shader->material = (cur->models[i])->material;
-            shader->texture_id = (cur->models[i])->geometry->object_number;
+            shader->texture_id = (((cur->models[i])->geometry)->object_number)*2;
+            shader->specular_id = 1+(((cur->models[i])->geometry)->object_number)*2;
 
             if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
                 std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
             }
 
             // The draw command
-            shader->setUniforms();
+            //update texture here
             if (cur->visible) {
-				(cur->models[i])->geometry->draw();
+				(cur->models[i])->geometry->draw(shader);
             }
         }
 

@@ -8,62 +8,48 @@ Scene.inl contains the definition of the scene graph
 #include <math.h>
 
 #define NUM_PLAYERS 4
+#define DEV_LIGHTING false
 
 using namespace glm;
 void Scene::init(void){
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
     //geometry["pink_car"]->init("models/CarPink.obj", "textures/car_textures.png", 0);
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", 0);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
     geometry["crown"] = new Obj; 
-    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
 
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", 1);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map(not finished).obj", "textures/grey.png", 2);
+    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
     
     // Create a material palette
     material["wood"] = new Material;
-    material["wood"] -> ambient = vec4(0.1f,0.1f,0.1f,1.0f);
-    material["wood"] -> diffuse = vec4(0.3f,0.15f,0.1f,1.0f);
-    material["wood"] -> specular = vec4(0.3f,0.15f,0.1f,1.0f);
     material["wood"] -> shininess = 100.0f;
     
     material["ceramic"] = new Material;
-    material["ceramic"] -> ambient = vec4(0.02f, 0.07f, 0.2f, 1.0f);
-    material["ceramic"] -> diffuse = vec4(0.1f, 0.25f, 0.7f, 1.0f);
-    material["ceramic"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["ceramic"] -> shininess = 150.0f;
  
     material["silver"] = new Material;
-    material["silver"] -> ambient = vec4(0.1f, 0.1f, 0.1f, 1.0f);
-    material["silver"] -> diffuse = vec4(0.2f, 0.2f, 0.2f, 1.0f);
-    material["silver"] -> specular = vec4(0.9f, 0.9f, 0.9f, 1.0f);
     material["silver"] -> shininess = 50.0f;
     
     material["turquoise"] = new Material;
-    material["turquoise"] -> ambient = vec4(0.1f, 0.2f, 0.17f, 1.0f);
-    material["turquoise"] -> diffuse = vec4(0.2f, 0.375f, 0.35f, 1.0f);
-    material["turquoise"] -> specular = vec4(0.3f, 0.3f, 0.3f, 1.0f);
     material["turquoise"] -> shininess = 100.0f;
     
     material["bulb"] = new Material;
-    material["bulb"] -> ambient = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    material["bulb"] -> diffuse = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    material["bulb"] -> specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
     
@@ -94,14 +80,54 @@ void Scene::init(void){
     model["map"]->material = material["ceramic"];
 
     // Create a light palette
-    light["sun"] = new Light;
-    light["sun"] -> position = vec4(3.0f,2.0f,1.0f,0.0f);
-    light["sun"] -> color = 1.0f*vec4(1.0f,1.0f,1.0f,1.0f);
-    
-    light["bulb"] = new Light;
-    light["bulb"] -> position = vec4(0.0f,2.0f,0.0f,0.0f);
-    light["bulb"] -> color = 1.5f * vec4(1.0f,0.2f,0.1f,1.0f);
-    
+
+    // Dev mode, equivelent to no shading.
+    if (DEV_LIGHTING) {
+        sun = new DirectionalLight;
+        sun->direction = vec3(1.0f, 1.0f, 1.0f);
+        sun->ambient = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        sun->diffuse = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        sun->specular = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+    // Normal Light pallet add new stuff here
+    else {
+        sun = new DirectionalLight;
+        sun->direction = vec3(1.0f, 1.0f, 1.0f);
+        sun->ambient = 0.6f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun->diffuse = 0.8f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+    }
+	pointLights["sun"] = new PointLight;
+	pointLights["sun"]->position = vec4(20.0f, 2.0f, 0.0f, 1.0f);
+	pointLights["sun"]->constant = 1.0f;
+	pointLights["sun"]->linear = 0.09f;
+	pointLights["sun"]->quadradic = 0.032f;
+	pointLights["sun"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	pointLights["sun"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	pointLights["sun"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+
+	pointLights["bulb"] = new PointLight;
+	pointLights["bulb"]->position = vec4(-20.0f, 2.0f, 0.0f, 1.0f);
+	pointLights["bulb"]->constant = 1.0f;
+	pointLights["bulb"]->linear = 0.09f;
+	pointLights["bulb"]->quadradic = 0.032f;
+	pointLights["bulb"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+	spotLights["player0Headlight"] = new SpotLight;
+	spotLights["player0Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+	spotLights["player0Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
+	spotLights["player0Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
+	spotLights["player0Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
+	spotLights["player0Headlight"]->constant = 1.0f;
+	spotLights["player0Headlight"]->linear = 0.045f;
+	spotLights["player0Headlight"]->quadradic = 0.0075f;
+	spotLights["player0Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	spotLights["player0Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+	spotLights["player0Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));

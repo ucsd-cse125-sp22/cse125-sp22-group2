@@ -46,7 +46,9 @@ public:
     std::map< std::string, Geometry* > geometry;
     std::map< std::string, Material* > material;
     std::map< std::string, Model* > model;
-    std::map< std::string, Light* > light;
+    std::map< std::string, PointLight* > pointLights;
+    std::map< std::string, SpotLight* > spotLights;
+    DirectionalLight* sun;
     
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
     std::map< std::string, Node* > node;
@@ -64,7 +66,7 @@ public:
         // The containers of pointers own the object pointed to by the pointers.
         // All the objects should be deleted when the object palette is destructed.
         // light
-        for(std::pair<std::string,Light*> entry : light ){
+        for(std::pair<std::string,PointLight*> entry : pointLights ){
             delete entry.second;
         }
         // geometry
@@ -85,6 +87,7 @@ public:
         }
         delete camera;
         delete shader;
+        delete sun;
     }
 };
 
