@@ -68,6 +68,7 @@
       <DisableSpecificWarnings>4101;4099;4819;4996;4305;4018</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,10 +84,12 @@
     <None Include="src\Scene.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\NetworkClient.cpp" />
     <ClCompile Include="src\Obj.cpp" />
     <ClCompile Include="src\objloader.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -95,6 +98,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Config.hpp" />
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
@@ -108,6 +112,7 @@
     <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\NetworkClient.hpp" />
     <ClInclude Include="include\Obj.h" />
     <ClInclude Include="include\objloader.h" />
     <ClInclude Include="include\Player.h" />

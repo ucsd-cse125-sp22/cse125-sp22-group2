@@ -17,16 +17,65 @@ PhysicalObjectManager::~PhysicalObjectManager()
 	// delete uniformGrid;
 }
 
-void PhysicalObjectManager::createObject()
-{
-	unsigned int next_id = this->objects->size();
-	this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
-	// Comment out to match the correct number of players
-	this->objects->push_back(new PhysicalObject(objects, glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
-	this->objects->push_back(new PhysicalObject(objects, glm::vec3(4.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
-	this->objects->push_back(new PhysicalObject(objects, glm::vec3(6.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+void PhysicalObjectManager::startGame() {
+	// TODO: this is going to be map dependent, could add a int parameter and switch statement if we want multiple maps
+	// Create players
+	// Create crown
+	// Create makeup booths
+	// Create walls and floors
+
+	// Very basic map
+	createObject(oPlayer, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oWall, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(-4.0f, 0.0f, 0.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f));
+	//createObject(oWall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
+	//cout << objects->at(4)->position.x << " " << objects->at(4)->position.z << "\n";
 }
 
+void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
+	unsigned int next_id = this->objects->size();
+
+	switch (objType) {
+	case (oPlayer):
+		this->objects->push_back(new ObjPlayer(objects, next_id, pos, dir, up));
+		break;
+	case (oWall):
+		this->objects->push_back(new ObjWall(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		break;
+	case (oFloor):
+		this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		break;
+	case (oCrown):
+		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
+		break;
+	case (oMakeup):
+		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		break;
+	case (oTrail):
+		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
+		break;
+	default:
+		break;
+	}
+	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
+}
+
+void PhysicalObjectManager::step() {
+	gameTime -= 1.0f / 60.0f;
+	for (unsigned int i = 0; i < objects->size(); i++) {
+		if (objects->at(i)->type == oPlayer) {
+			((ObjPlayer*)objects->at(i))->step();
+		}
+	}
+}
+
+
+// TODO: Everything below this line is not used yet
 vector<vector<int>*>* PhysicalObjectManager::createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes) {
 	glm::vec3 numGrids = (gridMax - gridMin) / gridSizes;
 	vector<vector<int>*>* uniformGrid = new vector<vector<int>*>(numGrids.x * numGrids.y * numGrids.z);
@@ -62,9 +111,9 @@ void PhysicalObjectManager::removeFromGrid(PhysicalObject* obj) {
 
 	for (unsigned int i = 0; i < boundingBox.gridCells.size(); i++) {
 		vector<int>* cell = (*uniformGrid)[boundingBox.gridCells[i]];
-		for (unsigned int j = cell->size() - 1; j >= 0; j--) {
+		for (int j = cell->size() - 1; j >= 0; j--) {
 			if (cell->at(j) == id) {
-				cell->at(j) == cell->at(cell->size() - 1);
+				cell->at(j) = cell->at(cell->size() - 1);
 				cell->pop_back();
 			}
 		}
@@ -84,9 +133,9 @@ void PhysicalObjectManager::addToGrid(PhysicalObject* obj, glm::vec3 gridMin, gl
 	glm::vec3 lowestCell = (obj->boundingBox.bbMin - gridMin) / gridSizes;
 	glm::vec3 highestCell = (obj->boundingBox.bbMax - gridMin) / gridSizes;
 
-	for (unsigned int xi = lowestCell.x; xi <= highestCell.x; xi++) {
-		for (unsigned int yi = lowestCell.y; yi <= highestCell.y; yi++) {
-			for (unsigned int zi = lowestCell.z; zi <= highestCell.z; zi++) {
+	for (unsigned int xi = lowestCell.x; xi <= (unsigned int)highestCell.x; xi++) {
+		for (unsigned int yi = lowestCell.y; yi <= (unsigned int)highestCell.y; yi++) {
+			for (unsigned int zi = lowestCell.z; zi <= (unsigned int)highestCell.z; zi++) {
 				// For now just add, could add a collision check though
 				unsigned int cellNum = (xi * (unsigned int)numGrids.x * (unsigned int)numGrids.y) + (yi * (unsigned int)numGrids.y) + zi;
 				(*uniformGrid)[cellNum]->push_back(obj->id);
