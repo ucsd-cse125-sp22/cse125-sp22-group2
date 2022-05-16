@@ -7,7 +7,7 @@ in vec2 TexCoord; // texture coordinates
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
 
-const float levels = 4.0f; // How many color levels when cel shading
+const float levels = 8.0f; // How many color levels when cel shading
 
 /////////////////////////
 // Material parameters //

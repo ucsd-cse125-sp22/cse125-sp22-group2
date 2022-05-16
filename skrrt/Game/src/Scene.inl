@@ -93,8 +93,8 @@ void Scene::init(void){
     else {
         sun = new DirectionalLight;
         sun->direction = vec3(1.0f, 1.0f, 1.0f);
-        sun->ambient = 0.3f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
-        sun->diffuse = 0.4f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun->ambient = 0.6f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun->diffuse = 0.8f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
         sun->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
     }
 	pointLights["sun"] = new PointLight;
