@@ -19,16 +19,31 @@
 #include "Geometry.h"
 #include "Material.h"
 #include "Model.h"
+#include "ParticleSource.h"
 
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
 class Node {
 public:
-    Node(std::string n = "", bool v = true) { name = n; visible = v; };
+    Node(std::string n = "", bool v = true, bool p = false) { 
+        name = n; 
+        visible = v; 
+        isParticleSource = p;
+        if (p) {
+			particles = &ParticleSource(); 
+            std::cout << "Call Particle Source ctor" << std::endl;
+        }
+        else {
+            particles = NULL;
+        }
+    };
 
     std::string name; 
     bool visible;
+    bool isParticleSource; 
+
+    ParticleSource* particles;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
@@ -55,11 +70,14 @@ public:
     
     Scene(){
         // the default scene graph already has one node named "world."
-        node["world"] = new Node("word");
+        node["world"] = new Node("world");
+        node["UI_root"] = new Node("UI_root");
     }
     
     void init( void );
-    void draw( void );
+    void draw(Node* current_node);
+
+    void updateScreen(void);
     
     // destructor
     ~Scene(){

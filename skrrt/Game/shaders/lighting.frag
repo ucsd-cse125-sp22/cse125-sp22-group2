@@ -20,6 +20,16 @@ struct Material {
 uniform Material material;
 
 // Texture sampler 
+//uniform int texture_id;
+//uniform sampler2D ourTexture;
+/*
+uniform sampler2D texture0;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+uniform sampler2D texture3;
+*/
+
+uniform int is_particle;
 uniform sampler2D texture_id;
 uniform sampler2D specular_id;
 
@@ -93,13 +103,28 @@ uniform SpotLight spotLights[maxNumSpotLights];
 // Output the frag color
 out vec4 fragColor;
 
-
 void main (void){
     //Shades everything in black.
     if (!enablelighting){
         vec3 N = normalize(normal);
-        fragColor = vec4(0.0f, 0.0f, 0.0f , 1.0f);
 
+        if (is_particle == 1) {
+            fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        /*
+        } else if (texture_id == 0) {
+			fragColor = texture(texture0, TexCoord);
+        } else if (texture_id == 1) {
+			fragColor = texture(texture1, TexCoord);
+        } else if (texture_id == 2) {
+			fragColor = texture(texture2, TexCoord);
+        */
+        } else {
+            // test for UI elements 
+			fragColor = texture(texture_id, TexCoord);
+            if (fragColor.w < 0.01) {
+                discard;
+            }
+        }
 
     //Shades everything normally.
     } else {
@@ -107,6 +132,10 @@ void main (void){
 
         vec4 texColor = texture(texture_id, TexCoord);
         vec4 specColor = texture(specular_id, TexCoord);
+
+		if (texColor.w < 0.01) {
+			discard;
+		}
 
         //make 3x3 matrix to transform normal (needed for non-uniform transforms)
         mat3 a_modelview = mat3(modelview);

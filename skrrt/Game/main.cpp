@@ -27,19 +27,21 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 800;
-static const int height = 600;
+static const int width = 1200;
+static const int height = 900;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
+//static ParticleCube* testcube;
 static Player p0, p1, p2, p3;
 static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
-static Game game(&p0, &p1, &p2, &p3);
+//static Game game(&p0, &p1, &p2, &p3);
+static Game game(cse125constants::NUM_PLAYERS);
 
-//static bool triggers[] = { false, false, false, false };
 static std::map<std::string, bool>triggers;
 
 static int lastRenderTime = 0;
+static int particleTime = 0;
 
 // Network related variables
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
@@ -135,7 +137,11 @@ void initialize(void)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw();
+    scene.draw(scene.node["world"]);
+    scene.updateScreen();
+    scene.draw(scene.node["UI_root"]);
+
+    //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
     glutSwapBuffers();
     glFlush();
@@ -179,6 +185,7 @@ void keyboard(unsigned char key, int x, int y){
         case ' ':
             hw3AutoScreenshots();
             glutPostRedisplay();
+
             break;
         */
             break;
@@ -193,22 +200,22 @@ void keyboard(unsigned char key, int x, int y){
         case 'a':
             //handleMoveLeft();
             triggers["left"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'd':
             //handleMoveRight();
             triggers["right"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'w':
             //handleMoveForward();
             triggers["up"] = true;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 's':
             triggers["down"] = true;
-            handleMoveBackward();
-            glutPostRedisplay();
+            //handleMoveBackward();
+            //glutPostRedisplay();
             break;
         case 'z':
             //scene.camera -> zoom(1.1f);
@@ -238,7 +245,7 @@ void keyboard(unsigned char key, int x, int y){
             break;
         */
         default:
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -247,22 +254,22 @@ void keyboardUp(unsigned char key, int x, int y){
     switch(key){
         case 'a':
             triggers["left"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'd':
             triggers["right"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 'w':
             triggers["up"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case 's':
             triggers["down"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         default:
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -273,19 +280,19 @@ void specialKey(int key, int x, int y) {
     switch (key) {
     case GLUT_KEY_UP: // up
         triggers["up"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_DOWN: // down
         triggers["down"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_RIGHT: // right
         triggers["right"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     case GLUT_KEY_LEFT: // left
         triggers["left"] = true;
-        glutPostRedisplay();
+        //glutPostRedisplay();
         break;
     }
 }
@@ -297,22 +304,22 @@ void specialKeyUp(int key, int x, int y){
         case GLUT_KEY_UP: // up
             //handleMoveForward();
             triggers["up"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN: // down
             //handleMoveBackward();
             triggers["down"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT: // right
             //handleMoveRight();
             triggers["right"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT: // left
             //handleMoveLeft();
             triggers["left"] = false;
-            glutPostRedisplay();
+            //glutPostRedisplay();
             break;
     }
 }
@@ -332,15 +339,20 @@ void idle() {
         glutPostRedisplay();
     }
     */
+
+    bool render = false;
+
     int time = glutGet(GLUT_ELAPSED_TIME);
-	float speed = 5.0f;
+	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);
             players[i]->bobCrown(time);
+            players[i]->updateParticles(1);
         }
-        glutPostRedisplay();
 		lastRenderTime = time;
+
+        render = true;
     }
 
     // Handle direction triggers 
@@ -366,7 +378,10 @@ void idle() {
         // Delete the frame
         delete frame;       
     }
-    glutPostRedisplay();
+
+    if (render) {
+        glutPostRedisplay();
+    }
 }
 
 void mouseMovement(int x, int y) {
@@ -410,6 +425,14 @@ int main(int argc, char** argv)
 
     // Read in config file and set variables
     cse125config::initializeConfig("../../config.json");
+    /*
+    outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
+    outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
+    outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
+    boost::asio::connect(*outgoingSocket, outgoingEndpoints);
+    requestClientId();
+    */
+
     // Initialize the network client
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id

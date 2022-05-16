@@ -6,15 +6,17 @@ Scene.inl contains the definition of the scene graph
 #include "Obj.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+//#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 
 using namespace glm;
 void Scene::init(void){
+
+
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    //geometry["pink_car"]->init("models/CarPink.obj", "textures/car_textures.png", 0);
     geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
     geometry["blue_car"] = new Obj;
     geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
@@ -36,6 +38,9 @@ void Scene::init(void){
     geometry["map"] = new Obj; 
     geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
     
+    geometry["plane"] = new Obj;
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
+
     // Create a material palette
     material["wood"] = new Material;
     material["wood"] -> shininess = 100.0f;
@@ -69,15 +74,20 @@ void Scene::init(void){
 
     model["tire"] = new Model; 
     model["tire"]->geometry = geometry["tire"]; 
-    model["tire"]->material = material["ceramic"]; 
+    model["tire"]->material = material["silver"]; 
 
     model["crown"] = new Model; 
     model["crown"]->geometry = geometry["crown"];
-    model["crown"]->material = material["ceramic"]; 
+    model["crown"]->material = material["silver"]; 
 
     model["map"] = new Model; 
     model["map"]->geometry = geometry["map"];
-    model["map"]->material = material["ceramic"];
+    model["map"]->material = material["silver"];
+
+    model["plane"] = new Model; 
+    model["plane"]->geometry = geometry["plane"];
+    model["plane"]->material = material["ceramic"];
+
 
     // Create a light palette
 
@@ -131,7 +141,7 @@ void Scene::init(void){
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
-
+		node["particles" + std::to_string(i)] = new Node("particles"+std::to_string(i), true, true);
     }
     /*
     node["player0"] = new Node("player0");
@@ -192,17 +202,29 @@ void Scene::init(void){
 		node["crown" + std::to_string(i)]->models.push_back(model["crown"]);
 		node["crown" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
+    node["crown_world"] = new Node("crown_world", true); 
+    node["crown_world"]->models.push_back(model["crown"]);
+    node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
 
     // Map
     node["map"] = new Node("map");
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
+    //********************************************
+    node["plane"] = new Node("plane");
+    node["plane"]->models.push_back(model["plane"]); 
+    node["plane"]->modeltransforms.push_back(mat4(1.0f));
+    //********************************************
+
+    //node["particles0"] = new Node("test_cube", true, true);
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
-    mat4 crown_transform = translate(vec3(0.0f, 1.25f, 0.0f)) * scale(vec3(0.8f, 0.8f, 0.8f));
+    mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
+    mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
 
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -214,6 +236,8 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
+    node["pink_car"]->childnodes.push_back(node["particles0"]);
+    node["pink_car"]->childtransforms.push_back(particle_transform);
     
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -225,6 +249,8 @@ void Scene::init(void){
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
     node["blue_car"]->childnodes.push_back(node["crown1"]);
     node["blue_car"]->childtransforms.push_back(crown_transform);
+    node["blue_car"]->childnodes.push_back(node["particles1"]);
+    node["blue_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player2"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -236,6 +262,8 @@ void Scene::init(void){
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["crown2"]);
     node["yellow_car"]->childtransforms.push_back(crown_transform);
+    node["yellow_car"]->childnodes.push_back(node["particles2"]);
+    node["yellow_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player3"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
@@ -247,9 +275,17 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(back_tire_transform);
     node["green_car"]->childnodes.push_back(node["crown3"]);
     node["green_car"]->childtransforms.push_back(crown_transform);
+    node["green_car"]->childnodes.push_back(node["particles3"]);
+    node["green_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -1.0f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["crown_world"]); 
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["plane"]); 
+    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     // Put a camera
     camera = new Camera;
@@ -257,6 +293,24 @@ void Scene::init(void){
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> reset(); 
+
+    node["screen"] = new Node("screen");
+
+    node["test_UI_elem"] = new Node("test_UI_elem"); 
+    node["test_UI_elem"]->models.push_back(model["plane"]);
+    node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    
+    node["UI_root"]->childnodes.push_back(node["screen"]); 
+    // camera transforms that we need to apply to all screen elements
+    node["UI_root"]->childtransforms.push_back(mat4(1.0f));
+    //node["UI_root"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
+
+    node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
+    // transform UI elements to be placed at a specific location on the "screen"
+    node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
+    //node["screen"]->childtransforms.push_back(mat4(1.0f));
+
+    // Create camera tree
     
     // Initialize shader
     shader = new SurfaceShader;

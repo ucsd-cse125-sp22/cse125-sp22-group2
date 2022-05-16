@@ -7,6 +7,7 @@ SurfaceShader is a shader that has the uniform
 #include "Material.h"
 #include "Light.h"
 #include <vector>
+#include <string>
 #include "Debug.h"
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -91,7 +92,17 @@ struct SurfaceShader : Shader {
     // Texture id 
     GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
+
+    GLuint is_particle; 
+    GLuint is_particle_loc;
     
+    /*
+    GLuint texture0_loc; 
+    GLuint texture1_loc; 
+    GLuint texture2_loc; 
+    GLuint texture3_loc; 
+    */
+
     // specular map
     GLuint specular_id;
     GLuint specular_id_loc;
@@ -149,6 +160,14 @@ struct SurfaceShader : Shader {
         sun_loc.shininess = glGetUniformLocation(program, "sun.shininess");
 
         texture_id_loc = glGetUniformLocation( program, "texture_id" );
+        is_particle_loc = glGetUniformLocation( program, "is_particle" );
+        
+        /*
+        texture0_loc = glGetUniformLocation(program, "texture0");
+        texture1_loc = glGetUniformLocation(program, "texture1");
+        texture2_loc = glGetUniformLocation(program, "texture2");
+        texture3_loc = glGetUniformLocation(program, "texture3");
+        */
         specular_id_loc = glGetUniformLocation(program, "specular_id");
     }
     void setUniforms(){
@@ -196,6 +215,14 @@ struct SurfaceShader : Shader {
         glUniform4fv( sun_loc.specular, 1, &(sun->specular[0]));
 
         glUniform1i(texture_id_loc, texture_id);
+        glUniform1i(is_particle_loc, is_particle);
+
+        /*
+        glUniform1i(texture0_loc, 0);
+        glUniform1i(texture1_loc, 1);
+        glUniform1i(texture2_loc, 2);
+        glUniform1i(texture3_loc, 3);
+        */
         glUniform1i(specular_id_loc, specular_id);
     }
 };
