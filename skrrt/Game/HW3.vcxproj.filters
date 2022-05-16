@@ -1,19 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\NetworkClient.cpp" />
     <ClCompile Include="src\Obj.cpp" />
     <ClCompile Include="src\objloader.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\ParticleCube.cpp" />
+    <ClCompile Include="src\ParticleSource.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
-    <ClCompile Include="..\..\Config.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Config.hpp" />
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
@@ -27,15 +32,18 @@
     <ClInclude Include="include\Light.h" />
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\NetworkClient.hpp" />
     <ClInclude Include="include\Obj.h" />
     <ClInclude Include="include\objloader.h" />
+    <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\ParticleCube.h" />
+    <ClInclude Include="include\ParticleSource.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Screenshot.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
-    <ClInclude Include="..\..\Config.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -18,6 +18,32 @@ that loads an obj file.
 #include "Obj.h"
 #include "Debug.h"
 
+void Obj::init(const char* filename, const char* texture_filename, const char* specular_filename, int obj_num){
+    init(filename, texture_filename, obj_num);
+
+    // load texture file
+    glGenTextures(1, &specularID); 
+    glActiveTexture(GL_TEXTURE0 + (1 + object_number*2));
+    glBindTexture(GL_TEXTURE_2D, specularID); 
+
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    unsigned char* image = stbi_load(specular_filename, &width, &height, &nrChannels, 0);
+
+    if (image) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(image);
+}
+
 void Obj::init(const char * filename, const char * texture_filename, int obj_num){
 
     object_number = obj_num;
@@ -39,7 +65,7 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
 
     // load texture file
     glGenTextures(1, &textureID); 
-    glActiveTexture(GL_TEXTURE0 + object_number);
+    glActiveTexture(GL_TEXTURE0 + (object_number*2));
     glBindTexture(GL_TEXTURE_2D, textureID); 
 
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
@@ -110,8 +136,11 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
 }
 
 void Obj::draw(void){
-    glActiveTexture(GL_TEXTURE0 + object_number);
+    glActiveTexture(GL_TEXTURE0 + (object_number*2));
     glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glActiveTexture(GL_TEXTURE0 + (1+object_number*2));
+    glBindTexture(GL_TEXTURE_2D, specularID);
 
 	glBindVertexArray(vao);
 	glDrawElements(mode,count,type,0);
