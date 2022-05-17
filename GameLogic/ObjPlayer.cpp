@@ -40,7 +40,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->speed = 1.0f;
 	this->iframes = 0;
 	this->stun = 0;
-	this->makeupLevel = 0.0f;
+	this->makeupLevel = 100.0f;
 	this->score = 0.0f;
 	this->hasCrown = false;
 	this->booth = false;
@@ -61,7 +61,7 @@ void ObjPlayer::step() {
 	}
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && !booth && !objectPosition(boundingBox, oMakeup)) {
-		makeupLevel -= 1.0f / 60.0f;
+		makeupLevel -= 1.0f / 30.0f;
 	}
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which

@@ -12,6 +12,7 @@
 
 #include "Scene.h"
 #include "ParticleSource.h"
+#include "../../../Definitions.hpp"
 
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
@@ -24,6 +25,9 @@ private:
 	// crown node 
 	Node* crown_node;
 	bool has_crown;
+
+	// Player's makeup level 
+	RealNumber makeupLevel; 
 
 	// Current world position 
 	// Current object's rotation 
@@ -39,8 +43,8 @@ private:
 
 public: 
 
-	Player() { player_node = NULL; has_crown = false; };
-	Player(Node* car) { player_node = car; has_crown = false; };
+	Player() { player_node = NULL; has_crown = false; makeupLevel = 0; };
+	Player(Node* car) { player_node = car; has_crown = false; makeupLevel = 0; };
 
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
@@ -50,6 +54,7 @@ public:
 	void setPlayer(Node* player) { player_node = player; };
 	void setCrown(Node* crown) { crown_node = crown; };
 	void setPosition(glm::vec3 position) { current_position = position; };
+	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }
 
 	void setCrownStatus(bool status) { 
 		has_crown = status; 
@@ -59,6 +64,8 @@ public:
 	bool getCrownStatus() {
 		return has_crown;
 	};
+
+	RealNumber getMakeupLevel(void) { return makeupLevel; }
 };
 
 #endif

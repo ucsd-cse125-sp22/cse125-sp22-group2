@@ -76,6 +76,8 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
         players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
         players[i]->setCrownStatus(frame->players[i].hasCrown);
+        players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        std::cout << "makeup level for player " << i << ": " << players[i]->getMakeupLevel() << std::endl;
     }
     scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
 }
@@ -358,11 +360,17 @@ void idle() {
             players[i]->bobCrown(time);
             players[i]->updateParticles(1);
         }
-        game.updateDrips(time);
+        //game.updateDrips(time);
+
+		// Update drip level based on current player's makeup level 
+		RealNumber currentMakeupLevel = players[clientId]->getMakeupLevel();
+		game.updateDrips(time, currentMakeupLevel);
+
 		lastRenderTime = time;
 
         render = true;
     }
+
 
     // Handle direction triggers 
     if (triggers["up"]) {

@@ -326,7 +326,7 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
 
     node["screen"]->childnodes.push_back(node["drips"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(35.0f, 300.0f, 1.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(35.0f, 600.0f, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));

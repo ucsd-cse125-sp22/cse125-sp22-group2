@@ -18,6 +18,7 @@
 #include "Geometry.h"
 #include "Material.h"
 #include "Model.h"
+#include "../../../Definitions.hpp"
 
 class Game {
 private:
@@ -53,7 +54,7 @@ public:
 		initial_drip_transform = drips->modeltransforms[0];
 	}
 
-	void updateDrips(int time); 
+	void updateDrips(int time, RealNumber makeupLevel); 
 
 };
 
