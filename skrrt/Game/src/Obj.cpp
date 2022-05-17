@@ -136,6 +136,7 @@ void Obj::init(const char * filename, const char * texture_filename, int obj_num
 }
 
 void Obj::draw(void){
+
     glActiveTexture(GL_TEXTURE0 + (object_number*2));
     glBindTexture(GL_TEXTURE_2D, textureID);
 

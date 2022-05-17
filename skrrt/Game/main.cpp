@@ -139,7 +139,13 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(scene.node["world"]);
     scene.updateScreen();
+
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+	//glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
+    glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 

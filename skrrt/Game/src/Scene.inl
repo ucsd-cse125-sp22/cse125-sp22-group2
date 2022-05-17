@@ -41,6 +41,9 @@ void Scene::init(void){
     geometry["plane"] = new Obj;
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
 
+    geometry["drips"] = new Obj;
+    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", 4);
+
     // Create a material palette
     material["wood"] = new Material;
     material["wood"] -> shininess = 100.0f;
@@ -87,6 +90,10 @@ void Scene::init(void){
     model["plane"] = new Model; 
     model["plane"]->geometry = geometry["plane"];
     model["plane"]->material = material["ceramic"];
+
+    model["drips"] = new Model;
+    model["drips"]->geometry = geometry["drips"];
+    model["drips"]->material = material["ceramic"];
 
 
     // Create a light palette
@@ -286,6 +293,7 @@ void Scene::init(void){
 
     node["world"]->childnodes.push_back(node["plane"]); 
     node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
     
     // Put a camera
     camera = new Camera;
@@ -299,16 +307,22 @@ void Scene::init(void){
     node["test_UI_elem"] = new Node("test_UI_elem"); 
     node["test_UI_elem"]->models.push_back(model["plane"]);
     node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    //node["test_UI_elem"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["drips"] = new Node("drips");
+    node["drips"]->models.push_back(model["drips"]); 
+    //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
     
     node["UI_root"]->childnodes.push_back(node["screen"]); 
-    // camera transforms that we need to apply to all screen elements
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
-    //node["UI_root"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
 
     node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
-    // transform UI elements to be placed at a specific location on the "screen"
     node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    //node["screen"]->childtransforms.push_back(mat4(1.0f));
+
+    node["screen"]->childnodes.push_back(node["drips"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(30.0f * vec3(1.0f)));
 
     // Create camera tree
     

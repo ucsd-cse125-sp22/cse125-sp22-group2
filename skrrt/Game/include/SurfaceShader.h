@@ -180,6 +180,7 @@ struct SurfaceShader : Shader {
         glUniform1f( material_loc.shininess,  material->shininess);
 
         glUniform1i( enablelighting_loc, enablelighting );
+        //glUniform1i( enablelighting_loc, 0);
 
         //set point lights
         for (int i = 0; i < numPointLights; i++) {
