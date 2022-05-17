@@ -314,6 +314,10 @@ void Scene::init(void){
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
+    node["back_drips"] = new Node("back_drips");
+    node["back_drips"]->models.push_back(model["drips"]); 
+    //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     node["UI_root"]->childnodes.push_back(node["screen"]); 
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
@@ -322,7 +326,10 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
 
     node["screen"]->childnodes.push_back(node["drips"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(30.0f * vec3(1.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(30.0f, 60.0f, 30.0f)));
+
+    //node["screen"]->childnodes.push_back(node["back_drips"]); 
+    //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
 
     // Create camera tree
     

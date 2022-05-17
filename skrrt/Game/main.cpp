@@ -126,6 +126,8 @@ void initialize(void)
         players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
 
+    game.init(scene.node["UI_root"]);
+
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
 
     // Enable depth test
@@ -356,6 +358,7 @@ void idle() {
             players[i]->bobCrown(time);
             players[i]->updateParticles(1);
         }
+        game.updateDrips(time);
 		lastRenderTime = time;
 
         render = true;
