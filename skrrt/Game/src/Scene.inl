@@ -171,7 +171,6 @@ void Scene::init(void){
     node["map"] = new Node("map");
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
-    node["map"]->visible = false;
 
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);

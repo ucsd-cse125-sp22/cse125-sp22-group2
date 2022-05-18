@@ -64,14 +64,14 @@ void ObjPlayer::step() {
 
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
-		makeupLevel -= 1.0f / 60.0f;
+		makeupLevel -= 1.0f / cse125config::DEFAULT_TICK_RATE;
 	}
 
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which
 	// would probably be passed in as a parameter
 	if (hasCrown && booth == -1 && !stun && !iframes) {
-		score += 1.0f / 60.0f;
+		score += 1.0f / cse125config::DEFAULT_TICK_RATE;
 	}
 
 	// Makeup station
@@ -84,6 +84,7 @@ void ObjPlayer::step() {
 			this->direction = dir;
 			this->boundingBox = bb;
 		}
+		boothTime--;
 		makeupLevel += 1.0f;
 	}
 
@@ -208,14 +209,14 @@ void ObjPlayer::action(glm::vec3 dir) {
 			this->direction = dir;
 			this->boundingBox = bb;
 
-			// Enter the makeup station if there is one at our destination
+			// Enter the makeup station if there was one at our destination
 			if (potentialBooth != -1) {
 				PhysicalObject*& obj = this->objects->at(potentialBooth);
 				if (!((ObjMakeup*)obj)->occupied) {
 					((ObjMakeup*)obj)->occupied = true;
 					this->booth = obj->id;
 					// Placeholder value
-					this->boothTime = 60.0f;
+					this->boothTime = MAKEUP_BOOTH_TIME;
 				}
 			}
 		}
