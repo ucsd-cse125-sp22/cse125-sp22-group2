@@ -50,7 +50,7 @@ namespace bounding {
 	glm::vec3 checkCollisionPointFloor(glm::vec3 v, BoundingBox floor);
 	// Try to align the bounding box to the terrain
 	BoundingBox checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset);
-	//
+	// This doesn't do anything anymore :pensive:
 	BoundingBox matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset);
 	
 }

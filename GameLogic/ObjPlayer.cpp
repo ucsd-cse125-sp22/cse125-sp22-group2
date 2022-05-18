@@ -85,6 +85,7 @@ void ObjPlayer::step() {
 			this->boundingBox = bb;
 		}
 		boothTime--;
+		// TODO: fix this to work with tick rate :woozy_face:
 		makeupLevel += 1.0f;
 	}
 
@@ -100,6 +101,7 @@ void ObjPlayer::step() {
 		speed -= MAKEUP_SPEED_PENALTY;
 	}
 
+	// TODO: uncomment this probably
 	//applyGravity();
 }
 
