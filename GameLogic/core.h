@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <algorithm>
 #include <vector>
 #include <ctype.h>
 #include <algorithm>

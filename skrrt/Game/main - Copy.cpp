@@ -28,8 +28,15 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
+<<<<<<< HEAD
+//static const int width = 1600;
+//static const int height = 1100;
+static const int width = 640;
+static const int height = 480;
+=======
 static const int width = 1200;
 static const int height = 900;
+>>>>>>> ed76b8f512b90fe598c252aac6139dd06d0498d9
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -138,11 +145,14 @@ void initialize(void)
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
-    glLineWidth(3.0f);
-    glEnable(GL_CULL_FACE);
-
+<<<<<<< HEAD
+    
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
+=======
+    glLineWidth(3.0f);
+    glEnable(GL_CULL_FACE); 
+>>>>>>> ed76b8f512b90fe598c252aac6139dd06d0498d9
 }
 
 void display(void)
@@ -359,11 +369,17 @@ void idle() {
         glutPostRedisplay();
     }
     */
+<<<<<<< HEAD
+    //int time = glutGet(GLUT_ELAPSED_TIME);
+    int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
+	float speed = 5.0f;
+=======
 
     bool render = false;
 
-    int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
+    int time = glutGet(GLUT_ELAPSED_TIME);
 	float speed = 10.0f;
+>>>>>>> ed76b8f512b90fe598c252aac6139dd06d0498d9
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             players[i]->spinWheels(speed);

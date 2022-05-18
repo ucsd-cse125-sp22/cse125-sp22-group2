@@ -19,16 +19,21 @@
 
 class Game {
 private:
-	int p0_score = 0, p1_score = 0, p2_score = 0, p3_score = 0; 
 	float game_time = 0; 
 
 	// Add other parameters as needed
 
 public: 
-	Player *p0, *p1, *p2, *p3;
+	std::vector<int> scores; 
+	std::vector<Player*> players; 
 
-	Game(Player* player0, Player* player1, Player* player2, Player* player3) 
-		{ p0 = player0; p1 = player1; p2 = player2; p3 = player3; };
+	Game(int numPlayers) {
+		for (int i = 0; i < numPlayers; i++) {
+			players.push_back(new Player());
+			scores.push_back(0);
+		}
+	}
+
 };
 
 
