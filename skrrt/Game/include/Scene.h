@@ -31,7 +31,7 @@ public:
         visible = v; 
         isParticleSource = p;
         if (p) {
-			particles = &ParticleSource(); 
+			particles = new ParticleSource(); 
             std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
