@@ -16,6 +16,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <glm/glm.hpp>
+#include <chrono>
 #include "Screenshot.h"
 #include "Scene.h"
 #include "Game.h"
@@ -47,8 +48,12 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
+// Time
+static std::chrono::time_point<std::chrono::system_clock> startTime;
+
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
+static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
 
@@ -115,7 +120,7 @@ void initialize(void)
 
     // Initialize scene
     scene.init();
-
+    
     // Initialize triggers map 
     triggers["up"] = false; 
     triggers["left"] = false; 
@@ -136,7 +141,10 @@ void initialize(void)
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glLineWidth(3.0f);
-    glEnable(GL_CULL_FACE); 
+    glEnable(GL_CULL_FACE);
+
+    // Make the cursor invisible
+    glutSetCursor(GLUT_CURSOR_NONE);
 }
 
 void display(void)
@@ -281,6 +289,15 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         */
+        case '`':
+            mouseLocked = !mouseLocked;
+            if (mouseLocked) {
+                glutSetCursor(GLUT_CURSOR_NONE);
+            }
+            else {
+                glutSetCursor(GLUT_CURSOR_INHERIT);
+            }
+            break;
         default:
             //glutPostRedisplay();
             break;
@@ -379,7 +396,7 @@ void idle() {
 
     bool render = false;
 
-    int time = glutGet(GLUT_ELAPSED_TIME);
+    int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
@@ -434,8 +451,16 @@ void mouseMovement(int x, int y) {
 	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
 	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);
 
-	mouseX = x;
-	mouseY = y;
+    // Set cursor to the center of the screen
+    if (mouseLocked) {
+        mouseX = width / 2;
+        mouseY = height / 2;
+        glutWarpPointer(mouseX, mouseY);
+    }
+    else {
+	    mouseX = x;
+	    mouseY = y;
+    }
 
     if (dx != 0 || dy != 0) {
         scene.camera->rotateRight(dx);

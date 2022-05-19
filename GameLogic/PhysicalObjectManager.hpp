@@ -30,6 +30,9 @@ public:
 	// Initialize map and objects
 	void startGame();
 
+	// End the game
+	void endGame();
+
 	// Create an instance
 	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
 
