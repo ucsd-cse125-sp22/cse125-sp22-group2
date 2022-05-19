@@ -62,10 +62,6 @@ public:
 	void setPosition(glm::vec3 position) { current_position = position; };
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
 	void setPlayerTransform(glm::mat4 transform) { 
-		//player_node->childtransforms[0] = initial_car_transform * transform; 
-		//player_node->childtransforms[0] = transform * initial_car_transform; 
-
-		//player_node->childtransforms[0] = glm::scale(glm::vec3(3.0f, 3.0f, 3.0f));
 		animation_transform = transform;
 
 		/*
