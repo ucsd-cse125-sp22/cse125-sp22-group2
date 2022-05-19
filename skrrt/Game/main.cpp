@@ -87,6 +87,14 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
 }
 
+void triggerAnimations(const cse125framing::AnimationTrigger& triggers) {
+
+}
+
+void triggerAudio() {
+
+}
+
 void printHelp(){
         /*
         case ' ':
@@ -435,6 +443,8 @@ void idle() {
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         // Get data from server and allocate a new frame variable
         cse125framing::ServerFrame* frame = receiveDataFromServer();
+        triggerAnimations(frame->animations);
+        triggerAudio(frame->audio);
         // Use the frame to update the player's state
         updatePlayerState(frame);
         // Delete the frame
