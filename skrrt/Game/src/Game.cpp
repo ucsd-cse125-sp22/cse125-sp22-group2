@@ -15,17 +15,55 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 	drips->modeltransforms[0] = offset * initial_drip_transform;
 }
 
-void Game::parseGateAnimation(const char* path) {
+// *******************************************
+// ************* Gate Animation **************
+// *******************************************
 
-	animations["gate_anim"] = new Animation();
+void Game::parseGateAnimation() {
 
-	animations["gate_anim"]->readAnimation(path);
+	const char* path = "animations/makeup_gate.txt";
+
+	for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
+		animations["gate_anim" + std::to_string(i)] = new Animation();
+
+		animations["gate_anim" + std::to_string(i)]->readAnimation(path);
+	}
 	
 	std::cout << "Successfully read in gate animation" << std::endl;
 }
 
-void Game::triggerGateAnimation() {
-	animations["gate_anim"]->triggerAnimation(true);
+/* 
+ * Function to trigger gate animation. 
+ */
+void Game::triggerGateAnimation(int gateNum) {
+	animations["gate_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+}
+
+// *******************************************
+// ******** Car Collision Animation **********
+// *******************************************
+
+void Game::parseCarCollisionAnimation() {
+
+	const char* path = "animations/makeup_gate.txt";
+	//const char* path = "animations/car_collision.txt"; 
+	/*
+	animations["collision_anim"] = new Animation(); 
+	animations["collision_anim"]->readAnimation(path); 
+	*/
+
+	//for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+	for (int i = 0; i < 4; i++) {
+		animations["collision_anim" + std::to_string(i)] = new Animation();
+		animations["collision_anim" + std::to_string(i)]->readAnimation(path); 
+	}
+	std::cout << "Successfully read in car collision animation" << std::endl;
+}
+
+void Game::triggerCarCollisionAnimation(int playerNum) {
+
+	// Select which car to apply the animation on 
+	animations["collision_anim" + std::to_string(playerNum)]->triggerAnimation(true);
 }
 
 /*
@@ -57,10 +95,18 @@ void Game::applyAnimations() {
 
 	// Gate's arm animation 
 	// Obtain the frame's rotation, translation, and scale matrices 
-	glm::mat4 new_transformation = animations["gate_anim"]->getCurrentTransform();
+	for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
+		glm::mat4 new_transformation = animations["gate_anim" + std::to_string(i)]->getCurrentTransform();
 
-	// Apply the transformations to the gate's arm
-	makeup_gate_arm->modeltransforms[0] = initial_arm_transform * new_transformation;
+		// Apply the transformations to the gate's arm
+		makeup_gate_arms[i]->modeltransforms[0] = initial_arm_transforms[i] * new_transformation;
+	}
+
+	// Car collision animations 
+	for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+		glm::mat4 new_transformation = animations["collision_anim" + std::to_string(i)]->getCurrentTransform(); 
+		players[i]->setPlayerTransform(new_transformation); 
+	}
 
 	// *********************************
 	// Add future animation applications here 

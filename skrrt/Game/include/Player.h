@@ -35,6 +35,8 @@ private:
 	glm::vec3 initial_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
 	glm::vec3 current_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
 
+	glm::mat4 initial_car_transform;
+
 	glm::mat4 initial_crown_transform = glm::translate(glm::vec3(0.0f, 2.0f, 0.0f)) * glm::scale(glm::vec3(0.8f, 0.8f, 0.8f));
 
 	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.6f, -0.4f, 0.0f)); 
@@ -51,10 +53,25 @@ public:
 	void bobCrown(float time);
 	void updateParticles(float time);
 
-	void setPlayer(Node* player) { player_node = player; };
+	void setPlayer(Node* player) { 
+		player_node = player; 
+		initial_car_transform = player->childtransforms[0];
+	};
 	void setCrown(Node* crown) { crown_node = crown; };
 	void setPosition(glm::vec3 position) { current_position = position; };
-	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }
+	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
+	void setPlayerTransform(glm::mat4 transform) { 
+		player_node->childtransforms[0] = initial_car_transform * transform; 
+
+
+		std::cout << "car transformation : " << std::endl; 
+		glm::mat4 car_transform = initial_car_transform * transform;
+		std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+		std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+		std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+		std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+
+	};
 
 	void setCrownStatus(bool status) { 
 		has_crown = status; 
@@ -64,6 +81,7 @@ public:
 	bool getCrownStatus() {
 		return has_crown;
 	};
+
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 };

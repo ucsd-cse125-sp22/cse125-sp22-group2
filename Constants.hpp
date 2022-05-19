@@ -5,4 +5,6 @@ namespace cse125constants {
 	const int DEFAULT_MAKEUP_LEVEL = 100;
 	const int DEFAULT_SCORE = 0;
 	const int NUM_PLAYERS = 1;
+
+	const int NUM_MAKEUP_STATIONS = 1;
 }

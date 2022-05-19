@@ -19,19 +19,21 @@
 #include "Material.h"
 #include "Model.h"
 #include "Animation.h"
+
+#include "../../../Constants.hpp"
 #include "../../../Definitions.hpp"
 
 class Game {
 private:
-	float game_time = 0; 
+	float game_time = 0;
 
 	// Add other parameters as needed
 	Node* UI_root = nullptr;
 	Node* drips = nullptr;
-	glm::mat4 initial_drip_transform; 
+	glm::mat4 initial_drip_transform;
 
-	Node* makeup_gate_arm = nullptr;
-	glm::mat4 initial_arm_transform; 
+	std::vector<Node*> makeup_gate_arms;
+	std::vector<glm::mat4> initial_arm_transforms;
 
 	//Animation gateAnimation;
 	std::map <std::string, Animation*> animations; 
@@ -59,25 +61,31 @@ public:
 			}
 		}
 
-		// Find makeup gate arm 
+		initial_drip_transform = drips->modeltransforms[0];
+
+		// Find makeup gate arms
 		for (Node* child : world->childnodes) {
-			if (child->name == "makeup_station") {
-				makeup_gate_arm = child->childnodes[0]; 
-				//initial_arm_transform = child->childtransforms[0];
-				initial_arm_transform = makeup_gate_arm->modeltransforms[0];
+
+			// Save makeup gate arms
+			if (child->name.find("makeup_station") != std::string::npos) {
+				makeup_gate_arms.push_back(child->childnodes[0]); 
+				initial_arm_transforms.push_back(child->childnodes[0]->modeltransforms[0]);
 			}
 		}
 
-		initial_drip_transform = drips->modeltransforms[0];
+		// Read in animations 
+		parseGateAnimation(); 
+		parseCarCollisionAnimation();
 	}
 
 	void updateDrips(int time, RealNumber makeupLevel); 
-	//void updateGateAnimation(int frameNum);
 	void updateAnimations(); 
 
-	void parseGateAnimation(const char* path);
-	void triggerGateAnimation();
+	void parseGateAnimation();
+	void triggerGateAnimation(int gateNum);
 
+	void parseCarCollisionAnimation();
+	void triggerCarCollisionAnimation(int playerNum);
 };
 
 

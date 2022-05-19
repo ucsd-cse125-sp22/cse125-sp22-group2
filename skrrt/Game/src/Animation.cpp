@@ -100,11 +100,10 @@ glm::mat4 Animation::getRotation(int frameNum) {
 		rotationVector = rotationChannel[frameNum]; 
 	}
 	else {
-		//std::cerr << "Trying to access rotation frame in animation that is not valid" << std::endl;
 		rotationVector = glm::vec3(0.0f); 
 	}
 
-	std::cout << "Rotations: " << rotationVector[0] << " " << rotationVector[1] << " " << rotationVector[2] << std::endl;
+	//std::cout << "Rotations: " << rotationVector[0] << " " << rotationVector[1] << " " << rotationVector[2] << std::endl;
 
 	return glm::rotate(rotationVector[0] * float(M_PI)/180.0f, vec3(1.0f, 0.0f,0.0f))
 		 * glm::rotate(rotationVector[1] * float(M_PI)/180.0f, vec3(0.0f, 1.0f,0.0f))
@@ -120,9 +119,6 @@ glm::mat4 Animation::getTranslation(int frameNum) {
 		return glm::translate(translationVector);
 	}
 	else {
-		//std::cerr << "Trying to access translation frame in animation that is not valid" << std::endl;
-		//translationVector = glm::vec3(0.0f); 
-		std::cout << "here" << std::endl;
 		return glm::mat4(1.0f);
 	}
 
@@ -146,7 +142,6 @@ glm::mat4 Animation::getScale(int frameNum) {
 		scaleVector = scaleChannel[frameNum];
 	}
 	else {
-		//std::cerr << "Trying to access scale frame in animation that is not valid" << std::endl;
 		scaleVector = glm::vec3(1.0f); 
 	}
 
