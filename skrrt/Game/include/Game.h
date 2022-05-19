@@ -50,6 +50,12 @@ public:
 		}
 	}
 
+	~Game() {
+		for (Player* p : players) {
+			delete(p); 
+		}
+	}
+
 	void init(Node* world, Node* ui_root) {
 		UI_root = ui_root; 
 

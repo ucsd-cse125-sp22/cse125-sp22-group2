@@ -45,12 +45,8 @@ void Game::triggerGateAnimation(int gateNum) {
 
 void Game::parseCarCollisionAnimation() {
 
-	const char* path = "animations/makeup_gate.txt";
-	//const char* path = "animations/car_collision.txt"; 
-	/*
-	animations["collision_anim"] = new Animation(); 
-	animations["collision_anim"]->readAnimation(path); 
-	*/
+	//const char* path = "animations/makeup_gate.txt";
+	const char* path = "animations/car_collision.txt"; 
 
 	//for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
 	for (int i = 0; i < 4; i++) {
@@ -103,7 +99,7 @@ void Game::applyAnimations() {
 	}
 
 	// Car collision animations 
-	for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+	for (int i = 0; i < 4; i++) {
 		glm::mat4 new_transformation = animations["collision_anim" + std::to_string(i)]->getCurrentTransform(); 
 		players[i]->setPlayerTransform(new_transformation); 
 	}
