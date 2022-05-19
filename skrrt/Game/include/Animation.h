@@ -35,14 +35,25 @@ private:
 	int anim_length = 0; 
 
 	// Get channel values 
-	glm::mat4& getRotation(int frameNum);
+	glm::mat4 getRotation(int frameNum);
 
-	glm::mat4& getTranslation(int frameNum);
+	glm::mat4 getTranslation(int frameNum);
 
-	glm::mat4& getScale(int frameNum);
+	glm::mat4 getScale(int frameNum);
 
-	glm::mat4& getTransform(int frameNum) {
-		return getTranslation(frameNum) * getScale(frameNum) * getRotation(frameNum); 
+	glm::mat4 getTransform(int frameNum) {
+		glm::mat4 trans = getTranslation(frameNum) * getScale(frameNum) * getRotation(frameNum); 
+
+		/*
+		std::cout << "transformation: " << std::endl; 
+		glm::mat4 car_transform = glm::mat4(1.0f) * getRotation(frameNum);
+		std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+		std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+		std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+		std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+		*/
+
+		return trans;
 	}
 
 public:

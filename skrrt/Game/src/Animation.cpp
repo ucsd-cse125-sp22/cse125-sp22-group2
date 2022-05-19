@@ -93,50 +93,61 @@ void Animation::triggerAnimation(bool trigger) {
 }
 
 // Get channel values 
-glm::mat4& Animation::getRotation(int frameNum) { 
+glm::mat4 Animation::getRotation(int frameNum) { 
 	glm::vec3 rotationVector; 
 
 	// Check if frameNum is within the range of rotation channel, 
-	if (frameNum < rotationChannel.size()) {
+	if (frameNum >= 0 && frameNum < rotationChannel.size()) {
 		rotationVector = rotationChannel[frameNum]; 
 	}
 	else {
 		//std::cerr << "Trying to access rotation frame in animation that is not valid" << std::endl;
-		//rotationVector = rotationChannel[0];
 		rotationVector = glm::vec3(0.0f); 
 	}
+
+	std::cout << "Rotations: " << rotationVector[0] << " " << rotationVector[1] << " " << rotationVector[2] << std::endl;
 
 	return glm::rotate(rotationVector[0] * float(M_PI)/180.0f, vec3(1.0f, 0.0f,0.0f))
 		 * glm::rotate(rotationVector[1] * float(M_PI)/180.0f, vec3(0.0f, 1.0f,0.0f))
 		 * glm::rotate(rotationVector[2] * float(M_PI)/180.0f, vec3(0.0f, 0.0f,1.0f));
 }
 
-glm::mat4& Animation::getTranslation(int frameNum) {
+glm::mat4 Animation::getTranslation(int frameNum) {
 	glm::vec3 translationVector;
 
 	// Check if frameNum is within the range of translation channel, 
-	if (frameNum < translationChannel.size()) {
+	if (frameNum >= 0 && frameNum < translationChannel.size()) {
 		translationVector = translationChannel[frameNum];
+		return glm::translate(translationVector);
 	}
 	else {
 		//std::cerr << "Trying to access translation frame in animation that is not valid" << std::endl;
-		//translationVector = translationChannel[0];
-		translationVector = glm::vec3(0.0f); 
+		//translationVector = glm::vec3(0.0f); 
+		std::cout << "here" << std::endl;
+		return glm::mat4(1.0f);
 	}
 
+	/*
+	std::cout << "Scale transformation: " << std::endl; 
+	glm::mat4 car_transform = glm::translate(translationVector);
+	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+
 	return glm::translate(translationVector);
+	*/
 }
 
-glm::mat4& Animation::getScale(int frameNum) {
+glm::mat4 Animation::getScale(int frameNum) {
 	glm::vec3 scaleVector; 
 
 	// Check if frameNum is within the range of scale channel, 
-	if (frameNum < scaleChannel.size()) {
+	if (frameNum >= 0 && frameNum < scaleChannel.size()) {
 		scaleVector = scaleChannel[frameNum];
 	}
 	else {
 		//std::cerr << "Trying to access scale frame in animation that is not valid" << std::endl;
-		//scaleVector = scaleChannel[0];
 		scaleVector = glm::vec3(1.0f); 
 	}
 

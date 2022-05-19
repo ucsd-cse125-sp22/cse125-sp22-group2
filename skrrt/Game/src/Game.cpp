@@ -62,8 +62,6 @@ void Game::applyAnimations() {
 	// Apply the transformations to the gate's arm
 	makeup_gate_arm->modeltransforms[0] = initial_arm_transform * new_transformation;
 
-	std::cout << "Arm transformation: " << std::endl; 
-
 	// *********************************
 	// Add future animation applications here 
 	// *********************************
