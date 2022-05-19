@@ -183,14 +183,15 @@ void ParticleSource::CleanUp() {
 
 	// Iterate through particles and remove expired particles
 	for (int i = 0; i < numParticles; i++) {
-
 		if (particles[i] != NULL && particles[i]->getLifespan() <= 0) {
 			// Delete particle there 
 			delete(particles[i]);
 
 			// Replace with last particle in list 
 			particles[i] = particles[numParticles - 1];
+			particles[numParticles - 1] = NULL;
 
+			i--;
 			numParticles--;
 		}
 	}

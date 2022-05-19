@@ -44,29 +44,29 @@ void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey mo
 void cse125gameaction::GameActionTracker::moveRight(int playerId)
 {
 	GameActionContainer* container = this->tracker.at(playerId);
-	container->right = 1;
+	container->right = 1 ^ container->left;
 	container->left = 0;
 }
 
 void cse125gameaction::GameActionTracker::moveForward(int playerId)
 {
 	GameActionContainer* container = this->tracker.at(playerId);
-	container->forward = 1;
+	container->forward = 1 ^ container->backward;
 	container->backward = 0;
 }
 
 void cse125gameaction::GameActionTracker::moveLeft(int playerId)
 {
 	GameActionContainer* container = this->tracker.at(playerId);
+	container->left = 1 ^ container->right;
 	container->right = 0;
-	container->left = 1;
 }
 
 void cse125gameaction::GameActionTracker::moveBackward(int playerId)
 {
 	GameActionContainer* container = this->tracker.at(playerId);
+	container->backward = 1 ^ container->forward;
 	container->forward = 0;
-	container->backward = 1;
 }
 
 const cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)
