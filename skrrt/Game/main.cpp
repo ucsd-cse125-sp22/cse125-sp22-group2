@@ -128,7 +128,8 @@ void initialize(void)
         players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
 
-    game.init(scene.node["UI_root"]);
+    game.init(scene.node["world"], scene.node["UI_root"]);
+    game.parseGateAnimation("animations/makeup_gate.txt");
 
     lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
 
@@ -248,6 +249,12 @@ void keyboard(unsigned char key, int x, int y){
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
             glutPostRedisplay();
             break;
+        case 'u': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(); 
+            glutPostRedisplay(); 
+            break; 
+
         /*
         case ' ':
             hw3AutoScreenshots();
@@ -360,14 +367,15 @@ void idle() {
             players[i]->bobCrown(time);
             players[i]->updateParticles(1);
         }
-        //game.updateDrips(time);
 
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
 
-		lastRenderTime = time;
+        // Update all animations 
+        game.updateAnimations(); 
 
+		lastRenderTime = time;
         render = true;
     }
 

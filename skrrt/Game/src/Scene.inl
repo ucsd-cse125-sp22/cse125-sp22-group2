@@ -44,6 +44,12 @@ void Scene::init(void){
     geometry["drips"] = new Obj;
     geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", 4);
 
+    geometry["makeup_station"] = new Obj; 
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", 5);
+
+    geometry["makeup_station_bar"] = new Obj; 
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", 5);
+
     // Create a material palette
     material["wood"] = new Material;
     material["wood"] -> shininess = 100.0f;
@@ -95,6 +101,13 @@ void Scene::init(void){
     model["drips"]->geometry = geometry["drips"];
     model["drips"]->material = material["ceramic"];
 
+    model["makeup_station"] = new Model;
+    model["makeup_station"]->geometry = geometry["makeup_station"];
+    model["makeup_station"]->material = material["ceramic"];
+
+    model["makeup_station_bar"] = new Model;
+    model["makeup_station_bar"]->geometry = geometry["makeup_station_bar"];
+    model["makeup_station_bar"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -150,12 +163,6 @@ void Scene::init(void){
         node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
 		node["particles" + std::to_string(i)] = new Node("particles"+std::to_string(i), true, true);
     }
-    /*
-    node["player0"] = new Node("player0");
-    node["player1"] = new Node("player1");
-    node["player2"] = new Node("player2");
-    node["player3"] = new Node("player3");
-    */
 
     node["pink_car"] = new Node("pink_car");
     node["pink_car"]->models.push_back(model["pink_car"]);
@@ -218,13 +225,14 @@ void Scene::init(void){
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
-    //********************************************
-    node["plane"] = new Node("plane");
-    node["plane"]->models.push_back(model["plane"]); 
-    node["plane"]->modeltransforms.push_back(mat4(1.0f));
-    //********************************************
+    // Makeup station 
+    node["makeup_station"] = new Node("makeup_station");
+    node["makeup_station"]->models.push_back(model["makeup_station"]);
+    node["makeup_station"]->modeltransforms.push_back(mat4(1.0f));
 
-    //node["particles0"] = new Node("test_cube", true, true);
+    node["makeup_station_bar"] = new Node("makeup_station_bar");
+    node["makeup_station_bar"]->models.push_back(model["makeup_station_bar"]);
+    node["makeup_station_bar"]->modeltransforms.push_back(mat4(1.0f));
 
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
@@ -291,9 +299,10 @@ void Scene::init(void){
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
 
-    node["world"]->childnodes.push_back(node["plane"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
-
+    node["world"]->childnodes.push_back(node["makeup_station"]); 
+    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["makeup_station"]->childnodes.push_back(node["makeup_station_bar"]);
+    node["makeup_station"]->childtransforms.push_back(mat4(1.0f));
     
     // Put a camera
     camera = new Camera;
@@ -301,6 +310,10 @@ void Scene::init(void){
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> reset(); 
+
+    // ************************
+    // ****** UI elems ********
+    // ************************
 
     node["screen"] = new Node("screen");
 

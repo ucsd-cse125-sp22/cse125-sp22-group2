@@ -14,3 +14,57 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 
 	drips->modeltransforms[0] = offset * initial_drip_transform;
 }
+
+void Game::parseGateAnimation(const char* path) {
+
+	animations["gate_anim"] = new Animation();
+
+	animations["gate_anim"]->readAnimation(path);
+	
+	std::cout << "Successfully read in gate animation" << std::endl;
+}
+
+void Game::triggerGateAnimation() {
+	animations["gate_anim"]->triggerAnimation(true);
+}
+
+/*
+void Game::updateGateAnimation(int frameNum) {
+	// For the gate's arm object 
+
+	// Obtain the frame's rotation, translation, and scale matrices 
+	glm::mat4 new_transformation = gateAnimation.getTransform(frameNum); 
+
+	// Apply the transformations to the gate's arm
+	makeup_gate_arm->modeltransforms[0] = initial_arm_transform * new_transformation;
+}
+*/
+
+void Game::updateAnimations() {
+
+	std::map<std::string, Animation*>::iterator it;
+
+	// Call update on all animations in map
+	for (it = animations.begin(); it != animations.end(); it++) {
+		it->second->updateAnimation();
+	}
+
+	// apply all animations to respective objects 
+	applyAnimations(); 
+}
+
+void Game::applyAnimations() {
+
+	// Gate's arm animation 
+	// Obtain the frame's rotation, translation, and scale matrices 
+	glm::mat4 new_transformation = animations["gate_anim"]->getCurrentTransform();
+
+	// Apply the transformations to the gate's arm
+	makeup_gate_arm->modeltransforms[0] = initial_arm_transform * new_transformation;
+
+	std::cout << "Arm transformation: " << std::endl; 
+
+	// *********************************
+	// Add future animation applications here 
+	// *********************************
+}
