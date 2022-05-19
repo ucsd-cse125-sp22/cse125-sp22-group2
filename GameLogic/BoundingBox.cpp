@@ -53,7 +53,7 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 	this->bVec = up;
 	this->cVec = glm::normalize(glm::cross(dir, up));
 
-	this->corner = pos - (0.5f * l * aVec) - (0.5f * w * bVec) - (0.5f * h * cVec);
+	this->corner = pos - (0.5f * l * aVec) - (0.5f * h * bVec) - (0.5f * w * cVec);
 	glm::vec3 a = aVec * l;
 	glm::vec3 b = bVec * h;
 	glm::vec3 c = cVec * w;
@@ -282,4 +282,56 @@ glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
 	// We found no axis along which they do not overlap, so there is a collision
 	//cout << "Potential adjustment: " << min_axis.x << ", " << min_axis.y << ", " << min_axis.z << ": " << min_overlap << "\n";
 	return min_overlap * min_axis;
+}
+
+glm::vec3 bounding::checkCollisionRadius(BoundingBox a, glm::vec3 center, float r)
+{
+	glm::vec3 dir = glm::normalize(glm::vec3(a.center.x, 0.0f, a.center.z) - glm::vec3(center.x, 0.0f, center.z));
+	float max_dist = -1.0f;
+	for (unsigned int i = 0; i < a.vertices.size(); i++) {
+		float curr_dist = glm::dot(glm::vec3(a.vertices[i].x, 0.0f, a.vertices[i].z), dir);
+		max_dist = max(max_dist, curr_dist);
+	}
+	if (max_dist > r) {
+		return (r - max_dist) * dir;
+	}
+	return glm::vec3(0.0f);
+}
+
+glm::vec3 bounding::checkCollisionPointFloor(glm::vec3 v, BoundingBox floor)
+{
+	glm::vec3 dir = glm::normalize(floor.bVec);
+	//float f_min = 0.0f;
+	float f_max = 0.0f;
+	for (unsigned int i = 0; i < floor.vertices.size(); i++) {
+		float proj = glm::dot(dir, floor.vertices[i]);
+		//if (!i || proj < f_min) {
+		//	f_min = proj;
+		//}
+		if (!i || proj > f_max) {
+			f_max = proj;
+		}
+	}
+	float proj = glm::dot(dir, v);
+	if (proj <= f_max) {
+		return (f_max - proj + 0.0001f) * dir;
+	}
+	return glm::vec3(0.0f);
+}
+
+BoundingBox bounding::checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset)
+{
+	// Since previous attempts kind of went nowhere this is now blank
+	// This is my plan for slopes though
+	// 
+	// Part I: Offset all lower vertices to be above the floor
+	// Part II: Use the diagonals to get the up vector
+	// Part III: Construct a new bounding box
+	// Part IV: Adjust the bounding box again to not collide with the floor
+	return BoundingBox();
+}
+
+BoundingBox bounding::matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset)
+{
+	return BoundingBox();
 }

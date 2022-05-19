@@ -4,6 +4,7 @@
 #include "PhysicalObject.hpp"
 #include "ObjCrown.hpp"
 #include "ObjTrail.hpp"
+#include "ObjMakeup.hpp"
 
 class ObjPlayer : public PhysicalObject
 {
@@ -22,8 +23,12 @@ public:
 	float score;
 	// Whether we have the crown
 	bool hasCrown;
-	// Whether we are in a makeup booth
-	bool booth;
+	// The makeup booth we are in, or -1 if we aren't in any
+	int booth;
+	// How much longer we are stuck in the booth
+	float boothTime;
+	// Current gravity force (represented as a positive float)
+	float gravity;
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);
@@ -35,4 +40,10 @@ public:
 
 	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
+	// Special movement function for when another player is pushing you
+	void movePushed(glm::vec3 dir, float pushSpeed);
+	// Apply gravity if there is no object directly below us
+	void applyGravity();
+	// 
+	BoundingBox matchTerrain(BoundingBox bb);
 };
