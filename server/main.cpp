@@ -92,8 +92,9 @@ int main()
                 sortedPriorities[playerPriorities[i]] = i;
             }
 
-            // Update basic game state (not dependent on input)
+            // Update basic game state (score, makeup levels; not dependent on input)
             manager->step();
+
             // Update the game state in player priority order
             for (auto it = sortedPriorities.begin();
                  it != sortedPriorities.end(); it++)
@@ -109,9 +110,6 @@ int main()
                 gameLoop(manager, playerId, gameAction,
                          container->cameraDirection);
             }
-
-            // TODO: Call Game loop even if no packets from any players to
-            // update score, etc. (might be a score-specific game loop)
 
             // Write data back to players
             cse125framing::ServerFrame serverFrame;
