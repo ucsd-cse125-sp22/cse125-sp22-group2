@@ -89,7 +89,6 @@ void Animation::updateAnimation(void) {
 
 void Animation::triggerAnimation(bool trigger) {
 	triggered = trigger; 
-	frameNum = 0; 
 }
 
 // Get channel values 

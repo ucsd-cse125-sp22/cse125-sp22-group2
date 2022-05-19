@@ -28,7 +28,7 @@ private:
 	glm::mat4 currentTransform = glm::mat4(1.0f); 
 
 	bool triggered; 
-	int anim_speed = 5; 
+	int anim_speed = 1; 
 	int frameNum; 
 	int count; 
 
