@@ -37,7 +37,8 @@ static Scene scene;
 //static Player p0, p1, p2, p3;
 //static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 //static Game game(&p0, &p1, &p2, &p3);
-static Game game(cse125constants::NUM_PLAYERS);
+//static Game game(cse125constants::NUM_PLAYERS);
+static Game game(4);
 
 static std::map<std::string, bool>triggers;
 
@@ -136,7 +137,8 @@ void initialize(void)
     triggers["right"] = false; 
 
     // Set up players
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+    //for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+    for (int i = 0; i < 4; i++) {
         game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
         game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
@@ -166,6 +168,14 @@ void display(void)
 	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 	//glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
+
+	std::cout << "car transformation : " << std::endl; 
+	glm::mat4 car_transform = scene.node["player0"]->childtransforms[0];
+	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+
     glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
