@@ -300,9 +300,9 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
 
     node["world"]->childnodes.push_back(node["makeup_station"]); 
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5, 0.0f))*scale(0.5f * vec3(1.0f)));
     node["makeup_station"]->childnodes.push_back(node["makeup_station_bar"]);
-    node["makeup_station"]->childtransforms.push_back(mat4(1.0f));
+    node["makeup_station"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
     
     // Put a camera
     camera = new Camera;
