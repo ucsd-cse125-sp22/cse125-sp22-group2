@@ -17,29 +17,29 @@ void Scene::init(void){
 
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["crown"] = new Obj; 
-    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
+    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
     
     geometry["plane"] = new Obj;
-    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -55,7 +55,6 @@ void Scene::init(void){
     material["turquoise"] -> shininess = 100.0f;
     
     material["bulb"] = new Material;
-    material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
     
     // Create a model palette

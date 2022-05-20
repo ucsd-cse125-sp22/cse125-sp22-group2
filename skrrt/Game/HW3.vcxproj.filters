@@ -46,6 +46,7 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
     <ClInclude Include="include\AudioEngine.h" />
+    <ClInclude Include="include\TextureConstants.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
