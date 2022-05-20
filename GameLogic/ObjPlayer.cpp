@@ -154,6 +154,13 @@ void ObjPlayer::action(glm::vec3 dir)
         // The booth at our destination
         int potentialBooth = -1;
 
+        // keep track for crash animation
+        this->crashed = false;
+
+        /* play for every collision?
+        this->crashed = collisions.size() > 0;
+        */
+
         // Go through every object we collided with (this includes non-solids
         // that we can overlap with)
         for (unsigned int i = 0; i < collisions.size(); i++)
@@ -237,6 +244,12 @@ void ObjPlayer::action(glm::vec3 dir)
                     this->iframes = 60;
                     ((ObjPlayer*)obj)->hasCrown = false;
                     ((ObjPlayer*)obj)->stun = 30;
+                }
+
+                // keep track for crash animation
+                if (!iframes) // you don't "crash" if you're invincible :)
+                {
+                    this->crashed = true;
                 }
             }
             // The crown is loose, take it

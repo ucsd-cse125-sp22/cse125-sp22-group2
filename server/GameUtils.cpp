@@ -37,6 +37,11 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
         }
+        // crash animation
+        if (player->crashed)
+        {
+            frame->animations.playerCrash[id] = true;
+        }
     }
 }
 

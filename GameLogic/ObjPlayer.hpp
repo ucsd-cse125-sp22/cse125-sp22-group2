@@ -29,6 +29,8 @@ public:
 	float boothTime;
 	// Current gravity force (represented as a positive float)
 	float gravity;
+	// keep track for crash animation
+	bool crashed;
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);
