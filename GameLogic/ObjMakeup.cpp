@@ -15,6 +15,8 @@ ObjMakeup::ObjMakeup() {
 	this->up = glm::vec3(0.0f);
 
 	this->solid = false;
+
+	this->makeupID = numMakeups++;
 }
 
 ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
@@ -35,6 +37,8 @@ ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->up = up;
 
 	this->solid = solid;
+
+	this->makeupID = numMakeups++;
 }
 
 ObjMakeup::~ObjMakeup() {
