@@ -18,38 +18,38 @@ void Scene::init(void){
 
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["crown"] = new Obj; 
-    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
+    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
     
     geometry["plane"] = new Obj;
-    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
     geometry["drips"] = new Obj;
-    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", 4);
+    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 4);
 
     geometry["makeup_station"] = new Obj; 
-    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", 5);
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station_bar"] = new Obj; 
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", 5);
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -65,7 +65,6 @@ void Scene::init(void){
     material["turquoise"] -> shininess = 100.0f;
     
     material["bulb"] = new Material;
-    material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
     
     // Create a model palette
@@ -147,17 +146,20 @@ void Scene::init(void){
 	pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 	pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
-	spotLights["player0Headlight"] = new SpotLight;
-	spotLights["player0Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
-	spotLights["player0Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
-	spotLights["player0Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
-	spotLights["player0Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
-	spotLights["player0Headlight"]->constant = 1.0f;
-	spotLights["player0Headlight"]->linear = 0.045f;
-	spotLights["player0Headlight"]->quadradic = 0.0075f;
-	spotLights["player0Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
-	spotLights["player0Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-	spotLights["player0Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+	    spotLights["player" + std::to_string(i) + "Headlight"] = new SpotLight;
+	    spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
+	    spotLights["player" + std::to_string(i) + "Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
+    	spotLights["player" + std::to_string(i) + "Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
+    	spotLights["player" + std::to_string(i) + "Headlight"]->constant = 1.0f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->linear = 0.045f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->quadradic = 0.0075f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+    }
 
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
@@ -169,7 +171,7 @@ void Scene::init(void){
     node["pink_car"]->models.push_back(model["pink_car"]);
     node["pink_car"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["blue_car"] = new Node("pink_car", false);
+    node["blue_car"] = new Node("blue_car");
     node["blue_car"]->models.push_back(model["blue_car"]);
     node["blue_car"]->modeltransforms.push_back(mat4(1.0f));
 
@@ -190,10 +192,10 @@ void Scene::init(void){
     node["p_tire_b"]->models.push_back(model["tire"]); 
     node["p_tire_b"]->modeltransforms.push_back(mat4(1.0f));
     
-    node["b_tire_f"] = new Node("b_tire_f", false); 
+    node["b_tire_f"] = new Node("b_tire_f"); 
     node["b_tire_f"]->models.push_back(model["tire"]); 
     node["b_tire_f"]->modeltransforms.push_back(mat4(1.0f));
-    node["b_tire_b"] = new Node("b_tire_b", false); 
+    node["b_tire_b"] = new Node("b_tire_b"); 
     node["b_tire_b"]->models.push_back(model["tire"]); 
     node["b_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 

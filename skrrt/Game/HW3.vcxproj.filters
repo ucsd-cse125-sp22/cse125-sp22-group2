@@ -45,7 +45,11 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+<<<<<<< HEAD
     <ClInclude Include="include\Animation.h" />
+=======
+    <ClInclude Include="include\TextureConstants.h" />
+>>>>>>> 4293b9a7c1ff82a6992cdc6388dbb88dc66f335d
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
