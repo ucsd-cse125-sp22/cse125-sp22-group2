@@ -5,9 +5,11 @@ Scene.cpp contains the implementation of the draw command
 #include "Cube.h"
 #include "Obj.h"
 #include "Debug.h"
+#include "TextureConstants.h"
 
 // The scene init definition 
 #include "Scene.inl"
+
 
 
 using namespace glm;
@@ -81,8 +83,9 @@ void Scene::draw(Node* current_node){
 
 				shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
 				shader->material = (cur->models[i])->material;
-				shader->texture_id = (((cur->models[i])->geometry)->object_number)*2;
-				shader->specular_id = 1+(((cur->models[i])->geometry)->object_number)*2;
+				shader->texture_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + TEXTURE_OFFSET;
+				shader->specular_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + SPECULAR_OFFSET;
+				shader->emission_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + EMISSION_OFFSET;
 				shader->is_particle = 0;
 
 				if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
