@@ -9,7 +9,8 @@ Scene.inl contains the definition of the scene graph
 //#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
-#define DEV_LIGHTING false
+//#define DEV_LIGHTING false
+#define DEV_LIGHTING true
 
 using namespace glm;
 void Scene::init(void){
@@ -294,7 +295,7 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.75f * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
@@ -306,9 +307,19 @@ void Scene::init(void){
     
     // Put a camera
     camera = new Camera;
+    // ************************* uncomment below for normal camera behavior
+    /*
     camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
+    */
+
+    // ********************** code to help with placing objects in scene
+    camera->target_default = vec3(0.0f, 0.0f, 0.0f); 
+    camera->eye_default = vec3(0.0f, 70.0f, 0.0f); 
+    camera->up_default = vec3(0.0f, 0.0f, -1.0f);
+    //**************************************************
+
     camera -> reset(); 
 
     // ************************
@@ -322,7 +333,7 @@ void Scene::init(void){
     node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     //node["test_UI_elem"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["drips"] = new Node("drips");
+    node["drips"] = new Node("drips", false);
     node["drips"]->models.push_back(model["drips"]); 
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));

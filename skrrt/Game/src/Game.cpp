@@ -10,7 +10,7 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 
 	glm::mat4 offset = translate(glm::vec3(0.0f, -y_offset, 0.0f));
 
-	std::cout << offset[3][1] << std::endl;
+	//std::cout << offset[3][1] << std::endl;
 
 	drips->modeltransforms[0] = offset * initial_drip_transform;
 }
