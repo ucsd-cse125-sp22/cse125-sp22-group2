@@ -183,16 +183,16 @@ void ObjPlayer::action(glm::vec3 dir) {
 				// We have the crown, pass it to the other player
 				if (this->hasCrown && !iframes) {
 					((ObjPlayer*)obj)->hasCrown = true;
-					((ObjPlayer*)obj)->iframes = 60;
+					((ObjPlayer*)obj)->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 					this->hasCrown = false;
-					this->stun = 30;
+					this->stun = STEAL_STUN_FRAMES * cse125config::TICK_RATE;
 				}
 				// The other player has the crown, take it
 				else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 					this->hasCrown = true;
-					this->iframes = 60;
+					this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 					((ObjPlayer*)obj)->hasCrown = false;
-					((ObjPlayer*)obj)->stun = 30;
+					((ObjPlayer*)obj)->stun = STEAL_STUN_FRAMES * cse125config::TICK_RATE;
 				}
 			}
 			// The crown is loose, take it

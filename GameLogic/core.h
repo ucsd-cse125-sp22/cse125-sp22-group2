@@ -35,15 +35,26 @@ const float GRAVITY_MAX = 0.1f;
 const float GRAVITY_FORCE = 0.001f;
 
 // Invincibility Frames
-const int CROWN_IFRAMES = 1;
-const int MAKEUP_IFRAMES = 1;
+const float CROWN_IFRAMES = 2.0f;
+const float MAKEUP_IFRAMES = 2.0f;
 
 // Stun Frames
-const int STEAL_STUN = 1;
+const float STEAL_STUN_FRAMES = 0.25f;
 
 // Dimensions (oPlayer)
 const float PLAYER_LENGTH = 2.1f;
 const float PLAYER_WIDTH = 1.15f;
 const float PLAYER_HEIGHT = 0.98f;
+
+// Dimensions (oBooth)
+const float BOOTH_WALL_LENGTH = 2.1f;
+const float BOOTH_WALL_WIDTH = 1.15f;
+const float BOOTH_WALL_HEIGHT = 0.98f;
+const float BOOTH_BAR_LENGTH = 2.1f;
+const float BOOTH_BAR_WIDTH = 1.15f;
+const float BOOTH_BAR_HEIGHT = 0.98f;
+const float BOOTH_MAKEUP_LENGTH = 2.1f;
+const float BOOTH_MAKEUP_WIDTH = 1.15f;
+const float BOOTH_MAKEUP_HEIGHT = 0.98f;
 
 #endif

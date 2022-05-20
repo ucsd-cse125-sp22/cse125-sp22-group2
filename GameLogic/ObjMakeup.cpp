@@ -18,7 +18,7 @@ ObjMakeup::ObjMakeup() {
 }
 
 ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
-	int type = oMakeup;
+	this->type = oMakeup;
 
 	this->objects = objects;
 	this->id = id;
