@@ -15,7 +15,6 @@ SurfaceShader is a shader that has the uniform
 #define __SURFACESHADER_H__
 
 struct Material_Locs {
-    GLuint emission;
     GLuint shininess;
 };
 
@@ -92,6 +91,13 @@ struct SurfaceShader : Shader {
     // Texture id 
     GLuint texture_id;          // indicates which texture to render on object
     GLuint texture_id_loc;
+    // specular map
+    GLuint specular_id;
+    GLuint specular_id_loc;
+    // emission map
+    GLuint emission_id;
+    GLuint emission_id_loc;
+
 
     GLuint is_particle; 
     GLuint is_particle_loc;
@@ -103,15 +109,11 @@ struct SurfaceShader : Shader {
     GLuint texture3_loc; 
     */
 
-    // specular map
-    GLuint specular_id;
-    GLuint specular_id_loc;
     
     void initUniforms(){
         view_loc  = glGetUniformLocation( program, "view" );
         modelview_loc  = glGetUniformLocation( program, "modelview" );
         projection_loc = glGetUniformLocation( program, "projection" );
-        material_loc.emission    = glGetUniformLocation( program, "material.emission" );
         material_loc.shininess    = glGetUniformLocation( program, "material.shininess" );
         enablelighting_loc = glGetUniformLocation( program, "enablelighting" );
         
@@ -159,7 +161,6 @@ struct SurfaceShader : Shader {
         sun_loc.specular = glGetUniformLocation(program, "sun.specular");
         sun_loc.shininess = glGetUniformLocation(program, "sun.shininess");
 
-        texture_id_loc = glGetUniformLocation( program, "texture_id" );
         is_particle_loc = glGetUniformLocation( program, "is_particle" );
         
         /*
@@ -168,7 +169,9 @@ struct SurfaceShader : Shader {
         texture2_loc = glGetUniformLocation(program, "texture2");
         texture3_loc = glGetUniformLocation(program, "texture3");
         */
+        texture_id_loc = glGetUniformLocation( program, "texture_id" );
         specular_id_loc = glGetUniformLocation(program, "specular_id");
+        emission_id_loc = glGetUniformLocation(program, "emission_id");
     }
     void setUniforms(){
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
@@ -176,7 +179,6 @@ struct SurfaceShader : Shader {
         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &projection[0][0]);
        
         // set material
-        glUniform4fv( material_loc.emission ,1, &(material->emision[0]));
         glUniform1f( material_loc.shininess,  material->shininess);
 
         glUniform1i( enablelighting_loc, enablelighting );
@@ -214,7 +216,6 @@ struct SurfaceShader : Shader {
         glUniform4fv( sun_loc.ambient, 1, &(sun->ambient[0]));
         glUniform4fv( sun_loc.specular, 1, &(sun->specular[0]));
 
-        glUniform1i(texture_id_loc, texture_id);
         glUniform1i(is_particle_loc, is_particle);
 
         /*
@@ -223,7 +224,9 @@ struct SurfaceShader : Shader {
         glUniform1i(texture2_loc, 2);
         glUniform1i(texture3_loc, 3);
         */
+        glUniform1i(texture_id_loc, texture_id);
         glUniform1i(specular_id_loc, specular_id);
+        glUniform1i(emission_id_loc, emission_id);
     }
 };
 
