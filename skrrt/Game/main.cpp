@@ -86,7 +86,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
     }
     //***********************************************
-    //scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
     //***********************************************
     // adding code to help with object placement 
     // uncomment line above for regular camera 
@@ -489,8 +489,8 @@ void mouseMovement(int x, int y) {
         //********************************************** 
         // commenting mouse camera rotations for help with placing objects in scene 
         //**********************************************
-        //scene.camera->rotateRight(dx);
-        //scene.camera->rotateUp(dy);
+        scene.camera->rotateRight(dx);
+        scene.camera->rotateUp(dy);
         glutPostRedisplay();
     }
 }

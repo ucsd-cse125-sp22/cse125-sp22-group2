@@ -9,8 +9,8 @@ Scene.inl contains the definition of the scene graph
 //#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
-//#define DEV_LIGHTING false
-#define DEV_LIGHTING true
+#define DEV_LIGHTING false
+//#define DEV_LIGHTING true
 
 using namespace glm;
 void Scene::init(void){
@@ -169,7 +169,7 @@ void Scene::init(void){
     node["pink_car"]->models.push_back(model["pink_car"]);
     node["pink_car"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["blue_car"] = new Node("pink_car");
+    node["blue_car"] = new Node("pink_car", false);
     node["blue_car"]->models.push_back(model["blue_car"]);
     node["blue_car"]->modeltransforms.push_back(mat4(1.0f));
 
@@ -190,10 +190,10 @@ void Scene::init(void){
     node["p_tire_b"]->models.push_back(model["tire"]); 
     node["p_tire_b"]->modeltransforms.push_back(mat4(1.0f));
     
-    node["b_tire_f"] = new Node("b_tire_f"); 
+    node["b_tire_f"] = new Node("b_tire_f", false); 
     node["b_tire_f"]->models.push_back(model["tire"]); 
     node["b_tire_f"]->modeltransforms.push_back(mat4(1.0f));
-    node["b_tire_b"] = new Node("b_tire_b"); 
+    node["b_tire_b"] = new Node("b_tire_b", false); 
     node["b_tire_b"]->models.push_back(model["tire"]); 
     node["b_tire_b"]->modeltransforms.push_back(mat4(1.0f));
 
@@ -308,16 +308,16 @@ void Scene::init(void){
     // Put a camera
     camera = new Camera;
     // ************************* uncomment below for normal camera behavior
-    /*
     camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
     camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
     camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
-    */
 
     // ********************** code to help with placing objects in scene
+    /*
     camera->target_default = vec3(0.0f, 0.0f, 0.0f); 
     camera->eye_default = vec3(0.0f, 70.0f, 0.0f); 
     camera->up_default = vec3(0.0f, 0.0f, -1.0f);
+    */
     //**************************************************
 
     camera -> reset(); 
