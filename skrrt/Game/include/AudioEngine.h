@@ -8,21 +8,37 @@ AudioEngine is a class to manage all sounds for the game
 #include <fstream>
 #include <string>
 #include <unordered_map>
-#include <array>
 
-#define LIBRARY_SIZE 5
 #define MAX_CHANNELS 32
 
 class AudioEngine
 {
 public:
-	const char* audioFiles[LIBRARY_SIZE] = {
-		"MenuTheme.wav",
-		"WinTheme.wav",
-		"LoseTheme.wav",
-		"GetCrown.wav",
-		"OneMinuteLeft.wav"
+	typedef struct {
+		bool is3d;
+		bool isLooping;
+		bool isStream;
+	} metadata;
+
+	std::unordered_map<std::string, metadata> audioFiles {
+		{ "MenuTheme.wav", {false, true, true}},
+		//{ "BattleTheme.wav", {false, true, true}},
+		{ "WinTheme.wav", {false, false, true}},
+		{ "LoseTheme.wav", {false, false, true}},
+		{ "GetCrown.wav", {false, false, false}},
+		{ "OneMinuteLeft.wav", {false, false, false}},
+		//{ "Horn", {true, false, false}},
+		//{ "Makeup.wav", {false, false, false}},
+		//{ "Engine", {true, true, false}},
 	};
+
+	std::vector<bool> isFile3d{
+		false,
+		false,
+		false,
+		false,
+
+	}
 
 
 	AudioEngine();
@@ -30,8 +46,10 @@ public:
 
 	void update();
 	bool errorCheck(const std::string& message, FMOD_RESULT engine);
-	std::string loadFile(const char* fileName);
+	std::string loadFile(std::string& fileName);
 
+	void loadSound(std::string& soundName, bool is3d, bool isLooping, bool isStream);
+	void unloadSound(std::string& soundName);
 
 	void playEvent(const char* fileName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
 	void playMusic(const char* fileName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
@@ -51,60 +69,31 @@ private:
 	FMOD::System* system;
 	FMOD::Channel* channel;
 	FMOD_RESULT engine;
-	std::unordered_map<string, FMOD::Sound*> library;
-
+	std::unordered_map<std::string, FMOD::Sound*> library;
 
 };
 
-bool succeededOrWarn(const std::string& message, FMOD_RESULT engine)
-{
-	if (engine != FMOD_OK) {
-		std::cerr << message << ": " << engine << " " << FMOD_ErrorString(engine) << std::endl;
-		return false;
-	}
-	return true;
-}
-
-string loadFile(const char* fileName)
-{
-	string pathPrefix = "../../audio/";
-	string filePath = pathPrefix + fileName;
-
-	// Check file exists
-	ifstream f(filePath.c_str());
-	if (f.good()) {
-		cout << "file exists" << endl;
-	}
-	else {
-		cout << "file DNE" << endl;
-		exit(1);
-	}
-
-	return filePath;
-}
-
-int(void) {
+int main(void) {
 	FMOD::System* system;
 	FMOD::Sound* sound;
 	FMOD::Channel* channel = 0;
-	FMOD_RESULT engine;
+	FMOD_RESULT result;
 
-	engine = FMOD::System_Create(&system);
-	engine = system->init(32, FMOD_INIT_NORMAL, 0);
+	result = FMOD::System_Create(&system);
+	result = system->init(32, FMOD_INIT_NORMAL, 0);
 
 	// Load and play sound
-	engine = system->createSound(loadFile("skrrt.wav").c_str(), FMOD_DEFAULT, 0, &sound);
-	if (!succeededOrWarn("FMOD: Failed to load sound", engine));
+	result = system->createSound(loadFile("skrrt.wav").c_str(), FMOD_DEFAULT, 0, &sound);
+	if (!succeededOrWarn("FMOD: Failed to load sound", result));
 
-	engine = system->playSound(sound, 0, false, &channel);
-	if (!succeededOrWarn("FMOD: Failed to play sound", engine));
+	result = system->playSound(sound, 0, false, &channel);
+	if (!succeededOrWarn("FMOD: Failed to play sound", result));
 	while (true);
 
-	engine = sound->release();
-	engine = system->close();
-	engine = system->release();
+	result = sound->release();
+	result = system->close();
+	result = system->release();
 
 	return 0;
 }
-
 
