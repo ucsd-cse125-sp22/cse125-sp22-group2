@@ -62,18 +62,6 @@ void Game::triggerCarCollisionAnimation(int playerNum) {
 	animations["collision_anim" + std::to_string(playerNum)]->triggerAnimation(true);
 }
 
-/*
-void Game::updateGateAnimation(int frameNum) {
-	// For the gate's arm object 
-
-	// Obtain the frame's rotation, translation, and scale matrices 
-	glm::mat4 new_transformation = gateAnimation.getTransform(frameNum); 
-
-	// Apply the transformations to the gate's arm
-	makeup_gate_arm->modeltransforms[0] = initial_arm_transform * new_transformation;
-}
-*/
-
 void Game::updateAnimations() {
 
 	std::map<std::string, Animation*>::iterator it;
