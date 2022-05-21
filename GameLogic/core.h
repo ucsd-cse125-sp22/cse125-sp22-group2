@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <vector>
 #include <ctype.h>
-#include <algorithm>
 #include "../Constants.hpp"
 #include "../Config.hpp"
 

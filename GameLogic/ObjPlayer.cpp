@@ -110,6 +110,10 @@ void ObjPlayer::step() {
 	}
 	else {
 		thresholdDecay = 0.0f;
+		// Lower speed if above maxSpeed
+		if (speed > maxSpeed) {
+			speed = max(maxSpeed, speed - SPEED_DECAY);
+		}
 	}
 
 	// TODO: uncomment this probably
@@ -137,7 +141,6 @@ void ObjPlayer::idle() {
 	if (speed < SPEED_THRESHOLD) {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
 		speed = max(0.0f, speed - SPEED_DECAY);
-
 	}
 	if (speed > 0.0f) {
 		move(direction);
