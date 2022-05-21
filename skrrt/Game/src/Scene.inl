@@ -52,10 +52,10 @@ void Scene::init(void){
     geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["tire_rack"] = new Obj; 
-    geometry["tire_rack"]->init("models/TireRack.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
 
     geometry["cones"] = new Obj; 
-    geometry["cones"]->init("models/Cones.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
 
     // Create a material palette
     material["wood"] = new Material;
