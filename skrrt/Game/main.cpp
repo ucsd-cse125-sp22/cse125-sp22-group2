@@ -34,10 +34,11 @@ static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 //static ParticleCube* testcube;
-static Player p0, p1, p2, p3;
-static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
+//static Player p0, p1, p2, p3;
+//static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 //static Game game(&p0, &p1, &p2, &p3);
-static Game game(cse125constants::NUM_PLAYERS);
+//static Game game(cse125constants::NUM_PLAYERS);
+static Game game(4);
 
 static std::map<std::string, bool>triggers;
 
@@ -79,10 +80,16 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     {
         const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
         const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
-        players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-        players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
+		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
     }
-    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    if (!TOP_DOWN_VIEW) {
+		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
 }
 
 void printHelp(){
@@ -126,10 +133,13 @@ void initialize(void)
     triggers["right"] = false; 
 
     // Set up players
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
-        players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+    //for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+    for (int i = 0; i < 4; i++) {
+        game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
+        game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
+
+    game.init(scene.node["world"], scene.node["UI_root"]);
 
     // Initialize time
     startTime = std::chrono::system_clock::now();
@@ -150,7 +160,21 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(scene.node["world"]);
     scene.updateScreen();
+
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
+
+    /*
+	std::cout << "car transformation : " << std::endl; 
+	glm::mat4 car_transform = scene.node["player0"]->childtransforms[0];
+	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+    */
+
+    glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
@@ -230,13 +254,13 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'z':
             //scene.camera -> zoom(1.1f);
-            players[0]->setCrownStatus(true);
-            std::cout << players[0]->getCrownStatus() << std::endl;
+            game.players[0]->setCrownStatus(true);
+            std::cout << game.players[0]->getCrownStatus() << std::endl;
             glutPostRedisplay();
             break;
         case 'x':
-            players[0]->setCrownStatus(false);
-            std::cout << players[0]->getCrownStatus() << std::endl;
+            game.players[0]->setCrownStatus(false);
+            std::cout << game.players[0]->getCrownStatus() << std::endl;
             glutPostRedisplay();
         /*
         case ' ':
@@ -249,6 +273,42 @@ void keyboard(unsigned char key, int x, int y){
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
             glutPostRedisplay();
             break;
+        case 'u': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(0); 
+            glutPostRedisplay(); 
+            break; 
+        case 'i': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(1); 
+            glutPostRedisplay(); 
+            break; 
+        case '1': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(0); 
+            glutPostRedisplay(); 
+            break; 
+        case '2': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(1); 
+            glutPostRedisplay(); 
+            break; 
+        case '3': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(2); 
+            glutPostRedisplay(); 
+            break; 
+        case '4': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(3); 
+            glutPostRedisplay(); 
+            break; 
+
+        case 'p': 
+            // Print player0's location 
+            std::cout << "Player0's location: " << game.players[0]->getPosition().x << " " << game.players[0]->getPosition().y<< " " << game.players[0]->getPosition().z << std::endl;
+            break;
+
         /*
         case ' ':
             hw3AutoScreenshots();
@@ -366,14 +426,22 @@ void idle() {
 	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            players[i]->spinWheels(speed);
-            players[i]->bobCrown(time);
-            players[i]->updateParticles(1);
+            game.players[i]->spinWheels(speed);
+            game.players[i]->bobCrown(time);
+            game.players[i]->updateParticles(1);
         }
-		lastRenderTime = time;
 
+		// Update drip level based on current player's makeup level 
+		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
+		game.updateDrips(time, currentMakeupLevel);
+
+        // Update all animations 
+        game.updateAnimations(); 
+
+		lastRenderTime = time;
         render = true;
     }
+
 
     // Handle direction triggers 
     if (triggers["up"]) {
@@ -421,8 +489,10 @@ void mouseMovement(int x, int y) {
     }
 
     if (dx != 0 || dy != 0) {
-        scene.camera->rotateRight(dx);
-        scene.camera->rotateUp(dy);
+        if (!TOP_DOWN_VIEW) {
+			scene.camera->rotateRight(dx);
+			scene.camera->rotateUp(dy);
+        }
         glutPostRedisplay();
     }
 }

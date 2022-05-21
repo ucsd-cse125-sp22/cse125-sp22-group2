@@ -40,7 +40,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->speed = 1.0f;
 	this->iframes = 0;
 	this->stun = 0;
-	this->makeupLevel = 0.0f;
+	this->makeupLevel = 100.0f;
 	this->score = 0.0f;
 	this->hasCrown = false;
 	this->booth = -1;

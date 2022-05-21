@@ -1,0 +1,11 @@
+# Fake animations format 
+
+# Rotations 
+# r frameNum x.rotation y.rotation z.rotation
+
+
+# Translations
+# t frameNum x.offset y.offset z.offset
+
+# Scaling 
+# s frameNum x.scaling y.scaling z.scaling 

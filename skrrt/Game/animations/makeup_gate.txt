@@ -1,0 +1,39 @@
+# Fake animations format 
+
+# Rotations 
+# r time x.rotation y.rotation z.rotation
+r 0 0 0 0 
+r 0 0 0 -5
+r 0 0 0 -10
+r 1 0 0 -15
+r 1 0 0 -20
+r 1 0 0 -25
+r 2 0 0 -30
+r 2 0 0 -35
+r 2 0 0 -40
+r 3 0 0 -45
+r 3 0 0 -50
+r 3 0 0 -55
+r 4 0 0 -60
+r 4 0 0 -65
+r 4 0 0 -70
+r 5 0 0 -75
+r 5 0 0 -80
+r 5 0 0 -85
+r 6 0 0 -90
+r 6 0 0 -90
+r 6 0 0 -90
+r 6 0 0 -90
+r 6 0 0 -90
+r 7 0 0 -75
+r 8 0 0 -60
+r 9 0 0 -45
+r 10 0 0 -30
+r 11 0 0 -15
+r 12 0 0 -0 
+
+# Translations
+# t time x.offset y.offset z.offset
+
+# Scaling 
+# s time x.scaling y.scaling z.scaling 
