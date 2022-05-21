@@ -14,7 +14,6 @@ const float levels = 8.0f; // How many color levels when cel shading
 /////////////////////////
 
 struct Material {
-    vec4 emission;
     float shininess;
 };
 uniform Material material;
@@ -32,6 +31,7 @@ uniform sampler2D texture3;
 uniform int is_particle;
 uniform sampler2D texture_id;
 uniform sampler2D specular_id;
+uniform sampler2D emission_id;
 
 /////////////////////////
 // Lighting parameters //
@@ -126,6 +126,7 @@ void main (void){
 
         vec4 texColor = texture(texture_id, TexCoord);
         vec4 specColor = texture(specular_id, TexCoord);
+        vec4 emisColor = texture(emission_id, TexCoord);
 
         // Discard pixels with small alpha channels for transparencies 
         /*
@@ -230,7 +231,7 @@ void main (void){
             fragColor += acum;
         }
 
-        fragColor += material.emission; 
+        fragColor += emisColor; 
 
         fragColor.w = texColor.w;
         

@@ -42,7 +42,7 @@ public:
     virtual void init(const char* s){};
     virtual void init(const char* s, const char* t){};
     virtual void init(const char* s, const char* t, int obj_num){};
-    virtual void init(const char* s, const char* t, const char* spec, int obj_num){};
+    virtual void init(const char* s, const char* t, const char* spec, const char* emis, int obj_num){};
     
     void draw(SurfaceShader *shader){
         glBindVertexArray(vao);

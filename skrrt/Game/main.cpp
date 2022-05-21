@@ -83,9 +83,13 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
-        std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
+		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
     }
-    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    if (!TOP_DOWN_VIEW) {
+		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers) 
@@ -203,16 +207,16 @@ void display(void)
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-	//glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
 
+    /*
 	std::cout << "car transformation : " << std::endl; 
 	glm::mat4 car_transform = scene.node["player0"]->childtransforms[0];
 	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
 	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
 	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
 	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+    */
 
     glDisable(GL_BLEND);
 
@@ -318,6 +322,11 @@ void keyboard(unsigned char key, int x, int y){
             game.triggerGateAnimation(0); 
             glutPostRedisplay(); 
             break; 
+        case 'i': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(1); 
+            glutPostRedisplay(); 
+            break; 
         case '1': 
             // Test to trigger car collision animation 
             game.triggerCarCollisionAnimation(0); 
@@ -338,6 +347,11 @@ void keyboard(unsigned char key, int x, int y){
             game.triggerCarCollisionAnimation(3); 
             glutPostRedisplay(); 
             break; 
+
+        case 'p': 
+            // Print player0's location 
+            std::cout << "Player0's location: " << game.players[0]->getPosition().x << " " << game.players[0]->getPosition().y<< " " << game.players[0]->getPosition().z << std::endl;
+            break;
 
         /*
         case ' ':
@@ -523,8 +537,10 @@ void mouseMovement(int x, int y) {
     }
 
     if (dx != 0 || dy != 0) {
-        scene.camera->rotateRight(dx);
-        scene.camera->rotateUp(dy);
+        if (!TOP_DOWN_VIEW) {
+			scene.camera->rotateRight(dx);
+			scene.camera->rotateUp(dy);
+        }
         glutPostRedisplay();
     }
 }

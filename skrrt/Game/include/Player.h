@@ -84,6 +84,10 @@ public:
 		return has_crown;
 	};
 
+	glm::vec3 getPosition() {
+		return current_position;
+	};
+
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 };
