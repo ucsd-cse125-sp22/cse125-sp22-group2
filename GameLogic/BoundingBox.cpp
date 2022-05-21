@@ -9,8 +9,7 @@ BoundingBox::BoundingBox() {
 	BoundingBox(0, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f));
 }
 
-BoundingBox::BoundingBox(int id, glm::vec3 vertex, glm::vec3 a, glm::vec3 b, glm::vec3 c)
-{
+BoundingBox::BoundingBox(int id, glm::vec3 vertex, glm::vec3 a, glm::vec3 b, glm::vec3 c) {
 	this->id = id;
 	this->corner = vertex;
 	this->aVec = a;
@@ -31,8 +30,7 @@ BoundingBox::BoundingBox(int id, glm::vec3 vertex, glm::vec3 a, glm::vec3 b, glm
 	gridCells = vector<int>();
 }
 
-BoundingBox::BoundingBox(int id, vector<glm::vec3> vertices)
-{
+BoundingBox::BoundingBox(int id, vector<glm::vec3> vertices) {
 	this->id = id;
 	this->vertices = vertices;
 	this->corner = vertices[0];
@@ -44,8 +42,7 @@ BoundingBox::BoundingBox(int id, vector<glm::vec3> vertices)
 	gridCells = vector<int>();
 }
 
-bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::vec3 up, float l, float w, float h)
-{
+bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::vec3 up, float l, float w, float h) {
 	this->id = id;
 	this->center = pos;
 
@@ -84,8 +81,7 @@ BoundingBox::~BoundingBox()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void BoundingBox::computeMinMax()
-{
+void BoundingBox::computeMinMax() {
 	bbMin = vertices[0];
 	bbMax = vertices[0];
 
@@ -191,8 +187,7 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 	return true;
 }
 
-glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
-{
+glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b) {
 	// SAT collision test
 	// Get all the axes along which we check for a gap between the objects
 	vector<glm::vec3> axes;
@@ -284,8 +279,7 @@ glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b)
 	return min_overlap * min_axis;
 }
 
-glm::vec3 bounding::checkCollisionRadius(BoundingBox a, glm::vec3 center, float r)
-{
+glm::vec3 bounding::checkCollisionRadius(BoundingBox a, glm::vec3 center, float r) {
 	glm::vec3 dir = glm::normalize(glm::vec3(a.center.x, 0.0f, a.center.z) - glm::vec3(center.x, 0.0f, center.z));
 	float max_dist = -1.0f;
 	for (unsigned int i = 0; i < a.vertices.size(); i++) {
@@ -298,8 +292,7 @@ glm::vec3 bounding::checkCollisionRadius(BoundingBox a, glm::vec3 center, float 
 	return glm::vec3(0.0f);
 }
 
-glm::vec3 bounding::checkCollisionPointFloor(glm::vec3 v, BoundingBox floor)
-{
+glm::vec3 bounding::checkCollisionPointFloor(glm::vec3 v, BoundingBox floor) {
 	glm::vec3 dir = glm::normalize(floor.bVec);
 	//float f_min = 0.0f;
 	float f_max = 0.0f;
@@ -319,8 +312,7 @@ glm::vec3 bounding::checkCollisionPointFloor(glm::vec3 v, BoundingBox floor)
 	return glm::vec3(0.0f);
 }
 
-BoundingBox bounding::checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset)
-{
+BoundingBox bounding::checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset) {
 	// Since previous attempts kind of went nowhere this is now blank
 	// This is my plan for slopes though
 	// 
@@ -331,7 +323,6 @@ BoundingBox bounding::checkCollisionFloor(BoundingBox obj, BoundingBox floor, fl
 	return BoundingBox();
 }
 
-BoundingBox bounding::matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset)
-{
+BoundingBox bounding::matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset) {
 	return BoundingBox();
 }

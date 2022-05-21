@@ -24,26 +24,45 @@ const float MAKEUP_MAX = 100.0f;
 const float MAKEUP_DECREASE_RATE = 1.0f;
 const float MAKEUP_BOOTH_TIME = 10.0f;
 
-// Speeds
-const float DEFAULT_SPEED = 0.5f;
+// Max Speeds
+const float DEFAULT_MAX_SPEED = 0.5f;
 const float CROWN_SPEED_BOOST = 0.0f;
 const float MAKEUP_SPEED_PENALTY = 0.25f;
 const float TRAIL_SPEED_PENALTY = 0.25f;
+
+// Speeds
+const float MOMENTUM_DECAY = 0.1f;
+const float SPEED_DECAY = 0.15f;
+const float THRESHOLD_DECAY_GROWTH = 0.05f;
+const float SPEED_FORCE = 0.1f;
+const float SPEED_THRESHOLD = 0.75f;
+const float SPEED_STEAL_CROWN = 1.0f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
 const float GRAVITY_FORCE = 0.001f;
 
 // Invincibility Frames
-const int CROWN_IFRAMES = 1;
-const int MAKEUP_IFRAMES = 1;
+const float CROWN_IFRAMES = 2.0f;
+const float MAKEUP_IFRAMES = 2.0f;
 
 // Stun Frames
-const int STEAL_STUN = 1;
+const float STEAL_STUN_FRAMES = 0.25f;
 
 // Dimensions (oPlayer)
 const float PLAYER_LENGTH = 2.1f;
 const float PLAYER_WIDTH = 1.15f;
 const float PLAYER_HEIGHT = 0.98f;
+
+// Dimensions (oBooth)
+const float BOOTH_WALL_LENGTH = 2.1f;
+const float BOOTH_WALL_WIDTH = 1.15f;
+const float BOOTH_WALL_HEIGHT = 0.98f;
+const float BOOTH_BAR_LENGTH = 2.1f;
+const float BOOTH_BAR_WIDTH = 1.15f;
+const float BOOTH_BAR_HEIGHT = 0.98f;
+const float BOOTH_MAKEUP_LENGTH = 2.1f;
+const float BOOTH_MAKEUP_WIDTH = 1.15f;
+const float BOOTH_MAKEUP_HEIGHT = 0.98f;
 
 #endif

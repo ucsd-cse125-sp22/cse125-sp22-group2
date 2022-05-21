@@ -102,7 +102,8 @@ void gameLoop(PhysicalObjectManager* manager,
 
     // Other game actions
     case GameAction::IDLE:
-        // TODO: Idle behavior ?
+        // TODO: Idle behavior
+        player->idle();
         break;
     default:
         break;
