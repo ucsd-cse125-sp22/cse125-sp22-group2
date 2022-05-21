@@ -168,8 +168,6 @@ void ObjPlayer::move(glm::vec3 dir) {
 	bool adjusted = false;
 	// The booth at our destination
 	int potentialBooth = -1;
-	// collision animation
-	this->crashed = false;
 
 	// Go through every object we collided with (this includes non-solids that we can overlap with)
 	for (unsigned int i = 0; i < collisions.size(); i++) {
@@ -190,7 +188,6 @@ void ObjPlayer::move(glm::vec3 dir) {
 
 		// A solid object is blocking us
 		if (obj->solid && !adjusted) {
-			this->crashed = true;
 			destinationFree = false;
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
