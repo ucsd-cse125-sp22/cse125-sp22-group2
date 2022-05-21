@@ -66,5 +66,8 @@ const float BOOTH_BAR_HEIGHT = 0.98f;
 const float BOOTH_MAKEUP_LENGTH = 2.1f;
 const float BOOTH_MAKEUP_WIDTH = 1.15f;
 const float BOOTH_MAKEUP_HEIGHT = 0.98f;
+const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(0.0f);
+const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(0.0f);
+const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f);
 
 #endif
