@@ -88,7 +88,7 @@ void ObjPlayer::step() {
 		}
 		boothTime--;
 		// TODO: fix this to work with tick rate :woozy_face:
-		makeupLevel += 1.0f;
+		makeupLevel = MAKEUP_MAX;
 	}
 
 	// Adjust max speed (these numbers are placeholders)

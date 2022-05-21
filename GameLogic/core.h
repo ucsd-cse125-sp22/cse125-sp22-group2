@@ -54,9 +54,12 @@ const float PLAYER_WIDTH = 1.15f;
 const float PLAYER_HEIGHT = 0.98f;
 
 // Dimensions (oBooth)
-const float BOOTH_WALL_LENGTH = 2.1f;
-const float BOOTH_WALL_WIDTH = 1.15f;
-const float BOOTH_WALL_HEIGHT = 0.98f;
+const float BOOTH_WALL_L_LENGTH = 2.1f;
+const float BOOTH_WALL_L_WIDTH = 1.15f;
+const float BOOTH_WALL_L_HEIGHT = 0.98f;
+const float BOOTH_WALL_R_LENGTH = 2.1f;
+const float BOOTH_WALL_R_WIDTH = 1.15f;
+const float BOOTH_WALL_R_HEIGHT = 0.98f;
 const float BOOTH_BAR_LENGTH = 2.1f;
 const float BOOTH_BAR_WIDTH = 1.15f;
 const float BOOTH_BAR_HEIGHT = 0.98f;

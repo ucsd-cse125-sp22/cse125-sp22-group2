@@ -14,6 +14,6 @@ public:
 	unsigned int barID;
 
 	ObjMakeup();
-	ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid);
+	ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned int barID, glm::vec3 position, glm::vec3 direction);
 	~ObjMakeup();
 };

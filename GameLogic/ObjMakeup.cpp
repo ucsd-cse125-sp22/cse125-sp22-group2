@@ -17,24 +17,26 @@ ObjMakeup::ObjMakeup() {
 	this->solid = false;
 }
 
-ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
+ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned int barID, glm::vec3 position, glm::vec3 direction) {
 	this->type = oMakeup;
 
 	this->objects = objects;
 	this->id = id;
 
-	this->position = position;
-	this->length = length;
-	this->width = width;
-	this->height = height;
+	this->barID = barID;
 
-	this->speed = 1.0f;
+	this->position = position;
+	this->length = BOOTH_MAKEUP_LENGTH;
+	this->width = BOOTH_MAKEUP_WIDTH;
+	this->height = BOOTH_MAKEUP_HEIGHT;
+
+	this->speed = 0.0f;
 	this->boundingBox = generateBoundingBox(position, direction, up);
 
 	this->direction = direction;
 	this->up = up;
 
-	this->solid = solid;
+	this->solid = false;
 }
 
 ObjMakeup::~ObjMakeup() {

@@ -75,10 +75,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
 		break;
 	case (oMakeup):
-		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		this->objects->push_back(new ObjWall(objects, next_id++, pos, BOOTH_WALL_L_LENGTH, BOOTH_WALL_L_WIDTH, BOOTH_WALL_L_HEIGHT, dir, up));
+		this->objects->push_back(new ObjWall(objects, next_id++, pos, BOOTH_WALL_R_LENGTH, BOOTH_WALL_R_WIDTH, BOOTH_WALL_R_HEIGHT, dir, up));
+		this->objects->push_back(new ObjWall(objects, next_id, pos, BOOTH_BAR_LENGTH, BOOTH_BAR_WIDTH, BOOTH_BAR_HEIGHT, dir, up));
+		this->objects->push_back(new ObjMakeup(objects, next_id + 1, next_id, glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		break;
 	case (oTrail):
-		this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
+		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
 	default:
 		break;
