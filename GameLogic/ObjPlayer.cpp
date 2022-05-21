@@ -46,6 +46,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->booth = -1;
 	this->boothTime = 0.0f;
 	this->momentum = 0.0f;
+	this->thresholdDecay = 0.0f;
 }
 
 ObjPlayer::~ObjPlayer() {}
@@ -102,6 +103,15 @@ void ObjPlayer::step() {
 		maxSpeed -= MAKEUP_SPEED_PENALTY;
 	}
 
+	// Adjust speed above threshold
+	if (speed > SPEED_THRESHOLD) {
+		speed -= thresholdDecay;
+		thresholdDecay += 0.01f;
+	}
+	else {
+		thresholdDecay = 0.0f;
+	}
+
 	// TODO: uncomment this probably
 	//applyGravity();
 }
@@ -127,6 +137,7 @@ void ObjPlayer::idle() {
 	if (speed < SPEED_THRESHOLD) {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
 		speed = max(0.0f, speed - SPEED_DECAY);
+
 	}
 	if (speed > 0.0f) {
 		move(direction);
@@ -249,6 +260,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 			this->hasCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
+			this->speed = SPEED_STEAL_CROWN;
 			((ObjPlayer*)obj)->hasCrown = false;
 			((ObjPlayer*)obj)->stun = STEAL_STUN_FRAMES * cse125config::TICK_RATE;
 			((ObjPlayer*)obj)->momentum = 0.0f;

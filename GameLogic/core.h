@@ -33,8 +33,10 @@ const float TRAIL_SPEED_PENALTY = 0.25f;
 // Speeds
 const float MOMENTUM_DECAY = 0.1f;
 const float SPEED_DECAY = 0.15f;
+const float THRESHOLD_DECAY_GROWTH = 0.05f;
 const float SPEED_FORCE = 0.1f;
 const float SPEED_THRESHOLD = 0.75f;
+const float SPEED_STEAL_CROWN = 1.0f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;

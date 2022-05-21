@@ -32,8 +32,10 @@ public:
 
 	// How much we have moved without stopping or crashing
 	float momentum;
-	// How faast we can go
+	// How fast we can go
 	float maxSpeed;
+	// Speed drop when above the speed threshold
+	float thresholdDecay;
 
 
 	ObjPlayer();
