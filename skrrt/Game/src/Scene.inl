@@ -6,11 +6,12 @@ Scene.inl contains the definition of the scene graph
 #include "Obj.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-//#include "..\..\..\Constants.hpp"
+#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(void){
@@ -37,7 +38,7 @@ void Scene::init(void){
     geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
+    geometry["map"]->init("models/Map_Complete.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
     
     geometry["plane"] = new Obj;
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 3);
@@ -47,9 +48,14 @@ void Scene::init(void){
 
     geometry["makeup_station"] = new Obj; 
     geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
-
     geometry["makeup_station_bar"] = new Obj; 
     geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+
+    geometry["tire_rack"] = new Obj; 
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+
+    geometry["cones"] = new Obj; 
+    geometry["cones"]->init("models/Cones.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -108,6 +114,14 @@ void Scene::init(void){
     model["makeup_station_bar"] = new Model;
     model["makeup_station_bar"]->geometry = geometry["makeup_station_bar"];
     model["makeup_station_bar"]->material = material["ceramic"];
+
+    model["tire_rack"] = new Model; 
+    model["tire_rack"]->geometry = geometry["tire_rack"]; 
+    model["tire_rack"]->material = material["ceramic"];
+
+    model["cones"] = new Model; 
+    model["cones"]->geometry = geometry["cones"]; 
+    model["cones"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -229,13 +243,28 @@ void Scene::init(void){
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
     // Makeup station 
-    node["makeup_station"] = new Node("makeup_station");
-    node["makeup_station"]->models.push_back(model["makeup_station"]);
-    node["makeup_station"]->modeltransforms.push_back(mat4(1.0f));
+    for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
+		node["makeup_station" + std::to_string(i)] = new Node("makeup_station" + std::to_string(i));
+		node["makeup_station" + std::to_string(i)]->models.push_back(model["makeup_station"]);
+		node["makeup_station" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
 
-    node["makeup_station_bar"] = new Node("makeup_station_bar");
-    node["makeup_station_bar"]->models.push_back(model["makeup_station_bar"]);
-    node["makeup_station_bar"]->modeltransforms.push_back(mat4(1.0f));
+		node["makeup_station_bar" + std::to_string(i)] = new Node("makeup_station_bar" + std::to_string(i));
+		node["makeup_station_bar" + std::to_string(i)]->models.push_back(model["makeup_station_bar"]);
+		node["makeup_station_bar" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    // Obstacles 
+    for (int i = 0; i < cse125constants::NUM_TIRE_RACKS; i++) {
+        node["tire_rack" + std::to_string(i)] = new Node("tire_rack" + std::to_string(i)); 
+        node["tire_rack" + std::to_string(i)]->models.push_back(model["tire_rack"]);
+        node["tire_rack" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    for (int i = 0; i < cse125constants::NUM_CONES; i++) {
+        node["cones" + std::to_string(i)] = new Node("cones" + std::to_string(i)); 
+        node["cones" + std::to_string(i)]->models.push_back(model["cones"]);
+        node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
 
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
@@ -297,30 +326,54 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.75f * vec3(1.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
 
-    node["world"]->childnodes.push_back(node["makeup_station"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5, 0.0f))*scale(0.5f * vec3(1.0f)));
-    node["makeup_station"]->childnodes.push_back(node["makeup_station_bar"]);
-    node["makeup_station"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
+    // ************
+    // * NOTE: This makeup station is the one in the upper left corner of the map
+    // * To see which one I'm talking about, set TOP_DOWN_VIEW in Debug.h and set it to true
+    // ************
+	node["world"]->childnodes.push_back(node["makeup_station0"]); 
+	node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f))*scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
     
+    // makeup_station1 is the one in the lower right 
+	node["world"]->childnodes.push_back(node["makeup_station1"]); 
+	node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f))*scale(0.5f * vec3(1.0f)) * rotate(45.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
+
+    // Obstacles
+    node["world"]->childnodes.push_back(node["tire_rack0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(4.0f, -0.5f, -28.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["tire_rack1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(7.3f, -0.5f, 21.3f)) * scale(0.5f * vec3(1.0f)) * rotate(20.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["world"]->childnodes.push_back(node["tire_rack2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-10.7f, -0.5f, 26.0f)) * scale(0.5f * vec3(1.0f)) * rotate(-30.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["cones0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-20.8f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cones1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cones2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
     // Put a camera
     camera = new Camera;
-    // ************************* uncomment below for normal camera behavior
-    camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
-    camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
-    camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
+    if (!TOP_DOWN_VIEW) {
+		camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
+		camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
+		camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
+    } else {
+        // This is the top down view camera
+		camera->target_default = vec3(0.0f, 0.0f, 0.0f); 
+		camera->eye_default = vec3(0.0f, 50.0f, 0.0f); 
+		camera->up_default = vec3(0.0f, 0.0f, -1.0f);
+    }
 
-    // ********************** code to help with placing objects in scene
-    /*
-    camera->target_default = vec3(0.0f, 0.0f, 0.0f); 
-    camera->eye_default = vec3(0.0f, 70.0f, 0.0f); 
-    camera->up_default = vec3(0.0f, 0.0f, -1.0f);
-    */
-    //**************************************************
 
     camera -> reset(); 
 
@@ -335,7 +388,7 @@ void Scene::init(void){
     node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     //node["test_UI_elem"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["drips"] = new Node("drips", false);
+    node["drips"] = new Node("drips", ENABLE_DRIPS);
     node["drips"]->models.push_back(model["drips"]); 
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));

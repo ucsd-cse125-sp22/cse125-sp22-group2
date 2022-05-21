@@ -14,3 +14,7 @@
 //     std::cout << "bla\n";
 // }
 // Prints if DEBUG_LEVEL is at least <whatever>
+
+
+// This is for utilizing the top down view of the game 
+#define TOP_DOWN_VIEW false

@@ -87,11 +87,9 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
 		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
 		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
     }
-    //***********************************************
-    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
-    //***********************************************
-    // adding code to help with object placement 
-    // uncomment line above for regular camera 
+    if (!TOP_DOWN_VIEW) {
+		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
 }
 
 void printHelp(){
@@ -165,8 +163,6 @@ void display(void)
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-	//glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
 
     /*
@@ -280,6 +276,11 @@ void keyboard(unsigned char key, int x, int y){
         case 'u': 
             // Test to trigger gate animation 
             game.triggerGateAnimation(0); 
+            glutPostRedisplay(); 
+            break; 
+        case 'i': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(1); 
             glutPostRedisplay(); 
             break; 
         case '1': 
@@ -488,11 +489,10 @@ void mouseMovement(int x, int y) {
     }
 
     if (dx != 0 || dy != 0) {
-        //********************************************** 
-        // commenting mouse camera rotations for help with placing objects in scene 
-        //**********************************************
-        scene.camera->rotateRight(dx);
-        scene.camera->rotateUp(dy);
+        if (!TOP_DOWN_VIEW) {
+			scene.camera->rotateRight(dx);
+			scene.camera->rotateUp(dy);
+        }
         glutPostRedisplay();
     }
 }
