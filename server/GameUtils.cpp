@@ -10,6 +10,16 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
 
+    // initialize audio triggers
+    for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
+    {
+        frame->audio[i].id = cse125framing::AudioId::NO_AUDIO;
+    }
+
+    // initialize animation triggers
+    frame->animations = {}; // initialize to false --> no animations
+
+    // initialize each player frame data
     for (int id = 0; id < cse125constants::NUM_PLAYERS; id++)
     {
         ObjPlayer* player = (ObjPlayer*)manager->objects->at(id);

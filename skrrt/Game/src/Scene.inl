@@ -6,10 +6,12 @@ Scene.inl contains the definition of the scene graph
 #include "Obj.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-//#include "..\..\..\Constants.hpp"
+#include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
+//#define DEV_LIGHTING true
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(void){
@@ -17,29 +19,43 @@ void Scene::init(void){
 
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", 0);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
     geometry["crown"] = new Obj; 
-    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", 1);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map.obj", "textures/MapTexture.png", "textures/map_specular.png", 2);
+    geometry["map"]->init("models/Map_Complete.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
     
     geometry["plane"] = new Obj;
-    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", 3);
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 3);
+
+    geometry["drips"] = new Obj;
+    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 4);
+
+    geometry["makeup_station"] = new Obj; 
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+    geometry["makeup_station_bar"] = new Obj; 
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+
+    geometry["tire_rack"] = new Obj; 
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+
+    geometry["cones"] = new Obj; 
+    geometry["cones"]->init("models/Cones.obj", "textures/grey.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -55,7 +71,6 @@ void Scene::init(void){
     material["turquoise"] -> shininess = 100.0f;
     
     material["bulb"] = new Material;
-    material["bulb"] -> emision = vec4(1.0f,0.2f,0.1f,1.0f);
     material["bulb"] -> shininess = 200.0f;
     
     // Create a model palette
@@ -88,6 +103,25 @@ void Scene::init(void){
     model["plane"]->geometry = geometry["plane"];
     model["plane"]->material = material["ceramic"];
 
+    model["drips"] = new Model;
+    model["drips"]->geometry = geometry["drips"];
+    model["drips"]->material = material["ceramic"];
+
+    model["makeup_station"] = new Model;
+    model["makeup_station"]->geometry = geometry["makeup_station"];
+    model["makeup_station"]->material = material["ceramic"];
+
+    model["makeup_station_bar"] = new Model;
+    model["makeup_station_bar"]->geometry = geometry["makeup_station_bar"];
+    model["makeup_station_bar"]->material = material["ceramic"];
+
+    model["tire_rack"] = new Model; 
+    model["tire_rack"]->geometry = geometry["tire_rack"]; 
+    model["tire_rack"]->material = material["ceramic"];
+
+    model["cones"] = new Model; 
+    model["cones"]->geometry = geometry["cones"]; 
+    model["cones"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -126,35 +160,32 @@ void Scene::init(void){
 	pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 	pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
-	spotLights["player0Headlight"] = new SpotLight;
-	spotLights["player0Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
-	spotLights["player0Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
-	spotLights["player0Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
-	spotLights["player0Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
-	spotLights["player0Headlight"]->constant = 1.0f;
-	spotLights["player0Headlight"]->linear = 0.045f;
-	spotLights["player0Headlight"]->quadradic = 0.0075f;
-	spotLights["player0Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
-	spotLights["player0Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-	spotLights["player0Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+	    spotLights["player" + std::to_string(i) + "Headlight"] = new SpotLight;
+	    spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
+	    spotLights["player" + std::to_string(i) + "Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
+    	spotLights["player" + std::to_string(i) + "Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
+    	spotLights["player" + std::to_string(i) + "Headlight"]->constant = 1.0f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->linear = 0.045f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->quadradic = 0.0075f;
+    	spotLights["player" + std::to_string(i) + "Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	spotLights["player" + std::to_string(i) + "Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+    }
 
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["player" + std::to_string(i)] = new Node("player" + std::to_string(i));
 		node["particles" + std::to_string(i)] = new Node("particles"+std::to_string(i), true, true);
     }
-    /*
-    node["player0"] = new Node("player0");
-    node["player1"] = new Node("player1");
-    node["player2"] = new Node("player2");
-    node["player3"] = new Node("player3");
-    */
 
     node["pink_car"] = new Node("pink_car");
     node["pink_car"]->models.push_back(model["pink_car"]);
     node["pink_car"]->modeltransforms.push_back(mat4(1.0f));
 
-    node["blue_car"] = new Node("pink_car");
+    node["blue_car"] = new Node("blue_car");
     node["blue_car"]->models.push_back(model["blue_car"]);
     node["blue_car"]->modeltransforms.push_back(mat4(1.0f));
 
@@ -211,13 +242,29 @@ void Scene::init(void){
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
-    //********************************************
-    node["plane"] = new Node("plane");
-    node["plane"]->models.push_back(model["plane"]); 
-    node["plane"]->modeltransforms.push_back(mat4(1.0f));
-    //********************************************
+    // Makeup station 
+    for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
+		node["makeup_station" + std::to_string(i)] = new Node("makeup_station" + std::to_string(i));
+		node["makeup_station" + std::to_string(i)]->models.push_back(model["makeup_station"]);
+		node["makeup_station" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
 
-    //node["particles0"] = new Node("test_cube", true, true);
+		node["makeup_station_bar" + std::to_string(i)] = new Node("makeup_station_bar" + std::to_string(i));
+		node["makeup_station_bar" + std::to_string(i)]->models.push_back(model["makeup_station_bar"]);
+		node["makeup_station_bar" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    // Obstacles 
+    for (int i = 0; i < cse125constants::NUM_TIRE_RACKS; i++) {
+        node["tire_rack" + std::to_string(i)] = new Node("tire_rack" + std::to_string(i)); 
+        node["tire_rack" + std::to_string(i)]->models.push_back(model["tire_rack"]);
+        node["tire_rack" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    for (int i = 0; i < cse125constants::NUM_CONES; i++) {
+        node["cones" + std::to_string(i)] = new Node("cones" + std::to_string(i)); 
+        node["cones" + std::to_string(i)]->models.push_back(model["cones"]);
+        node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
 
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
@@ -279,36 +326,89 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["map"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
 
-    node["world"]->childnodes.push_back(node["plane"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 4.0f)) * scale(vec3(0.5f, 0.5f, 0.5f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    // ************
+    // * NOTE: This makeup station is the one in the upper left corner of the map
+    // * To see which one I'm talking about, set TOP_DOWN_VIEW in Debug.h and set it to true
+    // ************
+	node["world"]->childnodes.push_back(node["makeup_station0"]); 
+	node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f))*scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
     
+    // makeup_station1 is the one in the lower right 
+	node["world"]->childnodes.push_back(node["makeup_station1"]); 
+	node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f))*scale(0.5f * vec3(1.0f)) * rotate(45.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
+
+    // Obstacles
+    node["world"]->childnodes.push_back(node["tire_rack0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(4.0f, -0.5f, -28.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["tire_rack1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(7.3f, -0.5f, 21.3f)) * scale(0.5f * vec3(1.0f)) * rotate(20.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["world"]->childnodes.push_back(node["tire_rack2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-10.7f, -0.5f, 26.0f)) * scale(0.5f * vec3(1.0f)) * rotate(-30.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["cones0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-20.8f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cones1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cones2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
     // Put a camera
     camera = new Camera;
-    camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
-    camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
-    camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
+    if (!TOP_DOWN_VIEW) {
+		camera -> target_default = vec3( 0.0f, 1.0f, 0.0f );
+		camera -> eye_default = vec3( 0.0f, 1.0f, 5.0f );
+		camera -> up_default = vec3( 0.0f, 1.0f, 0.0f );
+    } else {
+        // This is the top down view camera
+		camera->target_default = vec3(0.0f, 0.0f, 0.0f); 
+		camera->eye_default = vec3(0.0f, 50.0f, 0.0f); 
+		camera->up_default = vec3(0.0f, 0.0f, -1.0f);
+    }
+
+
     camera -> reset(); 
+
+    // ************************
+    // ****** UI elems ********
+    // ************************
 
     node["screen"] = new Node("screen");
 
     node["test_UI_elem"] = new Node("test_UI_elem"); 
     node["test_UI_elem"]->models.push_back(model["plane"]);
     node["test_UI_elem"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    //node["test_UI_elem"]->modeltransforms.push_back(mat4(1.0f));
+
+    node["drips"] = new Node("drips", ENABLE_DRIPS);
+    node["drips"]->models.push_back(model["drips"]); 
+    //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["back_drips"] = new Node("back_drips");
+    node["back_drips"]->models.push_back(model["drips"]); 
+    //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     node["UI_root"]->childnodes.push_back(node["screen"]); 
-    // camera transforms that we need to apply to all screen elements
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
-    //node["UI_root"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -4.0f)));
 
     node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
-    // transform UI elements to be placed at a specific location on the "screen"
     node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    //node["screen"]->childtransforms.push_back(mat4(1.0f));
+
+    node["screen"]->childnodes.push_back(node["drips"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(35.0f, 600.0f, 1.0f)));
+
+    //node["screen"]->childnodes.push_back(node["back_drips"]); 
+    //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
 
     // Create camera tree
     
