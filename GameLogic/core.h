@@ -24,11 +24,17 @@ const float MAKEUP_MAX = 100.0f;
 const float MAKEUP_DECREASE_RATE = 1.0f;
 const float MAKEUP_BOOTH_TIME = 10.0f;
 
-// Speeds
-const float DEFAULT_SPEED = 0.5f;
+// Max Speeds
+const float DEFAULT_MAX_SPEED = 0.5f;
 const float CROWN_SPEED_BOOST = 0.0f;
 const float MAKEUP_SPEED_PENALTY = 0.25f;
 const float TRAIL_SPEED_PENALTY = 0.25f;
+
+// Speeds
+const float MOMENTUM_DECAY = 0.1f;
+const float SPEED_DECAY = 0.15f;
+const float SPEED_FORCE = 0.1f;
+const float SPEED_THRESHOLD = 0.75f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;

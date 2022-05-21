@@ -57,4 +57,9 @@ public:
 	void moveDirection(glm::vec3 dir);
 	// Update everything that needs to happen in a time step not influenced by input
 	void step();
+
+	// Linear interpolation
+	float lerp(float v1, float v2, float t);
+	// Linear interpolation for vec3
+	glm::vec3 lerp(glm::vec3 v1, glm::vec3 v2, float t);
 };

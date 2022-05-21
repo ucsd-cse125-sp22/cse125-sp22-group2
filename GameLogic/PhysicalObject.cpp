@@ -108,3 +108,11 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 
 void PhysicalObject::step() {
 }
+
+float PhysicalObject::lerp(float v1, float v2, float t) {
+	return v1 + (v2 - v1) * t;
+}
+
+glm::vec3 PhysicalObject::lerp(glm::vec3 v1, glm::vec3 v2, float t) {
+	return v1 + (v2 - v1) * t;
+}
