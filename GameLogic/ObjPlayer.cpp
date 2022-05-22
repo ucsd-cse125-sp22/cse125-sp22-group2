@@ -134,7 +134,13 @@ void ObjPlayer::step() {
 	//}
 
 	// TODO: uncomment this probably
+	if (!id) {
+
+		applyGravity();
+		matchTerrain();
+	}
 	//applyGravity();
+	//matchTerrain();
 }
 
 void ObjPlayer::action(glm::vec3 dir) {
@@ -255,6 +261,8 @@ void ObjPlayer::move(glm::vec3 dir) {
 		this->position = destination;
 		this->direction = dir;
 		this->boundingBox = bb;
+
+		matchTerrain();
 
 		// Enter the makeup station if there was one at our destination
 		if (potentialBooth != -1) {
@@ -405,4 +413,123 @@ void ObjPlayer::applyGravity() {
 		// We have something solid beneath us, so reset gravity
 		this->gravity = 0.0f;
 	}
+
+	// REMOVE THIS
+	if (position.y < -8.0f) {
+		position.y = 8.0f;
+		boundingBox = generateBoundingBox(position, this->direction, this->up);
+	}
 }
+
+void ObjPlayer::matchTerrain() {
+	BoundingBox bb = this->boundingBox;
+	// For each vertex, find the floor beneath it
+	for (unsigned int i = 0; i < 4; i++) {
+		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -1.0f, 0.0f), this->direction, glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 2.0f, 0.1f), oFloor);
+		if (floor == -1) {
+			// No floor below this point
+			cout << "/ - ";
+			bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
+		}
+		else {
+			// Adjust based on the floor
+			glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(i)->boundingBox);
+			cout << adj.x << " " << adj.y << " " << adj.z << " - ";
+			bb.vertices[i] += adj;
+		}
+	}
+
+	glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
+	if (glm::dot(newUp, this->up) < 0.0f) {
+		newUp = -newUp;
+	}
+
+	glm::vec3 newDir = glm::normalize(glm::cross(glm::cross(this->direction, newUp), newUp));
+	if (glm::dot(newDir, this->direction) < 0.0f) {
+		newDir = -newDir;
+	}
+
+	glm::vec3 destination = this->position;
+
+	// Generate a bounding box at our destination and check what we would collide with
+	bb = generateBoundingBox(destination, newDir, newUp);
+
+	// Get the collisions for our destination
+	vector<int> collisions = findCollisionObjects(bb);
+
+	// Use to determine whether to cancel the move
+	bool destinationFree = true;
+	// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
+	bool adjusted = false;
+
+	// Go through every object we collided with (this includes non-solids that we can overlap with)
+	for (unsigned int i = 0; i < collisions.size(); i++) {
+		PhysicalObject*& obj = this->objects->at(collisions[i]);
+
+		// A solid object is blocking us
+		if (obj->solid && !adjusted) {
+			destinationFree = false;
+
+			// Crashed, so momentum is reset
+			momentum = 0.0f;
+			if (speed < SPEED_THRESHOLD) {
+				speed = 0.0f;
+			}
+
+			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
+			//cout <<  " Shifting " << glm::length(adjust) << " ";
+			if (glm::length(adjust) < 0.5f) {
+				//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+				if (glm::dot(obj->position - this->position, adjust) > 0) {
+					//cout << " FLIPPING ";
+					adjust = -adjust;
+				}
+				BoundingBox temp = generateBoundingBox(destination + adjust, newDir, newUp);
+				if (checkPlaceFree(temp)) {
+					//cout << "Adjusted\n";
+					destination += adjust;
+					bb = temp;
+					destinationFree = true;
+					adjusted = true;
+				}
+				else {
+					//cout << "Cancelled\n";
+					destinationFree = false;
+				}
+			}
+			else {
+				//cout << "Confirmed\n";
+				destinationFree = false;
+			}
+		}
+	}
+
+	if (!id) {
+		cout << destinationFree << " (" << position.x << " " << position.y << " " << position.z << ")\n"
+			<< " (" << destination.x << " " << destination.y << " " << destination.z << ")\n"
+			<< " (" << newDir.x << " " << newDir.y << " " << newDir.z << ")\n"
+			<< " (" << newUp.x << " " << newUp.y << " " << newUp.z << ")\n\n";
+	}
+
+	// If our destination is free, complete the move
+	if (destinationFree) {
+		this->momentum = min(MAX_MOMENTUM, momentum + glm::distance(destination, position));
+
+		this->position = destination;
+		this->direction = newDir;
+		this->up = newUp;
+		this->boundingBox = bb;
+	}
+
+
+
+	// Since previous attempts kind of went nowhere this is now blank
+	// This is my plan for slopes though
+	// 
+	// Part I: Offset all lower vertices to be above the floor
+	// Part II: Use the diagonals to get the up vector
+	// Part III: Construct a new bounding box
+	// Part IV: Adjust the bounding box again to not collide with the floor
+}
+

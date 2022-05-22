@@ -58,6 +58,6 @@ public:
 	void movePushed(glm::vec3 dir, float pushSpeed);
 	// Apply gravity if there is no object directly below us
 	void applyGravity();
-	// 
-	BoundingBox matchTerrain(BoundingBox bb);
+	// Adhere to the terrain
+	void matchTerrain();
 };

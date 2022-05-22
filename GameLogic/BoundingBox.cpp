@@ -58,12 +58,12 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 	this->vertices = vector<glm::vec3>();
 	this->vertices.push_back(corner);
 	this->vertices.push_back(corner + a);
-	this->vertices.push_back(corner + b);
-	this->vertices.push_back(corner + c);
-	this->vertices.push_back(corner + a + b);
 	this->vertices.push_back(corner + a + c);
-	this->vertices.push_back(corner + b + c);
+	this->vertices.push_back(corner + c);
+	this->vertices.push_back(corner + b);
+	this->vertices.push_back(corner + a + b);
 	this->vertices.push_back(corner + a + b + c);
+	this->vertices.push_back(corner + b + c);
 
 	//for (int i = 0; i < 8; i++) {
 	//	cout << "(" << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ")\n";
@@ -309,20 +309,6 @@ glm::vec3 bounding::checkCollisionPointFloor(glm::vec3 v, BoundingBox floor) {
 	if (proj <= f_max) {
 		return (f_max - proj + 0.0001f) * dir;
 	}
-	return glm::vec3(0.0f);
-}
-
-BoundingBox bounding::checkCollisionFloor(BoundingBox obj, BoundingBox floor, float maxOffset) {
-	// Since previous attempts kind of went nowhere this is now blank
-	// This is my plan for slopes though
-	// 
-	// Part I: Offset all lower vertices to be above the floor
-	// Part II: Use the diagonals to get the up vector
-	// Part III: Construct a new bounding box
-	// Part IV: Adjust the bounding box again to not collide with the floor
-	return BoundingBox();
-}
-
-BoundingBox bounding::matchTerrain(BoundingBox object, BoundingBox floor, float maxOffset) {
-	return BoundingBox();
+	return min(proj - f_max - 0.0001f, 0.25f) * -dir;
+	//return glm::vec3(0.0f);
 }

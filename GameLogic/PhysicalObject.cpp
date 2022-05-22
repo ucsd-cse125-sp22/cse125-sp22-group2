@@ -54,6 +54,20 @@ vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 	return collisions;
 }
 
+vector<int> PhysicalObject::findCollisionObjectsType(BoundingBox bb, int type) {
+	int objCount = this->objects->size();
+	vector<int> collisions = vector<int>();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == id || this->objects->at(i)->type != type) {
+			continue;
+		}
+		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			collisions.push_back(i);
+		}
+	}
+	return collisions;
+}
+
 bool PhysicalObject::objectPosition(BoundingBox bb, int type) {
 	int objCount = this->objects->size();
 	for (unsigned int i = 0; i < objCount; i++) {

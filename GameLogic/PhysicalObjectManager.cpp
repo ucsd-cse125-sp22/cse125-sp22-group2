@@ -36,6 +36,7 @@ void PhysicalObjectManager::startGame() {
 	// Add 180 degrees to value in scene graph
 	createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 	createObject(oMakeup, glm::vec3(-20.0f, 0.0, 20.0f), glm::vec3(cos(-135.0f * float(M_PI) / 180.0f), 0.0f, sin(-135.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+	createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(2.0f, -8.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -73,7 +74,10 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		this->objects->push_back(new ObjWall(objects, next_id, pos, 16.0f, 16.0f, 1.0f, dir, up));
 		break;
 	case (oFloor):
-		this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(0.0f, -4.0f, 0.0f), 8.0f, 1.0f, 8.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(12.0f, -1.0f, 0.0f), 8.0f, 1.0f, 8.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 1.0f)), glm::normalize(glm::vec3(0.0f, 1.0f, -1.0f)), true));
+		//this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(0.0f, -2.0f, 16.0f), 12.0f, 1.0f, 12.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)), true));
+		//this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(8.0f, -2.0f, 2.0f), 4.0f, 1.0f, 4.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		break;
 	case (oCrown):
 		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
@@ -82,7 +86,6 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		glm::vec3 offL = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_L_OFFSET), BOOTH_WALL_L_OFFSET.y, glm::dot(dir, BOOTH_WALL_L_OFFSET));
 		glm::vec3 offR = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_R_OFFSET), BOOTH_WALL_R_OFFSET.y, glm::dot(dir, BOOTH_WALL_R_OFFSET));
 		glm::vec3 offB = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_L_OFFSET), BOOTH_BAR_OFFSET.y, glm::dot(dir, BOOTH_BAR_OFFSET));
-		//cout << pos.x << " " << pos.y << " " << pos.z << " : " << pos.x + offL.x << " " << pos.y + offL.y << " " << pos.z + offL.z << "\n";
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offL, BOOTH_WALL_L_LENGTH, BOOTH_WALL_L_WIDTH, BOOTH_WALL_L_HEIGHT, dir, up));
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offR, BOOTH_WALL_R_LENGTH, BOOTH_WALL_R_WIDTH, BOOTH_WALL_R_HEIGHT, dir, up));
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offB, BOOTH_BAR_LENGTH, BOOTH_BAR_WIDTH, BOOTH_BAR_HEIGHT, dir, up));
