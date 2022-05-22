@@ -422,25 +422,27 @@ void ObjPlayer::applyGravity() {
 }
 
 void ObjPlayer::matchTerrain() {
+	//this->up = glm::vec3(0.0f, 1.0f, 0.0f);
 	BoundingBox bb = this->boundingBox;
 	// For each vertex, find the floor beneath it
 	for (unsigned int i = 0; i < 4; i++) {
-		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -1.0f, 0.0f), this->direction, glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 2.0f, 0.1f), oFloor);
+		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
 		if (floor == -1) {
 			// No floor below this point
 			cout << "/ - ";
-			bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
+			//bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
 		}
 		else {
 			// Adjust based on the floor
-			glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(i)->boundingBox);
-			cout << adj.x << " " << adj.y << " " << adj.z << " - ";
+			glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(floor)->boundingBox);
+			cout << "/ (" << adj.x << " " << adj.y << " " << adj.z << ") ";
 			bb.vertices[i] += adj;
 		}
 	}
+	cout << "/\n";
 
 	glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
-	if (glm::dot(newUp, this->up) < 0.0f) {
+	if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
 		newUp = -newUp;
 	}
 

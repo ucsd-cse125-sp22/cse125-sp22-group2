@@ -47,6 +47,7 @@ namespace cse125framing {
 	typedef struct PlayerData {
 		vec4 playerPosition;
 		vec3 playerDirection;
+		vec3 playerUp;
 		RealNumber playerSpeed;
 		RealNumber makeupLevel;
 		RealNumber score;

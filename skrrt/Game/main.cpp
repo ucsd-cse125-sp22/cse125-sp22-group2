@@ -80,7 +80,8 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     {
         const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
         const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
-        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        const glm::vec3 up = glm::vec3(frame->players[i].playerUp);
+        game.players[i]->moveCar(dir, up, pos);
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;

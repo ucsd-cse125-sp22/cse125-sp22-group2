@@ -24,8 +24,10 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     {
         ObjPlayer* player = (ObjPlayer*)manager->objects->at(id);
         frame->players[id].hasCrown = player->hasCrown;
+        frame->players[id].playerSpeed = player->speed;
         frame->players[id].makeupLevel = player->makeupLevel;
         frame->players[id].playerDirection = player->direction;
+        frame->players[id].playerUp = player->up;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
     }
