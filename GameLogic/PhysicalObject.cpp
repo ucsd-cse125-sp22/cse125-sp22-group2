@@ -115,7 +115,7 @@ float PhysicalObject::lerp(float v1, float v2, float t) {
 
 glm::vec3 PhysicalObject::lerp(glm::vec3 v1, glm::vec3 v2, float t) {
 	if (glm::dot(v1, v2) < -0.999f) {
-		v2 = glm::normalize(v2 + glm::vec3(0.01f, 0.0f, 0.01f));
+		v1 = glm::normalize(v1 + glm::vec3(0.01f, 0.0f, 0.01f));
 	}
 	return v1 + (v2 - v1) * t;
 }

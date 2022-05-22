@@ -27,8 +27,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/ez/cse125-sp22-group2/cse-125-include-directories/glm/out/build/x64-Debug",
-		"source" : "C:/ez/cse125-sp22-group2/cse-125-include-directories/glm"
+		"build" : "C:/Users/Steven/Desktop/skrrt/cse-125-include-directories/glm/out/build/x64-Debug",
+		"source" : "C:/Users/Steven/Desktop/skrrt/cse-125-include-directories/glm"
 	},
 	"version" : 
 	{

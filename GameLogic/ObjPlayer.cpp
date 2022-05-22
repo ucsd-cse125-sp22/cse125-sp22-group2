@@ -86,12 +86,16 @@ void ObjPlayer::step() {
 			this->direction = dir;
 			this->boundingBox = bb;
 		}
-		boothTime--;
-		// TODO: fix this to work with tick rate :woozy_face:
-		makeupLevel = MAKEUP_MAX;
+		if (--boothTime <= 0.0f) {
+			// TODO: potentially change this to work with tick rate
+			makeupLevel = MAKEUP_MAX;
+			speed = SPEED_LEAVE_BOOTH;
+			iframes = MAKEUP_IFRAMES;
+		}
+		
 	}
-
-	if (booth != -1 && !boothTime && !objectPosition(this->boundingBox, oMakeup)) {
+	if (booth != -1 && !objectPosition(this->boundingBox, oMakeup)) {
+		((ObjMakeup*)objects->at(booth))->occupied = false;
 		booth = -1;
 	}
 
@@ -121,15 +125,15 @@ void ObjPlayer::step() {
 	}
 
 	//if (!id)
-	//cout << speed << "\n";
+	//cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
 
 	// TODO: uncomment this probably
 	//applyGravity();
 }
 
 void ObjPlayer::action(glm::vec3 dir) {
-	// Can't move when stunned
-	if (!stun || !boothTime) {
+	// Can't move when stunned or locked in booth
+	if (!stun && !boothTime) {
 		// Increase speed (Note: if we are above the max speed we need to ignore this)
 		if (speed < maxSpeed) {
 			speed = min(maxSpeed, speed + SPEED_FORCE);
@@ -240,7 +244,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 
 	// If our destination is free, complete the move
 	if (destinationFree) {
-		this->momentum += glm::distance(destination, position);
+		this->momentum = min(MAX_MOMENTUM, momentum + glm::distance(destination, position));
 
 		this->position = destination;
 		this->direction = dir;

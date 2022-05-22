@@ -30,14 +30,16 @@ const float DEFAULT_MAX_SPEED = 0.5f;
 const float CROWN_SPEED_BOOST = 0.0f;
 const float MAKEUP_SPEED_PENALTY = 0.25f;
 const float TRAIL_SPEED_PENALTY = 0.25f;
+const float MAX_MOMENTUM = 15.0f;
 
 // Speeds
-const float MOMENTUM_DECAY = 0.1f;
+const float MOMENTUM_DECAY = 1.0f;
 const float SPEED_DECAY = 0.1f;
 const float THRESHOLD_DECAY_GROWTH = 0.05f;
 const float SPEED_FORCE = 0.1f;
 const float SPEED_THRESHOLD = 0.75f;
 const float SPEED_STEAL_CROWN = 1.0f;
+const float SPEED_LEAVE_BOOTH = 1.5f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
