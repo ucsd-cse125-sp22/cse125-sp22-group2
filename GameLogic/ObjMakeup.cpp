@@ -30,11 +30,11 @@ ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned
 	this->width = BOOTH_MAKEUP_WIDTH;
 	this->height = BOOTH_MAKEUP_HEIGHT;
 
-	this->speed = 0.0f;
-	this->boundingBox = generateBoundingBox(position, direction, up);
-
 	this->direction = direction;
-	this->up = up;
+	this->up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	this->speed = 0.0f;
+	this->boundingBox = generateBoundingBox(position, direction, this->up);
 
 	this->solid = false;
 }

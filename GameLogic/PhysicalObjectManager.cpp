@@ -34,7 +34,7 @@ void PhysicalObjectManager::startGame() {
 	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	createObject(oWall, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oMakeup, glm::vec3(20.0f, -0.5, -20.0f), glm::vec3(sin(-135.0f * float(M_PI) / 180.0f), 0.0f, cos(-135.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
-	createObject(oMakeup, glm::vec3(20.0f, -0.5, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(2.0f, -8.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(-2.0f, -8.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -84,7 +84,7 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offL, BOOTH_WALL_L_LENGTH, BOOTH_WALL_L_WIDTH, BOOTH_WALL_L_HEIGHT, dir, up));
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offR, BOOTH_WALL_R_LENGTH, BOOTH_WALL_R_WIDTH, BOOTH_WALL_R_HEIGHT, dir, up));
 		//this->objects->push_back(new ObjWall(objects, next_id++, pos + offB, BOOTH_BAR_LENGTH, BOOTH_BAR_WIDTH, BOOTH_BAR_HEIGHT, dir, up));
-		//this->objects->push_back(new ObjMakeup(objects, next_id, next_id - 1, pos, dir));
+		this->objects->push_back(new ObjMakeup(objects, next_id, next_id - 1, pos, dir));
 		break;
 	case (oTrail):
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));

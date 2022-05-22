@@ -91,6 +91,10 @@ void ObjPlayer::step() {
 		makeupLevel = MAKEUP_MAX;
 	}
 
+	if (booth != -1 && !boothTime && !objectPosition(this->boundingBox, oMakeup)) {
+		booth = -1;
+	}
+
 	// Adjust max speed (these numbers are placeholders)
 	maxSpeed = DEFAULT_MAX_SPEED;
 	if (hasCrown) {
