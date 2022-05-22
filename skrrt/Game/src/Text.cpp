@@ -60,6 +60,8 @@ void Text::init() {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
+
+	std::cout << "Init text" << std::endl;
 }
 
 void Text::RenderText(void)

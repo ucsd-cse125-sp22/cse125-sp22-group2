@@ -158,12 +158,13 @@ void initialize(void)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.draw(scene.node["world"]);
+    //scene.draw(scene.node["world"]);
     scene.updateScreen();
 
-    glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    scene.draw(scene.node["UI_root"]);
+    //glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //scene.draw(scene.node["UI_root"]);
     scene.drawText();
 
     /*
@@ -175,7 +176,7 @@ void display(void)
 	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
     */
 
-    glDisable(GL_BLEND);
+    //glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
