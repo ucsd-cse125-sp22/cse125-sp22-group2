@@ -346,7 +346,6 @@ void Scene::init(void){
 	node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f))*scale(0.5f * vec3(1.0f)) * rotate(45.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
-    node["makeup_station1"]->visible = false;
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);

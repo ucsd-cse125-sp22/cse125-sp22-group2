@@ -35,6 +35,7 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	// Add 180 degrees to value in scene graph
 	createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+	createObject(oMakeup, glm::vec3(-20.0f, 0.0, 20.0f), glm::vec3(cos(-135.0f * float(M_PI) / 180.0f), 0.0f, sin(-135.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//createObject(oWall, glm::vec3(2.0f, -8.0f, 2.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -81,10 +82,10 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		glm::vec3 offL = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_L_OFFSET), BOOTH_WALL_L_OFFSET.y, glm::dot(dir, BOOTH_WALL_L_OFFSET));
 		glm::vec3 offR = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_R_OFFSET), BOOTH_WALL_R_OFFSET.y, glm::dot(dir, BOOTH_WALL_R_OFFSET));
 		glm::vec3 offB = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_L_OFFSET), BOOTH_BAR_OFFSET.y, glm::dot(dir, BOOTH_BAR_OFFSET));
-		cout << pos.x << " " << pos.y << " " << pos.z << " : " << pos.x + offL.x << " " << pos.y + offL.y << " " << pos.z + offL.z << "\n";
+		//cout << pos.x << " " << pos.y << " " << pos.z << " : " << pos.x + offL.x << " " << pos.y + offL.y << " " << pos.z + offL.z << "\n";
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offL, BOOTH_WALL_L_LENGTH, BOOTH_WALL_L_WIDTH, BOOTH_WALL_L_HEIGHT, dir, up));
 		this->objects->push_back(new ObjWall(objects, next_id++, pos + offR, BOOTH_WALL_R_LENGTH, BOOTH_WALL_R_WIDTH, BOOTH_WALL_R_HEIGHT, dir, up));
-		//this->objects->push_back(new ObjWall(objects, next_id++, pos + offB, BOOTH_BAR_LENGTH, BOOTH_BAR_WIDTH, BOOTH_BAR_HEIGHT, dir, up));
+		this->objects->push_back(new ObjWall(objects, next_id++, pos + offB, BOOTH_BAR_LENGTH, BOOTH_BAR_WIDTH, BOOTH_BAR_HEIGHT, dir, up));
 		this->objects->push_back(new ObjMakeup(objects, next_id, next_id - 1, pos, dir));
 		break;
 	case (oTrail):

@@ -38,7 +38,7 @@ const float SPEED_DECAY = 0.1f;
 const float THRESHOLD_DECAY_GROWTH = 0.05f;
 const float SPEED_FORCE = 0.1f;
 const float SPEED_THRESHOLD = 0.75f;
-const float SPEED_STEAL_CROWN = 1.0f;
+const float SPEED_STEAL_CROWN = 1.2f;
 const float SPEED_LEAVE_BOOTH = 1.5f;
 
 // Gravity
@@ -64,14 +64,14 @@ const float BOOTH_WALL_L_HEIGHT = 2.98f;
 const float BOOTH_WALL_R_LENGTH = 5.6f;
 const float BOOTH_WALL_R_WIDTH = 1.85f;
 const float BOOTH_WALL_R_HEIGHT = 2.98f;
-const float BOOTH_BAR_LENGTH = 2.1f;
-const float BOOTH_BAR_WIDTH = 1.15f;
+const float BOOTH_BAR_LENGTH = 0.2f;
+const float BOOTH_BAR_WIDTH = 4.15f;
 const float BOOTH_BAR_HEIGHT = 0.98f;
 const float BOOTH_MAKEUP_LENGTH = 1.0f;
 const float BOOTH_MAKEUP_WIDTH = 1.0f;
 const float BOOTH_MAKEUP_HEIGHT = 1.0f;
-const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f); // glm::vec3(-3.0f, 0.0f, 6.0f);
+const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.2f, 0.0f, 0.157f);
-const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 0.0f);
+const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 2.0f);
 
 #endif

@@ -90,14 +90,17 @@ void ObjPlayer::step() {
 		if (boothTime <= 0.0f) {
 			// TODO: potentially change this to work with tick rate
 			boothTime = 0.0f;
+			objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = false;
 			makeupLevel = MAKEUP_MAX;
 			speed = SPEED_LEAVE_BOOTH;
 			iframes = MAKEUP_IFRAMES;
+
 		}
 		
 	}
 	if (booth != -1 && !objectPosition(this->boundingBox, oMakeup)) {
 		((ObjMakeup*)objects->at(booth))->occupied = false;
+		objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = true;
 		booth = -1;
 	}
 
@@ -126,8 +129,9 @@ void ObjPlayer::step() {
 		}
 	}
 
-	if (!id)
-	cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
+	//if (!id) {
+	//	cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
+	//}
 
 	// TODO: uncomment this probably
 	//applyGravity();
