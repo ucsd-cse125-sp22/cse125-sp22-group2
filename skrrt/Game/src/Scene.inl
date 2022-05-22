@@ -418,4 +418,20 @@ void Scene::init(void){
     shader -> compile();
     glUseProgram(shader -> program);
     shader -> initUniforms();
+
+    // Initialize text shader 
+    text_shader = new TextShader; 
+    text_shader->read_source("shaders/ui.vert", "shaders/ui.frag");
+    text_shader->compile(); 
+    glUseProgram(text_shader->program);
+    text_shader->initUniforms(); 
+
+    // Initialize text 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        scores[i] = new Text(text_shader->program);
+        scores[i]->updateText("0000");
+    }
+
+    game_time = new Text(text_shader->program);
+    game_time->updateText("100");
 }

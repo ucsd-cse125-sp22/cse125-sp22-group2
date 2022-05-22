@@ -15,6 +15,8 @@ Scene.cpp contains the implementation of the draw command
 using namespace glm;
 void Scene::draw(Node* current_node){
 
+    glUseProgram(shader->program);
+
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
     camera -> computeMatrices();
     shader -> view = camera -> view;
@@ -121,4 +123,19 @@ void Scene::updateScreen(void) {
 
     // Update transform of UI root 
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
+}
+
+void Scene::drawText(void) {
+
+    text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_WIDTH, 0.0f, cse125constants::WINDOW_HEIGHT);
+
+    // Draw all scores 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        text_shader->textColor = scores[i]->getColor(); 
+        scores[i]->RenderText();
+    }
+
+    // Draw game time
+	text_shader->textColor = game_time->getColor(); 
+    game_time->RenderText();
 }
