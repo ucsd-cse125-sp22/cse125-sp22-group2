@@ -9,9 +9,9 @@ Scene.inl contains the definition of the scene graph
 #include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
-#define DEV_LIGHTING false
+#define DEV_LIGHTING true
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS true
+#define ENABLE_DRIPS false
 
 using namespace glm;
 void Scene::init(void){
@@ -336,7 +336,8 @@ void Scene::init(void){
     // * To see which one I'm talking about, set TOP_DOWN_VIEW in Debug.h and set it to true
     // ************
 	node["world"]->childnodes.push_back(node["makeup_station0"]); 
-	node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f))*scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	//node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f))*scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f)) * scale(0.5f * vec3(1.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
     
@@ -345,6 +346,7 @@ void Scene::init(void){
 	node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f))*scale(0.5f * vec3(1.0f)) * rotate(45.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
+    node["makeup_station1"]->visible = false;
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);

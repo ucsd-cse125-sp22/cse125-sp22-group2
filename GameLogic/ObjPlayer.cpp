@@ -116,6 +116,9 @@ void ObjPlayer::step() {
 		}
 	}
 
+	//if (!id)
+	//cout << speed << "\n";
+
 	// TODO: uncomment this probably
 	//applyGravity();
 }
@@ -192,6 +195,13 @@ void ObjPlayer::move(glm::vec3 dir) {
 		// A solid object is blocking us
 		if (obj->solid && !adjusted) {
 			destinationFree = false;
+
+			// Crashed, so momentum is reset
+			momentum = 0.0f;
+			if (speed < SPEED_THRESHOLD) {
+				speed = 0.0f;
+			}
+
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 			//cout <<  " Shifting " << glm::length(adjust) << " ";
@@ -242,10 +252,6 @@ void ObjPlayer::move(glm::vec3 dir) {
 				this->boothTime = MAKEUP_BOOTH_TIME;
 			}
 		}
-	}
-	else {
-		// Crashed, so momentum is reset
-		momentum = 0.0f;
 	}
 }
 
