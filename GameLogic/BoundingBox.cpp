@@ -65,9 +65,9 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 	this->vertices.push_back(corner + b + c);
 	this->vertices.push_back(corner + a + b + c);
 
-	//for (int i = 0; i < 8; i++) {
-	//	cout << "(" << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ")\n";
-	//}
+	for (int i = 0; i < 8; i++) {
+		cout << "(" << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ")\n";
+	}
 
 	this->computeMinMax();
 	gridCells = vector<int>();

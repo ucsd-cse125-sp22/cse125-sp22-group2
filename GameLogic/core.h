@@ -14,7 +14,7 @@
 using namespace std;
 
 // Game parameters
-const float MATCH_LENGTH = 10.0f; //180.0f
+const float MATCH_LENGTH = 180.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
@@ -23,7 +23,7 @@ const float MAP_RADIUS = 63.5f;
 // Makeup
 const float MAKEUP_MAX = 100.0f;
 const float MAKEUP_DECREASE_RATE = 1.0f;
-const float MAKEUP_BOOTH_TIME = 10.0f;
+const float MAKEUP_BOOTH_TIME = 3.0f;
 
 // Max Speeds
 const float DEFAULT_MAX_SPEED = 0.5f;

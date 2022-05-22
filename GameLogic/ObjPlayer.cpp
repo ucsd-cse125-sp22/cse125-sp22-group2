@@ -86,8 +86,10 @@ void ObjPlayer::step() {
 			this->direction = dir;
 			this->boundingBox = bb;
 		}
-		if (--boothTime <= 0.0f) {
+		boothTime -= 1.0f / cse125config::TICK_RATE;
+		if (boothTime <= 0.0f) {
 			// TODO: potentially change this to work with tick rate
+			boothTime = 0.0f;
 			makeupLevel = MAKEUP_MAX;
 			speed = SPEED_LEAVE_BOOTH;
 			iframes = MAKEUP_IFRAMES;
@@ -124,8 +126,8 @@ void ObjPlayer::step() {
 		}
 	}
 
-	//if (!id)
-	//cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
+	if (!id)
+	cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
 
 	// TODO: uncomment this probably
 	//applyGravity();
