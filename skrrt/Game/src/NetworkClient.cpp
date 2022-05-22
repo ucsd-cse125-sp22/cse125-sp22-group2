@@ -20,6 +20,7 @@ int cse125networkclient::NetworkClient::getId()
     // Prepare a frame to send to the server
     cse125framing::ClientFrame frame;
     frame.id = cse125constants::DEFAULT_CLIENT_ID;
+    frame.replayMatch = false;
 
     // Until the id request is successful, 
     // attempt to get this client's id from the server
@@ -87,6 +88,7 @@ size_t cse125networkclient::NetworkClient::send(MovementKey movementKey, vec3 ca
     frame.ctr = this->clientFrameCtr++;
     frame.movementKey = movementKey;
     frame.cameraDirection = glm::vec3(cameraDirection);
+    frame.replayMatch = false;
 
     // Serialize frame
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
@@ -139,6 +141,31 @@ size_t cse125networkclient::NetworkClient::receive(cse125framing::ServerFrame* f
     // Set error code
     *errorCode = error;
     return size_t();
+}
+
+size_t cse125networkclient::NetworkClient::replay(boost::system::error_code* errorCode)
+{
+    // Prepare frame
+    cse125framing::ClientFrame frame;
+    frame.id = this->clientId;
+    frame.replayMatch = true;
+
+    // Serialize frame
+    boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
+    cse125framing::serialize(&frame, clientBuffer);
+
+    // Send frame to server
+    boost::system::error_code error;
+    size_t numWritten = boost::asio::write(*this->socket, boost::asio::buffer(clientBuffer), error);
+    if (error) {
+        if (DEBUG_LEVEL >= LOG_LEVEL_ERROR) {
+            std::cerr << "Error sending replay to server, continuing ..." << std::endl;
+            std::cerr << error << std::endl;
+        }
+    }
+    // Set error code
+    *errorCode = error;
+    return numWritten;
 }
 
 void cse125networkclient::NetworkClient::closeConnection()

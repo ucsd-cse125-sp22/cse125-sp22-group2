@@ -29,6 +29,9 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
     }
+
+    // set game restart values
+    frame->matchInProgress = true;
 }
 
 // Initializes and returns the PhysicalObjectManager

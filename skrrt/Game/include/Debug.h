@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #define LOG_LEVEL_NONE 0
 #define LOG_LEVEL_ERROR 1 
 #define LOG_LEVEL_WARN 2
@@ -7,7 +8,7 @@
 #define LOG_LEVEL_FINER 5
 #define LOG_LEVEL_FINEST 6
  
-#define DEBUG_LEVEL LOG_LEVEL_INFO
+#define DEBUG_LEVEL LOG_LEVEL_WARN
 
 // How to use debug level: 
 // if(DEBUG_LEVEL >= LOG_LEVEL_<whatever>) {
@@ -18,3 +19,7 @@
 
 // This is for utilizing the top down view of the game 
 #define TOP_DOWN_VIEW false
+
+namespace cse125debug {
+	void log(int level, const char* msg);
+}
