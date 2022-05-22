@@ -50,7 +50,7 @@ public:
 
 		x = 0; 
 		y = 0; 
-		scale = 10; 
+		scale = 30; 
 		color = glm::vec3(1.0f);
 
 		glGenVertexArrays(1, &VAO);
