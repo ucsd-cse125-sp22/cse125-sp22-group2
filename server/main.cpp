@@ -126,10 +126,8 @@ int main()
 
         std::cerr << "Match has ended!" << std::endl;
 
-        // Reset game state
+        // Reset the game manager
         delete manager;
-
-        std::cerr << "Deleted manager!" << std::endl;
 
         // Tell clients that the match finished
         cse125framing::ServerFrame matchFinishedFrame;
@@ -144,6 +142,11 @@ int main()
 
         // Reset number of clients replaying
         server->resetReplayStatus();
+
+        // Reset the server packet queue
+        server->queueMtx.lock();
+        server->serverQueue.clear();
+        server->queueMtx.unlock();
 
         // All clients are ready: notify clients that the game has restarted
         cse125framing::ServerFrame matchRestartedFrame;

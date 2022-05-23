@@ -62,59 +62,6 @@ static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
 
-
-void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
-{
-    // Only send data to server if the match is in progress
-    if (matchInProgress) {
-        boost::system::error_code error;
-        size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
-    }
-}
-
-void sendReplayToServer() {
-    // Only allow replay packet to be sent when match is not in progress 
-     // and if it hasn't been sent already
-    if (!matchInProgress && !readyToReplay) {
-        // Send packet to server indicating client is ready to replay
-        boost::system::error_code error;
-        // Check for a packet from the server indicating that the game is ready to restart
-        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");        
-        networkClient->replay(&error);
-        if (!error) {
-            readyToReplay = true;
-            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
-        }
-    }
-}
-
-cse125framing::ServerFrame* receiveDataFromServer()
-{
-    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
-    boost::system::error_code error;
-
-    size_t numRead = networkClient->receive(frame, &error);
-    return frame;
-}
-
-void updatePlayerState(cse125framing::ServerFrame* frame) {
-    // Use the data to update the player's game state
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
-    {
-        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
-        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
-        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
-        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
-        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
-    }
-    if (!TOP_DOWN_VIEW) {
-		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
-    }
-}
-
 void printHelp(){
         /*
         case ' ':
@@ -211,6 +158,60 @@ void saveScreenShot(const char* filename = "test.png")
     int currentheight = glutGet(GLUT_WINDOW_HEIGHT);
     Screenshot imag = Screenshot(currentwidth, currentheight);
     imag.save(filename);
+}
+
+void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
+{
+    // Only send data to server if the match is in progress
+    if (matchInProgress) {
+        boost::system::error_code error;
+        size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
+    }
+}
+
+void sendReplayToServer() {
+    // Only allow replay packet to be sent when match is not in progress 
+     // and if it hasn't been sent already
+    if (!matchInProgress && !readyToReplay) {
+        // Send packet to server indicating client is ready to replay
+        boost::system::error_code error;
+        // Check for a packet from the server indicating that the game is ready to restart
+        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
+        networkClient->replay(&error);
+        if (!error) {
+            readyToReplay = true;
+            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
+            // Reset graphics side state HERE
+            
+        }
+    }
+}
+
+cse125framing::ServerFrame* receiveDataFromServer()
+{
+    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
+    boost::system::error_code error;
+
+    size_t numRead = networkClient->receive(frame, &error);
+    return frame;
+}
+
+void updatePlayerState(cse125framing::ServerFrame* frame) {
+    // Use the data to update the player's game state
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
+        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
+        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
+        scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
+    }
+    if (!TOP_DOWN_VIEW) {
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
 }
 
 
