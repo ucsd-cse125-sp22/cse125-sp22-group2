@@ -28,8 +28,8 @@
 #include "../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1200;
-static const int height = 900;
+static const int width = 900;
+static const int height = 600;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -49,6 +49,10 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
+// Game restart variables
+bool matchInProgress = false;
+bool readyToReplay = false;
+
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
 
@@ -57,40 +61,6 @@ static int mouseY = 0.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
-
-
-void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
-{
-    boost::system::error_code error;
-    size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
-}
-
-cse125framing::ServerFrame* receiveDataFromServer()
-{
-    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
-    boost::system::error_code error;
-
-    size_t numRead = networkClient->receive(frame, &error);
-    return frame;
-}
-
-void updatePlayerState(cse125framing::ServerFrame* frame) {
-    // Use the data to update the player's game state
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
-    {
-        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
-        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
-        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
-        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
-        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
-    }
-    if (!TOP_DOWN_VIEW) {
-		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
-    }
-}
 
 void printHelp(){
         /*
@@ -106,7 +76,7 @@ void printHelp(){
       press 'O' to save a screenshot.
       press the arrow keys to rotate camera.
       press 'Z' to zoom.
-      press 'R' to reset camera.
+      press 'C' to reset camera.
       press 'L' to turn on/off the lighting.
     
       press 'W' 'A' 'S' 'D' to move. 
@@ -190,6 +160,60 @@ void saveScreenShot(const char* filename = "test.png")
     imag.save(filename);
 }
 
+void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
+{
+    // Only send data to server if the match is in progress
+    if (matchInProgress) {
+        boost::system::error_code error;
+        size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
+    }
+}
+
+void sendReplayToServer() {
+    // Only allow replay packet to be sent when match is not in progress 
+     // and if it hasn't been sent already
+    if (!matchInProgress && !readyToReplay) {
+        // Send packet to server indicating client is ready to replay
+        boost::system::error_code error;
+        // Check for a packet from the server indicating that the game is ready to restart
+        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
+        networkClient->replay(&error);
+        if (!error) {
+            readyToReplay = true;
+            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
+            // Reset graphics side state HERE
+            
+        }
+    }
+}
+
+cse125framing::ServerFrame* receiveDataFromServer()
+{
+    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
+    boost::system::error_code error;
+
+    size_t numRead = networkClient->receive(frame, &error);
+    return frame;
+}
+
+void updatePlayerState(cse125framing::ServerFrame* frame) {
+    // Use the data to update the player's game state
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
+        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
+        game.players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
+        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
+        scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
+    }
+    if (!TOP_DOWN_VIEW) {
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
+}
+
 
 void handleMoveForward() {
     sendDataToServer(MovementKey::FORWARD, scene.camera->forwardVectorXZ());
@@ -227,7 +251,7 @@ void keyboard(unsigned char key, int x, int y){
         case 'o': // save screenshot
             saveScreenShot();
             break;
-        case 'r':
+        case 'c':
             scene.camera -> aspect_default = float(glutGet(GLUT_WINDOW_WIDTH))/float(glutGet(GLUT_WINDOW_HEIGHT));
             scene.camera -> reset();
             glutPostRedisplay();
@@ -324,6 +348,12 @@ void keyboard(unsigned char key, int x, int y){
                 glutSetCursor(GLUT_CURSOR_INHERIT);
             }
             break;
+
+        // Key for telling server that player is ready for another match
+        case 'r':
+            sendReplayToServer();         
+            break;
+
         default:
             //glutPostRedisplay();
             break;
@@ -459,12 +489,35 @@ void idle() {
 
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
-        // Get data from server and allocate a new frame variable
-        cse125framing::ServerFrame* frame = receiveDataFromServer();
-        // Use the frame to update the player's state
-        updatePlayerState(frame);
-        // Delete the frame
-        delete frame;       
+        if (matchInProgress) {
+            // Get data from server and allocate a new frame variable
+            cse125framing::ServerFrame* frame = receiveDataFromServer();
+            if (frame->matchInProgress) {
+                // Use the frame to update the player's state
+                updatePlayerState(frame);
+            }
+            else {
+               cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
+               // The match has ended
+               matchInProgress = false;
+            }
+            // Delete the frame
+            delete frame;
+        }
+        else {
+            // Check for a packet from the server indicating that the game is ready to restart
+            if (readyToReplay) {
+                cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
+                cse125framing::ServerFrame* frame = receiveDataFromServer();
+                if (frame->matchInProgress) {
+                    cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
+                    matchInProgress = true;
+                    readyToReplay = false;
+                }          
+                delete frame;
+
+            }
+        }
     }
 
     if (render) {
@@ -523,18 +576,12 @@ int main(int argc, char** argv)
 
     // Read in config file and set variables
     cse125config::initializeConfig("../../config.json");
-    /*
-    outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
-    outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
-    outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
-    boost::asio::connect(*outgoingSocket, outgoingEndpoints);
-    requestClientId();
-    */
 
     // Initialize the network client
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
+    matchInProgress = true;
     
     // Graphics binding
     initialize();

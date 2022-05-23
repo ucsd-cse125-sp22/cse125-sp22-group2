@@ -23,6 +23,7 @@ namespace cse125framing {
 		int ctr;
 		MovementKey movementKey;
 		vec3 cameraDirection;
+		bool replayMatch = false; // whether this client is ready to replay another match
 	} ClientFrame;
 
 	enum class AudioId {
@@ -60,6 +61,7 @@ namespace cse125framing {
 		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
 		AnimationTrigger animations;
 		RealNumber gameTime;
+		bool matchInProgress = true;
 	} ServerFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);

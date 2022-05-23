@@ -86,12 +86,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
 }
 
-void PhysicalObjectManager::step() {
+void PhysicalObjectManager::step(bool* matchInProgress) {
 	if (gameTime > 0.0f) {
 		gameTime -= 1.0f / cse125config::DEFAULT_TICK_RATE;
 		if (gameTime <= 0.0f) {
 			gameTime = 0.0f;
 			endGame();
+			*matchInProgress = false;
 		}
 	}
 	for (unsigned int i = 0; i < objects->size(); i++) {
