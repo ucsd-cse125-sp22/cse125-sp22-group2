@@ -422,15 +422,16 @@ void ObjPlayer::applyGravity() {
 }
 
 void ObjPlayer::matchTerrain() {
-	//this->up = glm::vec3(0.0f, 1.0f, 0.0f);
+	////this->up = glm::vec3(0.0f, 1.0f, 0.0f);
 	BoundingBox bb = this->boundingBox;
 	// For each vertex, find the floor beneath it
 	for (unsigned int i = 0; i < 4; i++) {
+		cout << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).x << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).y << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).z << "\n";
 		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
 		if (floor == -1) {
 			// No floor below this point
 			cout << "/ - ";
-			//bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
+			bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
 		}
 		else {
 			// Adjust based on the floor
@@ -445,6 +446,18 @@ void ObjPlayer::matchTerrain() {
 	if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
 		newUp = -newUp;
 	}
+
+	//glm::vec3 newUp = glm::vec3(0.0f);
+	//int floor = findObjectPosition(generateBoundingBox(this->position + glm::vec3(0.0f, -0.25f, 0.0f), this->direction, this->up), oFloor);
+	//if (floor == -1) {
+	//	newUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	//}
+	//else {
+	//	newUp = this->objects->at(floor)->up;
+	//}
+	//if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
+	//	newUp = -newUp;
+	//}
 
 	glm::vec3 newDir = glm::normalize(glm::cross(glm::cross(this->direction, newUp), newUp));
 	if (glm::dot(newDir, this->direction) < 0.0f) {
@@ -471,12 +484,6 @@ void ObjPlayer::matchTerrain() {
 		// A solid object is blocking us
 		if (obj->solid && !adjusted) {
 			destinationFree = false;
-
-			// Crashed, so momentum is reset
-			momentum = 0.0f;
-			if (speed < SPEED_THRESHOLD) {
-				speed = 0.0f;
-			}
 
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
