@@ -34,7 +34,7 @@ const float MAX_MOMENTUM = 15.0f;
 
 // Speeds
 const float MOMENTUM_DECAY = 1.0f;
-const float MOMENTUM_CRASH_THRESHOLD = 7.0f;
+const float MOMENTUM_CRASH_THRESHOLD = 5.0f;
 const float SPEED_DECAY = 0.1f;
 const float THRESHOLD_DECAY_GROWTH = 0.05f;
 const float SPEED_FORCE = 0.1f;

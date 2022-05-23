@@ -85,12 +85,22 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(pos + (1.0f * glm::normalize(dir)), 1.0f);
-		scene.spotLights["player" + std::to_string(i) + "Headlight"]->direction = dir;
+        glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
+        const std::string headlightName = "player" + std::to_string(i) + "Headlight";
+        scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
+        scene.spotLights[headlightName + "0"]->direction = dir;
+        scene.spotLights[headlightName + "1"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (-0.5f * offsetDir), 1.0f);
+        scene.spotLights[headlightName + "1"]->direction = dir;
     }
     if (!TOP_DOWN_VIEW) {
 		scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
     }
+}
+
+void updateCrownState(cse125framing::ServerFrame* frame) {
+    // None of this is right
+    scene.node["crown_world"]->modeltransforms[0] = glm::translate(frame->crown.crownPosition);
+    scene.node["crown_world"]->visible = frame->crown.crownVisible;
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers) 
@@ -509,7 +519,8 @@ void idle() {
 
         triggerAnimations(frame->animations);
         triggerAudio(frame->audio);
-
+        // Use the frame to update the crown's state
+        updateCrownState(frame);
         // Use the frame to update the player's state
         updatePlayerState(frame);
         // Delete the frame

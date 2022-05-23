@@ -82,6 +82,7 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		break;
 	case (oCrown):
 		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
+		this->crownID = next_id;
 		break;
 	case (oMakeup):
 		glm::vec3 offL = glm::vec3(glm::dot(glm::vec3(-dir.z, 0.0f, dir.x), BOOTH_WALL_L_OFFSET), BOOTH_WALL_L_OFFSET.y, glm::dot(dir, BOOTH_WALL_L_OFFSET));

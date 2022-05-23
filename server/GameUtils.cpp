@@ -10,6 +10,11 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
 
+    // initialize crown frame data
+    ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);
+    frame->crown.crownPosition = crown->position;
+    frame->crown.crownVisible = crown->loose;
+
     // initialize audio triggers
     for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
     {

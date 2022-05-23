@@ -25,6 +25,8 @@ public:
 	float gameTime;
 	// How many makeup booths there are
 	unsigned int numMakeups;
+	// ID for the loose crown
+	unsigned int crownID;
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();
