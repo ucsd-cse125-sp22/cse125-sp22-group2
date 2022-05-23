@@ -93,7 +93,51 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     }
 }
 
-void printHelp(){
+void triggerAnimations(const cse125framing::AnimationTrigger& triggers) 
+{
+     // makeup booth animation
+     for (int booth = 0; booth < cse125constants::NUM_MAKEUP_STATIONS; booth++) 
+     {
+         if (triggers.makeupBooth[booth]) 
+         {
+             // trigger gate animation
+             game.triggerGateAnimation(booth);
+         }
+     }
+
+     // crash animation
+     for (int playerId = 0; playerId < cse125constants::NUM_PLAYERS; playerId++)
+     {
+         if (triggers.playerCrash[playerId])
+         {
+             // trigger crash animation
+             game.triggerCarCollisionAnimation(playerId);
+         }
+     }
+ }
+
+void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MAX_NUM_SOUNDS]) 
+{
+     using namespace cse125framing;
+     using namespace cse125constants;
+     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
+     {
+         AudioTrigger audio = triggers[i];
+         switch (audio.id)
+         {
+             case AudioId::COLLISION:
+                 // game.triggerCarCollisionAudio(audio.position);
+             case AudioId::NO_AUDIO:
+             default:
+                 break;
+         }
+         // optimization if all audios are at the front (no holes)
+         if (audio.id == AudioId::NO_AUDIO)
+             break;
+     }
+ }
+
+void printHelp() {
         /*
         case ' ':
             hw3AutoScreenshots();
@@ -462,6 +506,10 @@ void idle() {
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         // Get data from server and allocate a new frame variable
         cse125framing::ServerFrame* frame = receiveDataFromServer();
+
+        triggerAnimations(frame->animations);
+        triggerAudio(frame->audio);
+
         // Use the frame to update the player's state
         updatePlayerState(frame);
         // Delete the frame

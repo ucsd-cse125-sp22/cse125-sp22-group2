@@ -17,7 +17,7 @@ ObjMakeup::ObjMakeup() {
 	this->solid = false;
 }
 
-ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned int barID, glm::vec3 position, glm::vec3 direction) {
+ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned int makeupID, unsigned int barID, glm::vec3 position, glm::vec3 direction) {
 	this->type = oMakeup;
 
 	this->objects = objects;
@@ -37,6 +37,7 @@ ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned
 	this->boundingBox = generateBoundingBox(position, direction, this->up);
 
 	this->solid = false;
+	this->makeupID = makeupID;
 }
 
 ObjMakeup::~ObjMakeup() {

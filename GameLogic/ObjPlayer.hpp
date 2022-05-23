@@ -29,6 +29,8 @@ public:
 	float boothTime;
 	// Current gravity force (represented as a positive float)
 	float gravity;
+	// Whether we crashed this frame
+	bool crashed;
 
 	// How much we have moved without stopping or crashing
 	float momentum;

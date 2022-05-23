@@ -40,7 +40,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->speed = 0.0f;
 	this->iframes = 0;
 	this->stun = 0;
-	this->makeupLevel = 100.0f;
+	this->makeupLevel = MAKEUP_MAX;
 	this->score = 0.0f;
 	this->hasCrown = false;
 	this->booth = -1;
@@ -54,6 +54,9 @@ ObjPlayer::~ObjPlayer() {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ObjPlayer::step() {
+	// Reset crash check
+	crashed = false;
+
 	// Update iframes
 	if (iframes) {
 		iframes--;
@@ -134,11 +137,10 @@ void ObjPlayer::step() {
 	//}
 
 	// TODO: uncomment this probably
-	if (!id) {
-
-		applyGravity();
-		matchTerrain();
-	}
+	//if (!id) {
+	//	applyGravity();
+	//	matchTerrain();
+	//}
 	//applyGravity();
 	//matchTerrain();
 }
@@ -181,6 +183,13 @@ void ObjPlayer::move(glm::vec3 dir) {
 	// Make sure we don't drive out of the arena
 	glm::vec3 arenaAdjustment = bounding::checkCollisionRadius(bb, MAP_CENTER, MAP_RADIUS);
 	if (glm::length(arenaAdjustment) > 0.0f) {
+		if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
+			this->crashed = true;
+		}
+		momentum = 0.0f;
+		if (speed < SPEED_THRESHOLD) {
+			speed = 0.0f;
+		}
 		destination += arenaAdjustment;
 		bb = generateBoundingBox(destination, dir, this->up);
 	}
@@ -217,6 +226,9 @@ void ObjPlayer::move(glm::vec3 dir) {
 			destinationFree = false;
 
 			// Crashed, so momentum is reset
+			if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
+				this->crashed = true;
+			}
 			momentum = 0.0f;
 			if (speed < SPEED_THRESHOLD) {
 				speed = 0.0f;
@@ -262,7 +274,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 		this->direction = dir;
 		this->boundingBox = bb;
 
-		matchTerrain();
+		// matchTerrain();
 
 		// Enter the makeup station if there was one at our destination
 		if (potentialBooth != -1) {
@@ -329,6 +341,10 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	// Make sure we don't get pushed out of the arena
 	glm::vec3 arenaAdjustment = bounding::checkCollisionRadius(bb, MAP_CENTER, MAP_RADIUS);
 	if (glm::length(arenaAdjustment) > 0.0f) {
+		if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
+			this->crashed = true;
+		}
+		momentum = 0.0f;
 		destination += arenaAdjustment;
 		bb = generateBoundingBox(destination, dir, this->up);
 	}
@@ -336,9 +352,14 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	vector<int> collisions = findCollisionObjects(bb);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		if (this->objects->at(collisions[i])->solid) {
+			if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
+				this->crashed = true;
+			}
+			momentum = 0.0f;
 			return;
 		}
 	}
+	this->momentum = min(MAX_MOMENTUM, momentum + glm::distance(destination, position));
 	this->position = destination;
 	this->boundingBox = bb;
 }

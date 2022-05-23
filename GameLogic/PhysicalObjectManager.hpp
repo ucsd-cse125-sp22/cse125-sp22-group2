@@ -23,6 +23,8 @@ public:
 
 	// How much of the match remains
 	float gameTime;
+	// How many makeup booths there are
+	unsigned int numMakeups;
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();

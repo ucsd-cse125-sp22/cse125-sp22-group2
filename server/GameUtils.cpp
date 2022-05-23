@@ -30,6 +30,20 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].playerUp = player->up;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
+
+        // makeup booth animation
+        if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
+        {
+            int makeupID =
+                ((ObjMakeup*)manager->objects->at(player->booth))->makeupID;
+            assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
+            frame->animations.makeupBooth[makeupID] = true;
+        }
+        // crash animation
+        if (player->crashed)
+        {
+            frame->animations.playerCrash[id] = true;
+        }
     }
 }
 
