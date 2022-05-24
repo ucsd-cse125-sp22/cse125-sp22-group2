@@ -112,7 +112,7 @@ public:
 		velocity = v;
 	}
 	
-	void Update(float deltaTime, glm::vec3 p, glm::vec3 v);
+	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew);
 
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 50.0f,
