@@ -10,6 +10,11 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
 
+    // initialize crown frame data
+    ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);
+    frame->crown.crownPosition = crown->position;
+    frame->crown.crownVisible = crown->loose;
+
     // initialize audio triggers
     for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
     {
@@ -24,11 +29,30 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     {
         ObjPlayer* player = (ObjPlayer*)manager->objects->at(id);
         frame->players[id].hasCrown = player->hasCrown;
+        frame->players[id].playerSpeed = player->speed;
         frame->players[id].makeupLevel = player->makeupLevel;
         frame->players[id].playerDirection = player->direction;
+        frame->players[id].playerUp = player->up;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
+
+        // makeup booth animation
+        if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
+        {
+            int makeupID =
+                ((ObjMakeup*)manager->objects->at(player->booth))->makeupID;
+            assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
+            frame->animations.makeupBooth[makeupID] = true;
+        }
+        // crash animation
+        if (player->crashed)
+        {
+            frame->animations.playerCrash[id] = true;
+        }
     }
+
+    // set game restart values
+    frame->matchInProgress = true;
 }
 
 // Initializes and returns the PhysicalObjectManager
@@ -88,7 +112,8 @@ void gameLoop(PhysicalObjectManager* manager,
 
     // Other game actions
     case GameAction::IDLE:
-        // TODO: Idle behavior ?
+        // TODO: Idle behavior
+        player->idle();
         break;
     default:
         break;

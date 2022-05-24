@@ -16,7 +16,7 @@ void Player::moveCar(vec3 dir, vec3 up, vec3 pos) {
 	mat4 s = scale(vec3(0.5f, 0.5f, 0.5f));
 	mat4 correction = rotate(-1.0f * radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
 
-	player_node->childtransforms[0] = t * s * correction * r;
+	player_node->childtransforms[0] = animation_transform * t * s * correction * r;
 
 	mat4 car_transform = player_node->childtransforms[0];
 

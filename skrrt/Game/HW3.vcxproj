@@ -86,8 +86,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="main.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="src\AudioEngine.cpp" />
+=======
+    <ClCompile Include="src\Animation.cpp" />
+>>>>>>> 9a3d0cc172fa3fd39dbc9525332cf8ebfafc358c
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\NetworkClient.cpp" />
@@ -106,7 +111,11 @@
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
+<<<<<<< HEAD
     <ClInclude Include="include\AudioEngine.h" />
+=======
+    <ClInclude Include="include\Animation.h" />
+>>>>>>> 9a3d0cc172fa3fd39dbc9525332cf8ebfafc358c
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Cube.h" />
     <ClInclude Include="include\Debug.h" />

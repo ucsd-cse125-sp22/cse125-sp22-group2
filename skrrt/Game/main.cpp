@@ -23,9 +23,9 @@
 #include "Player.h"
 #include "NetworkClient.hpp"
 
-#include "../../Config.hpp"
-#include "../../Frame.hpp"
-#include "../../Definitions.hpp"
+#include "../../../Config.hpp"
+#include "../../../Frame.hpp"
+#include "../../../Definitions.hpp"
 #include "Debug.h"
 
 static const int width = 1200;
@@ -34,10 +34,11 @@ static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
 //static ParticleCube* testcube;
-static Player p0, p1, p2, p3;
-static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
+//static Player p0, p1, p2, p3;
+//static std::vector<Player*> players{ &p0, &p1, &p2, &p3 };
 //static Game game(&p0, &p1, &p2, &p3);
-static Game game(cse125constants::NUM_PLAYERS);
+//static Game game(cse125constants::NUM_PLAYERS);
+static Game game(4);
 
 static std::map<std::string, bool>triggers;
 
@@ -48,6 +49,10 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
+// Game restart variables
+bool matchInProgress = false;
+bool readyToReplay = false;
+
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
 
@@ -57,35 +62,8 @@ static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
 
-
-void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
-{
-    boost::system::error_code error;
-    size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
-}
-
-cse125framing::ServerFrame* receiveDataFromServer()
-{
-    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
-    boost::system::error_code error;
-
-    size_t numRead = networkClient->receive(frame, &error);
-    return frame;
-}
-
-void updatePlayerState(cse125framing::ServerFrame* frame) {
-    // Use the data to update the player's game state
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
-    {
-        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
-        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
-        players[i]->moveCar(dir, glm::vec3(0.0f, 1.0f, 0.0f), pos);
-        players[i]->setCrownStatus(frame->players[i].hasCrown);
-    }
-    scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
-}
-
 void printHelp(){
+
         /*
         case ' ':
             hw3AutoScreenshots();
@@ -99,7 +77,7 @@ void printHelp(){
       press 'O' to save a screenshot.
       press the arrow keys to rotate camera.
       press 'Z' to zoom.
-      press 'R' to reset camera.
+      press 'C' to reset camera.
       press 'L' to turn on/off the lighting.
     
       press 'W' 'A' 'S' 'D' to move. 
@@ -126,10 +104,13 @@ void initialize(void)
     triggers["right"] = false; 
 
     // Set up players
-    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
-        players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+    //for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+    for (int i = 0; i < 4; i++) {
+        game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
+        game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
     }
+
+    game.init(scene.node["world"], scene.node["UI_root"]);
 
     // Initialize time
     startTime = std::chrono::system_clock::now();
@@ -150,7 +131,21 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(scene.node["world"]);
     scene.updateScreen();
+
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     scene.draw(scene.node["UI_root"]);
+
+    /*
+	std::cout << "car transformation : " << std::endl; 
+	glm::mat4 car_transform = scene.node["player0"]->childtransforms[0];
+	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
+	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
+	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
+	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
+    */
+
+    glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
 
@@ -166,6 +161,114 @@ void saveScreenShot(const char* filename = "test.png")
     imag.save(filename);
 }
 
+void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
+{
+    // Only send data to server if the match is in progress
+    if (matchInProgress) {
+        boost::system::error_code error;
+        size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
+    }
+}
+
+void sendReplayToServer() {
+    // Only allow replay packet to be sent when match is not in progress 
+     // and if it hasn't been sent already
+    if (!matchInProgress && !readyToReplay) {
+        // Send packet to server indicating client is ready to replay
+        boost::system::error_code error;
+        // Check for a packet from the server indicating that the game is ready to restart
+        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
+        networkClient->replay(&error);
+        if (!error) {
+            readyToReplay = true;
+            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
+            // Reset graphics side state HERE
+            
+        }
+    }
+}
+
+cse125framing::ServerFrame* receiveDataFromServer()
+{
+    cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
+    boost::system::error_code error;
+
+    size_t numRead = networkClient->receive(frame, &error);
+    return frame;
+}
+
+void updatePlayerState(cse125framing::ServerFrame* frame) {
+    // Use the data to update the player's game state
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        const glm::vec3 pos = glm::vec3(frame->players[i].playerPosition);
+        const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
+        const glm::vec3 up = glm::vec3(frame->players[i].playerUp);
+        game.players[i]->moveCar(dir, up, pos);
+        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
+        const std::string headlightName = "player" + std::to_string(i) + "Headlight";
+        scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
+        scene.spotLights[headlightName + "0"]->direction = dir;
+        scene.spotLights[headlightName + "1"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (-0.5f * offsetDir), 1.0f);
+        scene.spotLights[headlightName + "1"]->direction = dir;
+    }
+    if (!TOP_DOWN_VIEW) {
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+    }
+}
+
+void updateCrownState(cse125framing::ServerFrame* frame) {
+    // None of this is right
+    scene.node["crown_world"]->modeltransforms[0] = glm::translate(frame->crown.crownPosition);
+    scene.node["crown_world"]->visible = frame->crown.crownVisible;
+}
+
+void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
+{
+    // makeup booth animation
+    for (int booth = 0; booth < cse125constants::NUM_MAKEUP_STATIONS; booth++)
+    {
+        if (triggers.makeupBooth[booth])
+        {
+            // trigger gate animation
+            game.triggerGateAnimation(booth);
+        }
+    }
+
+    // crash animation
+    for (int playerId = 0; playerId < cse125constants::NUM_PLAYERS; playerId++)
+    {
+        if (triggers.playerCrash[playerId])
+        {
+            // trigger crash animation
+            game.triggerCarCollisionAnimation(playerId);
+        }
+    }
+}
+
+void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MAX_NUM_SOUNDS])
+{
+    using namespace cse125framing;
+    using namespace cse125constants;
+    for (int i = 0; i < MAX_NUM_SOUNDS; i++)
+    {
+        AudioTrigger audio = triggers[i];
+        switch (audio.id)
+        {
+        case AudioId::COLLISION:
+            // game.triggerCarCollisionAudio(audio.position);
+        case AudioId::NO_AUDIO:
+        default:
+            break;
+        }
+        // optimization if all audios are at the front (no holes)
+        if (audio.id == AudioId::NO_AUDIO)
+            break;
+    }
+}
 
 void handleMoveForward() {
     sendDataToServer(MovementKey::FORWARD, scene.camera->forwardVectorXZ());
@@ -203,7 +306,7 @@ void keyboard(unsigned char key, int x, int y){
         case 'o': // save screenshot
             saveScreenShot();
             break;
-        case 'r':
+        case 'c':
             scene.camera -> aspect_default = float(glutGet(GLUT_WINDOW_WIDTH))/float(glutGet(GLUT_WINDOW_HEIGHT));
             scene.camera -> reset();
             glutPostRedisplay();
@@ -230,13 +333,13 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'z':
             //scene.camera -> zoom(1.1f);
-            players[0]->setCrownStatus(true);
-            std::cout << players[0]->getCrownStatus() << std::endl;
+            game.players[0]->setCrownStatus(true);
+            std::cout << game.players[0]->getCrownStatus() << std::endl;
             glutPostRedisplay();
             break;
         case 'x':
-            players[0]->setCrownStatus(false);
-            std::cout << players[0]->getCrownStatus() << std::endl;
+            game.players[0]->setCrownStatus(false);
+            std::cout << game.players[0]->getCrownStatus() << std::endl;
             glutPostRedisplay();
         /*
         case ' ':
@@ -249,6 +352,42 @@ void keyboard(unsigned char key, int x, int y){
             scene.shader -> enablelighting = !(scene.shader -> enablelighting);
             glutPostRedisplay();
             break;
+        case 'u': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(0); 
+            glutPostRedisplay(); 
+            break; 
+        case 'i': 
+            // Test to trigger gate animation 
+            game.triggerGateAnimation(1); 
+            glutPostRedisplay(); 
+            break; 
+        case '1': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(0); 
+            glutPostRedisplay(); 
+            break; 
+        case '2': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(1); 
+            glutPostRedisplay(); 
+            break; 
+        case '3': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(2); 
+            glutPostRedisplay(); 
+            break; 
+        case '4': 
+            // Test to trigger car collision animation 
+            game.triggerCarCollisionAnimation(3); 
+            glutPostRedisplay(); 
+            break; 
+
+        case 'p': 
+            // Print player0's location 
+            std::cout << "Player0's location: " << game.players[0]->getPosition().x << " " << game.players[0]->getPosition().y<< " " << game.players[0]->getPosition().z << std::endl;
+            break;
+
         /*
         case ' ':
             hw3AutoScreenshots();
@@ -264,6 +403,12 @@ void keyboard(unsigned char key, int x, int y){
                 glutSetCursor(GLUT_CURSOR_INHERIT);
             }
             break;
+
+        // Key for telling server that player is ready for another match
+        case 'r':
+            sendReplayToServer();         
+            break;
+
         default:
             //glutPostRedisplay();
             break;
@@ -366,14 +511,22 @@ void idle() {
 	float speed = 10.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            players[i]->spinWheels(speed);
-            players[i]->bobCrown(time);
-            players[i]->updateParticles(1);
+            game.players[i]->spinWheels(speed);
+            game.players[i]->bobCrown(time);
+            game.players[i]->updateParticles(1);
         }
-		lastRenderTime = time;
 
+		// Update drip level based on current player's makeup level 
+		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
+		game.updateDrips(time, currentMakeupLevel);
+
+        // Update all animations 
+        game.updateAnimations(); 
+
+		lastRenderTime = time;
         render = true;
     }
+
 
     // Handle direction triggers 
     if (triggers["up"]) {
@@ -392,12 +545,44 @@ void idle() {
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         // Get data from server and allocate a new frame variable
-        cse125framing::ServerFrame* frame = receiveDataFromServer();
-        // Use the frame to update the player's state
-        updatePlayerState(frame);
-        // Delete the frame
-        delete frame;       
+
+        if (matchInProgress) {
+            cse125framing::ServerFrame* frame = receiveDataFromServer();
+            triggerAnimations(frame->animations);
+            triggerAudio(frame->audio);
+            if (frame->matchInProgress) {
+                // Use the frame to update the crown's state
+                updateCrownState(frame);
+                // Use the frame to update the player's state
+                updatePlayerState(frame);
+            }
+            else {
+               cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
+               // The match has ended
+               matchInProgress = false;
+            }
+            // Delete the frame
+            delete frame;
+        }
+        else {
+            // Check for a packet from the server indicating that the game is ready to restart
+            if (readyToReplay) {
+                cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
+                cse125framing::ServerFrame* frame = receiveDataFromServer();
+                triggerAudio(frame->audio);
+                if (frame->matchInProgress) {
+                    cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
+                    matchInProgress = true;
+                    readyToReplay = false;
+                }
+                // Delete the frame
+                delete frame;
+
+            }
+        }
+
     }
+
 
     if (render) {
         glutPostRedisplay();
@@ -421,8 +606,10 @@ void mouseMovement(int x, int y) {
     }
 
     if (dx != 0 || dy != 0) {
-        scene.camera->rotateRight(dx);
-        scene.camera->rotateUp(dy);
+        if (!TOP_DOWN_VIEW) {
+			scene.camera->rotateRight(dx);
+			scene.camera->rotateUp(dy);
+        }
         glutPostRedisplay();
     }
 }
@@ -453,18 +640,12 @@ int main(int argc, char** argv)
 
     // Read in config file and set variables
     cse125config::initializeConfig("../../config.json");
-    /*
-    outgoingResolver = std::make_unique<boost::asio::ip::tcp::resolver>(outgoingContext);
-    outgoingEndpoints = outgoingResolver->resolve(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
-    outgoingSocket = std::make_unique<boost::asio::ip::tcp::socket>(outgoingContext);
-    boost::asio::connect(*outgoingSocket, outgoingEndpoints);
-    requestClientId();
-    */
 
     // Initialize the network client
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
+    matchInProgress = true;
     
     // Graphics binding
     initialize();
