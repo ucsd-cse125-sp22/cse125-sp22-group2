@@ -219,7 +219,6 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     if (!TOP_DOWN_VIEW) {
         scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
     }
-    std::cout << frame->players[0].playerSpeed << std::endl;
 }
 
 void updateCrownState(cse125framing::ServerFrame* frame) {
@@ -510,10 +509,10 @@ void idle() {
     bool render = false;
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
-	float speed = 10.0f;
+	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            game.players[i]->spinWheels(speed);
+            game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles(1);
         }

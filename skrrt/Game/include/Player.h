@@ -90,6 +90,8 @@ public:
 		return current_position;
 	};
 
+	RealNumber getSpeed() { return current_speed; }
+
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 };
