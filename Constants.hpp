@@ -7,7 +7,6 @@ namespace cse125constants {
 	const int NUM_PLAYERS = 1;
 	const int NUM_MAKEUP_STATIONS = 2;
 	const int MAX_NUM_SOUNDS = 4;
-
 	// Please don't touch these  -- Emily 
 	const int NUM_TIRE_RACKS = 3; 
 	const int NUM_CONES = 3; 

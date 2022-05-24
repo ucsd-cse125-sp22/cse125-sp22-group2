@@ -18,7 +18,7 @@ ObjFloor::ObjFloor() {
 }
 
 ObjFloor::ObjFloor(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
-	int type = oFloor;
+	this->type = oFloor;
 
 	this->objects = objects;
 	this->id = id;
@@ -28,11 +28,12 @@ ObjFloor::ObjFloor(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 
 	this->width = width;
 	this->height = height;
 
-	this->speed = 1.0f;
-	this->boundingBox = generateBoundingBox(position, direction, up);
-
 	this->direction = direction;
 	this->up = up;
+
+	this->speed = 0.0f;
+	this->boundingBox = generateBoundingBox(position, direction, up);
+
 
 	this->solid = solid;
 }

@@ -8,7 +8,7 @@
 #define LOG_LEVEL_FINER 5
 #define LOG_LEVEL_FINEST 6
  
-#define DEBUG_LEVEL LOG_LEVEL_WARN
+#define DEBUG_LEVEL LOG_LEVEL_INFO
 
 // How to use debug level: 
 // if(DEBUG_LEVEL >= LOG_LEVEL_<whatever>) {
