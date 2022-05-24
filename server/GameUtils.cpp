@@ -21,6 +21,9 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->audio[i].id = cse125framing::AudioId::NO_AUDIO;
     }
 
+    // Index for the current sound effect
+    int audioIndex = 0;
+
     // initialize animation triggers
     frame->animations = {}; // initialize to false --> no animations
 
@@ -43,11 +46,17 @@ void initializeServerFrame(PhysicalObjectManager* manager,
                 ((ObjMakeup*)manager->objects->at(player->booth))->makeupID;
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::MAKEUP;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
         // crash animation
         if (player->crashed)
         {
             frame->animations.playerCrash[id] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::COLLISION;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
     }
 
