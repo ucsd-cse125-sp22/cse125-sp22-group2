@@ -20,57 +20,62 @@ public:
 		bool isStream;
 	} metadata;
 
-	std::unordered_map<std::string, metadata> audioFiles {
+	const std::unordered_map<std::string, metadata> audioFiles {
 		{ "MenuTheme.wav", {false, true, true}},
 		//{ "BattleTheme.wav", {false, true, true}},
 		{ "WinTheme.wav", {false, false, true}},
 		{ "LoseTheme.wav", {false, false, true}},
 		{ "GetCrown.wav", {false, false, false}},
 		{ "OneMinuteLeft.wav", {false, false, false}},
-		//{ "Horn", {true, false, false}},
+		//{ "Horn.wav", {true, false, false}},
 		//{ "Makeup.wav", {false, false, false}},
-		//{ "Engine", {true, true, false}},
+		//{ "Engine.wav", {true, true, false}},
 	};
-
-	std::vector<bool> isFile3d{
-		false,
-		false,
-		false,
-		false,
-
-	}
-
 
 	AudioEngine();
 	~AudioEngine();
 
 	void update();
 	bool errorCheck(const std::string& message, FMOD_RESULT engine);
-	std::string loadFile(std::string& fileName);
+	std::string loadFile(const std::string& fileName);
 
-	void loadSound(std::string& soundName, bool is3d, bool isLooping, bool isStream);
-	void unloadSound(std::string& soundName);
+	void loadSound(const std::string& soundName, bool is3d, bool isLooping, bool isStream);
+	void unloadSound(const std::string& soundName);
 
-	void playEvent(const char* fileName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
-	void playMusic(const char* fileName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
+	//void playEvent(const char* eventName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
+	int playSound(const char* soundName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
 	void stopChannel(int channelId);
-	void stopEvent(const char* eventName, bool immediate = false);
+	//void stopEvent(const char* eventName, bool immediate = false);
 	void stopAllChannels();
 	void setChannel3dPosition(int channelId, const vec3& newPosition);
 	void setChannelVolume(int channelId, float db);
 	bool isPlaying(int channelId) const;
-	bool isEventPlaying(const char* eventName) const;
-	float dbToVolume(float db);
-	float volumeToDb(float volume);
-	FMOD_VECTOR vecToFmodVec(const  vec3& position);
+	//bool isEventPlaying(const char* eventName) const;
+
+	float dbToVolume(float dB)
+	{
+		return powf(10.0f, 0.05f * dB);
+	}
+	float volumeToDb(float volume)
+	{
+		return 20.0f * log10f(volume);
+	}
+
+	FMOD_VECTOR vecToFmodVec(const vec3& position)
+	{
+		FMOD_VECTOR fVec;
+		fVec.x = position.x;
+		fVec.y = position.y;
+		fVec.z = position.z;
+		return fVec;
+	}
 
 
 private:
 	FMOD::System* system;
-	FMOD::Channel* channel;
 	FMOD_RESULT engine;
 	std::unordered_map<std::string, FMOD::Sound*> library;
-
+	std::unordered_map<int, FMOD::Channel*> channels;
 };
 
 int main(void) {

@@ -1,102 +1,140 @@
 #include "AudioEngine.h"
+#include <vector>
 
 
 bool AudioEngine::errorCheck(const std::string& message, FMOD_RESULT engine)
 {
-	if (engine != FMOD_OK) {
-		std::cerr << message << ": " << engine << " " << FMOD_ErrorString(engine) << std::endl;
-		return false;
-	}
-	return true;
+    if (engine != FMOD_OK) {
+        std::cerr << message << ": " << engine << " " << FMOD_ErrorString(engine) << std::endl;
+        return false;
+    }
+    return true;
 }
 
-std::string loadFile(std::string fileName)
+void AudioEngine::update()
 {
-	std::string pathPrefix = "../../audio/";
-	std::string filePath = pathPrefix + fileName;
-
-	// Check file exists
-	std::ifstream f(filePath.c_str());
-	if (f.good()) {
-		std::cout << "file exists" << std::endl;
-	}
-	else {
-		std::cout << "file DNE" << std::endl;
-		exit(1);
-	}
-
-	return filePath;
+    //std::vector<AudioEngine::channels::iterator> stoppedChannels;
+    // dead code for now
 }
 
-void AudioEngine::loadSound(std::string& soundName, bool is3d, bool isLooping, bool isStream)
+std::string AudioEngine::loadFile(const std::string& fileName)
 {
-	FMOD_MODE mode = FMOD_DEFAULT;
-	mode |= is3d ? FMOD_3D : FMOD_2D;
-	mode |= isLooping ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF;
-	mode |= isStream ? FMOD_CREATESTREAM : FMOD_CREATECOMPRESSEDSAMPLE;
+    std::string pathPrefix = "../../audio/";
+    std::string filePath = pathPrefix + fileName;
 
-	std::string e = "Load: " + soundName;
-	FMOD::Sound* fmod_sound = nullptr;
-	AudioEngine::errorCheck(e, AudioEngine::system->createSound(loadFile(soundName).c_str(), mode, nullptr, &fmod_sound));
+    // Check file exists
+    std::ifstream f(filePath.c_str());
+    if (f.good()) {
+        std::cout << "file exists" << std::endl;
+    }
+    else {
+        std::cout << "file DNE" << std::endl;
+        exit(1);
+    }
 
-	if (fmod_sound)
-	{
-		library[soundName] = fmod_sound;
-	}
+    return filePath;
 }
 
-void AudioEngine::unloadSound(std::string& soundName)
+void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLooping, bool isStream)
 {
-	auto library_iter = library.find(soundName);
-	if (library_iter != library.end()) {
-		std::string e = "Unload: " + soundName;
-		AudioEngine::errorCheck(e, library_iter->second->release());
-		library.erase(library_iter);
-	}
+    FMOD_MODE mode = FMOD_DEFAULT;
+    mode |= is3d ? FMOD_3D : FMOD_2D;
+    mode |= isLooping ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF;
+    mode |= isStream ? FMOD_CREATESTREAM : FMOD_CREATECOMPRESSEDSAMPLE;
+
+    std::string e = "Load: " + soundName;
+    FMOD::Sound* fmod_sound = nullptr;
+    AudioEngine::errorCheck(e, AudioEngine::system->createSound(AudioEngine::loadFile(soundName).c_str(), mode, nullptr, &fmod_sound));
+
+    if (fmod_sound)
+    {
+        library[soundName] = fmod_sound;
+    }
+}
+
+void AudioEngine::unloadSound(const std::string& soundName)
+{
+    auto library_iter = library.find(soundName);
+    if (library_iter != library.end()) {
+        std::string e = "Unload: " + soundName;
+        AudioEngine::errorCheck(e, library_iter->second->release());
+        library.erase(library_iter);
+    }
 }
 
 AudioEngine::AudioEngine()
 {
-	AudioEngine::engine = FMOD::System_Create(&system);
-	AudioEngine::engine = system->init(MAX_CHANNELS, FMOD_INIT_NORMAL, 0);
+    AudioEngine::engine = FMOD::System_Create(&system);
+    AudioEngine::engine = system->init(MAX_CHANNELS, FMOD_INIT_NORMAL, 0);
 
-	// Load Sounds 
-	AudioEngine::loadSounds();
+    // Load Sounds 
+    for (auto const& audioFile : audioFiles)
+    {
+        AudioEngine::loadSound(audioFile.first, audioFile.second.is3d, audioFile.second.isLooping, audioFile.second.isStream);
+    }
 }
 
-~AudioEngine::AudioEngine()
+AudioEngine::~AudioEngine()
 {
-	// Release sounds and engines
-	for (sound : this.library)
-	{
-		engine = sound->second->release();
-	}
-	this.engine = this.system->close();
-	this.engine = this.system->release();
+    // Unload sounds
+    for (auto const& sound : library)
+    {
+        AudioEngine::unloadSound(sound.first);
+    }
+    AudioEngine::engine = AudioEngine::system->close();
+    AudioEngine::engine = AudioEngine::system->release();
 }
-bool AudioEngine::errorCheck(const std::string& message, FMOD_Result engine)
+
+/* UTILITY FUNCTIONS */
+
+int AudioEngine::playSound(const char* soundName, const vec3& position, float dB)
 {
-	if (engine != FMOD_OK) {
-		std::cerr << message << ": " << engine << " " << FMOD_ErrorString(engine) << std::endl;
-		return false;
-	}
-	return true;
+    int channelId = channels.size();
+    auto soundIter = library.find(soundName);
+    if (soundIter != library.end())
+    {
+        // Play sound
+        std::string e = "Play: ";
+        e += soundName;
+        FMOD::Channel * channel = nullptr;
+        AudioEngine::errorCheck(e, AudioEngine::system->playSound(soundIter->second, nullptr, true, &channel);
+
+        // Set channel parameters
+        if (channel)
+        {
+            FMOD_MODE currMode;
+            soundIter->second->getMode(&currMode);
+            if (currMode & FMOD_3D)
+            {
+                FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
+                channel->set3DAttributes(&fmod_position, nullptr);
+            }
+            channel->setVolume(AudioEngine::dbToVolume(dB));
+            channel->setPaused(false);
+            // Add channel to channels
+            channels[channelId] = channel;
+        }
+    }
+    return channelId;
 }
 
-string AudioEngine::loadFile(const char* fileName)
+void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
 {
-	string pathPrefix = "../../audio/";
-	string filePath = pathPrefix + fileName;
-
-	// Check file exists
-	ifstream f(filePath.c_str());
-	if (f.good()) {
-		cout << "file exists" << endl;
-	}
-	else {
-		cout << "file DNE" << endl;
-		exit(1);
-	}
-
-	return filePath;
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
+        channelIter->second->set3DAttributes(&fmod_position, NULL);
+    }
 }
+
+void AudioEngine::setChannelVolume(int channelId, float dB)
+{
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        channelIter->second->setVolume(AudioEngine::dbToVolume(dB));
+    }
+}
+
+
