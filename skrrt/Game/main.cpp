@@ -158,7 +158,7 @@ void initialize(void)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //scene.draw(scene.node["world"]);
+    scene.draw(scene.node["world"]);
     scene.updateScreen();
 
     glEnable(GL_BLEND);
@@ -166,8 +166,6 @@ void display(void)
 
     scene.draw(scene.node["UI_root"]);
 
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT);
     scene.drawText();
 
     /*

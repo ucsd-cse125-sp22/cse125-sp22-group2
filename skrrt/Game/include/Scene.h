@@ -88,6 +88,11 @@ public:
     void init( void );
     void draw(Node* current_node);
 
+    glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f), 
+                                glm::vec3(0.91f, 0.90f, 0.32f), 
+                                glm::vec3(0.31f, 0.68f, 0.89f), 
+                                glm::vec3(0.41f, 0.76f, 0.24f)};
+    
     void drawText(void);
 
     void updateScreen(void);

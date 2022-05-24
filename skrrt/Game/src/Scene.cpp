@@ -132,14 +132,17 @@ void Scene::drawText(void) {
 
     // Draw all scores 
     for (int i = 0; i < NUM_PLAYERS; i++) {
+        scores[i]->setColor(text_colors[i]);
         text_shader->textColor = scores[i]->getColor(); 
 		text_shader->setUniforms();
         scores[i]->RenderText();
+        scores[i]->setPosition(cse125constants::WINDOW_WIDTH - 120.0f, cse125constants::WINDOW_HEIGHT - 50.0f * i - 75.0f);
     }
 
     // Draw game time
 	text_shader->textColor = game_time->getColor(); 
     text_shader->setUniforms();
     game_time->RenderText();
+	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
 
 }
