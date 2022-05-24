@@ -12,7 +12,7 @@ struct TextShader : Shader {
 
 	glm::mat4 projection = glm::mat4(1.0f); GLuint projection_loc;
 	glm::vec3 textColor = glm::vec3(1.0f); GLuint textColor_loc; 
-	GLuint text; GLuint text_loc;
+	GLuint text = 0; GLuint text_loc;
 
 	void initUniforms() {
 		projection_loc = glGetUniformLocation(program, "projection");

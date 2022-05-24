@@ -48,9 +48,9 @@ public:
 		// pre load all 128 ascii characters
 		init();
 
-		x = 0; 
-		y = 0; 
-		scale = 30; 
+		x = 25.0f; 
+		y = 25.0f; 
+		scale = 1.0f; 
 		color = glm::vec3(1.0f);
 
 		glGenVertexArrays(1, &VAO);
