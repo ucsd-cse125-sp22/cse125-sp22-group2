@@ -96,3 +96,22 @@ void Game::applyAnimations() {
 	// Add future animation applications here 
 	// *********************************
 }
+
+// *********************************
+// AUDIO TRIGGERS
+// *********************************
+void Game::stopAllSounds()
+{
+	audioEngine.stopAllChannels();
+}
+
+void Game::playMusic(const char* musicName)
+{
+	audioEngine.stopAllChannels();
+	audioEngine.playSound(musicName);
+}
+
+void Game::triggerFx(const char* fxName, const vec3& position, float dB)
+{
+	audioEngine.playSound(fxName, position);
+}

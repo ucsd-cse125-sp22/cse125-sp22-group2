@@ -20,6 +20,8 @@
 #include "Model.h"
 #include "Animation.h"
 
+#include "AudioEngine.h"
+
 #include "../../../Constants.hpp"
 #include "../../../Definitions.hpp"
 
@@ -37,6 +39,7 @@ private:
 
 	//Animation gateAnimation;
 	std::map <std::string, Animation*> animations; 
+	AudioEngine audioEngine;
 	void applyAnimations(); 
 
 public: 
@@ -82,6 +85,7 @@ public:
 		// Read in animations 
 		parseGateAnimation(); 
 		parseCarCollisionAnimation();
+		
 	}
 
 	void updateDrips(int time, RealNumber makeupLevel); 
@@ -92,6 +96,13 @@ public:
 
 	void parseCarCollisionAnimation();
 	void triggerCarCollisionAnimation(int playerNum);
+
+	/* AUDIO TRIGGERS */
+	void stopAllSounds();
+	void playMusic(const char* soundName);
+	//void stopMusic(const char* soundName);
+	void triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
+
 };
 
 

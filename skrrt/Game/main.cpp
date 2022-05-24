@@ -22,7 +22,6 @@
 #include "Game.h"
 #include "Player.h"
 #include "NetworkClient.hpp"
-#include "AudioEngine.h"
 
 #include "../../../Config.hpp"
 #include "../../../Frame.hpp"
@@ -50,8 +49,6 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
-// AudioEngine variables
-AudioEngine audioEngine = AudioEngine();
 
 // Game restart variables
 bool matchInProgress = false;
@@ -264,6 +261,11 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
         {
         case AudioId::COLLISION:
             // game.triggerCarCollisionAudio(audio.position);
+            // CROWN CHANGE SOUND HERE
+            break;
+        case AudioId::CROWN_CHANGE:
+            game.triggerFx("GetCrown.wav");
+            break;
         case AudioId::NO_AUDIO:
         default:
             break;
@@ -387,6 +389,20 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay(); 
             break; 
 
+            /* AUDIO TRIGGERS */
+        case ',':
+            // Audio Engine
+            game.stopAllSounds();
+            break;
+        case 'm':
+            // Audio Engine
+            game.playMusic("MenuTheme.wav");
+            break;
+        case 'n':
+            // Audio Engine
+            game.triggerFx("GetCrown.wav", glm::vec3{ -25,0,0 });
+            break;
+
         case 'p': 
             // Print player0's location 
             std::cout << "Player0's location: " << game.players[0]->getPosition().x << " " << game.players[0]->getPosition().y<< " " << game.players[0]->getPosition().z << std::endl;
@@ -437,8 +453,6 @@ void keyboardUp(unsigned char key, int x, int y){
             triggers["down"] = false;
             //glutPostRedisplay();
             break;
-        case '1':
-            audioEngine.playSound("MenuTheme.wav");
         default:
             //glutPostRedisplay();
             break;

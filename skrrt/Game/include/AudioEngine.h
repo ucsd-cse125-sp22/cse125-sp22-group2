@@ -44,6 +44,7 @@ public:
 
 	//void playEvent(const char* eventName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
 	int playSound(const char* soundName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
+	bool stopSound(const char* soundName);
 	void stopChannel(int channelId);
 	//void stopEvent(const char* eventName, bool immediate = false);
 	void stopAllChannels();
