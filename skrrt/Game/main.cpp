@@ -208,6 +208,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        game.players[i]->setSpeed(frame->players[i].playerSpeed);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -508,10 +509,10 @@ void idle() {
     bool render = false;
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
-	float speed = 10.0f;
+	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            game.players[i]->spinWheels(speed);
+            game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles(1);
         }

@@ -81,7 +81,7 @@ void Player::updateParticles(float time) {
 	// Call update for the particle source 
 	for (Node* child : car_node->childnodes) {
 		if (child->isParticleSource) {
-			child->particles->Update(time, position, velocity);
+			child->particles->Update(time, position, velocity, this->current_speed > 0.0f);
 		}
 	}
 }
