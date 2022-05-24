@@ -208,6 +208,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        game.players[i]->setSpeed(frame->players[i].playerSpeed);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -218,6 +219,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
     if (!TOP_DOWN_VIEW) {
         scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
     }
+    std::cout << frame->players[0].playerSpeed << std::endl;
 }
 
 void updateCrownState(cse125framing::ServerFrame* frame) {
