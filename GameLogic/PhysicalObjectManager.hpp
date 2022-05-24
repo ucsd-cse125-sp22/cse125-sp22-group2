@@ -9,6 +9,8 @@
 #include "ObjCrown.hpp"
 #include "ObjMakeup.hpp"
 
+enum Obstacles { oTireRack, oCones };
+
 class PhysicalObjectManager
 {
 private:
@@ -38,7 +40,7 @@ public:
 	void endGame();
 
 	// Create an instance
-	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
+	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), int modifier = 0);
 
 	// Update general game state once per tick
 	void step();

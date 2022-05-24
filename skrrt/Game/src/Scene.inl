@@ -9,9 +9,9 @@ Scene.inl contains the definition of the scene graph
 #include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
-#define DEV_LIGHTING false
-//#define DEV_LIGHTING true
-#define ENABLE_DRIPS true
+//#define DEV_LIGHTING false
+#define DEV_LIGHTING true
+#define ENABLE_DRIPS false
 
 using namespace glm;
 void Scene::init(void){

@@ -41,6 +41,7 @@ const float SPEED_FORCE = 0.1f;
 const float SPEED_THRESHOLD = 0.75f;
 const float SPEED_STEAL_CROWN = 1.2f;
 const float SPEED_LEAVE_BOOTH = 1.5f;
+const float MAX_ADJUSTMENT = 0.5f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
@@ -74,5 +75,15 @@ const float BOOTH_MAKEUP_HEIGHT = 1.0f;
 const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.2f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 2.0f);
+
+// Dimensions (Tire Rack)
+const float TIRERACK_LENGTH = 1.36f;
+const float TIRERACK_WIDTH = 6.51f;
+const float TIRERACK_HEIGHT = 2.0f;
+
+// Dimensions (Cones)
+const float CONES_LENGTH = 3.71f;
+const float CONES_WIDTH = 0.83f;
+const float CONES_HEIGHT = 2.0f;
 
 #endif

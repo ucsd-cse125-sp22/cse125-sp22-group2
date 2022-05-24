@@ -23,9 +23,9 @@
 #include "Player.h"
 #include "NetworkClient.hpp"
 
-#include "../../Config.hpp"
-#include "../../Frame.hpp"
-#include "../../Definitions.hpp"
+#include "../../../Config.hpp"
+#include "../../../Frame.hpp"
+#include "../../../Definitions.hpp"
 #include "Debug.h"
 
 static const int width = 1200;
