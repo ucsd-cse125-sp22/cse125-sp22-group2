@@ -22,6 +22,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "NetworkClient.hpp"
+#include "AudioEngine.h"
 
 #include "../../../Config.hpp"
 #include "../../../Frame.hpp"
@@ -48,6 +49,9 @@ static int particleTime = 0;
 // Network related variables
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
+
+// AudioEngine variables
+AudioEngine audioEngine = AudioEngine();
 
 // Game restart variables
 bool matchInProgress = false;
@@ -433,6 +437,8 @@ void keyboardUp(unsigned char key, int x, int y){
             triggers["down"] = false;
             //glutPostRedisplay();
             break;
+        case '1':
+            audioEngine.playSound("MenuTheme.wav");
         default:
             //glutPostRedisplay();
             break;
@@ -646,7 +652,7 @@ int main(int argc, char** argv)
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
     matchInProgress = true;
-    
+
     // Graphics binding
     initialize();
     glutDisplayFunc(display);

@@ -97,7 +97,7 @@ int AudioEngine::playSound(const char* soundName, const vec3& position, float dB
         std::string e = "Play: ";
         e += soundName;
         FMOD::Channel * channel = nullptr;
-        AudioEngine::errorCheck(e, AudioEngine::system->playSound(soundIter->second, nullptr, true, &channel);
+        AudioEngine::errorCheck(e, AudioEngine::system->playSound(soundIter->second, nullptr, true, &channel));
 
         // Set channel parameters
         if (channel)

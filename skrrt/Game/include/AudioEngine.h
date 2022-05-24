@@ -78,6 +78,7 @@ private:
 	std::unordered_map<int, FMOD::Channel*> channels;
 };
 
+/*
 int main(void) {
 	FMOD::System* system;
 	FMOD::Sound* sound;
@@ -101,4 +102,5 @@ int main(void) {
 
 	return 0;
 }
+*/
 
