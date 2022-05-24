@@ -42,8 +42,13 @@ public:
 	// Create an instance
 	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), int modifier = 0);
 
-	// Update general game state once per tick
-	void step();
+
+	/**
+	 * @brief Update general game state once per tick 
+	 *
+	 * @param matchInProgress will be set to false if the game has ended, unchanged otherwise
+	 */
+	void step(bool* matchInProgress);
 	
 	// These will not be used for now
 	vector<vector<int>*>* createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes);

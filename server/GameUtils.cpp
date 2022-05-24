@@ -50,6 +50,9 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             frame->animations.playerCrash[id] = true;
         }
     }
+
+    // set game restart values
+    frame->matchInProgress = true;
 }
 
 // Initializes and returns the PhysicalObjectManager

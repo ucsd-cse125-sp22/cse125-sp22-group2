@@ -14,7 +14,7 @@
 using namespace std;
 
 // Game parameters
-const float MATCH_LENGTH = 180.0f;
+const float MATCH_LENGTH = 10.0f; //180.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
