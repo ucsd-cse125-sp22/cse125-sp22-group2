@@ -161,17 +161,20 @@ void Scene::init(void){
 	pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
     for (int i = 0; i < NUM_PLAYERS; i++) {
-	    spotLights["player" + std::to_string(i) + "Headlight"] = new SpotLight;
-	    spotLights["player" + std::to_string(i) + "Headlight"]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
-    	spotLights["player" + std::to_string(i) + "Headlight"]->direction = vec3(0.0f, -1.0f, 0.0f);
-	    spotLights["player" + std::to_string(i) + "Headlight"]->innerCutoff = glm::cos(glm::radians(12.0f));
-    	spotLights["player" + std::to_string(i) + "Headlight"]->outerCutoff = glm::cos(glm::radians(20.0f));
-    	spotLights["player" + std::to_string(i) + "Headlight"]->constant = 1.0f;
-    	spotLights["player" + std::to_string(i) + "Headlight"]->linear = 0.045f;
-    	spotLights["player" + std::to_string(i) + "Headlight"]->quadradic = 0.0075f;
-    	spotLights["player" + std::to_string(i) + "Headlight"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    	spotLights["player" + std::to_string(i) + "Headlight"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    	spotLights["player" + std::to_string(i) + "Headlight"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+        for (int n = 0; n < 2; n++) {
+            const std::string headlightName = "player" + std::to_string(i) + "Headlight" + std::to_string(n);
+	        spotLights[headlightName] = new SpotLight;
+	        spotLights[headlightName]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+    	    spotLights[headlightName]->direction = vec3(0.0f, -1.0f, 0.0f);
+	        spotLights[headlightName]->innerCutoff = glm::cos(glm::radians(12.0f));
+    	    spotLights[headlightName]->outerCutoff = glm::cos(glm::radians(20.0f));
+    	    spotLights[headlightName]->constant = 1.0f;
+    	    spotLights[headlightName]->linear = 0.045f;
+    	    spotLights[headlightName]->quadradic = 0.0075f;
+    	    spotLights[headlightName]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	    spotLights[headlightName]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    	    spotLights[headlightName]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+        }
 
     }
 
@@ -329,7 +332,7 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]); 
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 6.0f, 0.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 
     // ************
     // * NOTE: This makeup station is the one in the upper left corner of the map
@@ -337,6 +340,7 @@ void Scene::init(void){
     // ************
 	node["world"]->childnodes.push_back(node["makeup_station0"]); 
 	node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f))*scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    //node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f)) * scale(0.5f * vec3(1.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
     

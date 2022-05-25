@@ -29,21 +29,37 @@ public:
 	float boothTime;
 	// Current gravity force (represented as a positive float)
 	float gravity;
+	// Whether we crashed this frame
+	bool crashed;
+
+	// How much we have moved without stopping or crashing
+	float momentum;
+	// How fast we can go
+	float maxSpeed;
+	// Speed drop when above the speed threshold
+	float thresholdDecay;
+
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);
 	~ObjPlayer();
 
 	void step();
-	// Movement and crown transfer, anything that happens because of user input goes here
+	// Anything that happens because of user input goes here, calls move function to handle crown transfer
 	void action(glm::vec3 dir);
+	// Call when no action is performed
+	void idle();
 
+	// Movement
+	void move(glm::vec3 dir);
+	// Attempt crown transfer
+	void crownTransfer(const PhysicalObject* obj);
 	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 	// Special movement function for when another player is pushing you
 	void movePushed(glm::vec3 dir, float pushSpeed);
 	// Apply gravity if there is no object directly below us
 	void applyGravity();
-	// 
-	BoundingBox matchTerrain(BoundingBox bb);
+	// Adhere to the terrain
+	void matchTerrain();
 };

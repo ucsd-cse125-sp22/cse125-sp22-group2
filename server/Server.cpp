@@ -14,12 +14,14 @@ GraphicsSession::GraphicsSession(
     int myid,
     std::deque<cse125framing::ClientFrame>& serverQueue,
     std::mutex& queueMtx,
-    unsigned int& clientsConnected)
+    unsigned int& clientsConnected,
+    bool(&clientsReplaying)[cse125constants::NUM_PLAYERS])
     : socket(std::move(socket)),
       id(myid),
       serverQueue(serverQueue),
       queueMtx(queueMtx),
-      clientsConnected(clientsConnected)
+      clientsConnected(clientsConnected),
+      clientsReplaying(clientsReplaying)
 {
     this->sessionTerminated = false;
 }
@@ -47,12 +49,16 @@ void GraphicsSession::do_read()
                 // std::cerr << "Frame from client: " << std::endl;
                 // std::cerr << &clientFrame << std::endl;
 
-                // Check if ID needs to be sent back
+                // Check if ID needs to be sent back for initial id assignment
                 if (clientFrame.id == cse125constants::DEFAULT_CLIENT_ID)
                 {
                     cse125framing::ServerFrame frame;
                     frame.id = this->id;
                     do_write(&frame);
+                }
+                // Check if this client is indicating that it's ready to replay a match
+                else if (clientFrame.replayMatch) {
+                    this->clientsReplaying[this->id] = true;
                 }
                 else
                 {
@@ -118,7 +124,27 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
                boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
     numConnections = 0;
+    for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+        this->clientsReplaying[i] = false;
+    }
     do_accept();
+}
+
+bool GraphicsServer::readyToReplay()
+{
+    for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+        if (!this->clientsReplaying[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void GraphicsServer::resetReplayStatus()
+{
+    for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+        this->clientsReplaying[i] = false;
+    }
 }
 
 void GraphicsServer::do_accept()
@@ -135,7 +161,7 @@ void GraphicsServer::do_accept()
                     std::make_shared<GraphicsSession>(
                         std::move(socket), this->numConnections,
                         this->serverQueue, this->queueMtx,
-                        this->clientsConnected);
+                        this->clientsConnected, this->clientsReplaying);
                 sessions.push_back(session);
                 session->start();
 

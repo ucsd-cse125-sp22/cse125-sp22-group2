@@ -37,6 +37,7 @@ private:
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 initial_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
 	glm::vec3 current_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
+	RealNumber current_speed = 0.0f;
 
 	glm::mat4 initial_car_transform;
 	glm::mat4 animation_transform = glm::mat4(1.0f);
@@ -62,6 +63,7 @@ public:
 	};
 	void setCrown(Node* crown) { crown_node = crown; };
 	void setPosition(glm::vec3 position) { current_position = position; };
+	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
 	void setPlayerScore(RealNumber s) { score = s; }; 
 	void setPlayerTransform(glm::mat4 transform) { 
@@ -90,6 +92,8 @@ public:
 	glm::vec3 getPosition() {
 		return current_position;
 	};
+
+	RealNumber getSpeed() { return current_speed; }
 
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }

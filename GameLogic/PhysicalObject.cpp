@@ -54,6 +54,20 @@ vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 	return collisions;
 }
 
+vector<int> PhysicalObject::findCollisionObjectsType(BoundingBox bb, int type) {
+	int objCount = this->objects->size();
+	vector<int> collisions = vector<int>();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == id || this->objects->at(i)->type != type) {
+			continue;
+		}
+		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			collisions.push_back(i);
+		}
+	}
+	return collisions;
+}
+
 bool PhysicalObject::objectPosition(BoundingBox bb, int type) {
 	int objCount = this->objects->size();
 	for (unsigned int i = 0; i < objCount; i++) {
@@ -107,4 +121,15 @@ void PhysicalObject::moveDirection(glm::vec3 dir) {
 }
 
 void PhysicalObject::step() {
+}
+
+float PhysicalObject::lerp(float v1, float v2, float t) {
+	return v1 + (v2 - v1) * t;
+}
+
+glm::vec3 PhysicalObject::lerp(glm::vec3 v1, glm::vec3 v2, float t) {
+	if (glm::dot(v1, v2) < -0.999f) {
+		v1 = glm::normalize(v1 + glm::vec3(0.01f, 0.0f, 0.01f));
+	}
+	return v1 + (v2 - v1) * t;
 }
