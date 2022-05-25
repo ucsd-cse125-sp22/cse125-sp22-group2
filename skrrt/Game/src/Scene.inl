@@ -57,6 +57,9 @@ void Scene::init(void){
     geometry["cones"] = new Obj; 
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
 
+    geometry["start_menu"] = new Obj;
+    geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emmision.png", "textures/no_emissions.png", 8);
+
     // Create a material palette
     material["wood"] = new Material;
     material["wood"] -> shininess = 100.0f;
@@ -122,6 +125,10 @@ void Scene::init(void){
     model["cones"] = new Model; 
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
+
+    model["start_menu"] = new Model;
+    model["start_menu"]->geometry = geometry["start_menu"];
+    model["start_menu"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -401,6 +408,10 @@ void Scene::init(void){
     node["back_drips"]->models.push_back(model["drips"]); 
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["start_menu"] = new Node("start_menu");
+    node["start_menu"]->models.push_back(model["start_menu"]);
+    node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
     
     node["UI_root"]->childnodes.push_back(node["screen"]); 
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
@@ -410,6 +421,10 @@ void Scene::init(void){
 
     node["screen"]->childnodes.push_back(node["drips"]); 
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(35.0f, 600.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["start_menu"]);
+    // TODO: Dynamic scaling based on window size
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(30.0f, 30.0f, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));

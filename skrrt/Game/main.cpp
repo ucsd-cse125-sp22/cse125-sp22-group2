@@ -562,6 +562,8 @@ void idle() {
         // Get data from server and allocate a new frame variable
 
         if (matchInProgress) {
+            // Hide the start menu
+            scene.node["start_menu"]->visible = false;
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
@@ -594,7 +596,6 @@ void idle() {
                 }
                 // Delete the frame
                 delete frame;
-
             }
         }
 
