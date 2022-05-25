@@ -88,7 +88,8 @@ void Text::RenderText(void)
         float xpos = x + ch.Bearing.x * scale;
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
-        float w = ch.Size.x * scale;
+        //float w = ch.Size.x * scale;
+        float w = ch.Size.x * (scale / 2.0f);
         float h = ch.Size.y * scale;
         // update VBO for each character
         float vertices[6][4] = {
@@ -109,7 +110,7 @@ void Text::RenderText(void)
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.Advance >> 6) * (scale / 2.0f) + 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

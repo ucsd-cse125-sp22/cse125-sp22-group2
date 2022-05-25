@@ -429,8 +429,15 @@ void Scene::init(void){
     // Initialize text 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         scores[i] = new Text(text_shader->program);
-        scores[i]->updateText("0000");
+        //scores[i]->updateText("1234567890");
+        scores[i]->updateText("000");
     }
+    /*
+	scores[0]->updateText("911");
+	scores[1]->updateText("039");
+	scores[2]->updateText("549");
+	scores[3]->updateText("873");
+    */
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");

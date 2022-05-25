@@ -28,6 +28,9 @@ private:
 
 	// Player's makeup level 
 	RealNumber makeupLevel; 
+	
+	// Player's score 
+	RealNumber score = 0;
 
 	// Current world position 
 	// Current object's rotation 
@@ -42,7 +45,6 @@ private:
 
 	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.6f, -0.4f, 0.0f)); 
 
-	// Maybe a spawned position and rotation?
 
 public: 
 
@@ -61,6 +63,7 @@ public:
 	void setCrown(Node* crown) { crown_node = crown; };
 	void setPosition(glm::vec3 position) { current_position = position; };
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
+	void setPlayerScore(RealNumber s) { score = s; }; 
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 
@@ -90,6 +93,7 @@ public:
 
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
+	RealNumber getScore(void) { return score; }
 };
 
 #endif
