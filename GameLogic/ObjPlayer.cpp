@@ -76,7 +76,7 @@ void ObjPlayer::step() {
 
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
-		makeupLevel -= MAKEUP_DECREASE_RATE / cse125config::TICK_RATE;
+		makeupLevel = max(0.0f, makeupLevel - MAKEUP_DECREASE_RATE / cse125config::TICK_RATE);
 	}
 
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
@@ -110,7 +110,8 @@ void ObjPlayer::step() {
 	}
 	if (booth != -1 && !objectPosition(this->boundingBox, oMakeup)) {
 		((ObjMakeup*)objects->at(booth))->occupied = false;
-		objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = true;
+		// Note: We are letting the makeup booth handle this itself now
+		// objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = true;
 		booth = -1;
 	}
 
@@ -239,7 +240,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 
 		// Try to enter a makeup station
 		if (obj->type == oMakeup) {
-			if (!((ObjMakeup*)obj)->occupied) {
+			if (!((ObjMakeup*)obj)->occupied && ((ObjMakeup*)obj)->ready) {
 				potentialBooth = obj->id;
 			}
 		}
@@ -302,8 +303,9 @@ void ObjPlayer::move(glm::vec3 dir) {
 		// Enter the makeup station if there was one at our destination
 		if (potentialBooth != -1) {
 			PhysicalObject*& obj = this->objects->at(potentialBooth);
-			if (!((ObjMakeup*)obj)->occupied) {
+			if (!((ObjMakeup*)obj)->occupied && ((ObjMakeup*)obj)->ready) {
 				((ObjMakeup*)obj)->occupied = true;
+				((ObjMakeup*)obj)->ready = false;
 				this->booth = obj->id;
 				// Placeholder value
 				this->boothTime = MAKEUP_BOOTH_TIME;

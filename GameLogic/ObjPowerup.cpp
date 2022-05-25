@@ -18,7 +18,7 @@ ObjPowerup::ObjPowerup() {
 }
 
 ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector<glm::vec3> locations, glm::vec3 direction, glm::vec3 up) {
-	this->type = oCrown;
+	this->type = oPowerup;
 
 	this->objects = objects;
 	this->id = id;
@@ -48,7 +48,7 @@ ObjPowerup::~ObjPowerup() {
 void ObjPowerup::step() {
 	// Update respawn time
 	if (respawnTime) {
-		respawnTime = max(0.0f, respawnTime - 1.0f / cse125config::TICK_RATE);
+		respawnTime = max(0.0f, respawnTime - 1.0f / +cse125config::TICK_RATE);
 	}
 
 	if (respawnTime == 0.0f && !spawned) {
