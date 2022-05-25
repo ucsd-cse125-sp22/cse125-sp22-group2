@@ -47,6 +47,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->boothTime = 0.0f;
 	this->momentum = 0.0f;
 	this->thresholdDecay = 0.0f;
+	this->powerupTime = 0.0f;
 }
 
 ObjPlayer::~ObjPlayer() {}
@@ -68,9 +69,14 @@ void ObjPlayer::step() {
 		stun--;
 	}
 
+	// Update powerup time
+	if (powerupTime) {
+		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
+	}
+
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
-		makeupLevel -= 1.0f / cse125config::TICK_RATE;
+		makeupLevel -= MAKEUP_DECREASE_RATE / cse125config::TICK_RATE;
 	}
 
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
@@ -154,10 +160,26 @@ void ObjPlayer::action(glm::vec3 dir) {
 			speed = min(maxSpeed, speed + SPEED_FORCE);
 		}
 
+		// SLOPES!!!
+		//glm::vec3 angledDir = dir;
+		//if (this->up.y < 0.9f) {
+		//	angledDir = glm::normalize(glm::cross(dir, glm::cross(this->up, dir)));
+		//	if (glm::dot(angledDir, dir) < 0.0f) {
+		//		angledDir = -angledDir;
+		//	}
+		//}
+		//glm::vec3 newDir = angledDir; //glm::normalize(lerp(angledDir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		//cout << up.x << "    " << up.y << "    " << up.z << " up\n";
+		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
+
 		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
 
 		// Move
 		move(newDir);
+	}
+	else if (!boothTime) {
+		// Still move due to inertia if stunned
+		idle();
 	}
 	// cout << id << " " << hasCrown << " " << position.x << ", " << position.z << "\n";
 }
@@ -452,40 +474,40 @@ void ObjPlayer::matchTerrain() {
 	// For each vertex, find the floor beneath it
 
 	// Complex
-	//for (unsigned int i = 0; i < 4; i++) {
-	//	cout << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).x << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).y << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).z << "\n";
-	//	int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
-	//	if (floor == -1) {
-	//		// No floor below this point
-	//		cout << "/ - ";
-	//		bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
-	//	}
-	//	else {
-	//		// Adjust based on the floor
-	//		glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(floor)->boundingBox);
-	//		cout << "/ (" << adj.x << " " << adj.y << " " << adj.z << ") ";
-	//		bb.vertices[i] += adj;
-	//	}
-	//}
-	//cout << "/\n";
-	//glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
-	//if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
-	//	newUp = -newUp;
-	//}
-
-	// Simple
-	glm::vec3 newUp = glm::vec3(0.0f);
-	int floor = findObjectPosition(generateBoundingBox(this->position + glm::vec3(0.0f, -1.0f, 0.0f), this->direction, this->up), oFloor);
-	if (floor == -1) {
-		newUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	for (unsigned int i = 0; i < 4; i++) {
+		cout << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).x << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).y << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).z << "\n";
+		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
+		if (floor == -1) {
+			// No floor below this point
+			cout << "/ - ";
+			bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
+		}
+		else {
+			// Adjust based on the floor
+			glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(floor)->boundingBox);
+			cout << "/ (" << adj.x << " " << adj.y << " " << adj.z << ") ";
+			bb.vertices[i] += adj;
+		}
 	}
-	else {
-		newUp = this->objects->at(floor)->up;
-	}
+	cout << "/\n";
+	glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
 	if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
 		newUp = -newUp;
 	}
-	cout << newUp.x << " " << newUp.y << " " << newUp.z << " - up\n";
+
+	// Simple
+	//glm::vec3 newUp = glm::vec3(0.0f);
+	//int floor = findObjectPosition(generateBoundingBox(this->position + glm::vec3(0.0f, -1.0f, 0.0f), this->direction, this->up), oFloor);
+	//if (floor == -1) {
+	//	newUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	//}
+	//else {
+	//	newUp = this->objects->at(floor)->up;
+	//}
+	//if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
+	//	newUp = -newUp;
+	//}
+	//cout << newUp.x << " " << newUp.y << " " << newUp.z << " - up\n";
 
 	glm::vec3 newDir = glm::normalize(glm::cross(newUp, glm::cross(this->direction, newUp)));
 	if (glm::dot(newDir, this->direction) < 0.0f) {

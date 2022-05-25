@@ -75,6 +75,9 @@
     <ClInclude Include="GameUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\GameLogic\ObjPowerup.hpp">
+      <Filter>Header Files\GameLogic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Definitions.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="GameUtils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameLogic\ObjPowerup.cpp">
+      <Filter>Source Files\GameLogic</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

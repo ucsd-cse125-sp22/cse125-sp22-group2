@@ -5,6 +5,7 @@
 #include <glm/gtx/transform.hpp>
 #include <algorithm>
 #include <vector>
+#include <random>
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"
@@ -13,9 +14,10 @@
 #include <math.h>
 
 using namespace std;
+using namespace cse125config;
 
 // Game parameters
-const float MATCH_LENGTH = 30.0f; //180.0f;
+const float MATCH_LENGTH = 30000.0f; //180.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
@@ -43,6 +45,10 @@ const float SPEED_THRESHOLD = 0.75f;
 const float SPEED_STEAL_CROWN = 1.2f;
 const float SPEED_LEAVE_BOOTH = 1.5f;
 const float MAX_ADJUSTMENT = 0.5f;
+
+// Powerup
+const float POWERUP_SPEED = 0.7f;
+const float POWERUP_TIME = 2.0f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
