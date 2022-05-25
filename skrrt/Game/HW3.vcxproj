@@ -86,6 +86,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Camera.cpp" />

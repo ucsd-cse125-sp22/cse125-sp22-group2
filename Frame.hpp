@@ -23,6 +23,7 @@ namespace cse125framing {
 		int ctr;
 		MovementKey movementKey;
 		vec3 cameraDirection;
+		bool replayMatch = false; // whether this client is ready to replay another match
 	} ClientFrame;
 
 	enum class AudioId {
@@ -54,13 +55,21 @@ namespace cse125framing {
 		bool hasCrown;
 	} PlayerData;
 
+	// Data for loose crown
+	typedef struct CrownData {
+		vec3 crownPosition;
+		bool crownVisible;
+	} CrownData;
+
 	typedef struct ServerFrame {
 		int id; // index in players
 		int ctr;
+		CrownData crown;
 		PlayerData players[cse125constants::NUM_PLAYERS];
 		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
 		AnimationTrigger animations;
 		RealNumber gameTime;
+		bool matchInProgress = true;
 	} ServerFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);

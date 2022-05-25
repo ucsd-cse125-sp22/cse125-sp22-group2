@@ -69,14 +69,14 @@ void ObjPlayer::step() {
 
 	// Reduce makeup level if not currently fixing makeup
 	if (makeupLevel && booth == -1 && !objectPosition(boundingBox, oMakeup)) {
-		makeupLevel -= 1.0f / cse125config::DEFAULT_TICK_RATE;
+		makeupLevel -= 1.0f / cse125config::TICK_RATE;
 	}
 
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which
 	// would probably be passed in as a parameter
 	if (hasCrown && booth == -1 && !stun && !iframes) {
-		score += 1.0f / cse125config::DEFAULT_TICK_RATE;
+		score += 1.0f / cse125config::TICK_RATE;
 	}
 
 	// Makeup station
@@ -237,7 +237,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 			//cout <<  " Shifting " << glm::length(adjust) << " ";
-			if (glm::length(adjust) < 0.5f) {
+			if (glm::length(adjust) < MAX_ADJUSTMENT) {
 				//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
 				if (glm::dot(obj->position - this->position, adjust) > 0) {
 					//cout << " FLIPPING ";
@@ -395,7 +395,7 @@ void ObjPlayer::applyGravity() {
 				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 				glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 				//cout <<  " Shifting " << glm::length(adjust) << " ";
-				if (glm::length(adjust) < 0.5f) {
+				if (glm::length(adjust) < MAX_ADJUSTMENT) {
 					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
 					if (glm::dot(obj->position - this->position, adjust) > 0) {
 						//cout << " FLIPPING ";
@@ -509,7 +509,7 @@ void ObjPlayer::matchTerrain() {
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 			glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 			//cout <<  " Shifting " << glm::length(adjust) << " ";
-			if (glm::length(adjust) < 0.5f) {
+			if (glm::length(adjust) < MAX_ADJUSTMENT) {
 				//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
 				if (glm::dot(obj->position - this->position, adjust) > 0) {
 					//cout << " FLIPPING ";

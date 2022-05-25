@@ -10,11 +10,19 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->ctr = frameCtr++;
     frame->gameTime = gameTime++;
 
+    // initialize crown frame data
+    ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);
+    frame->crown.crownPosition = crown->position;
+    frame->crown.crownVisible = crown->loose;
+
     // initialize audio triggers
     for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
     {
         frame->audio[i].id = cse125framing::AudioId::NO_AUDIO;
     }
+
+    // Index for the current sound effect
+    int audioIndex = 0;
 
     // initialize animation triggers
     frame->animations = {}; // initialize to false --> no animations
@@ -38,13 +46,22 @@ void initializeServerFrame(PhysicalObjectManager* manager,
                 ((ObjMakeup*)manager->objects->at(player->booth))->makeupID;
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::MAKEUP;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
         // crash animation
         if (player->crashed)
         {
             frame->animations.playerCrash[id] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::COLLISION;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
     }
+
+    // set game restart values
+    frame->matchInProgress = true;
 }
 
 // Initializes and returns the PhysicalObjectManager

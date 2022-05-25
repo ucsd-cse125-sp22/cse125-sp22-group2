@@ -46,6 +46,15 @@ namespace cse125networkclient {
 
 
 		/**
+		 * @brief Sends a ClientFrame to the server indicating that this player is ready to replay a match
+		 *
+		 * @param errorCode			the error (if any) set by the network call
+		 * 
+		 * @return the number of bytes successfully sent
+		 */
+		size_t replay(boost::system::error_code* errorCode);
+
+		/**
 		 * @brief Closes the connection established by this object
 		 */
 		void closeConnection();

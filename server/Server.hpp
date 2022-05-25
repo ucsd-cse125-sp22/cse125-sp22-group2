@@ -22,12 +22,14 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
      * @param serverQueue reference to server's frame queue to add frames to
      * @param queueMtx mutex variable to ensure syncronous writes
      * @param clientsConnected tells server when another client is connected
+     * @param clientsReplaying tells server when clients are ready to replay
      */
     GraphicsSession(boost::asio::ip::tcp::socket socket,
                     int id,
                     std::deque<cse125framing::ClientFrame>& serverQueue,
                     std::mutex& queueMtx,
-                    unsigned int& clientsConnected);
+                    unsigned int& clientsConnected,
+                    bool (&clientsReplaying)[cse125constants::NUM_PLAYERS]);
 
     /**
      * @brief Begin the session by reading for a packet
@@ -49,6 +51,7 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
     boost::asio::ip::tcp::socket socket;
     int id;
     unsigned int& clientsConnected;
+    bool(&clientsReplaying)[cse125constants::NUM_PLAYERS];
     std::deque<cse125framing::ClientFrame>& serverQueue;
     std::mutex& queueMtx;
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
@@ -70,6 +73,10 @@ class GraphicsServer
      * @brief number of clients connected to the server
      */
     unsigned int clientsConnected;
+    /**
+     * @brief whether the ith client is ready to replay a match 
+     */
+    bool clientsReplaying[cse125constants::NUM_PLAYERS];
 
     /**
      * @brief Construct a new Graphics Server object
@@ -84,10 +91,20 @@ class GraphicsServer
      * @param serverFrame frame to write to clients
      */
     void writePackets(cse125framing::ServerFrame* serverFrame);
+    /**
+     * @brief Returns true if all clients are ready to replay, false otherwise
+     *
+     * @return true if all clients are ready to replay, false otherwise
+     */
+    bool readyToReplay();
+    /**
+     * @brief Resets all clients to NOT be ready to replay
+     */
+    void resetReplayStatus();
+
 
   private:
     void do_accept();
-
     std::vector<std::shared_ptr<GraphicsSession>> sessions;
     boost::asio::ip::tcp::acceptor acceptor;
     unsigned int numConnections;
