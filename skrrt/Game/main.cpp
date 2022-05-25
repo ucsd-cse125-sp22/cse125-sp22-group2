@@ -28,8 +28,8 @@
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1200;
-static const int height = 900;
+static const int width = cse125constants::WINDOW_WIDTH;
+static const int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -135,7 +135,8 @@ void display(void)
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    scene.draw(scene.node["UI_root"]);
+    //scene.draw(scene.node["UI_root"]);
+    scene.drawUI();
 
     scene.drawText();
 
@@ -513,6 +514,7 @@ void idle() {
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
+		game.updateMakeupStatusBar(time, currentMakeupLevel);
 
         // Update all animations 
         game.updateAnimations(); 

@@ -15,6 +15,14 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 	drips->modeltransforms[0] = offset * initial_drip_transform;
 }
 
+void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
+
+	// Scale makeup status bar based on the makeup level
+	glm::mat4 scale = glm::scale(glm::vec3(((float)makeupLevel / 100.0f), 1.0f, 1.0f));
+
+	makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
+}
+
 // *******************************************
 // ************* Gate Animation **************
 // *******************************************
