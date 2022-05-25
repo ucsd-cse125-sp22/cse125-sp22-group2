@@ -93,10 +93,10 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		}
 		break;
 	case (oFloor):
-		this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(0.0f, -4.0f, 0.0f), 8.0f, 8.0f, 1.0f ,glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(0.0f, -1.0f, 0.0f), 8.0f, 8.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
 		this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(12.0f, 1.0f, 0.0f), 8.0f, 8.0f, 1.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 1.0f)), glm::normalize(glm::vec3(0.0f, 1.0f, -1.0f)), true));
 		//this->objects->push_back(new ObjFloor(objects, next_id++, glm::vec3(0.0f, -2.0f, 16.0f), 12.0f, 1.0f, 12.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)), true));
-		//this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(8.0f, -2.0f, 2.0f), 4.0f, 1.0f, 4.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), true));
+		//this->objects->push_back(new ObjFloor(objects, next_id, glm::vec3(8.0f, -2.0f, 2.0f), 4.0f, 1.0f, 4.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f,` 0.0f), true));
 		break;
 	case (oCrown):
 		this->objects->push_back(new ObjCrown(objects, next_id, pos, dir, up));
