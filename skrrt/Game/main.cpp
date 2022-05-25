@@ -50,6 +50,8 @@ int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
 // Game restart variables
+// Note: the logic for starting the game and restarting is identical
+bool gameStarted = false;
 bool matchInProgress = false;
 bool readyToReplay = false;
 
@@ -557,13 +559,33 @@ void idle() {
         handleMoveRight();
     }
 
+    // Handle menu visibility
+    if (gameStarted) {
+        scene.node["start_menu"]->visible = false;
+        // TODO: make invisible the UI elements (score, time, makeup level)
+    }
+    else {
+        scene.node["start_menu"]->visible = true;
+        // TODO: make visible the UI elements (score, time, makeup level)
+    }
+
+    if (matchInProgress) {
+        // TODO: make visible the UI elements (score, time, makeup level)
+        // TODO: use a different end menu
+        scene.node["start_menu"]->visible = false;
+    }
+    else {
+        // make invisible the UI elements (score, time, makeup level)
+        // TODO: use a different end menu
+        scene.node["start_menu"]->visible = true;
+    }
+
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         // Get data from server and allocate a new frame variable
 
         if (matchInProgress) {
             // Hide the start menu
-            scene.node["start_menu"]->visible = false;
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
@@ -584,13 +606,14 @@ void idle() {
             delete frame;
         }
         else {
-            // Check for a packet from the server indicating that the game is ready to restart
+            // Check for a packet from the server indicating that the game is ready to begin OR restart
             if (readyToReplay) {
                 cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
                 cse125framing::ServerFrame* frame = receiveDataFromServer();
                 triggerAudio(frame->audio);
                 if (frame->matchInProgress) {
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
+                    gameStarted = true;
                     matchInProgress = true;
                     readyToReplay = false;
                 }
