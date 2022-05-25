@@ -1,5 +1,6 @@
 {
   "host": "localhost",
   "port": "8000",
-  "tickRate": 30
+  "tickRate": 30,
+  "gameTime": 30
 }
