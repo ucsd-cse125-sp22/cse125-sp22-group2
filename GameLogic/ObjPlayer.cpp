@@ -439,7 +439,7 @@ void ObjPlayer::applyGravity() {
 		this->gravity = 0.0f;
 	}
 
-	// REMOVE THIS
+	// REMOVE THIS AFTER SLOPES/RESPAWNING
 	if (position.y < -8.0f) {
 		position.y = 8.0f;
 		boundingBox = generateBoundingBox(position, this->direction, this->up);

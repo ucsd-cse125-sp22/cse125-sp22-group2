@@ -47,7 +47,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
             frame->audio[audioIndex].id = cse125framing::AudioId::MAKEUP;
-            frame->audio[audioIndex].position = player->position;
+            frame->audio[audioIndex].position = ((ObjMakeup*)manager->objects->at(makeupID))->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
         // crash animation + audio
