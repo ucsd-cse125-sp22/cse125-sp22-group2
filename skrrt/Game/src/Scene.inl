@@ -81,6 +81,8 @@ void Scene::init(void){
     geometry["mascara_bar"] = new Obj;
     geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
 
+    geometry["white_bar"] = new Obj;
+    geometry["white_bar"]->init("models/StatusBar.obj", "textures/white.png", "textures/map_specular.png", "textures/map_emission.png", 16);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -179,6 +181,10 @@ void Scene::init(void){
     model["mascara_bar"] = new Model; 
     model["mascara_bar"]->geometry = geometry["mascara_bar"];
     model["mascara_bar"]->material = material["ceramic"];
+
+    model["white_bar"] = new Model; 
+    model["white_bar"]->geometry = geometry["white_bar"];
+    model["white_bar"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -459,27 +465,6 @@ void Scene::init(void){
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    /************************
-    geometry["clock"] = new Obj;
-    geometry["clock"]->init("models/Plane.obj", "textures/Timer_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-
-    geometry["pink_tire"] = new Obj;
-    geometry["pink_tire"]->init("models/Plane.obj", "textures/PlayerPink.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-    geometry["blue_tire"] = new Obj;
-    geometry["blue_tire"]->init("models/Plane.obj", "textures/PlayerBlue.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-    geometry["yellow_tire"] = new Obj;
-    geometry["yellow_tire"]->init("models/Plane.obj", "textures/PlayerYellow.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-    geometry["green_tire"] = new Obj;
-    geometry["green_tire"]->init("models/Plane.obj", "textures/PlayerGreen.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-
-    geometry["crown_icon"] = new Obj;
-    geometry["crown_icon"]->init("models/Plane.obj", "textures/Crown_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-
-    geometry["mascara_icon"] = new Obj;
-    geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-    geometry["mascara_bar"] = new Obj;
-    geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 8);
-    *************************/
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
     node["clock"] = new Node("clock");
@@ -509,6 +494,9 @@ void Scene::init(void){
     node["mascara_bar"] = new Node("mascara_bar");
     node["mascara_bar"]->models.push_back(model["mascara_bar"]);
     node["mascara_bar"]->modeltransforms.push_back(UI_rotation);
+    node["white_bar"] = new Node("white_bar");
+    node["white_bar"]->models.push_back(model["white_bar"]);
+    node["white_bar"]->modeltransforms.push_back(UI_rotation);
 
     node["UI_root"]->childnodes.push_back(node["screen"]); 
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
@@ -535,6 +523,8 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-10.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["mascara_bar"]);
     node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["white_bar"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
 
     node["screen"]->childnodes.push_back(node["drips"]); 
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));

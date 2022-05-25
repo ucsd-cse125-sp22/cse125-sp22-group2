@@ -514,6 +514,7 @@ void idle() {
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
+		game.updateMakeupStatusBar(time, currentMakeupLevel);
 
         // Update all animations 
         game.updateAnimations(); 
