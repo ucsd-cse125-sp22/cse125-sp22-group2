@@ -22,6 +22,7 @@
 #include "ParticleSource.h"
 #include "TextShader.h"
 #include "Text.h"
+#include "UIShader.h"
 
 #include "../../../Constants.hpp"
 
@@ -63,6 +64,7 @@ public:
     Camera* camera;
     SurfaceShader* shader;
     TextShader* text_shader;
+    UIShader* ui_shader;
 
     Text* scores[4];
     Text* game_time;
@@ -94,6 +96,7 @@ public:
                                 glm::vec3(0.41f, 0.76f, 0.24f)};
     
     void drawText(void);
+    void drawUI(void); 
 
     void updateScreen(void);
     
@@ -130,6 +133,7 @@ public:
         delete camera;
         delete shader;
         delete text_shader;
+        delete ui_shader;
         delete sun;
     }
 };

@@ -135,7 +135,8 @@ void display(void)
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    scene.draw(scene.node["UI_root"]);
+    //scene.draw(scene.node["UI_root"]);
+    scene.drawUI();
 
     scene.drawText();
 

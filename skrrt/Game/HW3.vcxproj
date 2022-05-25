@@ -87,6 +87,8 @@
     <None Include="run4.sh" />
     <None Include="shaders\lighting.frag" />
     <None Include="shaders\projective.vert" />
+    <None Include="shaders\text.frag" />
+    <None Include="shaders\text.vert" />
     <None Include="shaders\ui.frag" />
     <None Include="shaders\ui.vert" />
     <None Include="src\Scene.inl" />
@@ -142,6 +144,7 @@
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
     <ClInclude Include="include\TextureConstants.h" />
+    <ClInclude Include="include\UIShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

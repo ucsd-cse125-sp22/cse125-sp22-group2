@@ -425,7 +425,7 @@ void Scene::init(void){
 
     // Initialize text shader 
     text_shader = new TextShader; 
-    text_shader->read_source("shaders/ui.vert", "shaders/ui.frag");
+    text_shader->read_source("shaders/text.vert", "shaders/text.frag");
     text_shader->compile(); 
     glUseProgram(text_shader->program);
     text_shader->initUniforms(); 
@@ -433,8 +433,7 @@ void Scene::init(void){
     // Initialize text 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         scores[i] = new Text(text_shader->program);
-        //scores[i]->updateText("1234567890");
-        scores[i]->updateText("000");
+        scores[i]->updateText("0");
     }
     /*
 	scores[0]->updateText("911");
@@ -445,4 +444,11 @@ void Scene::init(void){
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    // Initialize UI shader 
+    ui_shader = new UIShader; 
+    ui_shader->read_source("shaders/ui.vert", "shaders/ui.frag"); 
+    ui_shader->compile(); 
+    glUseProgram(ui_shader->program); 
+    ui_shader->initUniforms(); 
 }

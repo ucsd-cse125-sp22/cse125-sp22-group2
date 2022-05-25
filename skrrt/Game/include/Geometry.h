@@ -24,6 +24,7 @@ arrays of unknown size.
 *****************************************************/
 #include <vector>
 #include <SurfaceShader.h>
+#include <UIShader.h>
 
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
@@ -48,16 +49,22 @@ public:
         glBindVertexArray(vao);
         
         //draw black wire mesh
-        /*
-        shader->enablelighting = GL_FALSE;
-        shader->setUniforms();
-		glCullFace(GL_FRONT); 
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        glDrawElements(mode,count,type,0);
-        */
         // draw normaly
         //glEnable(GL_LINE_SMOOTH);
         shader->enablelighting = GL_TRUE;
+        shader->setUniforms();
+		glCullFace(GL_BACK); 
+	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glDrawElements(mode,count,type,0);
+        
+    }
+
+    void draw(UIShader *shader){
+        glBindVertexArray(vao);
+        
+        //draw black wire mesh
+        // draw normaly
+        //glEnable(GL_LINE_SMOOTH);
         shader->setUniforms();
 		glCullFace(GL_BACK); 
 	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
