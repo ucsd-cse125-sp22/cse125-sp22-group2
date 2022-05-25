@@ -128,7 +128,7 @@ void Scene::updateScreen(void) {
 void Scene::drawText(void) {
     glUseProgram(text_shader->program);
 
-    text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_WIDTH, 0.0f, cse125constants::WINDOW_HEIGHT);
+    text_shader->projection = glm::ortho(0.0f, (float)cse125constants::WINDOW_WIDTH, 0.0f, (float)cse125constants::WINDOW_HEIGHT);
     //text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_HEIGHT, 0.0f, cse125constants::WINDOW_WIDTH);
 
     // Draw all scores 
@@ -138,7 +138,7 @@ void Scene::drawText(void) {
 		text_shader->setUniforms();
         scores[i]->RenderText();
         //scores[i]->setPosition(cse125constants::WINDOW_WIDTH - 120.0f, cse125constants::WINDOW_HEIGHT - 50.0f * i - 75.0f);
-        scores[i]->setPosition(60.0f, cse125constants::WINDOW_HEIGHT - 75.0f * i - 100.0f);
+        scores[i]->setPosition(120.0f, cse125constants::WINDOW_HEIGHT - 75.0f * i - 100.0f);
     }
 
     // Draw game time
