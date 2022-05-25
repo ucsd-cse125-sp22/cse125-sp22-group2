@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"
+#include "../Frame.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
 

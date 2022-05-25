@@ -54,8 +54,9 @@ ObjPlayer::~ObjPlayer() {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ObjPlayer::step() {
-	// Reset crash check
+	// Reset crash and crown check
 	crashed = false;
+	tookCrown = false;
 
 	// Update iframes
 	if (iframes) {
@@ -294,6 +295,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		// We have the crown, pass it to the other player
 		if (this->hasCrown && !iframes) {
 			((ObjPlayer*)obj)->hasCrown = true;
+			((ObjPlayer*)obj)->tookCrown = true;
 			((ObjPlayer*)obj)->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			this->hasCrown = false;
 			this->stun = STEAL_STUN_FRAMES * cse125config::TICK_RATE;
@@ -302,6 +304,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		// The other player has the crown, take it
 		else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 			this->hasCrown = true;
+			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			this->speed = SPEED_STEAL_CROWN;
 			((ObjPlayer*)obj)->hasCrown = false;
@@ -314,6 +317,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		if (((ObjCrown*)obj)->loose) {
 			((ObjCrown*)obj)->loose = false;
 			this->hasCrown = true;
+			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 		}
 	}
