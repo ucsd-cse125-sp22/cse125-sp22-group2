@@ -15,6 +15,8 @@ Scene.cpp contains the implementation of the draw command
 using namespace glm;
 void Scene::draw(Node* current_node){
 
+    glUseProgram(shader->program);
+
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
     camera -> computeMatrices();
     shader -> view = camera -> view;
@@ -121,4 +123,27 @@ void Scene::updateScreen(void) {
 
     // Update transform of UI root 
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
+}
+
+void Scene::drawText(void) {
+    glUseProgram(text_shader->program);
+
+    text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_WIDTH, 0.0f, cse125constants::WINDOW_HEIGHT);
+    //text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_HEIGHT, 0.0f, cse125constants::WINDOW_WIDTH);
+
+    // Draw all scores 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        scores[i]->setColor(text_colors[i]);
+        text_shader->textColor = scores[i]->getColor(); 
+		text_shader->setUniforms();
+        scores[i]->RenderText();
+        scores[i]->setPosition(cse125constants::WINDOW_WIDTH - 120.0f, cse125constants::WINDOW_HEIGHT - 50.0f * i - 75.0f);
+    }
+
+    // Draw game time
+	text_shader->textColor = game_time->getColor(); 
+    text_shader->setUniforms();
+    game_time->RenderText();
+	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
+
 }

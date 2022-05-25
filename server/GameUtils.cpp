@@ -8,7 +8,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     static unsigned int gameTime = 0;
 
     frame->ctr = frameCtr++;
-    frame->gameTime = gameTime++;
+    frame->gameTime = manager->gameTime;
 
     // initialize crown frame data
     ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);

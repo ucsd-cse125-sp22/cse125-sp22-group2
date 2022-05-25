@@ -20,6 +20,12 @@
 #include "Material.h"
 #include "Model.h"
 #include "ParticleSource.h"
+#include "TextShader.h"
+#include "Text.h"
+
+#include "../../../Constants.hpp"
+
+//#define NUM_PLAYERS 4
 
 #ifndef __SCENE_H__
 #define __SCENE_H__
@@ -56,6 +62,11 @@ class Scene {
 public:
     Camera* camera;
     SurfaceShader* shader;
+    TextShader* text_shader;
+
+    Text* scores[4];
+    Text* game_time;
+
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
     std::map< std::string, Geometry* > geometry;
@@ -76,6 +87,13 @@ public:
     
     void init( void );
     void draw(Node* current_node);
+
+    glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f), 
+                                glm::vec3(0.91f, 0.90f, 0.32f), 
+                                glm::vec3(0.31f, 0.68f, 0.89f), 
+                                glm::vec3(0.41f, 0.76f, 0.24f)};
+    
+    void drawText(void);
 
     void updateScreen(void);
     
@@ -103,8 +121,15 @@ public:
         for(std::pair<std::string,Node*> entry : node ){
             delete entry.second;
         }
+
+        for (Text* t : scores) {
+            delete t;
+        }
+
+        delete game_time;
         delete camera;
         delete shader;
+        delete text_shader;
         delete sun;
     }
 };
