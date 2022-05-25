@@ -497,20 +497,6 @@ void specialKeyUp(int key, int x, int y){
 
 void idle() {
 
-    /*
-
-    // Update wheel animation
-    // Render every half second
-    if (time - lastRenderTime > 50) {
-        float speed = 5.0f;
-        p0.spinWheels(speed);
-        p1.spinWheels(speed);
-        p2.spinWheels(speed);
-        p3.spinWheels(speed);
-        glutPostRedisplay();
-    }
-    */
-
     bool render = false;
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
@@ -532,7 +518,7 @@ void idle() {
         game.updateAnimations(); 
 
         // Update time 
-        scene.game_time->updateText(std::to_string((int)game.getTime()));
+        scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
 
 		lastRenderTime = time;
         render = true;
