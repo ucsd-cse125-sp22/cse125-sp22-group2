@@ -444,6 +444,9 @@ void idle() {
         // Update all animations 
         game.updateAnimations(); 
 
+        // Update time 
+        scene.game_time->updateText(std::to_string((int)game.getTime()));
+
 		lastRenderTime = time;
         render = true;
     }

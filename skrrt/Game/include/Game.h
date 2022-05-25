@@ -84,6 +84,8 @@ public:
 		parseCarCollisionAnimation();
 	}
 
+	float getTime() { return game_time; };
+
 	void updateDrips(int time, RealNumber makeupLevel); 
 	void updateAnimations(); 
 
