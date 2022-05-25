@@ -17,7 +17,11 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+<<<<<<< HEAD
+    <ClCompile Include="src\Text.cpp" />
+=======
     <ClCompile Include="include\Debug.cpp" />
+>>>>>>> dbe90b33126eff5784eeed943592154e32694b0b
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Config.hpp" />
@@ -47,13 +51,27 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+<<<<<<< HEAD
+    <ClInclude Include="include\TextureConstants.h" />
+    <ClInclude Include="include\Text.h" />
+    <ClInclude Include="include\TextShader.h" />
+=======
     <ClInclude Include="include\Animation.h" />
     <ClInclude Include="include\TextureConstants.h" />
+>>>>>>> dbe90b33126eff5784eeed943592154e32694b0b
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="shaders\lighting.frag" />
     <None Include="shaders\projective.vert" />
     <None Include="src\Scene.inl" />
+    <None Include="shaders\ui.frag" />
+    <None Include="shaders\ui.vert" />
+    <None Include="FreeImage.dll" />
+    <None Include="freetype.dll" />
+    <None Include="glew32.dll" />
+    <None Include="glut32.dll" />
+    <None Include="run2.sh" />
+    <None Include="run4.sh" />
   </ItemGroup>
 </Project>

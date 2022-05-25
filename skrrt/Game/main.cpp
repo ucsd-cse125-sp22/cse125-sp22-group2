@@ -134,7 +134,10 @@ void display(void)
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     scene.draw(scene.node["UI_root"]);
+
+    scene.drawText();
 
     /*
 	std::cout << "car transformation : " << std::endl; 
@@ -194,6 +197,7 @@ cse125framing::ServerFrame* receiveDataFromServer()
     boost::system::error_code error;
 
     size_t numRead = networkClient->receive(frame, &error);
+
     return frame;
 }
 
@@ -207,6 +211,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->moveCar(dir, up, pos);
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        game.players[i]->setPlayerScore(frame->players[i].score);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
         game.players[i]->setSpeed(frame->players[i].playerSpeed);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
@@ -519,6 +524,8 @@ void idle() {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles(1);
+
+            scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
 
 		// Update drip level based on current player's makeup level 
@@ -527,6 +534,9 @@ void idle() {
 
         // Update all animations 
         game.updateAnimations(); 
+
+        // Update time 
+        scene.game_time->updateText(std::to_string((int)game.getTime()));
 
 		lastRenderTime = time;
         render = true;
@@ -560,6 +570,8 @@ void idle() {
                 updateCrownState(frame);
                 // Use the frame to update the player's state
                 updatePlayerState(frame);
+
+                game.updateTime(frame->gameTime);
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");

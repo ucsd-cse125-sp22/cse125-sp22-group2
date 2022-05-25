@@ -58,7 +58,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);glew32.lib;glut32.lib;glu32.lib;opengl32.lib;FreeImage.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);glew32.lib;glut32.lib;glu32.lib;opengl32.lib;FreeImage.lib;freetype.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,9 +78,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="FreeImage.dll" />
+    <None Include="freetype.dll" />
+    <None Include="glew32.dll" />
+    <None Include="glut32.dll" />
     <None Include="packages.config" />
+    <None Include="run2.sh" />
+    <None Include="run4.sh" />
     <None Include="shaders\lighting.frag" />
     <None Include="shaders\projective.vert" />
+    <None Include="shaders\ui.frag" />
+    <None Include="shaders\ui.vert" />
     <None Include="src\Scene.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +109,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Config.hpp" />
@@ -130,6 +139,8 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+    <ClInclude Include="include\Text.h" />
+    <ClInclude Include="include\TextShader.h" />
     <ClInclude Include="include\TextureConstants.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
