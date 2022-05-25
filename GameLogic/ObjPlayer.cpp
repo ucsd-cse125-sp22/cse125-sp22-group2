@@ -54,8 +54,9 @@ ObjPlayer::~ObjPlayer() {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ObjPlayer::step() {
-	// Reset crash check
+	// Reset crash and crown check
 	crashed = false;
+	tookCrown = false;
 
 	// Update iframes
 	if (iframes) {
@@ -274,7 +275,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 		this->direction = dir;
 		this->boundingBox = bb;
 
-		// matchTerrain();
+		//matchTerrain();
 
 		// Enter the makeup station if there was one at our destination
 		if (potentialBooth != -1) {
@@ -294,6 +295,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		// We have the crown, pass it to the other player
 		if (this->hasCrown && !iframes) {
 			((ObjPlayer*)obj)->hasCrown = true;
+			((ObjPlayer*)obj)->tookCrown = true;
 			((ObjPlayer*)obj)->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			this->hasCrown = false;
 			this->stun = STEAL_STUN_FRAMES * cse125config::TICK_RATE;
@@ -302,6 +304,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		// The other player has the crown, take it
 		else if (((ObjPlayer*)obj)->hasCrown && !((ObjPlayer*)obj)->iframes) {
 			this->hasCrown = true;
+			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			this->speed = SPEED_STEAL_CROWN;
 			((ObjPlayer*)obj)->hasCrown = false;
@@ -314,6 +317,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 		if (((ObjCrown*)obj)->loose) {
 			((ObjCrown*)obj)->loose = false;
 			this->hasCrown = true;
+			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 		}
 	}
@@ -435,7 +439,7 @@ void ObjPlayer::applyGravity() {
 		this->gravity = 0.0f;
 	}
 
-	// REMOVE THIS
+	// REMOVE THIS AFTER SLOPES/RESPAWNING
 	if (position.y < -8.0f) {
 		position.y = 8.0f;
 		boundingBox = generateBoundingBox(position, this->direction, this->up);
@@ -446,44 +450,52 @@ void ObjPlayer::matchTerrain() {
 	////this->up = glm::vec3(0.0f, 1.0f, 0.0f);
 	BoundingBox bb = this->boundingBox;
 	// For each vertex, find the floor beneath it
-	for (unsigned int i = 0; i < 4; i++) {
-		cout << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).x << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).y << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).z << "\n";
-		int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
-		if (floor == -1) {
-			// No floor below this point
-			cout << "/ - ";
-			bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
-		}
-		else {
-			// Adjust based on the floor
-			glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(floor)->boundingBox);
-			cout << "/ (" << adj.x << " " << adj.y << " " << adj.z << ") ";
-			bb.vertices[i] += adj;
-		}
-	}
-	cout << "/\n";
 
-	glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
-	if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
-		newUp = -newUp;
-	}
-
-	//glm::vec3 newUp = glm::vec3(0.0f);
-	//int floor = findObjectPosition(generateBoundingBox(this->position + glm::vec3(0.0f, -0.25f, 0.0f), this->direction, this->up), oFloor);
-	//if (floor == -1) {
-	//	newUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	// Complex
+	//for (unsigned int i = 0; i < 4; i++) {
+	//	cout << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).x << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).y << " " << (bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f)).z << "\n";
+	//	int floor = findObjectPosition(BoundingBox(this->id, bb.vertices[i] + glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.1f, 1.0f), oFloor);
+	//	if (floor == -1) {
+	//		// No floor below this point
+	//		cout << "/ - ";
+	//		bb.vertices[i] += glm::vec3(0.0f, -0.25f, 0.0f);
+	//	}
+	//	else {
+	//		// Adjust based on the floor
+	//		glm::vec3 adj = checkCollisionPointFloor(bb.vertices[i], this->objects->at(floor)->boundingBox);
+	//		cout << "/ (" << adj.x << " " << adj.y << " " << adj.z << ") ";
+	//		bb.vertices[i] += adj;
+	//	}
 	//}
-	//else {
-	//	newUp = this->objects->at(floor)->up;
-	//}
+	//cout << "/\n";
+	//glm::vec3 newUp = glm::normalize(glm::cross(bb.vertices[0] - bb.vertices[2], bb.vertices[1] - bb.vertices[3]));
 	//if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
 	//	newUp = -newUp;
 	//}
 
-	glm::vec3 newDir = glm::normalize(glm::cross(glm::cross(this->direction, newUp), newUp));
+	// Simple
+	glm::vec3 newUp = glm::vec3(0.0f);
+	int floor = findObjectPosition(generateBoundingBox(this->position + glm::vec3(0.0f, -1.0f, 0.0f), this->direction, this->up), oFloor);
+	if (floor == -1) {
+		newUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+	else {
+		newUp = this->objects->at(floor)->up;
+	}
+	if (glm::dot(newUp, glm::vec3(0.0f, 1.0f, 0.0f)) < 0.0f) {
+		newUp = -newUp;
+	}
+	cout << newUp.x << " " << newUp.y << " " << newUp.z << " - up\n";
+
+	glm::vec3 newDir = glm::normalize(glm::cross(newUp, glm::cross(this->direction, newUp)));
 	if (glm::dot(newDir, this->direction) < 0.0f) {
 		newDir = -newDir;
 	}
+	if (glm::dot(newDir, this->direction) < 0.5f) {
+		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+	}
+	cout << direction.x << " " << direction.y << " " << direction.z << " - old direction\n";
+	cout << newDir.x << " " << newDir.y << " " << newDir.z << " - new direction\n";
 
 	glm::vec3 destination = this->position;
 
@@ -536,10 +548,10 @@ void ObjPlayer::matchTerrain() {
 	}
 
 	if (!id) {
-		cout << destinationFree << " (" << position.x << " " << position.y << " " << position.z << ")\n"
-			<< " (" << destination.x << " " << destination.y << " " << destination.z << ")\n"
-			<< " (" << newDir.x << " " << newDir.y << " " << newDir.z << ")\n"
-			<< " (" << newUp.x << " " << newUp.y << " " << newUp.z << ")\n\n";
+		//cout << destinationFree << " (" << position.x << " " << position.y << " " << position.z << ")\n"
+		//	<< " (" << destination.x << " " << destination.y << " " << destination.z << ")\n"
+		//	<< " (" << newDir.x << " " << newDir.y << " " << newDir.z << ")\n"
+		//	<< " (" << newUp.x << " " << newUp.y << " " << newUp.z << ")\n\n";
 	}
 
 	// If our destination is free, complete the move
