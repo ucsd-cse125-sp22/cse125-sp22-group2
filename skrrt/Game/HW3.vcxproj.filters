@@ -51,6 +51,7 @@
     <ClInclude Include="include\TextureConstants.h" />
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
+    <ClInclude Include="include\UIShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -65,5 +66,7 @@
     <None Include="glut32.dll" />
     <None Include="run2.sh" />
     <None Include="run4.sh" />
+    <None Include="shaders\text.vert" />
+    <None Include="shaders\text.frag" />
   </ItemGroup>
 </Project>
