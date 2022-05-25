@@ -409,6 +409,10 @@ void keyboard(unsigned char key, int x, int y){
         case 'r':
             sendReplayToServer();         
             break;
+        // Key for starting the game initially
+        case ' ':
+            sendReplayToServer();
+            break;
 
         default:
             //glutPostRedisplay();
@@ -646,7 +650,7 @@ int main(int argc, char** argv)
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
-    matchInProgress = true;
+    matchInProgress = false;
     
     // Graphics binding
     initialize();

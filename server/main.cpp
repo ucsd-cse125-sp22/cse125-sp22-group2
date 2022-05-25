@@ -43,6 +43,16 @@ int main()
     {
         // idle wait for clients
     }
+
+    // Wait for all clients to be be ready to start playing
+    std::cerr << "Waiting for clients to start playing..." << std::endl;
+    while (!server->readyToReplay()) {
+        // Idle wait
+    }
+    // Reset number of clients replaying
+    server->resetReplayStatus();
+    std::cerr << "All clients ready to start playing " << std::endl;
+
     // server loop
  
     while (runServer) 
