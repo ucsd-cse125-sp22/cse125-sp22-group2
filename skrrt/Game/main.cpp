@@ -433,6 +433,8 @@ void idle() {
             game.players[i]->spinWheels(speed);
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles(1);
+
+            scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
 
 		// Update drip level based on current player's makeup level 
