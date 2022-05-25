@@ -23,6 +23,11 @@ public:
 	// A list of vanancies in the objects vector, we shouldn't need this since we probably won't be deleting objects
 	// vector<unsigned int> vacancies;
 
+	// Index for the current sound effect
+	int audioIndex = 0;
+	// Array of audio triggers
+	cse125framing::AudioTrigger audioTriggers[cse125constants::MAX_NUM_SOUNDS];
+
 	// How much of the match remains
 	float gameTime;
 	// How many makeup booths there are

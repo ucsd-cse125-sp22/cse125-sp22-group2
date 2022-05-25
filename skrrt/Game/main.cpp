@@ -139,7 +139,10 @@ void display(void)
 
     scene.draw(scene.node["UI_root"]);
 
-    scene.drawText();
+    // Only draw the text if the match is in progress
+    if (matchInProgress) {
+        scene.drawText();
+    }
 
     /*
 	std::cout << "car transformation : " << std::endl; 
@@ -156,6 +159,19 @@ void display(void)
 
     glutSwapBuffers();
     glFlush();
+}
+
+// Toggles the visibility of the start menu and background
+void toggleStartMenuVisibility(bool visibility) {
+    scene.node["start_menu"]->visible = visibility;
+    scene.node["start_menu_background"]->visible = visibility;
+}
+
+// Toggles the visibility of the end menu and background
+// TODO: Display a different end menu depending on who won?
+void toggleEndMenuVisibility(bool visibility) {
+    scene.node["end_menu"]->visible = visibility;
+    scene.node["end_menu_background"]->visible = visibility;
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -503,20 +519,6 @@ void specialKeyUp(int key, int x, int y){
 
 void idle() {
 
-    /*
-
-    // Update wheel animation
-    // Render every half second
-    if (time - lastRenderTime > 50) {
-        float speed = 5.0f;
-        p0.spinWheels(speed);
-        p1.spinWheels(speed);
-        p2.spinWheels(speed);
-        p3.spinWheels(speed);
-        glutPostRedisplay();
-    }
-    */
-
     bool render = false;
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
@@ -538,7 +540,7 @@ void idle() {
         game.updateAnimations(); 
 
         // Update time 
-        scene.game_time->updateText(std::to_string((int)game.getTime()));
+        scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
 
 		lastRenderTime = time;
         render = true;
@@ -559,26 +561,12 @@ void idle() {
         handleMoveRight();
     }
 
-    // Handle menu visibility
-    if (gameStarted) {
-        scene.node["start_menu"]->visible = false;
-        // TODO: make invisible the UI elements (score, time, makeup level)
-    }
-    else {
-        scene.node["start_menu"]->visible = true;
-        // TODO: make visible the UI elements (score, time, makeup level)
-    }
+    const bool showStartMenu = !gameStarted;
+    const bool showEndMenu = gameStarted && !matchInProgress;
 
-    if (matchInProgress) {
-        // TODO: make visible the UI elements (score, time, makeup level)
-        // TODO: use a different end menu
-        scene.node["start_menu"]->visible = false;
-    }
-    else {
-        // make invisible the UI elements (score, time, makeup level)
-        // TODO: use a different end menu
-        scene.node["start_menu"]->visible = true;
-    }
+    // Handle menu visibility
+    toggleStartMenuVisibility(showStartMenu);
+    toggleEndMenuVisibility(showEndMenu);
 
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {

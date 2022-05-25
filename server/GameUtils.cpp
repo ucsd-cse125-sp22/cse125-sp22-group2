@@ -8,7 +8,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     static unsigned int gameTime = 0;
 
     frame->ctr = frameCtr++;
-    frame->gameTime = gameTime++;
+    frame->gameTime = manager->gameTime;
 
     // initialize crown frame data
     ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);
@@ -20,6 +20,9 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     {
         frame->audio[i].id = cse125framing::AudioId::NO_AUDIO;
     }
+
+    // Index for the current sound effect
+    int audioIndex = 0;
 
     // initialize animation triggers
     frame->animations = {}; // initialize to false --> no animations
@@ -36,18 +39,31 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
 
-        // makeup booth animation
+        // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
         {
             int makeupID =
                 ((ObjMakeup*)manager->objects->at(player->booth))->makeupID;
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::MAKEUP;
+            frame->audio[audioIndex].position = ((ObjMakeup*)manager->objects->at(makeupID))->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
-        // crash animation
+        // crash animation + audio
         if (player->crashed)
         {
             frame->animations.playerCrash[id] = true;
+            frame->audio[audioIndex].id = cse125framing::AudioId::COLLISION;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        // crown audio
+        if (player->tookCrown)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::CROWN_CHANGE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
     }
 

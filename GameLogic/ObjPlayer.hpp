@@ -31,6 +31,8 @@ public:
 	float gravity;
 	// Whether we crashed this frame
 	bool crashed;
+	// Whether we took the crown this frame
+	bool tookCrown;
 
 	// How much we have moved without stopping or crashing
 	float momentum;

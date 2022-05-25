@@ -56,6 +56,14 @@ bounding::BoundingBox::BoundingBox(int id, glm::vec3 pos, glm::vec3 dir, glm::ve
 	glm::vec3 c = cVec * w;
 
 	this->vertices = vector<glm::vec3>();
+	//this->vertices.push_back(corner);
+	//this->vertices.push_back(corner + a);
+	//this->vertices.push_back(corner + b);
+	//this->vertices.push_back(corner + c);
+	//this->vertices.push_back(corner + a + b);
+	//this->vertices.push_back(corner + a + c);
+	//this->vertices.push_back(corner + b + c);
+	//this->vertices.push_back(corner + a + b + c);
 	this->vertices.push_back(corner);
 	this->vertices.push_back(corner + a);
 	this->vertices.push_back(corner + a + c);

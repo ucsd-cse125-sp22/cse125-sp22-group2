@@ -8,17 +8,18 @@
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"
+#include "../Frame.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 using namespace std;
 
 // Game parameters
-const float MATCH_LENGTH = 15.0f; //180.0f;
+const float MATCH_LENGTH = 10.0f; //180.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
-const float MAP_RADIUS = 31.5f; //63.5f;
+const float MAP_RADIUS = 31.5f; //63.5f; // For big map
 
 // Makeup
 const float MAKEUP_MAX = 100.0f;
