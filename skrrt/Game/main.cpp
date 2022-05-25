@@ -134,7 +134,10 @@ void display(void)
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     scene.draw(scene.node["UI_root"]);
+
+    scene.drawText();
 
     /*
 	std::cout << "car transformation : " << std::endl; 
@@ -194,6 +197,7 @@ cse125framing::ServerFrame* receiveDataFromServer()
     boost::system::error_code error;
 
     size_t numRead = networkClient->receive(frame, &error);
+
     return frame;
 }
 
@@ -207,7 +211,9 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->moveCar(dir, up, pos);
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
+        game.players[i]->setPlayerScore(frame->players[i].score);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
+        game.players[i]->setSpeed(frame->players[i].playerSpeed);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -491,29 +497,17 @@ void specialKeyUp(int key, int x, int y){
 
 void idle() {
 
-    /*
-
-    // Update wheel animation
-    // Render every half second
-    if (time - lastRenderTime > 50) {
-        float speed = 5.0f;
-        p0.spinWheels(speed);
-        p1.spinWheels(speed);
-        p2.spinWheels(speed);
-        p3.spinWheels(speed);
-        glutPostRedisplay();
-    }
-    */
-
     bool render = false;
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
-	float speed = 10.0f;
+	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-            game.players[i]->spinWheels(speed);
+            game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles(1);
+
+            scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
 
 		// Update drip level based on current player's makeup level 
@@ -522,6 +516,9 @@ void idle() {
 
         // Update all animations 
         game.updateAnimations(); 
+
+        // Update time 
+        scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
 
 		lastRenderTime = time;
         render = true;
@@ -555,6 +552,8 @@ void idle() {
                 updateCrownState(frame);
                 // Use the frame to update the player's state
                 updatePlayerState(frame);
+
+                game.updateTime(frame->gameTime);
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");

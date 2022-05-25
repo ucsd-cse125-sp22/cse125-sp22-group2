@@ -28,12 +28,16 @@ private:
 
 	// Player's makeup level 
 	RealNumber makeupLevel; 
+	
+	// Player's score 
+	RealNumber score = 0;
 
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 initial_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
 	glm::vec3 current_direction = glm::vec3(-1.0f, 0.0f, -0.0f);
+	RealNumber current_speed = 0.0f;
 
 	glm::mat4 initial_car_transform;
 	glm::mat4 animation_transform = glm::mat4(1.0f);
@@ -42,7 +46,6 @@ private:
 
 	glm::mat4 initial_particle_transform = glm::translate(glm::vec3(0.6f, -0.4f, 0.0f)); 
 
-	// Maybe a spawned position and rotation?
 
 public: 
 
@@ -60,7 +63,9 @@ public:
 	};
 	void setCrown(Node* crown) { crown_node = crown; };
 	void setPosition(glm::vec3 position) { current_position = position; };
+	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
+	void setPlayerScore(RealNumber s) { score = s; }; 
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 
@@ -88,8 +93,11 @@ public:
 		return current_position;
 	};
 
+	RealNumber getSpeed() { return current_speed; }
+
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
+	RealNumber getScore(void) { return score; }
 };
 
 #endif

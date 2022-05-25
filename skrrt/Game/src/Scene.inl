@@ -9,8 +9,8 @@ Scene.inl contains the definition of the scene graph
 #include "..\..\..\Constants.hpp"
 
 #define NUM_PLAYERS 4
-#define DEV_LIGHTING false
-//#define DEV_LIGHTING true
+//#define DEV_LIGHTING false
+#define DEV_LIGHTING true
 #define ENABLE_DRIPS true
 
 using namespace glm;
@@ -19,43 +19,43 @@ void Scene::init(void){
 
     // Create a geometry palette
     geometry["pink_car"] = new Obj;
-    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
+    geometry["pink_car"]->init("models/Car_Pink.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 1);
     geometry["blue_car"] = new Obj;
-    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
+    geometry["blue_car"]->init("models/Car_Blue.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 1);
     geometry["yellow_car"] = new Obj;
-    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
+    geometry["yellow_car"]->init("models/Car_Yellow.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 1);
     geometry["green_car"] = new Obj;
-    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
+    geometry["green_car"]->init("models/Car_Green.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 1);
 
     geometry["tire"] = new Obj;
-    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 0);
+    geometry["tire"]->init("models/Tires.obj", "textures/car_textures.png", "textures/car_specular.png", "textures/car_emission.png", 1);
     geometry["crown"] = new Obj; 
-    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
+    geometry["crown"]->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 2);
 
     geometry["traffic_light"] = new Obj;
-    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
+    geometry["traffic_light"]->init("models/TrafficLight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 2);
     geometry["spotlight"] = new Obj;
-    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 1);
+    geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 2);
 
     geometry["map"] = new Obj; 
-    geometry["map"]->init("models/Map_Complete.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 2);
+    geometry["map"]->init("models/Map_Complete.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
     
     geometry["plane"] = new Obj;
-    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 3);
+    geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 4);
 
     geometry["drips"] = new Obj;
-    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 4);
+    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station"] = new Obj; 
-    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
     geometry["makeup_station_bar"] = new Obj; 
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
 
     geometry["tire_rack"] = new Obj; 
-    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
 
     geometry["cones"] = new Obj; 
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 6);
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -422,4 +422,27 @@ void Scene::init(void){
     shader -> compile();
     glUseProgram(shader -> program);
     shader -> initUniforms();
+
+    // Initialize text shader 
+    text_shader = new TextShader; 
+    text_shader->read_source("shaders/ui.vert", "shaders/ui.frag");
+    text_shader->compile(); 
+    glUseProgram(text_shader->program);
+    text_shader->initUniforms(); 
+
+    // Initialize text 
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        scores[i] = new Text(text_shader->program);
+        //scores[i]->updateText("1234567890");
+        scores[i]->updateText("000");
+    }
+    /*
+	scores[0]->updateText("911");
+	scores[1]->updateText("039");
+	scores[2]->updateText("549");
+	scores[3]->updateText("873");
+    */
+
+    game_time = new Text(text_shader->program);
+    game_time->updateText("100");
 }
