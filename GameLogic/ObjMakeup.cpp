@@ -48,7 +48,7 @@ ObjMakeup::~ObjMakeup() {
 void ObjMakeup::step() {
 	// Attept to reset the bar
 	if (!this->occupied && !this->ready) {
-		if (checkPlaceFree(this->objects->at(this->barID)->boundingBox)) {
+		if (!objectPosition(this->objects->at(this->barID)->boundingBox, oPlayer)) {
 			this->ready = true;
 			this->objects->at(this->barID)->solid = true;
 		}

@@ -82,8 +82,8 @@ void ObjPlayer::step() {
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which
 	// would probably be passed in as a parameter
-	if (hasCrown && booth == -1 && !stun && !iframes) {
-		score += 1.0f / cse125config::TICK_RATE;
+	if (hasCrown && booth == -1 && !stun) {
+		score += SCORE_INCREASE / cse125config::TICK_RATE;
 	}
 
 	// Makeup station
@@ -104,7 +104,6 @@ void ObjPlayer::step() {
 			makeupLevel = MAKEUP_MAX;
 			speed = SPEED_LEAVE_BOOTH;
 			iframes = MAKEUP_IFRAMES;
-
 		}
 		
 	}
@@ -187,6 +186,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 
 void ObjPlayer::idle() {
 	// If we above a certain threshold, the player should not be able to control their movement as well
+
 	if (speed < SPEED_THRESHOLD) {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
 		speed = max(0.0f, speed - SPEED_DECAY);
