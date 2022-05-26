@@ -125,12 +125,11 @@ void Game::triggerFx(const char* fxName, const vec3& position, float dB)
 	audioEngine.playSound(fxName, position);
 }
 
-void Game::compute3dLocation(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos)
+vec3 Game::compute3dLocation(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos)
 {
 	vec3 distance = eventPos - playerPos;
 	printf("distance: %.3f %.3f %.3f\n", distance.x, distance.y, distance.z);
 	printf("cameraPos: %.3f %.3f %.3f\n", cameraPos.x, cameraPos.y, cameraPos.z);
 
-
-
+	return distance;
 }

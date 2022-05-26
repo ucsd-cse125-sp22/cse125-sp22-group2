@@ -70,7 +70,7 @@ AudioEngine::AudioEngine()
 {
 	AudioEngine::engine = FMOD::System_Create(&system);
 	AudioEngine::engine = system->init(MAX_CHANNELS, FMOD_INIT_NORMAL, 0);
-	AudioEngine::engine = system->set3DSettings(2.0, 2.0, 2.0);
+	//AudioEngine::engine = system->set3DSettings(2.0, 2.0, 2.0);
 
 	// Load Sounds 
 	for (auto const& audioFile : audioFiles)
