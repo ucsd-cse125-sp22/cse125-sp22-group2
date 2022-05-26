@@ -3,6 +3,7 @@
 in vec4 position; // raw position in the model coord
 in vec3 normal;   // raw normal in the model coord
 in vec2 TexCoord; // texture coordinates
+in vec4 posDirectionalLightSpace;
 
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
@@ -92,6 +93,21 @@ uniform sampler2D pointDepthMaps[maxNumPointLights];
 // Output the frag color
 out vec4 fragColor;
 
+float ShadowCalculation(vec4 fragPosLightSpace) {
+	// perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5f + 0.5f;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(directionalDepthMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0f : 0.0f;
+
+    return shadow;
+}
+
 void main (void){
 	fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
 
@@ -113,17 +129,18 @@ void main (void){
 	// Calc Directional Light //
 	////////////////////////////
 	vec3 sunDirNorm = normalize(view * vec4(sun.direction,0.0f)).xyz; // Transform sun to eye coord
+	float shadow = ShadowCalculation(posDirectionalLightSpace);
 
 	// Calculate ambient
 	vec4 acum = sun.ambient * texColor;
 
 	// Calculate diffuse
 	float sunNL = dot(n_eye_norm, sunDirNorm);
-	acum += sun.diffuse * max(sunNL,0) * texColor;
+	acum += shadow * (sun.diffuse * max(sunNL,0) * texColor);
 
 	// Calculate specular
 	float sunNH = dot(n_eye_norm, normalize(v_eye_norm + sunDirNorm));
-	acum += sun.specular * pow(max(sunNH,0), material.shininess) * specColor;
+	acum += shadow * (sun.specular * pow(max(sunNH,0), material.shininess) * specColor);
 
 	fragColor += acum;
 

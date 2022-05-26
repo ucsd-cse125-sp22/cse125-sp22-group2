@@ -52,11 +52,11 @@
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
+    <ClInclude Include="include\DepthShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="shaders\lightingShadowsEnabled.frag" />
-    <None Include="shaders\projective.vert" />
     <None Include="src\Scene.inl" />
     <None Include="shaders\ui.frag" />
     <None Include="shaders\ui.vert" />
@@ -67,5 +67,9 @@
     <None Include="run2.sh" />
     <None Include="run4.sh" />
     <None Include="shaders\lightingShadowsDisabled.frag" />
+    <None Include="shaders\depthShader.frag" />
+    <None Include="shaders\depthShader.vert" />
+    <None Include="shaders\projectiveShadowsDisabled.vert" />
+    <None Include="shaders\projectiveShadowsEnabled.vert" />
   </ItemGroup>
 </Project>

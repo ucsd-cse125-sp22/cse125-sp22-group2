@@ -21,6 +21,7 @@
 #include "Model.h"
 #include "ParticleSource.h"
 #include "TextShader.h"
+#include "DepthShader.h"
 #include "Text.h"
 
 #include "../../../Constants.hpp"
@@ -63,9 +64,12 @@ public:
     Camera* camera;
     SurfaceShader* shader;
     TextShader* text_shader;
+    DepthShader* depth_shader;
 
     Text* scores[4];
     Text* game_time;
+
+    int shadowMapOffset;
 
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
@@ -109,7 +113,7 @@ public:
     void updateScreen(void);
 
     void calculateShadowMaps();
-    
+    void drawDepthMap(Node* current_node, glm::mat4 lightSpace);
     // destructor
     ~Scene(){
         // The containers of pointers own the object pointed to by the pointers.

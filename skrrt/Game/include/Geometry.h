@@ -24,6 +24,7 @@ arrays of unknown size.
 *****************************************************/
 #include <vector>
 #include <SurfaceShader.h>
+#include "DepthShader.h"
 
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
@@ -45,6 +46,14 @@ public:
     virtual void init(const char* s, const char* t, const char* spec, const char* emis, int obj_num){};
     
     void draw(SurfaceShader *shader){
+        glBindVertexArray(vao);
+        shader->setUniforms();
+		glCullFace(GL_BACK); 
+	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glDrawElements(mode,count,type,0);
+    }
+
+    void drawDepth(DepthShader* shader){
         glBindVertexArray(vao);
         shader->setUniforms();
 		glCullFace(GL_BACK); 

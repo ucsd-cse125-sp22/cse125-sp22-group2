@@ -8,6 +8,7 @@ Scene.inl contains the definition of the scene graph
 #include <math.h>
 #include "..\..\..\Constants.hpp"
 #include "ShadowMapConstants.h"
+#include "TextureConstants.h"
 
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
@@ -60,6 +61,13 @@ void Scene::init(void) {
 
     geometry["cones"] = new Obj;
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
+
+    ////////////////////////////////////////
+    //          SET THIS VALUE            //
+    //      WHEN YOU ADD A NEW OBJECT     //
+    ////////////////////////////////////////
+    int maxObjectNumber = 7; // THIS VALUE RIGHT HERE :)
+    shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
 
     // Create a material palette
     material["wood"] = new Material;
@@ -438,6 +446,7 @@ void Scene::init(void) {
 
         // create depth texture
         glGenTextures(1, &directionalDepthMap);
+		glActiveTexture(GL_TEXTURE0 + shadowMapOffset);
         glBindTexture(GL_TEXTURE_2D, directionalDepthMap);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -456,13 +465,19 @@ void Scene::init(void) {
     // Initialize shader
     if (ENABLE_SHADOW_MAP) {
         shader = new SurfaceShader;
-        shader->read_source("shaders/projective.vert", "shaders/lightingShadowsEnabled.frag");
+        shader->read_source("shaders/projectiveShadowsEnabled.vert", "shaders/lightingShadowsEnabled.frag");
         shader->compile();
         glUseProgram(shader->program);
         shader->initUniforms();
+
+        depth_shader = new DepthShader;
+        depth_shader->read_source("shaders/depthShader.vert", "shaders/depthShader.frag");
+        depth_shader->compile();
+        glUseProgram(depth_shader->program);
+        depth_shader->initUniforms();
     } else {
         shader = new SurfaceShader;
-        shader->read_source("shaders/projective.vert", "shaders/lightingShadowsDisabled.frag");
+        shader->read_source("shaders/projectiveShadowsDisabled.vert", "shaders/lightingShadowsDisabled.frag");
         shader->compile();
         glUseProgram(shader->program);
         shader->initUniforms();

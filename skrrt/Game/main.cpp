@@ -130,10 +130,24 @@ void initialize(void)
 void display(void)
 {
     if (ENABLE_SHADOW_MAP) {
-        scene.calculateShadowMaps();
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,-10.0f,10.0f,-10.0f,10.0f);
+        glm::mat4 lightView = glm::lookAt(5.0f * scene.sun->direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 lightSpace = lightProjection * lightView;
+        scene.drawDepthMap(scene.node["world"], lightSpace);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Update shadowmaps?
+    if (ENABLE_SHADOW_MAP) {
+        glActiveTexture(GL_TEXTURE0 + scene.shadowMapOffset);
+        glBindTexture(GL_TEXTURE_2D, scene.directionalDepthMap);
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(scene.node["world"]);
     scene.updateScreen();
 

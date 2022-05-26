@@ -42,7 +42,7 @@ void Scene::draw(Node* current_node){
 
     // tell shader what the depth maps are
     if (ENABLE_SHADOW_MAP) {
-        shader->directionalDepthMap = directionalDepthMap;
+        shader->directionalDepthMap = shadowMapOffset;
         for (int i = 0; i < spotDepthMaps.size(); i++) {
             shader->spotDepthMaps[i] = spotDepthMaps[i];
         }
@@ -120,9 +120,67 @@ void Scene::draw(Node* current_node){
             dfs_stack.push(cur->childnodes[i]);
             matrix_stack.push(cur_VM * cur->childtransforms[i]);
         }
-
     } // End of DFS while loop.
+}
 
+void Scene::drawDepthMap(Node* current_node, glm::mat4 lightSpace){
+
+    glUseProgram(depth_shader->program);
+
+    // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
+    depth_shader->lightSpace = lightSpace;
+
+    // Define stacks for depth-first search (DFS)
+    std::stack < Node* > dfs_stack;
+    std::stack < mat4 >  matrix_stack;
+
+    // Initialize the current state variable for DFS
+    Node* cur = current_node; // root of the tree
+    mat4 cur_VM = glm::mat4(1.0f); // update this current modelview during the depth first search.  Initially, we are at the "world" node, whose modelview matrix is just camera's view matrix.
+
+    // The following is the beginning of the depth-first search algorithm.
+    dfs_stack.push(cur);
+    matrix_stack.push(cur_VM);
+    while (!dfs_stack.empty()) {
+        // Detect whether the search runs into infinite loop by checking whether the stack is longer than the size of the graph.
+        // Note that, at any time, the stack does not contain repeated element.
+        if (dfs_stack.size() > node.size()) {
+            std::cerr << "Error: The scene graph has a closed loop." << std::endl;
+            exit(-1);
+        }
+
+        // top-pop the stacks
+        cur = dfs_stack.top();        dfs_stack.pop();
+        cur_VM = matrix_stack.top(); matrix_stack.pop();
+
+		// Check if the node is a particle source 
+		if (cur->isParticleSource == 1) {
+            //do nothing
+        }
+        else {
+			// draw all the models at the current node
+			for (unsigned int i = 0; i < cur->models.size(); i++) {
+				// Prepare to draw the geometry. Assign the modelview and the material.
+                depth_shader->model = cur_VM * cur->modeltransforms[i];
+
+				if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
+					std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
+				}
+
+				// The draw command
+				depth_shader->setUniforms();
+				if (cur->visible) {
+					(cur->models[i])->geometry->drawDepth(depth_shader);
+				}
+			}
+        }
+
+        // Continue the DFS: put all the child nodes of the current node in the stack
+        for (unsigned int i = 0; i < cur->childnodes.size(); i++) {
+            dfs_stack.push(cur->childnodes[i]);
+            matrix_stack.push(cur_VM * cur->childtransforms[i]);
+        }
+    } // End of DFS while loop.
 }
 
 void Scene::calculateShadowMaps() {
