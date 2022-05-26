@@ -94,6 +94,13 @@ int main()
                 playerPriorities.at(clientFrame.id) = priorityCtr++;
             }
 
+            // Ensure all players have a priority
+            for (int i = 0; i < playerPriorities.size(); i++) {
+                if (!playerPriorities.at(i)) {
+                    playerPriorities.at(i) = priorityCtr++;
+                }
+            }
+
             // Empty the queue of all tasks
             server->queueMtx.lock();
             server->serverQueue.clear();
