@@ -567,7 +567,8 @@ void Scene::init(void){
     const float mascara_icon_ratio = 1782.0f / 751.0f; 
     const float mascara_bar_ratio = 1440.0f / 353.0f;
     node["screen"]->childnodes.push_back(node["mascara_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -20.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    //node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -20.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -15.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
     //node["screen"]->childnodes.push_back(node["mascara_bar"]);
     //node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["white_bar"]);

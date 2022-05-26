@@ -22,7 +22,7 @@ void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
 
 	//makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
 
-	float max_offset = -2.0f; 
+	float max_offset = -1.0f; 
 	glm::mat4 translate = glm::translate(glm::vec3(max_offset * (1 - (float)makeupLevel / 100.0f), 0.0f, 0.0f));
 	makeup_status_bar->modeltransforms[0] = translate * initial_drip_transform;
 
