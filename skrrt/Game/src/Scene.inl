@@ -91,11 +91,21 @@ void Scene::init(void){
     geometry["start_menu_background"] = new Obj;
     geometry["start_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
-    geometry["end_menu"] = new Obj;
-    geometry["end_menu"]->init("models/Plane.obj", "textures/game_over.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    // Match end screens for each player
+    geometry["player_1_win"] = new Obj;
+    geometry["player_1_win"]->init("models/Plane.obj", "textures/player_1_win.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
-    geometry["end_menu_background"] = new Obj;
-    geometry["end_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 20);
+    geometry["player_2_win"] = new Obj;
+    geometry["player_2_win"]->init("models/Plane.obj", "textures/player_2_win.png", "textures/no_emission.png", "textures/no_emission.png", 20);
+
+    geometry["player_3_win"] = new Obj;
+    geometry["player_3_win"]->init("models/Plane.obj", "textures/player_3_win.png", "textures/no_emission.png", "textures/no_emission.png", 21);
+
+    geometry["player_4_win"] = new Obj;
+    geometry["player_4_win"]->init("models/Plane.obj", "textures/player_4_win.png", "textures/no_emission.png", "textures/no_emission.png", 22);
+
+    geometry["win_background"] = new Obj;
+    geometry["win_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 23);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -171,13 +181,25 @@ void Scene::init(void){
     model["start_menu_background"]->geometry = geometry["start_menu_background"];
     model["start_menu_background"]->material = material["ceramic"];
 
-    model["end_menu"] = new Model;
-    model["end_menu"]->geometry = geometry["end_menu"];
-    model["end_menu"]->material = material["ceramic"];
+    model["player_1_win"] = new Model;
+    model["player_1_win"]->geometry = geometry["player_1_win"];
+    model["player_1_win"]->material = material["ceramic"];
 
-    model["end_menu_background"] = new Model;
-    model["end_menu_background"]->geometry = geometry["end_menu_background"];
-    model["end_menu_background"]->material = material["ceramic"];
+    model["player_2_win"] = new Model;
+    model["player_2_win"]->geometry = geometry["player_2_win"];
+    model["player_2_win"]->material = material["ceramic"];
+
+    model["player_3_win"] = new Model;
+    model["player_3_win"]->geometry = geometry["player_3_win"];
+    model["player_3_win"]->material = material["ceramic"];
+
+    model["player_4_win"] = new Model;
+    model["player_4_win"]->geometry = geometry["player_4_win"];
+    model["player_4_win"]->material = material["ceramic"];
+
+    model["win_background"] = new Model;
+    model["win_background"]->geometry = geometry["win_background"];
+    model["win_background"]->material = material["ceramic"];
     //********************************************
     //*********** UI elem ************************
     //********************************************
@@ -501,13 +523,25 @@ void Scene::init(void){
     node["start_menu_background"]->models.push_back(model["start_menu_background"]);
     node["start_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    node["end_menu"] = new Node("end_menu");
-    node["end_menu"]->models.push_back(model["end_menu"]);
-    node["end_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["player_1_win"] = new Node("player_1_win");
+    node["player_1_win"]->models.push_back(model["player_1_win"]);
+    node["player_1_win"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    node["end_menu_background"] = new Node("end_menu_background");
-    node["end_menu_background"]->models.push_back(model["end_menu_background"]);
-    node["end_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["player_2_win"] = new Node("player_2_win");
+    node["player_2_win"]->models.push_back(model["player_2_win"]);
+    node["player_2_win"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["player_3_win"] = new Node("player_3_win");
+    node["player_3_win"]->models.push_back(model["player_3_win"]);
+    node["player_3_win"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["player_4_win"] = new Node("player_4_win");
+    node["player_4_win"]->models.push_back(model["player_4_win"]);
+    node["player_4_win"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["win_background"] = new Node("win_background");
+    node["win_background"]->models.push_back(model["win_background"]);
+    node["win_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
@@ -582,13 +616,25 @@ void Scene::init(void){
     node["screen"]->childnodes.push_back(node["start_menu_background"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
 
-    node["screen"]->childnodes.push_back(node["end_menu"]);
+    node["screen"]->childnodes.push_back(node["player_1_win"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(10.0f, 10.0f, 1.0f)));
-    node["screen"]->childnodes.push_back(node["end_menu_background"]);
+
+    node["screen"]->childnodes.push_back(node["player_2_win"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(10.0f, 10.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["player_3_win"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(10.0f, 10.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["player_4_win"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(10.0f, 10.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["win_background"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
+
+    // Set menus to be invisible by default
 
     // Create camera tree
     

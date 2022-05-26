@@ -70,6 +70,7 @@ namespace cse125framing {
 		AnimationTrigger animations;
 		RealNumber gameTime;
 		bool matchInProgress = true;
+		int winnerId = cse125constants::DEFAULT_WINNER_ID;
 	} ServerFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);

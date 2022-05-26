@@ -54,6 +54,7 @@ std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 bool gameStarted = false;
 bool matchInProgress = false;
 bool readyToReplay = false;
+int winnerId = cse125constants::DEFAULT_WINNER_ID;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -119,6 +120,13 @@ void initialize(void)
     //lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
     lastRenderTime = -50;
 
+    // Make win menus invisible by default
+    scene.node["player_1_win"]->visible = false;
+    scene.node["player_2_win"]->visible = false;
+    scene.node["player_3_win"]->visible = false;
+    scene.node["player_4_win"]->visible = false;
+    scene.node["win_background"]->visible = false;
+
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glLineWidth(3.0f);
@@ -163,16 +171,33 @@ void display(void)
 }
 
 // Toggles the visibility of the start menu and background
-void toggleStartMenuVisibility(bool visibility) {
+void toggleStartMenuVisibility(const bool& visibility) {
     scene.node["start_menu"]->visible = visibility;
     scene.node["start_menu_background"]->visible = visibility;
 }
 
 // Toggles the visibility of the end menu and background
-// TODO: Display a different end menu depending on who won?
-void toggleEndMenuVisibility(bool visibility) {
-    scene.node["end_menu"]->visible = visibility;
-    scene.node["end_menu_background"]->visible = visibility;
+void toggleEndMenuVisibility(const bool& visibility, const int& winnerId) {
+    switch (winnerId) {
+    case 0:
+        scene.node["player_1_win"]->visible = visibility;
+        scene.node["win_background"]->visible = visibility;
+        break;
+    case 1:
+        scene.node["player_2_win"]->visible = visibility;
+        scene.node["win_background"]->visible = visibility;
+        break;
+    case 2:
+        scene.node["player_3_win"]->visible = visibility;
+        scene.node["win_background"]->visible = visibility;
+        break;
+    case 3:
+        scene.node["player_4_win"]->visible = visibility;
+        scene.node["win_background"]->visible = visibility;
+        break;
+    default:
+        break;
+    }
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -568,7 +593,7 @@ void idle() {
 
     // Handle menu visibility
     toggleStartMenuVisibility(showStartMenu);
-    toggleEndMenuVisibility(showEndMenu);
+    toggleEndMenuVisibility(showEndMenu, winnerId);
 
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
@@ -589,7 +614,7 @@ void idle() {
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
-               // The match has ended
+               winnerId = frame->winnerId;
                matchInProgress = false;
             }
             // Delete the frame
