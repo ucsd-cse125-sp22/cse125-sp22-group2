@@ -85,7 +85,8 @@
     <None Include="packages.config" />
     <None Include="run2.sh" />
     <None Include="run4.sh" />
-    <None Include="shaders\lighting.frag" />
+    <None Include="shaders\lightingShadowsDisabled.frag" />
+    <None Include="shaders\lightingShadowsEnabled.frag" />
     <None Include="shaders\projective.vert" />
     <None Include="shaders\ui.frag" />
     <None Include="shaders\ui.vert" />
@@ -120,6 +121,7 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Cube.h" />
     <ClInclude Include="include\Debug.h" />
+    <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\Geometry.h" />
     <ClInclude Include="include\Game.h" />

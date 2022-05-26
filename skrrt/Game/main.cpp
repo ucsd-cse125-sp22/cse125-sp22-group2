@@ -22,6 +22,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "NetworkClient.hpp"
+#include "ShadowMapConstants.h"
 
 #include "../../../Config.hpp"
 #include "../../../Frame.hpp"
@@ -128,6 +129,10 @@ void initialize(void)
 
 void display(void)
 {
+    if (ENABLE_SHADOW_MAP) {
+        scene.calculateShadowMaps();
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     scene.draw(scene.node["world"]);
     scene.updateScreen();
@@ -353,10 +358,6 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         */
-            break;
-        case 'l':
-            scene.shader -> enablelighting = !(scene.shader -> enablelighting);
-            glutPostRedisplay();
             break;
         case 'u': 
             // Test to trigger gate animation 

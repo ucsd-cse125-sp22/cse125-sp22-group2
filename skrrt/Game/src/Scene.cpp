@@ -6,6 +6,7 @@ Scene.cpp contains the implementation of the draw command
 #include "Obj.h"
 #include "Debug.h"
 #include "TextureConstants.h"
+#include "ShadowMapConstants.h"
 
 // The scene init definition 
 #include "Scene.inl"
@@ -39,6 +40,17 @@ void Scene::draw(Node* current_node){
         count++;
     }
 
+    // tell shader what the depth maps are
+    if (ENABLE_SHADOW_MAP) {
+        shader->directionalDepthMap = directionalDepthMap;
+        for (int i = 0; i < spotDepthMaps.size(); i++) {
+            shader->spotDepthMaps[i] = spotDepthMaps[i];
+        }
+        for (int i = 0; i < pointDepthMaps.size(); i++) {
+            shader->pointDepthMaps[i] = pointDepthMaps[i];
+        }
+    }
+
     // Define stacks for depth-first search (DFS)
     std::stack < Node* > dfs_stack;
     std::stack < mat4 >  matrix_stack;
@@ -70,7 +82,7 @@ void Scene::draw(Node* current_node){
             shader->modelview = camera->view;
 			shader->texture_id = 0;
 
-			shader->is_particle = 1;
+			//shader->is_particle = 1;
 
 			// The draw command
 			shader->setUniforms();
@@ -88,7 +100,7 @@ void Scene::draw(Node* current_node){
 				shader->texture_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + TEXTURE_OFFSET;
 				shader->specular_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + SPECULAR_OFFSET;
 				shader->emission_id = (((cur->models[i])->geometry)->object_number) * NUM_TEXTURES + EMISSION_OFFSET;
-				shader->is_particle = 0;
+				//shader->is_particle = 0;
 
 				if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
 					std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";
@@ -110,6 +122,10 @@ void Scene::draw(Node* current_node){
         }
 
     } // End of DFS while loop.
+
+}
+
+void Scene::calculateShadowMaps() {
 
 }
 

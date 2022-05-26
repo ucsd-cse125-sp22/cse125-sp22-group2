@@ -75,7 +75,18 @@ public:
     std::map< std::string, PointLight* > pointLights;
     std::map< std::string, SpotLight* > spotLights;
     DirectionalLight* sun;
+
+    // Where the depth map textures live 
+	GLuint directionalDepthMap;
+	std::vector<GLuint> pointDepthMaps;
+	std::vector<GLuint> spotDepthMaps;
+
+    // Where the depth map frame buffers live 
+	GLuint directionalDepthMapFBO;
+	std::vector<GLuint> pointDepthMapsFBO;
+	std::vector<GLuint> spotDepthMapsFBO;
     
+
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
     std::map< std::string, Node* > node;
     
@@ -96,6 +107,8 @@ public:
     void drawText(void);
 
     void updateScreen(void);
+
+    void calculateShadowMaps();
     
     // destructor
     ~Scene(){

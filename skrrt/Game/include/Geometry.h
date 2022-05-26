@@ -46,23 +46,10 @@ public:
     
     void draw(SurfaceShader *shader){
         glBindVertexArray(vao);
-        
-        //draw black wire mesh
-        /*
-        shader->enablelighting = GL_FALSE;
-        shader->setUniforms();
-		glCullFace(GL_FRONT); 
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        glDrawElements(mode,count,type,0);
-        */
-        // draw normaly
-        //glEnable(GL_LINE_SMOOTH);
-        shader->enablelighting = GL_TRUE;
         shader->setUniforms();
 		glCullFace(GL_BACK); 
 	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         glDrawElements(mode,count,type,0);
-        
     }
 };
 
