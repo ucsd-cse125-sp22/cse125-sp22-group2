@@ -28,8 +28,8 @@
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1200;
-static const int height = 900;
+static const int width = cse125constants::WINDOW_WIDTH;
+static const int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -50,6 +50,8 @@ int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
 // Game restart variables
+// Note: the logic for starting the game and restarting is identical
+bool gameStarted = false;
 bool matchInProgress = false;
 bool readyToReplay = false;
 
@@ -135,9 +137,13 @@ void display(void)
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    scene.draw(scene.node["UI_root"]);
+    //scene.draw(scene.node["UI_root"]);
+    scene.drawUI();
 
-    scene.drawText();
+    // Only draw the text if the match is in progress
+    if (matchInProgress) {
+        scene.drawText();
+    }
 
     /*
 	std::cout << "car transformation : " << std::endl; 
@@ -154,6 +160,19 @@ void display(void)
 
     glutSwapBuffers();
     glFlush();
+}
+
+// Toggles the visibility of the start menu and background
+void toggleStartMenuVisibility(bool visibility) {
+    scene.node["start_menu"]->visible = visibility;
+    scene.node["start_menu_background"]->visible = visibility;
+}
+
+// Toggles the visibility of the end menu and background
+// TODO: Display a different end menu depending on who won?
+void toggleEndMenuVisibility(bool visibility) {
+    scene.node["end_menu"]->visible = visibility;
+    scene.node["end_menu_background"]->visible = visibility;
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -414,6 +433,10 @@ void keyboard(unsigned char key, int x, int y){
         case 'r':
             sendReplayToServer();         
             break;
+        // Key for starting the game initially
+        case ' ':
+            sendReplayToServer();
+            break;
 
         default:
             //glutPostRedisplay();
@@ -513,6 +536,7 @@ void idle() {
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
+		game.updateMakeupStatusBar(time, currentMakeupLevel);
 
         // Update all animations 
         game.updateAnimations(); 
@@ -539,11 +563,19 @@ void idle() {
         handleMoveRight();
     }
 
+    const bool showStartMenu = !gameStarted;
+    const bool showEndMenu = gameStarted && !matchInProgress;
+
+    // Handle menu visibility
+    toggleStartMenuVisibility(showStartMenu);
+    toggleEndMenuVisibility(showEndMenu);
+
     // Only get data from server once the client has registered with the server
     if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
         // Get data from server and allocate a new frame variable
 
         if (matchInProgress) {
+            // Hide the start menu
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
@@ -564,19 +596,19 @@ void idle() {
             delete frame;
         }
         else {
-            // Check for a packet from the server indicating that the game is ready to restart
+            // Check for a packet from the server indicating that the game is ready to begin OR restart
             if (readyToReplay) {
                 cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
                 cse125framing::ServerFrame* frame = receiveDataFromServer();
                 triggerAudio(frame->audio);
                 if (frame->matchInProgress) {
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
+                    gameStarted = true;
                     matchInProgress = true;
                     readyToReplay = false;
                 }
                 // Delete the frame
                 delete frame;
-
             }
         }
 
@@ -644,7 +676,7 @@ int main(int argc, char** argv)
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
-    matchInProgress = true;
+    matchInProgress = false;
     
     // Graphics binding
     initialize();

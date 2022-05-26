@@ -4,6 +4,7 @@ Camera is a class for a camera object.
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include "../../../Constants.hpp"
 
 #pragma once
 
@@ -25,7 +26,8 @@ public:
     glm::vec3 target_default = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 up_default = glm::vec3(0.0f, 1.0f, 0.0f);
     float fovy_default = 30.0f;
-    float aspect_default = 4.0f/3.0f;
+    //float aspect_default = 4.0f/3.0f;
+    float aspect_default = ((float)cse125constants::WINDOW_WIDTH) / cse125constants::WINDOW_HEIGHT;
     float near_default = 0.01f;
     float far_default = 500.0f;
     //float far_default = 100.0f;
