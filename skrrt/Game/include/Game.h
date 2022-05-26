@@ -34,6 +34,9 @@ private:
 	Node* drips = nullptr;
 	glm::mat4 initial_drip_transform;
 
+	Node* makeup_status_bar = nullptr; 
+	glm::mat4 initial_makeup_transform; 
+
 	std::vector<Node*> makeup_gate_arms;
 	std::vector<glm::mat4> initial_arm_transforms;
 
@@ -68,9 +71,14 @@ public:
 			if (child->name == "drips") {
 				drips = child;
 			}
+
+			if (child->name == "white_bar") {
+				makeup_status_bar = child;
+			}
 		}
 
 		initial_drip_transform = drips->modeltransforms[0];
+		initial_makeup_transform = makeup_status_bar->modeltransforms[0]; 
 
 		// Find makeup gate arms
 		for (Node* child : world->childnodes) {
@@ -88,7 +96,11 @@ public:
 		
 	}
 
+	void updateTime(RealNumber t) { game_time = t; }
+	float getTime() { return game_time; };
+
 	void updateDrips(int time, RealNumber makeupLevel); 
+	void updateMakeupStatusBar(int time, RealNumber makeupLevel); 
 	void updateAnimations(); 
 
 	void parseGateAnimation();

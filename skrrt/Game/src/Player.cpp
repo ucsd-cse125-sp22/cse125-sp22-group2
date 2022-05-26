@@ -14,7 +14,7 @@ void Player::moveCar(vec3 dir, vec3 up, vec3 pos) {
 	mat4 t = translate(pos);
 
 	mat4 s = scale(vec3(0.5f, 0.5f, 0.5f));
-	mat4 correction = rotate(-1.0f * radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
+	mat4 correction = rotate(-1.0f * radians(90.0f), up);
 
 	player_node->childtransforms[0] = animation_transform * t * s * correction * r;
 
@@ -81,7 +81,7 @@ void Player::updateParticles(float time) {
 	// Call update for the particle source 
 	for (Node* child : car_node->childnodes) {
 		if (child->isParticleSource) {
-			child->particles->Update(time, position, velocity);
+			child->particles->Update(time, position, velocity, this->current_speed > 0.0f);
 		}
 	}
 }

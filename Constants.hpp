@@ -10,4 +10,9 @@ namespace cse125constants {
 	// Please don't touch these  -- Emily 
 	const int NUM_TIRE_RACKS = 3; 
 	const int NUM_CONES = 3; 
+
+	//const float WINDOW_HEIGHT = 1200.0f;
+	//const float WINDOW_WIDTH = 900.0f;
+	const int WINDOW_WIDTH = 1920;
+	const int WINDOW_HEIGHT = 1080;
 }
