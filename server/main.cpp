@@ -43,6 +43,16 @@ int main()
     {
         // idle wait for clients
     }
+
+    // Wait for all clients to be be ready to start playing
+    std::cerr << "Waiting for clients to start playing..." << std::endl;
+    while (!server->readyToReplay()) {
+        // Idle wait
+    }
+    // Reset number of clients replaying
+    server->resetReplayStatus();
+    std::cerr << "All clients ready to start playing " << std::endl;
+
     // server loop
  
     while (runServer) 
@@ -82,6 +92,13 @@ int main()
                 // Track the priority order for this player
                 // Note: Higher values indicate higher priority
                 playerPriorities.at(clientFrame.id) = priorityCtr++;
+            }
+
+            // Ensure all players have a priority
+            for (int i = 0; i < playerPriorities.size(); i++) {
+                if (!playerPriorities.at(i)) {
+                    playerPriorities.at(i) = priorityCtr++;
+                }
             }
 
             // Empty the queue of all tasks

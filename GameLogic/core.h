@@ -5,6 +5,7 @@
 #include <glm/gtx/transform.hpp>
 #include <algorithm>
 #include <vector>
+#include <random>
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"
@@ -13,9 +14,11 @@
 #include <math.h>
 
 using namespace std;
+using namespace cse125config;
 
 // Game parameters
-const float MATCH_LENGTH = 30.0f; //180.0f;
+// const float MATCH_LENGTH = 120.0f;
+const float SCORE_INCREASE = 3.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
@@ -23,7 +26,7 @@ const float MAP_RADIUS = 31.5f; //63.5f; // For big map
 
 // Makeup
 const float MAKEUP_MAX = 100.0f;
-const float MAKEUP_DECREASE_RATE = 1.0f;
+const float MAKEUP_DECREASE_RATE = 3.0f;
 const float MAKEUP_BOOTH_TIME = 2.0f;
 
 // Max Speeds
@@ -43,6 +46,10 @@ const float SPEED_THRESHOLD = 0.75f;
 const float SPEED_STEAL_CROWN = 1.2f;
 const float SPEED_LEAVE_BOOTH = 1.5f;
 const float MAX_ADJUSTMENT = 0.5f;
+
+// Powerup
+const float POWERUP_SPEED = 0.7f;
+const float POWERUP_TIME = 2.0f;
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;
@@ -70,9 +77,9 @@ const float BOOTH_WALL_R_HEIGHT = 2.98f;
 const float BOOTH_BAR_LENGTH = 0.2f;
 const float BOOTH_BAR_WIDTH = 4.15f;
 const float BOOTH_BAR_HEIGHT = 0.98f;
-const float BOOTH_MAKEUP_LENGTH = 1.0f;
-const float BOOTH_MAKEUP_WIDTH = 1.0f;
-const float BOOTH_MAKEUP_HEIGHT = 1.0f;
+const float BOOTH_MAKEUP_LENGTH = 0.8f;
+const float BOOTH_MAKEUP_WIDTH = 0.8f;
+const float BOOTH_MAKEUP_HEIGHT = 0.8f;
 const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.2f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 2.0f);

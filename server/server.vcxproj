@@ -156,6 +156,7 @@
     <ClInclude Include="..\GameLogic\ObjFloor.hpp" />
     <ClInclude Include="..\GameLogic\ObjMakeup.hpp" />
     <ClInclude Include="..\GameLogic\ObjPlayer.hpp" />
+    <ClInclude Include="..\GameLogic\ObjPowerup.hpp" />
     <ClInclude Include="..\GameLogic\ObjTrail.hpp" />
     <ClInclude Include="..\GameLogic\ObjWall.hpp" />
     <ClInclude Include="..\GameLogic\PhysicalObject.hpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="..\GameLogic\ObjFloor.cpp" />
     <ClCompile Include="..\GameLogic\ObjMakeup.cpp" />
     <ClCompile Include="..\GameLogic\ObjPlayer.cpp" />
+    <ClCompile Include="..\GameLogic\ObjPowerup.cpp" />
     <ClCompile Include="..\GameLogic\ObjTrail.cpp" />
     <ClCompile Include="..\GameLogic\ObjWall.cpp" />
     <ClCompile Include="..\GameLogic\PhysicalObject.cpp" />

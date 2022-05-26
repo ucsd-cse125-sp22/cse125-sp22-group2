@@ -5,7 +5,7 @@
 cse125gameaction::GameActionTracker::GameActionTracker(unsigned int numPlayers)
 {
 	for (unsigned int i = 0; i < numPlayers; i++) {
-		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer();
+		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer{ 0, 0, 0, 0 };
 		this->tracker.push_back(container);
 	}
 }

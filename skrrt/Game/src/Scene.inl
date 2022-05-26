@@ -47,15 +47,15 @@ void Scene::init(void){
     geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station"] = new Obj; 
-    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
     geometry["makeup_station_bar"] = new Obj; 
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
 
     geometry["tire_rack"] = new Obj; 
-    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["cones"] = new Obj; 
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
     //*****************************
     //********** UI obj ***********
@@ -85,6 +85,19 @@ void Scene::init(void){
 
     geometry["white_bar"] = new Obj;
     geometry["white_bar"]->init("models/StatusBar.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 16);
+
+    geometry["start_menu"] = new Obj;
+    geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
+    // Large background to cover up what the start menu doesn't cover up
+    geometry["start_menu_background"] = new Obj;
+    geometry["start_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+
+    geometry["end_menu"] = new Obj;
+    geometry["end_menu"]->init("models/Plane.obj", "textures/game_over.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+
+    geometry["end_menu_background"] = new Obj;
+    geometry["end_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 20);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -152,6 +165,21 @@ void Scene::init(void){
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
 
+    model["start_menu"] = new Model;
+    model["start_menu"]->geometry = geometry["start_menu"];
+    model["start_menu"]->material = material["ceramic"];
+
+    model["start_menu_background"] = new Model;
+    model["start_menu_background"]->geometry = geometry["start_menu_background"];
+    model["start_menu_background"]->material = material["ceramic"];
+
+    model["end_menu"] = new Model;
+    model["end_menu"]->geometry = geometry["end_menu"];
+    model["end_menu"]->material = material["ceramic"];
+
+    model["end_menu_background"] = new Model;
+    model["end_menu_background"]->geometry = geometry["end_menu_background"];
+    model["end_menu_background"]->material = material["ceramic"];
     //********************************************
     //*********** UI elem ************************
     //********************************************
@@ -467,6 +495,22 @@ void Scene::init(void){
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
+    node["start_menu"] = new Node("start_menu");
+    node["start_menu"]->models.push_back(model["start_menu"]);
+    node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["start_menu_background"] = new Node("start_menu_background");
+    node["start_menu_background"]->models.push_back(model["start_menu_background"]);
+    node["start_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["end_menu"] = new Node("end_menu");
+    node["end_menu"]->models.push_back(model["end_menu"]);
+    node["end_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["end_menu_background"] = new Node("end_menu_background");
+    node["end_menu_background"]->models.push_back(model["end_menu_background"]);
+    node["end_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
     node["clock"] = new Node("clock");
@@ -531,6 +575,20 @@ void Scene::init(void){
 
     node["screen"]->childnodes.push_back(node["drips"]); 
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["start_menu"]);
+    // TODO: Dynamic scaling? based on window size
+    const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
+    const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(START_MENU_SCALE * START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
+    // Scale the background to be very large
+    node["screen"]->childnodes.push_back(node["start_menu_background"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["end_menu"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(10.0f, 10.0f, 1.0f)));
+    node["screen"]->childnodes.push_back(node["end_menu_background"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
