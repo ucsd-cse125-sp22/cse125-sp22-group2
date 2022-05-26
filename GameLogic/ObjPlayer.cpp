@@ -54,7 +54,7 @@ ObjPlayer::~ObjPlayer() {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ObjPlayer::step() {
+void ObjPlayer::step(float gameTime) {
 	// Reset crash and crown check
 	crashed = false;
 	tookCrown = false;
@@ -82,8 +82,10 @@ void ObjPlayer::step() {
 	// Increase score, currently set to not increase while invincible/stunning/fixing makeup
 	// Eventually this will probably be based on the amount of time left in the match, which
 	// would probably be passed in as a parameter
-	if (hasCrown && booth == -1 && !stun) {
-		score += SCORE_INCREASE / cse125config::TICK_RATE;
+	//if (hasCrown && booth == -1 && !stun) {
+	if (hasCrown && !stun) {
+		const float scoreModifier = SCORE_INCREASE * SCORE_WEIGHT * (cse125config::MATCH_LENGTH - gameTime) / cse125config::MATCH_LENGTH;
+		score += (SCORE_INCREASE + scoreModifier) / cse125config::TICK_RATE;
 	}
 
 	// Makeup station
@@ -236,6 +238,15 @@ void ObjPlayer::move(glm::vec3 dir) {
 		if (obj->type == oPlayer) {
 			glm::vec3 d = glm::normalize(obj->position - this->position);
 			((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			// Don't waste adjustment if player was pushed entirely out of the way
+			//if (!bounding::checkCollision(bb, obj->boundingBox)) {
+			//	// Crashed, so momentum is reset
+			//	if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
+			//		this->crashed = true;
+			//		this->momentum = 0.0f;
+			//	}
+			//	continue;
+			//}
 		}
 
 		// Try to enter a makeup station

@@ -135,7 +135,7 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 	}
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
-			((ObjPlayer*)objects->at(i))->step();
+			((ObjPlayer*)objects->at(i))->step(gameTime);
 		}
 		else if (objects->at(i)->type == oMakeup) {
 			((ObjMakeup*)objects->at(i))->step();

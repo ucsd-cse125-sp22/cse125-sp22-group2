@@ -19,6 +19,7 @@ using namespace cse125config;
 // Game parameters
 // const float MATCH_LENGTH = 120.0f;
 const float SCORE_INCREASE = 3.0f;
+const float SCORE_WEIGHT = 1.0f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);

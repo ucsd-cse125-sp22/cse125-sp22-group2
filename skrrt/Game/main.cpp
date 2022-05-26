@@ -336,21 +336,25 @@ void keyboard(unsigned char key, int x, int y){
             scene.camera -> reset();
             glutPostRedisplay();
             break;
+        case 'A':
         case 'a':
             //handleMoveLeft();
             triggers["left"] = true;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             //handleMoveRight();
             triggers["right"] = true;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             //handleMoveForward();
             triggers["up"] = true;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = true;
             //handleMoveBackward();
@@ -446,18 +450,22 @@ void keyboard(unsigned char key, int x, int y){
 
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
+        case 'A':
         case 'a':
             triggers["left"] = false;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             triggers["right"] = false;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             triggers["up"] = false;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = false;
             //glutPostRedisplay();

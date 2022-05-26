@@ -49,7 +49,7 @@ public:
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);
 	~ObjPlayer();
 
-	void step();
+	void step(float gameTime);
 	// Anything that happens because of user input goes here, calls move function to handle crown transfer
 	void action(glm::vec3 dir);
 	// Call when no action is performed
