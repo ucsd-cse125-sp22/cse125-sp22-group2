@@ -62,7 +62,7 @@ public:
 	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 	// Special movement function for when another player is pushing you
-	void movePushed(glm::vec3 dir, float pushSpeed);
+	bool movePushed(glm::vec3 dir, float pushSpeed);
 	// Apply gravity if there is no object directly below us
 	void applyGravity();
 	// Adhere to the terrain

@@ -233,11 +233,12 @@ void ObjPlayer::move(glm::vec3 dir) {
 	// Go through every object we collided with (this includes non-solids that we can overlap with)
 	for (unsigned int i = 0; i < collisions.size(); i++) {
 		PhysicalObject*& obj = this->objects->at(collisions[i]);
-
+		bool pushCheck = false;
 		// Push other players
 		if (obj->type == oPlayer) {
 			glm::vec3 d = glm::normalize(obj->position - this->position);
-			((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			
 			// Don't waste adjustment if player was pushed entirely out of the way
 			//if (!bounding::checkCollision(bb, obj->boundingBox)) {
 			//	// Crashed, so momentum is reset
@@ -263,10 +264,16 @@ void ObjPlayer::move(glm::vec3 dir) {
 			// Crashed, so momentum is reset
 			if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
 				this->crashed = true;
+
 			}
 			momentum = 0.0f;
 			if (speed < SPEED_THRESHOLD) {
-				speed = 0.0f;
+				if (pushCheck) {
+					speed = min(speed, maxSpeed * 0.5f);
+				}
+				else {
+					speed = 0.0f;
+				}
 			}
 
 			//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
@@ -373,10 +380,10 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 	return false;
 }
 
-void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
+bool ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	glm::vec3 destination = this->position + pushSpeed * dir;
 	BoundingBox bb = generateBoundingBox(destination, this->direction, this->up);
-
+	bool result = true;
 	// Make sure we don't get pushed out of the arena
 	glm::vec3 arenaAdjustment = bounding::checkCollisionRadius(bb, MAP_CENTER, MAP_RADIUS);
 	if (glm::length(arenaAdjustment) > 0.0f) {
@@ -386,6 +393,7 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 		momentum = 0.0f;
 		destination += arenaAdjustment;
 		bb = generateBoundingBox(destination, dir, this->up);
+		result = false;
 	}
 
 	vector<int> collisions = findCollisionObjects(bb);
@@ -393,7 +401,9 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 		// Push other players
 		if (this->objects->at(collisions[i])->type == oPlayer) {
 			glm::vec3 d = glm::normalize(this->objects->at(collisions[i])->position - this->position);
-			((ObjPlayer*)this->objects->at(collisions[i]))->movePushed(dir, glm::dot(d, dir * pushSpeed));
+			if (glm::dot(d, dir) > 0.25f) {
+				((ObjPlayer*)this->objects->at(collisions[i]))->movePushed(dir, glm::dot(d, dir * pushSpeed));
+			}
 		}
 
 		if (this->objects->at(collisions[i])->solid) {
@@ -401,12 +411,14 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 				this->crashed = true;
 			}
 			momentum = 0.0f;
-			return;
+			result = false;
+			return result;
 		}
 	}
 	this->momentum = min(MAX_MOMENTUM, momentum + glm::distance(destination, position));
 	this->position = destination;
 	this->boundingBox = bb;
+	return result;
 }
 
 void ObjPlayer::applyGravity() {
