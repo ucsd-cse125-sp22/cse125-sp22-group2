@@ -115,6 +115,8 @@ public:
 	//void stopMusic(const char* soundName);
 	void triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
 
+	void compute3dLocation(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
+
 };
 
 

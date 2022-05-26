@@ -43,6 +43,11 @@ void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLoop
 	FMOD::Sound* fmod_sound = nullptr;
 	AudioEngine::errorCheck(e, AudioEngine::system->createSound(AudioEngine::loadFile(soundName).c_str(), mode, nullptr, &fmod_sound));
 
+	// Set 3D parameters
+	if (is3d) {
+		fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE);
+	}
+
 	if (fmod_sound)
 	{
 		library[soundName] = fmod_sound;

@@ -268,7 +268,6 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
         {
         case AudioId::COLLISION:
             // game.triggerCarCollisionAudio(audio.position);
-            // CROWN CHANGE SOUND HERE
             break;
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav");
@@ -407,7 +406,12 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'n':
             // Audio Engine
-            game.triggerFx("GetCrown.wav", glm::vec3{ -25,0,0 });
+            game.compute3dLocation(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 10,0,0 });
+            //game.triggerFx("Collision.wav", glm::vec3{ 25,0,0 });
+            break;
+        case 'b':
+            // Audio Engine
+            game.triggerFx("Collision.wav", vec3{ -5,0,0 });
             break;
 
         case 'p': 

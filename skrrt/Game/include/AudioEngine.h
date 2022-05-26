@@ -11,6 +11,9 @@ AudioEngine is a class to manage all sounds for the game
 
 #define MAX_CHANNELS 32
 
+#define MIN_3D_DISTANCE 0
+#define MAX_3D_DISTANCE 15
+
 class AudioEngine
 {
 public:
@@ -21,15 +24,17 @@ public:
 	} metadata;
 
 	const std::unordered_map<std::string, metadata> audioFiles {
-		{ "MenuTheme.wav", {false, true, true}},
+		//                  <3d>   <loop>  <stream>
+		{ "MenuTheme.wav", {false, true,   true}},
 		//{ "BattleTheme.wav", {false, true, true}},
 		{ "WinTheme.wav", {false, false, true}},
 		{ "LoseTheme.wav", {false, false, true}},
 		{ "GetCrown.wav", {false, false, false}},
 		{ "OneMinuteLeft.wav", {false, false, false}},
 		//{ "Horn.wav", {true, false, false}},
-		//{ "Makeup.wav", {false, false, false}},
-		//{ "Engine.wav", {true, true, false}},
+		{ "Makeup.wav", {false, false, false}},
+		{ "Engine.wav", {true, true, false}},
+		{ "Collision.wav", {true, false, false}},
 	};
 
 	AudioEngine();
