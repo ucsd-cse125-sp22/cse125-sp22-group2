@@ -18,9 +18,14 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
 
 	// Scale makeup status bar based on the makeup level
-	glm::mat4 scale = glm::scale(glm::vec3(((float)makeupLevel / 100.0f), 1.0f, 1.0f));
+	//glm::mat4 scale = glm::scale(glm::vec3(((float)makeupLevel / 100.0f), 1.0f, 1.0f));
 
-	makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
+	//makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
+
+	float max_offset = -2.0f; 
+	glm::mat4 translate = glm::translate(glm::vec3(max_offset * (1 - (float)makeupLevel / 100.0f), 0.0f, 0.0f));
+	makeup_status_bar->modeltransforms[0] = translate * initial_drip_transform;
+
 }
 
 // *******************************************

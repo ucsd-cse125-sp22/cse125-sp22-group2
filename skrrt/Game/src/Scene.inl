@@ -77,12 +77,14 @@ void Scene::init(void){
     geometry["crown_icon"]->init("models/Plane.obj", "textures/Crown_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 13);
 
     geometry["mascara_icon"] = new Obj;
-    geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 14);
+    //geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 14);
+    geometry["mascara_icon"]->init("models/Plane.obj", "textures/LipstickBase.png", "textures/map_specular.png", "textures/map_emission.png", 14);
     geometry["mascara_bar"] = new Obj;
-    geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
+    //geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
+    geometry["mascara_bar"]->init("models/Plane.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 15);
 
     geometry["white_bar"] = new Obj;
-    geometry["white_bar"]->init("models/StatusBar.obj", "textures/white.png", "textures/map_specular.png", "textures/map_emission.png", 16);
+    geometry["white_bar"]->init("models/StatusBar.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 16);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -503,7 +505,8 @@ void Scene::init(void){
 
     //node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    const float clock_ratio = 85.0f / 101.0f; 
+    //const float clock_ratio = 85.0f / 101.0f; 
+    const float clock_ratio = 407.0f / 514.0f; 
     node["screen"]->childnodes.push_back(node["clock"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
@@ -517,12 +520,12 @@ void Scene::init(void){
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
 
-    const float mascara_icon_ratio = 179.0f / 177.0f; 
-    const float mascara_bar_ratio = 557.0f / 70.0f;
+    const float mascara_icon_ratio = 1782.0f / 751.0f; 
+    const float mascara_bar_ratio = 1440.0f / 353.0f;
     node["screen"]->childnodes.push_back(node["mascara_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-10.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
-    node["screen"]->childnodes.push_back(node["mascara_bar"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -20.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    //node["screen"]->childnodes.push_back(node["mascara_bar"]);
+    //node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["white_bar"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
 
