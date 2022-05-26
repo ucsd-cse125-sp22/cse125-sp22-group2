@@ -379,6 +379,12 @@ void ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 
 	vector<int> collisions = findCollisionObjects(bb);
 	for (unsigned int i = 0; i < collisions.size(); i++) {
+		// Push other players
+		if (this->objects->at(collisions[i])->type == oPlayer) {
+			glm::vec3 d = glm::normalize(this->objects->at(collisions[i])->position - this->position);
+			((ObjPlayer*)this->objects->at(collisions[i]))->movePushed(dir, glm::dot(d, dir * pushSpeed));
+		}
+
 		if (this->objects->at(collisions[i])->solid) {
 			if (!iframes && momentum >= MOMENTUM_CRASH_THRESHOLD) {
 				this->crashed = true;
