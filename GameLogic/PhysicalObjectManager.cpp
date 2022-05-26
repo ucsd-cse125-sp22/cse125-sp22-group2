@@ -8,7 +8,7 @@ PhysicalObjectManager::PhysicalObjectManager()
 	this->uniformGrid = nullptr;
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
 
-	gameTime = MATCH_LENGTH;
+	gameTime = cse125config::MATCH_LENGTH;
 }
 
 PhysicalObjectManager::~PhysicalObjectManager()

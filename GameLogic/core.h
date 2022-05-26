@@ -17,7 +17,7 @@ using namespace std;
 using namespace cse125config;
 
 // Game parameters
-const float MATCH_LENGTH = 120.0f;
+// const float MATCH_LENGTH = 120.0f;
 const float SCORE_INCREASE = 3.0f;
 
 // Map
