@@ -443,13 +443,12 @@ void keyboard(unsigned char key, int x, int y){
             break;
         // Key for starting the game initially
         case ' ':
-            if (matchInProgress) {
-                handleSpace();
-            } else {
-                sendReplayToServer();
-            }
+            handleSpace();
+            sendReplayToServer();
             break;
-
+        case 'q':
+            handleSpace();
+            break;
         default:
             //glutPostRedisplay();
             break;

@@ -144,9 +144,9 @@ void ObjPlayer::step(float gameTime) {
 		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * this->speed / 2.0f, this->direction, this->up));
 	}
 
-	if (!id) {
-		cout << hasPowerup << " " << powerupTime << " " << speed << "\n";
-	}
+	//if (!id) {
+	//	cout << hasPowerup << " " << powerupTime << " " << speed << "\n";
+	//}
 
 	// TODO: uncomment this probably
 	//if (!id) {
@@ -158,14 +158,18 @@ void ObjPlayer::step(float gameTime) {
 }
 
 void ObjPlayer::action(glm::vec3 dir, bool trigger) {
-	// Can't move when stunned or locked in booth
-	if (!stun && !boothTime) {
-		if (trigger && hasPowerup) {
+	if (trigger) {
+		if (hasPowerup && !stun && !boothTime) {
 			this->powerupTime = POWERUP_TIME;
 			this->hasPowerup = false;
-			return;
 		}
+		else if (!boothTime) {
+			idle();
+		}
+	}
 
+	// Can't move when stunned or locked in booth
+	if (!stun && !boothTime) {
 		// Increase speed (Note: if we are above the max speed we need to ignore this)
 		if (speed < maxSpeed) {
 			speed = min(maxSpeed, speed + SPEED_FORCE);

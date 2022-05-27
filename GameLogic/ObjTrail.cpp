@@ -24,11 +24,11 @@ ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, unsigned i
 	this->id = id;
 
 	this->position = position;
-	this->length = 0.8f;
-	this->width = 0.8f;
-	this->height = 0.8f;
+	this->length = TRAIL_DIMENSIONS;
+	this->width = TRAIL_DIMENSIONS;
+	this->height = TRAIL_DIMENSIONS;
 
-	this->speed = 1.0f;
+	this->speed = 0.0f;
 
 	this->direction = direction;
 	this->up = up;
@@ -37,7 +37,7 @@ ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, unsigned i
 	this->solid = false;
 
 	this->playerID = playerID;
-	this->life = 100.0f;
+	this->life = TRAIL_LIFE;
 }
 
 ObjTrail::~ObjTrail() {

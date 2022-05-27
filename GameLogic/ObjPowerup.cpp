@@ -23,10 +23,11 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 	this->objects = objects;
 	this->id = id;
 
+	this->distribution = uniform_int_distribution<int>(0, locations.size() - 1);
 	this->position = locations.at(distribution(generator));
-	this->length = 1.0f;
-	this->width = 1.0f;
-	this->height = 1.0f;
+	this->length = POWERUP_DIMENSIONS;
+	this->width = POWERUP_DIMENSIONS;
+	this->height = POWERUP_DIMENSIONS;
 
 	this->speed = 0.0f;
 

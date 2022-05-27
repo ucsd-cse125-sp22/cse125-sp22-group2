@@ -141,7 +141,6 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 		}
 	}
 
-	vector<unsigned int> deletions{};
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
 			((ObjPlayer*)objects->at(i))->step(gameTime);
@@ -152,19 +151,16 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 		else if (objects->at(i)->type == oTrail) {
 			((ObjTrail*)objects->at(i))->step();
 			if (((ObjTrail*)(objects->at(i)))->life <= 0.0f) {
-				deletions.push_back(i);
+				delete objects->at(i);
+				objects->at(i) = objects->at(objects->size() - 1);
+				objects->pop_back();
+				i--;
 			}
 			
 		}
 		else if (objects->at(i)->type == oPowerup) {
 			((ObjPowerup*)objects->at(i))->step();
 		}
-	}
-
-
-	for (int i = deletions.size() - 1; i >= 0; i--) {
-		objects->at(deletions.at(i)) = objects->at(objects->size() - 1);
-		objects->pop_back();
 	}
 }
 

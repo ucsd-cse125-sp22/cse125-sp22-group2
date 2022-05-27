@@ -52,6 +52,12 @@ const float MAX_ADJUSTMENT = 0.5f;
 const float POWERUP_SPEED = 0.7f;
 const float POWERUP_TIME = 2.0f;
 const float POWERUP_RESPAWN_TIME = 10.0f;
+const float POWERUP_DIMENSIONS = 1.0f;
+
+// Trail
+const float TRAIL_LIFE = 2.5f;
+const float TRAIL_DIMENSIONS = 1.0f;
+
 
 // Gravity
 const float GRAVITY_MAX = 0.1f;

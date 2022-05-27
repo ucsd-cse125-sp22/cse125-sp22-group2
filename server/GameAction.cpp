@@ -36,6 +36,9 @@ void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey mo
 	case MovementKey::BACKWARD:
 		this->moveBackward(playerId);
 		break;
+	case MovementKey::SPACE:
+		this->moveAction(playerId);
+		break;
 	default:
 		break;		
 	}
