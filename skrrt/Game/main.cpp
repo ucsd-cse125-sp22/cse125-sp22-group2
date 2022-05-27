@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <format>
 // OSX systems need their own headers
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -70,6 +71,17 @@ static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
 
+std::string makeMatchEndText(int playerId, int winnerId) {
+    std::string matchEndText = "";
+    if (playerId == winnerId) {
+        matchEndText = "You won the pageant! Press Space to play again!";
+    }
+    else {
+        matchEndText = "Player " + std::to_string(winnerId + 1) + " won the pageant! Better luck next time! Press Space to play again!";
+    }
+    return matchEndText;
+}
+
 void printHelp(){
 
         /*
@@ -125,13 +137,6 @@ void initialize(void)
     //lastRenderTime = glutGet(GLUT_ELAPSED_TIME);
     lastRenderTime = -50;
 
-    // Make win menus invisible by default
-    scene.node["player_1_win"]->visible = false;
-    scene.node["player_2_win"]->visible = false;
-    scene.node["player_3_win"]->visible = false;
-    scene.node["player_4_win"]->visible = false;
-    scene.node["win_background"]->visible = false;
-
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glLineWidth(3.0f);
@@ -153,9 +158,14 @@ void display(void)
     //scene.draw(scene.node["UI_root"]);
     scene.drawUI();
 
-    // Only draw the text if the match is in progress
-    if (matchInProgress) {
-        scene.drawText();
+
+    // Create the end of match text
+    const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
+    if (showMatchEndText) {
+        scene.drawText(true, makeMatchEndText(clientId, winnerId));
+    }
+    else {
+        scene.drawText(false);
     }
 
     /*
@@ -180,34 +190,6 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
-        scene.node["start_menu_background"]->visible = visibility;
-    }
-}
-
-// Toggles the visibility of the end menu and background
-void toggleEndMenuVisibility(const bool& visibility, const int& winnerId) {
-    if (visibility != winScreenVisibility) {
-        winScreenVisibility = visibility;
-        switch (winnerId) {
-        case 0:
-            scene.node["player_1_win"]->visible = visibility;
-            scene.node["win_background"]->visible = visibility;
-            break;
-        case 1:
-            scene.node["player_2_win"]->visible = visibility;
-            scene.node["win_background"]->visible = visibility;
-            break;
-        case 2:
-            scene.node["player_3_win"]->visible = visibility;
-            scene.node["win_background"]->visible = visibility;
-            break;
-        case 3:
-            scene.node["player_4_win"]->visible = visibility;
-            scene.node["win_background"]->visible = visibility;
-            break;
-        default:
-            break;
-        }
     }
 }
 
@@ -607,7 +589,6 @@ void idle() {
     const bool showStartMenu = !gameStarted;
     const bool showEndMenu = gameStarted && !matchInProgress;
     toggleStartMenuVisibility(showStartMenu);
-    toggleEndMenuVisibility(showEndMenu, winnerId);
 
     // Handle server communication
     const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
@@ -635,6 +616,8 @@ void idle() {
         else {
             if (waitingToStartMatch) {
                 cse125debug::log(LOG_LEVEL_INFO, "Waiting for match start packet from server...\n");
+                // Reset the winner id for this new match
+                winnerId = cse125constants::DEFAULT_WINNER_ID;
                 cse125framing::ServerFrame* frame = receiveDataFromServer();
                 triggerAudio(frame->audio);
                 if (frame->matchInProgress) {
