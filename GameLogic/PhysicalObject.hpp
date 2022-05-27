@@ -8,7 +8,7 @@ using namespace bounding;
 // Object types
 // To add an object type, add it to the enum and make a class that inherits PhysicalObject (format is Obj + name of object)
 // Make sure its type in the .hpp is correct and add a case to createObject in PhysicalObjectManager for it
-enum ObjectType { oPlayer, oWall, oFloor, oCrown, oMakeup, oTrail, oOther };
+enum ObjectType { oPlayer, oWall, oFloor, oCrown, oMakeup, oTrail, oPowerup, oOther };
 
 class PhysicalObject
 {
@@ -44,6 +44,8 @@ public:
 
 	// Basic boolean collision check that terminates immediately if a collision with a solid object is found
 	bool checkPlaceFree(BoundingBox bb);
+	// Basic boolean collision check that terminates immediately if a collision with any object is found
+	bool checkPlaceEmpty(BoundingBox bb);
 	// Longer collision check that collects the id of every object collided with
 	vector<int> findCollisionObjects(BoundingBox bb);
 	// Longer collision check that collects the id of every object collided with of the given type

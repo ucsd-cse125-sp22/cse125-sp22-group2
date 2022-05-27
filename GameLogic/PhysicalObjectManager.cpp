@@ -8,7 +8,7 @@ PhysicalObjectManager::PhysicalObjectManager()
 	this->uniformGrid = nullptr;
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
 
-	gameTime = MATCH_LENGTH;
+	gameTime = cse125config::MATCH_LENGTH;
 }
 
 PhysicalObjectManager::~PhysicalObjectManager()
@@ -28,11 +28,11 @@ void PhysicalObjectManager::startGame() {
 	// Create walls and floors
 
 	// Very basic map
-	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oCrown, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(0.0f, 0.0f, -21.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	createObject(oCrown, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	// Add 180 degrees to value in scene graph or maybe 180 - degrees from scene graph?
 	createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
 	createObject(oMakeup, glm::vec3(-20.0f, 0.0, 20.0f), glm::vec3(cos(-135.0f * float(M_PI) / 180.0f), 0.0f, sin(-135.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -132,6 +132,12 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
 			((ObjPlayer*)objects->at(i))->step();
+		}
+		else if (objects->at(i)->type == oMakeup) {
+			((ObjMakeup*)objects->at(i))->step();
+		}
+		else if (objects->at(i)->type == oPowerup) {
+			((ObjPowerup*)objects->at(i))->step();
 		}
 	}
 }

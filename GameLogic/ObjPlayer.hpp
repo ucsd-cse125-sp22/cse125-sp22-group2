@@ -5,6 +5,7 @@
 #include "ObjCrown.hpp"
 #include "ObjTrail.hpp"
 #include "ObjMakeup.hpp"
+#include "ObjPowerup.hpp"
 
 class ObjPlayer : public PhysicalObject
 {
@@ -40,6 +41,8 @@ public:
 	float maxSpeed;
 	// Speed drop when above the speed threshold
 	float thresholdDecay;
+	// How much longer we have the powerup
+	float powerupTime;
 
 
 	ObjPlayer();

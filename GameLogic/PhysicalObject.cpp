@@ -40,6 +40,20 @@ bool PhysicalObject::checkPlaceFree(BoundingBox bb) {
 	return true;
 }
 
+bool PhysicalObject::checkPlaceEmpty(BoundingBox bb)
+{
+	int objCount = this->objects->size();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (i == this->id) {
+			continue;
+		}
+		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 	int objCount = this->objects->size();
 	vector<int> collisions = vector<int>();
