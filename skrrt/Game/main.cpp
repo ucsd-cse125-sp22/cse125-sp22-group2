@@ -410,7 +410,7 @@ void keyboard(unsigned char key, int x, int y){
         case 'n':
         {
             // Audio Engine
-            vec3 position = game.compute3dLocation(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
+            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
             game.triggerFx("Collision.wav", position);
             //game.triggerFx("Collision.wav", glm::vec3{ 25,0,0 });
             break;
