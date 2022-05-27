@@ -58,7 +58,7 @@ void PhysicalObjectManager::startGame() {
 	//createObject(oWall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
 }
 
-void PhysicalObjectManager::endGame() {
+void PhysicalObjectManager::endGame(int* winnerId) {
 	unsigned int winner = 0;
 	float winner_score = 0.0f;
 	for (unsigned int i = 0; i < objects->size(); i++) {
@@ -69,6 +69,8 @@ void PhysicalObjectManager::endGame() {
 			}
 		}
 	}
+	// Set the winner id (note that it is 0-indexed, not 1-indexed)
+	*winnerId = winner;
 	cout << "The game has ended!  Player " << winner + 1 << " has won!\n";
 }
 
@@ -120,12 +122,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
 }
 
-void PhysicalObjectManager::step(bool* matchInProgress) {
+
+void PhysicalObjectManager::step(bool* matchInProgress, int* winnerId) {
 	if (gameTime > 0.0f) {
 		gameTime -= 1.0f / cse125config::TICK_RATE;
 		if (gameTime <= 0.0f) {
 			gameTime = 0.0f;
-			endGame();
+			endGame(winnerId);
 			*matchInProgress = false;
 		}
 	}
