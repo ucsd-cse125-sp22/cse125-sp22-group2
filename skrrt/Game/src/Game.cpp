@@ -35,11 +35,14 @@ void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
 void Game::parseGateAnimation() {
 
 	const char* path = "animations/makeup_gate.txt";
+	const char* lipstick_path = "animations/lipstick.txt";
 
 	for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
 		animations["gate_anim" + std::to_string(i)] = new Animation();
-
 		animations["gate_anim" + std::to_string(i)]->readAnimation(path);
+
+		animations["lipstick_anim" + std::to_string(i)] = new Animation(); 
+		animations["lipstick_anim" + std::to_string(i)]->readAnimation(lipstick_path);
 	}
 	
 	std::cout << "Successfully read in gate animation" << std::endl;
@@ -50,6 +53,7 @@ void Game::parseGateAnimation() {
  */
 void Game::triggerGateAnimation(int gateNum) {
 	animations["gate_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["lipstick_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 }
 
 // *******************************************
@@ -97,6 +101,9 @@ void Game::applyAnimations() {
 
 		// Apply the transformations to the gate's arm
 		makeup_gate_arms[i]->modeltransforms[0] = initial_arm_transforms[i] * new_transformation;
+
+		new_transformation = animations["lipstick_anim" + std::to_string(i)]->getCurrentTransform(); 
+		lipsticks[i]->modeltransforms[0] = initial_lipstick_transforms[i] * new_transformation;
 	}
 
 	// Car collision animations 

@@ -38,6 +38,9 @@ private:
 	std::vector<Node*> makeup_gate_arms;
 	std::vector<glm::mat4> initial_arm_transforms;
 
+	std::vector<Node*> lipsticks;
+	std::vector<glm::mat4> initial_lipstick_transforms;
+
 	//Animation gateAnimation;
 	std::map <std::string, Animation*> animations; 
 	void applyAnimations(); 
@@ -80,10 +83,16 @@ public:
 		// Find makeup gate arms
 		for (Node* child : world->childnodes) {
 
-			// Save makeup gate arms
+			// Save makeup gate arms and lipstick objects
 			if (child->name.find("makeup_station") != std::string::npos) {
+				// makeup gate arm 
 				makeup_gate_arms.push_back(child->childnodes[0]); 
 				initial_arm_transforms.push_back(child->childnodes[0]->modeltransforms[0]);
+
+				// lipstick 
+				lipsticks.push_back(child->childnodes[1]); 
+				initial_lipstick_transforms.push_back(child->childnodes[1]->modeltransforms[0]);
+
 			}
 		}
 
