@@ -125,7 +125,7 @@ void Scene::updateScreen(void) {
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
 }
 
-void Scene::drawText(void) {
+void Scene::drawText(const bool& renderMatchEndText, const std::string& matchEndText) {
     glUseProgram(text_shader->program);
 
     text_shader->projection = glm::ortho(0.0f, (float)cse125constants::WINDOW_WIDTH, 0.0f, (float)cse125constants::WINDOW_HEIGHT);
@@ -146,6 +146,15 @@ void Scene::drawText(void) {
     text_shader->setUniforms();
     game_time->RenderText();
 	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
+
+
+    if (renderMatchEndText) {
+        text_shader->textColor = match_end_text->getColor();
+        text_shader->setUniforms();
+        match_end_text->updateText(matchEndText);
+        match_end_text->RenderText();
+        match_end_text->setPosition(cse125constants::WINDOW_WIDTH / 4.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
+    }
 
 }
 

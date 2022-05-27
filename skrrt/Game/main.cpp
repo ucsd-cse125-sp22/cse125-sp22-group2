@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <format>
 // OSX systems need their own headers
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -49,12 +50,17 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
+// Optimization to prevent accessing the scene graph to toggle menu visibility
+// if the current visibility is the same as the toggled visibility
+bool startScreenVisibility = false;
+bool winScreenVisibility = false;
 
-// Game restart variables
-// Note: the logic for starting the game and restarting is identical
+// Game / match flow variables
 bool gameStarted = false;
 bool matchInProgress = false;
-bool readyToReplay = false;
+bool waitingToStartMatch = false;
+bool enableSendPlay = true;
+int winnerId = cse125constants::DEFAULT_WINNER_ID;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -64,6 +70,17 @@ static int mouseY = 0.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
+
+std::string makeMatchEndText(int playerId, int winnerId) {
+    std::string matchEndText = "";
+    if (playerId == winnerId) {
+        matchEndText = "You won the pageant! Press Space to play again!";
+    }
+    else {
+        matchEndText = "Player " + std::to_string(winnerId + 1) + " won the pageant! Better luck next time! Press Space to play again!";
+    }
+    return matchEndText;
+}
 
 void printHelp(){
 
@@ -142,9 +159,14 @@ void display(void)
     //scene.draw(scene.node["UI_root"]);
     scene.drawUI();
 
-    // Only draw the text if the match is in progress
-    if (matchInProgress) {
-        scene.drawText();
+
+    // Create the end of match text
+    const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
+    if (showMatchEndText) {
+        scene.drawText(true, makeMatchEndText(clientId, winnerId));
+    }
+    else {
+        scene.drawText(false);
     }
 
     /*
@@ -165,16 +187,11 @@ void display(void)
 }
 
 // Toggles the visibility of the start menu and background
-void toggleStartMenuVisibility(bool visibility) {
-    scene.node["start_menu"]->visible = visibility;
-    scene.node["start_menu_background"]->visible = visibility;
-}
-
-// Toggles the visibility of the end menu and background
-// TODO: Display a different end menu depending on who won?
-void toggleEndMenuVisibility(bool visibility) {
-    scene.node["end_menu"]->visible = visibility;
-    scene.node["end_menu_background"]->visible = visibility;
+void toggleStartMenuVisibility(const bool& visibility) {
+    if (visibility != startScreenVisibility) {
+        startScreenVisibility = visibility;
+        scene.node["start_menu"]->visible = visibility;
+    }
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -191,23 +208,26 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
     if (matchInProgress) {
         boost::system::error_code error;
         size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
+        if (error) {
+            cse125debug::log(LOG_LEVEL_ERROR, "Error sending packet to server\n");
+        }
     }
 }
 
-void sendReplayToServer() {
-    // Only allow replay packet to be sent when match is not in progress 
-     // and if it hasn't been sent already
-    if (!matchInProgress && !readyToReplay) {
-        // Send packet to server indicating client is ready to replay
+void sendPlayToServer() {
+    if (enableSendPlay) {
+        // Send packet to server indicating client is ready to play
         boost::system::error_code error;
         // Check for a packet from the server indicating that the game is ready to restart
         cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
-        networkClient->replay(&error);
+        networkClient->play(&error);
         if (!error) {
-            readyToReplay = true;
-            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
-            // Reset graphics side state HERE
-            
+            enableSendPlay = false;
+            waitingToStartMatch = true;
+            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent play packet to server...\n");
+        }
+        else {
+            cse125debug::log(LOG_LEVEL_ERROR, "Error sending play packet to server\n");
         }
     }
 }
@@ -216,8 +236,10 @@ cse125framing::ServerFrame* receiveDataFromServer()
 {
     cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
     boost::system::error_code error;
-
     size_t numRead = networkClient->receive(frame, &error);
+    if (error) {
+        cse125debug::log(LOG_LEVEL_ERROR, "Error receiving packet from server\n");
+    }
 
     return frame;
 }
@@ -317,7 +339,6 @@ void handleMoveBackward() {
 
 void handleMoveRight() {
     sendDataToServer(MovementKey::RIGHT, scene.camera->forwardVectorXZ());
-
 }
 
 void handleMoveLeft() {
@@ -460,11 +481,11 @@ void keyboard(unsigned char key, int x, int y){
 
         // Key for telling server that player is ready for another match
         case 'r':
-            sendReplayToServer();         
+            sendPlayToServer();         
             break;
         // Key for starting the game initially
         case ' ':
-            sendReplayToServer();
+            sendPlayToServer();
             break;
 
         default:
@@ -592,19 +613,15 @@ void idle() {
         handleMoveRight();
     }
 
+    // Handle menu screen visibility
     const bool showStartMenu = !gameStarted;
     const bool showEndMenu = gameStarted && !matchInProgress;
-
-    // Handle menu visibility
     toggleStartMenuVisibility(showStartMenu);
-    toggleEndMenuVisibility(showEndMenu);
 
-    // Only get data from server once the client has registered with the server
-    if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
-        // Get data from server and allocate a new frame variable
-
+    // Handle server communication
+    const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
+    if (connectedToServer) {
         if (matchInProgress) {
-            // Hide the start menu
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
@@ -613,28 +630,30 @@ void idle() {
                 updateCrownState(frame);
                 // Use the frame to update the player's state
                 updatePlayerState(frame);
-
                 game.updateTime(frame->gameTime);
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
-               // The match has ended
+               winnerId = frame->winnerId;
                matchInProgress = false;
+               enableSendPlay = true;
             }
             // Delete the frame
             delete frame;
         }
         else {
-            // Check for a packet from the server indicating that the game is ready to begin OR restart
-            if (readyToReplay) {
-                cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
+            if (waitingToStartMatch) {
+                cse125debug::log(LOG_LEVEL_INFO, "Waiting for match start packet from server...\n");
+                // Reset the winner id for this new match
+                winnerId = cse125constants::DEFAULT_WINNER_ID;
                 cse125framing::ServerFrame* frame = receiveDataFromServer();
                 triggerAudio(frame->audio);
                 if (frame->matchInProgress) {
-                    cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
+                    cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                     gameStarted = true;
                     matchInProgress = true;
-                    readyToReplay = false;
+                    waitingToStartMatch = false;
+
                     // Play Game Music
                     game.playMusic("BattleTheme.wav", -10.0);
                 }
@@ -642,7 +661,6 @@ void idle() {
                 delete frame;
             }
         }
-
     }
 
 
@@ -707,7 +725,6 @@ int main(int argc, char** argv)
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
-    matchInProgress = false;
     
     // Graphics binding
     initialize();

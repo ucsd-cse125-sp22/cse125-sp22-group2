@@ -21,7 +21,7 @@ GraphicsSession::GraphicsSession(
       serverQueue(serverQueue),
       queueMtx(queueMtx),
       clientsConnected(clientsConnected),
-      clientsReplaying(clientsReplaying)
+      clientsReady(clientsReplaying)
 {
     this->sessionTerminated = false;
 }
@@ -56,9 +56,9 @@ void GraphicsSession::do_read()
                     frame.id = this->id;
                     do_write(&frame);
                 }
-                // Check if this client is indicating that it's ready to replay a match
-                else if (clientFrame.replayMatch) {
-                    this->clientsReplaying[this->id] = true;
+                // Check if this client is indicating that it's ready to play a match
+                else if (clientFrame.readyToPlay) {
+                    this->clientsReady[this->id] = true;
                 }
                 else
                 {
@@ -125,25 +125,25 @@ GraphicsServer::GraphicsServer(boost::asio::io_context& io_context, short port)
 {
     numConnections = 0;
     for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        this->clientsReplaying[i] = false;
+        this->clientsReady[i] = false;
     }
     do_accept();
 }
 
-bool GraphicsServer::readyToReplay()
+bool GraphicsServer::readyToPlay()
 {
     for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        if (!this->clientsReplaying[i]) {
+        if (!this->clientsReady[i]) {
             return false;
         }
     }
     return true;
 }
 
-void GraphicsServer::resetReplayStatus()
+void GraphicsServer::setReadyToPlay(const bool& status)
 {
     for (unsigned int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
-        this->clientsReplaying[i] = false;
+        this->clientsReady[i] = status;
     }
 }
 
@@ -161,7 +161,7 @@ void GraphicsServer::do_accept()
                     std::make_shared<GraphicsSession>(
                         std::move(socket), this->numConnections,
                         this->serverQueue, this->queueMtx,
-                        this->clientsConnected, this->clientsReplaying);
+                        this->clientsConnected, this->clientsReady);
                 sessions.push_back(session);
                 session->start();
 

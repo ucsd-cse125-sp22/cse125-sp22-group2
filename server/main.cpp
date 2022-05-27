@@ -13,8 +13,6 @@
 
 PhysicalObjectManager* manager;
 boost::asio::io_context io_context;
-bool matchInProgress = true;
-bool runServer = true;
 
 void launchServer()
 {
@@ -35,7 +33,7 @@ int main()
     // Initialize ticker
     cse125clocktick::ClockTick ticker(cse125config::TICK_RATE);
 
-    // Block until 4 clients connected
+    // Block until all clients connected
     std::cout << "Waiting for " << cse125constants::NUM_PLAYERS
               << " clients to connect..." << std::endl;
 
@@ -46,20 +44,21 @@ int main()
 
     // Wait for all clients to be be ready to start playing
     std::cerr << "Waiting for clients to start playing..." << std::endl;
-    while (!server->readyToReplay()) {
-        // Idle wait
-    }
-    // Reset number of clients replaying
-    server->resetReplayStatus();
-    std::cerr << "All clients ready to start playing " << std::endl;
+    server->setReadyToPlay(false);
+    while (!server->readyToPlay()) {} // Idle wait
+    std::cerr << "All clients ready to start playing! " << std::endl;
 
     // server loop
- 
+    bool runServer = true; 
     while (runServer) 
     {
         // Initialize or re-initialize game manager
         manager = initializeGame();
-        matchInProgress = true;
+
+        // State about the current match
+        bool matchInProgress = true;
+        int winnerId = cse125constants::DEFAULT_WINNER_ID;
+
         std::cout << "Starting Skrrt Skirt!" << std::endl;
         while (matchInProgress)
         {
@@ -94,7 +93,8 @@ int main()
                 playerPriorities.at(clientFrame.id) = priorityCtr++;
             }
 
-            // Ensure all players have a priority
+            // Ensure all players have a priority, even if 
+            // they didn't send a packet this server tick
             for (int i = 0; i < playerPriorities.size(); i++) {
                 if (!playerPriorities.at(i)) {
                     playerPriorities.at(i) = priorityCtr++;
@@ -115,7 +115,7 @@ int main()
             }
 
             // Update basic game state (score, makeup levels; not dependent on input)
-            manager->step(&matchInProgress);
+            manager->step(&matchInProgress, &winnerId);
 
             // Update the game state in player priority order
             for (auto it = sortedPriorities.begin();
@@ -139,7 +139,7 @@ int main()
             server->writePackets(&serverFrame);
             // Sleep until the end of the clock tick
             ticker.tickEnd();
-        }
+        } 
 
         std::cerr << "Match has ended!" << std::endl;
 
@@ -147,18 +147,14 @@ int main()
         delete manager;
 
         // Tell clients that the match finished
-        cse125framing::ServerFrame matchFinishedFrame;
-        matchFinishedFrame.matchInProgress = false;
-        server->writePackets(&matchFinishedFrame);
+        cse125framing::ServerFrame matchEndFrame;
+        initMatchEndFrame(matchInProgress, winnerId, &matchEndFrame);
+        server->writePackets(&matchEndFrame);
 
         // Wait for all clients to be ready to play again
-        std::cerr << "Waiting for clients to restart..." << std::endl;
-        while (!server->readyToReplay()) {
-            // Idle wait
-        }
-
-        // Reset number of clients replaying
-        server->resetReplayStatus();
+        std::cerr << "Waiting for clients to replay..." << std::endl;
+        server->setReadyToPlay(false);
+        while (!server->readyToPlay()) {}
 
         // Reset the server packet queue
         server->queueMtx.lock();

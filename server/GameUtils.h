@@ -7,12 +7,25 @@
 
 /**
  * @brief Creates an outgoing server frame to be written to clients
+ * while the match is in progress
  *
  * @param manager object to determine what to put in frame
  * @param frame destination of created frame
  */
 void initializeServerFrame(PhysicalObjectManager* manager,
                            cse125framing::ServerFrame* frame);
+
+
+/**
+ * @brief Creates an outgoing server frame to be written to clients
+ * after the match has ended
+ *
+ * @param matchInProgress whether the match is ongoing
+ * @param winnerId id of the winning player (0-indexed)
+ * @param frame destination of created frame
+ */
+void initMatchEndFrame(bool matchInProgress, int winnerId,
+    cse125framing::ServerFrame* frame);
 
 /**
  * @brief Initialize a PhysicalObjectManager and begins the game
