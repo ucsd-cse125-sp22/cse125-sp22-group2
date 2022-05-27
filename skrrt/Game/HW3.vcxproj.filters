@@ -17,7 +17,11 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+<<<<<<< HEAD
+    <ClCompile Include="src\AudioEngine.cpp" />
+=======
     <ClCompile Include="src\Text.cpp" />
+>>>>>>> 183ae59835c8c78c9eb50d986fd7dd3e1f7cafa9
     <ClCompile Include="include\Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +52,11 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+<<<<<<< HEAD
+    <ClInclude Include="include\AudioEngine.h" />
+    <ClInclude Include="include\Animation.h" />
+=======
+>>>>>>> 183ae59835c8c78c9eb50d986fd7dd3e1f7cafa9
     <ClInclude Include="include\TextureConstants.h" />
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
