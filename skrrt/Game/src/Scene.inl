@@ -87,16 +87,6 @@ void Scene::init(void){
     geometry["start_menu"] = new Obj;
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
 
-    // Large background to cover up what the start menu doesn't cover up
-    geometry["start_menu_background"] = new Obj;
-    geometry["start_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 18);
-
-    geometry["end_menu"] = new Obj;
-    geometry["end_menu"]->init("models/Plane.obj", "textures/game_over.png", "textures/no_emission.png", "textures/no_emission.png", 19);
-
-    geometry["end_menu_background"] = new Obj;
-    geometry["end_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 20);
-
     // Create a material palette
     material["wood"] = new Material;
     material["wood"] -> shininess = 100.0f;
@@ -167,17 +157,6 @@ void Scene::init(void){
     model["start_menu"]->geometry = geometry["start_menu"];
     model["start_menu"]->material = material["ceramic"];
 
-    model["start_menu_background"] = new Model;
-    model["start_menu_background"]->geometry = geometry["start_menu_background"];
-    model["start_menu_background"]->material = material["ceramic"];
-
-    model["end_menu"] = new Model;
-    model["end_menu"]->geometry = geometry["end_menu"];
-    model["end_menu"]->material = material["ceramic"];
-
-    model["end_menu_background"] = new Model;
-    model["end_menu_background"]->geometry = geometry["end_menu_background"];
-    model["end_menu_background"]->material = material["ceramic"];
     //********************************************
     //*********** UI elem ************************
     //********************************************
@@ -497,18 +476,6 @@ void Scene::init(void){
     node["start_menu"]->models.push_back(model["start_menu"]);
     node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    node["start_menu_background"] = new Node("start_menu_background");
-    node["start_menu_background"]->models.push_back(model["start_menu_background"]);
-    node["start_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
-
-    node["end_menu"] = new Node("end_menu");
-    node["end_menu"]->models.push_back(model["end_menu"]);
-    node["end_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
-
-    node["end_menu_background"] = new Node("end_menu_background");
-    node["end_menu_background"]->models.push_back(model["end_menu_background"]);
-    node["end_menu_background"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
-
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
     node["clock"] = new Node("clock");
@@ -578,14 +545,7 @@ void Scene::init(void){
     const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
     const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(START_MENU_SCALE * START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
-    // Scale the background to be very large
-    node["screen"]->childnodes.push_back(node["start_menu_background"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
 
-    node["screen"]->childnodes.push_back(node["end_menu"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(10.0f, 10.0f, 1.0f)));
-    node["screen"]->childnodes.push_back(node["end_menu_background"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(1000.0f, 1000.0f, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
@@ -620,6 +580,9 @@ void Scene::init(void){
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    match_end_text = new Text(text_shader->program);
+    match_end_text->updateText("End of match text");
 
     // Initialize UI shader 
     ui_shader = new UIShader; 

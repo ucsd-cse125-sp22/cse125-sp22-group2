@@ -72,6 +72,7 @@ public:
 
     Text* scores[4];
     Text* game_time;
+    Text* match_end_text;
 
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
@@ -99,7 +100,13 @@ public:
                                 glm::vec3(0.91f, 0.90f, 0.32f),  // yellow
                                 glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
-    void drawText(void);
+    /**
+     * @brief Draws the text-based UI elements on the screen
+     *
+     * @param renderMatchEndText whether to render the end of match text
+     * @param matchEndText       the end of match text to render
+     */
+    void drawText(const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
 
     void updateScreen(void);

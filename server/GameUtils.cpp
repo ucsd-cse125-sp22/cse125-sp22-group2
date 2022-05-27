@@ -81,6 +81,12 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->matchInProgress = true;
 }
 
+void initMatchEndFrame(bool matchInProgress, int winnerId, cse125framing::ServerFrame* frame)
+{
+    frame->matchInProgress = matchInProgress;
+    frame->winnerId = winnerId;
+}
+
 // Initializes and returns the PhysicalObjectManager
 PhysicalObjectManager* initializeGame()
 {
