@@ -9,6 +9,8 @@ PhysicalObjectManager::PhysicalObjectManager()
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
 
 	gameTime = cse125config::MATCH_LENGTH;
+
+	this->powerupIDOffset = 9999;
 }
 
 PhysicalObjectManager::~PhysicalObjectManager()
@@ -49,7 +51,7 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(-29.6f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(20.8f, 0.0f, 4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 
-	// Powerups
+	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
 	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
@@ -122,6 +124,9 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
 	case (oPowerup):
+		if (powerupIDOffset > next_id) {
+			powerupIDOffset = next_id;
+		}
 		this->objects->push_back(new ObjPowerup(objects, next_id, vector<glm::vec3>{pos}, dir, up));
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;

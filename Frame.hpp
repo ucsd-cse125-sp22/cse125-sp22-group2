@@ -53,6 +53,8 @@ namespace cse125framing {
 		RealNumber makeupLevel;
 		RealNumber score;
 		bool hasCrown;
+		bool hasPowerup;
+		bool powerupActive;
 	} PlayerData;
 
 	// Data for loose crown
@@ -61,10 +63,17 @@ namespace cse125framing {
 		bool crownVisible;
 	} CrownData;
 
+	// Data for powerups
+	typedef struct PowerupData {
+		vec3 powerupPosition;
+		bool powerupVisible;
+	} PowerupData;
+
 	typedef struct ServerFrame {
 		int id; // index in players
 		int ctr;
 		CrownData crown;
+		PowerupData powerup[cse125constants::NUM_POWERUPS];
 		PlayerData players[cse125constants::NUM_PLAYERS];
 		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
 		AnimationTrigger animations;

@@ -77,6 +77,7 @@ void Scene::draw(Node* current_node){
 
 			// Draw particles
 			cur->particles->Draw(cur_VM, shader->program);
+            cur->particlesPowerup->Draw(cur_VM, shader->program);
         }
         else {
 			// draw all the models at the current node

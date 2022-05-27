@@ -36,6 +36,8 @@ public:
 	unsigned int numMakeups;
 	// ID for the loose crown
 	unsigned int crownID;
+	// ID for the first powerup
+	unsigned int powerupIDOffset;
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();

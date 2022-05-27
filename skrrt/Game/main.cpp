@@ -540,6 +540,7 @@ void idle() {
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
+        std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);

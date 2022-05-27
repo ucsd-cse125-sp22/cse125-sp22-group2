@@ -86,6 +86,7 @@ void ObjPlayer::step(float gameTime) {
 
 	// Makeup station
 	if (booth != -1 && boothTime) {
+		makeupLevel = MAKEUP_MAX;
 		glm::vec3 destination = (position + objects->at(booth)->position) / 2.0f;
 		glm::vec3 dir = (direction + objects->at(booth)->direction) / 2.0f;
 		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
@@ -99,7 +100,6 @@ void ObjPlayer::step(float gameTime) {
 			// TODO: potentially change this to work with tick rate
 			boothTime = 0.0f;
 			objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = false;
-			makeupLevel = MAKEUP_MAX;
 			speed = SPEED_LEAVE_BOOTH;
 			iframes = MAKEUP_IFRAMES;
 		}

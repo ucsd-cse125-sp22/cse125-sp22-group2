@@ -15,6 +15,14 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->crown.crownPosition = crown->position;
     frame->crown.crownVisible = crown->loose;
 
+    // initialize powerup frame data
+    for (int id = manager->powerupIDOffset; id < cse125constants::NUM_POWERUPS; id++)
+    {
+        ObjPowerup* powerup = (ObjPowerup*)manager->objects->at(id);
+        frame->powerup[id].powerupPosition = powerup->position;
+        frame->powerup[id].powerupVisible = powerup->spawned;
+    }
+
     // initialize audio triggers
     for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
     {
@@ -38,6 +46,8 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].playerUp = player->up;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
+        frame->players[id].hasPowerup = player->hasPowerup;
+        frame->players[id].powerupActive = player->powerupTime;
 
         // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)

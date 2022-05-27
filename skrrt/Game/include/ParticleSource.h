@@ -13,7 +13,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_PARTICLES 100
+#define MAX_PARTICLES 150
 
 
 //std::default_random_engine gen;
@@ -113,6 +113,7 @@ public:
 	}
 	
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew);
+	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew);
 
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
 		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 50.0f,

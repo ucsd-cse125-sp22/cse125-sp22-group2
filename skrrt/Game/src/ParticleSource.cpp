@@ -14,6 +14,9 @@ namespace this_sucks {
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew) {
 	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -1, (createNew ? 1 : 0));
 }
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew) {
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -1, (createNew ? createRate : 0), lifeSpan, posVar, velVar, lifespVar, 0.0f, 5.22f, 0.1f, particleRad);
+}
 
 /*
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
