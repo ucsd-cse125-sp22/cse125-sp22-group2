@@ -12,7 +12,7 @@ AudioEngine is a class to manage all sounds for the game
 #define MAX_CHANNELS 32
 
 #define MIN_3D_DISTANCE 1.0f
-#define MAX_3D_DISTANCE 200.0f
+#define MAX_3D_DISTANCE 100.0f
 
 class AudioEngine
 {

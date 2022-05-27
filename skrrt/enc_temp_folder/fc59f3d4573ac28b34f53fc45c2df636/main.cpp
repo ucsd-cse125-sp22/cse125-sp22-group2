@@ -411,7 +411,7 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'm':
             // Audio Engine
-            game.playMusic("BattleTheme.wav", -10.0);
+            game.playMusic("BattleTheme.wav");
             break;
         case 'n':
         {

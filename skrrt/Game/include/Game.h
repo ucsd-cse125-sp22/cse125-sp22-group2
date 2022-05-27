@@ -43,6 +43,7 @@ private:
     //Animation gateAnimation;
     std::map <std::string, Animation*> animations; 
     AudioEngine audioEngine;
+    std::map<int, int> carEngineChannels;
     void applyAnimations(); 
 
 public: 
@@ -111,7 +112,7 @@ public:
 
     /* AUDIO TRIGGERS */
     void stopAllSounds();
-    void playMusic(const char* soundName);
+    void playMusic(const char* soundName, float db = 0.0);
     //void stopMusic(const char* soundName);
     void triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
 

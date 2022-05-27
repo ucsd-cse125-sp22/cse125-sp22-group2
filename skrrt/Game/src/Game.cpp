@@ -114,10 +114,10 @@ void Game::stopAllSounds()
     audioEngine.stopAllChannels();
 }
 
-void Game::playMusic(const char* musicName)
+void Game::playMusic(const char* musicName, float db)
 {
     audioEngine.stopAllChannels();
-    audioEngine.playSound(musicName);
+    audioEngine.playSound(musicName, { 0,0,0 }, db);
 }
 
 void Game::triggerFx(const char* fxName, const vec3& position, float dB)
@@ -128,12 +128,10 @@ void Game::triggerFx(const char* fxName, const vec3& position, float dB)
 vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos)
 {
     vec3 distance = eventPos - playerPos;
-    //printf("distance     : %.3f %.3f %.3f\n", distance.x, distance.y, distance.z);
 
     // Compute camera angle of rotation from origin
     vec3 origin = { 0, 0, -1 };
     float theta = glm::acos(glm::dot(origin, cameraPos)); 
-    //theta *= 180.0f / (float)M_PI; // NOTE: theta in degrees
     // > 180 degree check (left or right half)
     if (cameraPos.x > 0.0)
     {
@@ -141,21 +139,10 @@ vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playe
         theta = 2*M_PI - theta;
     }
 
-
     // Rotate original vector
-    //float cameraCorrection = 360.0 - theta;
     vec3 eventRelativeToCameraPos = { 0,0,0 };
     eventRelativeToCameraPos.x = glm::cos(theta) * distance.x - glm::sin(theta) * distance.z;
     eventRelativeToCameraPos.z = glm::sin(theta) * distance.x + glm::cos(theta) * distance.z;
-    //printf("eventToCamera: %.3f %.3f %.3f\n", eventRelativeToCameraPos.x, eventRelativeToCameraPos.y, eventRelativeToCameraPos.z);
 
-    printf("theta: %.3f", theta);
-    vec3 cam = { cameraPos.x, cameraPos.y, cameraPos.z };
-    printf("cam: %.3f %.3f %.3f\n", cam.x, cam.y, cam.z);
-    cam.x = glm::cos(theta) * cam.x - glm::sin(theta) * cam.z;
-    cam.z = sin(theta) * cam.x + cos(theta) * cam.z;
-    printf("cam: %.3f %.3f %.3f\n", cam.x, cam.y, cam.z);
-
-
-    return distance;
+    return eventRelativeToCameraPos;
 }
