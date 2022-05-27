@@ -104,6 +104,9 @@ struct SurfaceShader : Shader {
     // emission map
     GLuint emission_id;
     GLuint emission_id_loc;
+
+    glm::mat4 lightSpace;
+    GLuint lightSpace_loc;
     
     void initUniforms(){
         if (ENABLE_SHADOW_MAP) {
@@ -120,6 +123,8 @@ struct SurfaceShader : Shader {
         modelview_loc  = glGetUniformLocation( program, "modelview" );
         projection_loc = glGetUniformLocation( program, "projection" );
         material_loc.shininess    = glGetUniformLocation( program, "material.shininess" );
+
+        lightSpace_loc = glGetUniformLocation(program, "lightSpace");
         
         numPointLights_loc = glGetUniformLocation( program, "numPointLights" );
         for (int i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
@@ -172,6 +177,8 @@ struct SurfaceShader : Shader {
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &modelview[0][0]);
         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &projection[0][0]);
+
+        glUniformMatrix4fv(lightSpace_loc, 1, GL_FALSE, &lightSpace[0][0]);
 
         // set material
         glUniform1f(material_loc.shininess, material->shininess);
