@@ -17,16 +17,16 @@ ObjTrail::ObjTrail() {
 	this->solid = false;
 }
 
-ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, float length, float width, float height, glm::vec3 direction, glm::vec3 up, bool solid) {
+ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, unsigned int playerID, glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
 	this->type = oTrail;
 
 	this->objects = objects;
 	this->id = id;
 
 	this->position = position;
-	this->length = 1.0f;
-	this->width = 1.0f;
-	this->height = 1.0f;
+	this->length = 0.8f;
+	this->width = 0.8f;
+	this->height = 0.8f;
 
 	this->speed = 1.0f;
 
@@ -36,9 +36,14 @@ ObjTrail::ObjTrail(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 
 
 	this->solid = false;
 
-	this->life = 180;
+	this->playerID = playerID;
+	this->life = 100.0f;
 }
 
 ObjTrail::~ObjTrail() {
+}
 
+void ObjTrail::step() {
+	// Update life
+	life -= 1.0f / cse125config::TICK_RATE;
 }

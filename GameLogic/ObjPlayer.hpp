@@ -41,6 +41,8 @@ public:
 	float maxSpeed;
 	// Speed drop when above the speed threshold
 	float thresholdDecay;
+	// Whether we have a powerup
+	bool hasPowerup;
 	// How much longer we have the powerup
 	float powerupTime;
 
@@ -51,7 +53,7 @@ public:
 
 	void step(float gameTime);
 	// Anything that happens because of user input goes here, calls move function to handle crown transfer
-	void action(glm::vec3 dir);
+	void action(glm::vec3 dir, bool trigger = false);
 	// Call when no action is performed
 	void idle();
 
@@ -59,6 +61,8 @@ public:
 	void move(glm::vec3 dir);
 	// Attempt crown transfer
 	void crownTransfer(const PhysicalObject* obj);
+	// Attempt to pickup powerup
+	void pickupPowerup(const PhysicalObject* obj);
 	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 	// Special movement function for when another player is pushing you

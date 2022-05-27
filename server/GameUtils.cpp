@@ -127,6 +127,8 @@ void gameLoop(PhysicalObjectManager* manager,
         break;
 
     // Other game actions
+    case GameAction::ACTION:
+        player->action(glm::normalize(cameraDirection), true);
     case GameAction::IDLE:
         // Idle behavior
         player->idle();

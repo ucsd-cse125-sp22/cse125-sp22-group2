@@ -28,14 +28,14 @@ void PhysicalObjectManager::startGame() {
 	// Create walls and floors
 
 	// Very basic map
-	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	//createObject(oPlayer, glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-	//createObject(oPlayer, glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//createObject(oPlayer, glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	//createObject(oPlayer, glm::vec3(0.0f, 0.0f, -21.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//createObject(oPlayer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPlayer, glm::vec3(0.0f, 0.0f, -21.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	createObject(oCrown, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	// Add 180 degrees to value in scene graph or maybe 180 - degrees from scene graph?
 	createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -48,6 +48,9 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(-20.8f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(-29.6f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(20.8f, 0.0f, 4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
+
+	// Powerups
+	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -118,6 +121,10 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	case (oTrail):
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
+	case (oPowerup):
+		this->objects->push_back(new ObjPowerup(objects, next_id, vector<glm::vec3>{pos}, dir, up));
+		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
+		break;
 	default:
 		break;
 	}
@@ -133,6 +140,8 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 			*matchInProgress = false;
 		}
 	}
+
+	vector<unsigned int> deletions{};
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
 			((ObjPlayer*)objects->at(i))->step(gameTime);
@@ -140,9 +149,22 @@ void PhysicalObjectManager::step(bool* matchInProgress) {
 		else if (objects->at(i)->type == oMakeup) {
 			((ObjMakeup*)objects->at(i))->step();
 		}
+		else if (objects->at(i)->type == oTrail) {
+			((ObjTrail*)objects->at(i))->step();
+			if (((ObjTrail*)(objects->at(i)))->life <= 0.0f) {
+				deletions.push_back(i);
+			}
+			
+		}
 		else if (objects->at(i)->type == oPowerup) {
 			((ObjPowerup*)objects->at(i))->step();
 		}
+	}
+
+
+	for (int i = deletions.size() - 1; i >= 0; i--) {
+		objects->at(deletions.at(i)) = objects->at(objects->size() - 1);
+		objects->pop_back();
 	}
 }
 

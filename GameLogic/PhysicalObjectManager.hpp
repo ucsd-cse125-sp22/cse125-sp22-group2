@@ -8,6 +8,8 @@
 #include "ObjFloor.hpp"
 #include "ObjCrown.hpp"
 #include "ObjMakeup.hpp"
+#include "ObjTrail.hpp"
+#include "ObjPowerup.hpp"
 
 enum Obstacles { oTireRack, oCones };
 

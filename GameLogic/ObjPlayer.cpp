@@ -47,6 +47,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->boothTime = 0.0f;
 	this->momentum = 0.0f;
 	this->thresholdDecay = 0.0f;
+	this->hasPowerup = false;
 	this->powerupTime = 0.0f;
 }
 
@@ -67,11 +68,6 @@ void ObjPlayer::step(float gameTime) {
 	// Update stun frames
 	if (stun) {
 		stun--;
-	}
-
-	// Update powerup time
-	if (powerupTime) {
-		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
 	}
 
 	// Reduce makeup level if not currently fixing makeup
@@ -141,9 +137,16 @@ void ObjPlayer::step(float gameTime) {
 		}
 	}
 
-	//if (!id) {
-	//	cout << momentum << " " << makeupLevel << " " << booth << " " << boothTime << "\n";
-	//}
+	// Update powerup time
+	if (powerupTime) {
+		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
+		speed = max(speed, POWERUP_SPEED);
+		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * this->speed / 2.0f, this->direction, this->up));
+	}
+
+	if (!id) {
+		cout << hasPowerup << " " << powerupTime << " " << speed << "\n";
+	}
 
 	// TODO: uncomment this probably
 	//if (!id) {
@@ -154,9 +157,15 @@ void ObjPlayer::step(float gameTime) {
 	//matchTerrain();
 }
 
-void ObjPlayer::action(glm::vec3 dir) {
+void ObjPlayer::action(glm::vec3 dir, bool trigger) {
 	// Can't move when stunned or locked in booth
 	if (!stun && !boothTime) {
+		if (trigger && hasPowerup) {
+			this->powerupTime = POWERUP_TIME;
+			this->hasPowerup = false;
+			return;
+		}
+
 		// Increase speed (Note: if we are above the max speed we need to ignore this)
 		if (speed < maxSpeed) {
 			speed = min(maxSpeed, speed + SPEED_FORCE);
@@ -237,7 +246,9 @@ void ObjPlayer::move(glm::vec3 dir) {
 		// Push other players
 		if (obj->type == oPlayer) {
 			glm::vec3 d = glm::normalize(obj->position - this->position);
-			pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			if (glm::dot(d, dir) > 0.0f) {
+				pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+			}
 			
 			// Don't waste adjustment if player was pushed entirely out of the way
 			//if (!bounding::checkCollision(bb, obj->boundingBox)) {
@@ -306,6 +317,8 @@ void ObjPlayer::move(glm::vec3 dir) {
 
 		// Transfer/take the crown
 		crownTransfer(obj);
+		// Pick up powerup
+		pickupPowerup(obj);
 	}
 
 	// If our destination is free, complete the move
@@ -361,6 +374,16 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->hasCrown = true;
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
+		}
+	}
+}
+
+void ObjPlayer::pickupPowerup(const PhysicalObject* obj) {
+	if (obj->type == oPowerup && !this->hasPowerup) {
+		if (((ObjPowerup*)obj)->spawned) {
+			((ObjPowerup*)obj)->spawned = false;
+			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME;
+			this->hasPowerup = true;
 		}
 	}
 }
@@ -479,6 +502,8 @@ void ObjPlayer::applyGravity() {
 
 			// Transfer/take the crown
 			crownTransfer(obj);
+			// Pick up powerup
+			pickupPowerup(obj);
 		}
 
 		// If our destination is free, complete the move

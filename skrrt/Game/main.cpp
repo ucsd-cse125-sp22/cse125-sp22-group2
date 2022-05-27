@@ -312,6 +312,10 @@ void handleMoveLeft() {
     sendDataToServer(MovementKey::LEFT, scene.camera->forwardVectorXZ());
 }
 
+void handleSpace() {
+    sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+}
+
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
@@ -439,7 +443,11 @@ void keyboard(unsigned char key, int x, int y){
             break;
         // Key for starting the game initially
         case ' ':
-            sendReplayToServer();
+            if (matchInProgress) {
+                handleSpace();
+            } else {
+                sendReplayToServer();
+            }
             break;
 
         default:
