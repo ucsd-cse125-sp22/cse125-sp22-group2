@@ -128,8 +128,6 @@ void initialize(void)
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
 
-    // Play Game Music
-    game.playMusic("BattleTheme.wav", -10.0);
 }
 
 void display(void)
@@ -285,19 +283,19 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
     {
         AudioTrigger audio = triggers[i];
+        vec3 position;
         switch (audio.id)
         {
         case AudioId::COLLISION:
-        {
-            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
             game.triggerFx("Collision.wav", position);
             break;
-        }
         case AudioId::MAKEUP:
-            game.triggerFx("Makeup.wav");
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            game.triggerFx("Makeup.wav", position);
             break;
         case AudioId::CROWN_CHANGE:
-            game.triggerFx("GetCrown.wav");
+            game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
         case AudioId::NO_AUDIO:
         default:
@@ -637,6 +635,8 @@ void idle() {
                     gameStarted = true;
                     matchInProgress = true;
                     readyToReplay = false;
+                    // Play Game Music
+                    game.playMusic("BattleTheme.wav", -10.0);
                 }
                 // Delete the frame
                 delete frame;
