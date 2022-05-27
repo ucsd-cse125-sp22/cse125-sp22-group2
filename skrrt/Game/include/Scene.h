@@ -22,6 +22,7 @@
 #include "ParticleSource.h"
 #include "TextShader.h"
 #include "DepthShader.h"
+#include "QuadShader.h"
 #include "Text.h"
 
 #include "../../../Constants.hpp"
@@ -65,6 +66,7 @@ public:
     SurfaceShader* shader;
     TextShader* text_shader;
     DepthShader* depth_shader;
+    QuadShader* quad_shader;
 
     Text* scores[4];
     Text* game_time;

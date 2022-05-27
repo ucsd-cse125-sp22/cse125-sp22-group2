@@ -91,6 +91,8 @@
     <None Include="shaders\lightingShadowsEnabled.frag" />
     <None Include="shaders\projectiveShadowsDisabled.vert" />
     <None Include="shaders\projectiveShadowsEnabled.vert" />
+    <None Include="shaders\quad.frag" />
+    <None Include="shaders\quad.vert" />
     <None Include="shaders\ui.frag" />
     <None Include="shaders\ui.vert" />
     <None Include="src\Scene.inl" />
@@ -125,6 +127,7 @@
     <ClInclude Include="include\Cube.h" />
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\DepthShader.h" />
+    <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\Geometry.h" />

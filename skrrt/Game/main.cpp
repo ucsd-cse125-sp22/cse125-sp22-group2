@@ -127,14 +127,49 @@ void initialize(void)
     glutSetCursor(GLUT_CURSOR_NONE);
 }
 
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad(float nearPlane, float farPlane, GLuint texId) {
+    glUseProgram(scene.quad_shader->program);
+    scene.quad_shader->near_plane = nearPlane;
+    scene.quad_shader->far_plane = farPlane;
+    scene.quad_shader->texture_id = texId;
+    scene.quad_shader->setUniforms();
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
 void display(void)
 {
+    float near_plane = -10.0f;
+    float far_plane = 10.0f;
     if (ENABLE_SHADOW_MAP) {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,-10.0f,10.0f,-10.0f,10.0f);
-        glm::mat4 lightView = glm::lookAt(5.0f * scene.sun->direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,-10.0f,10.0f,near_plane,far_plane);
+        glm::mat4 lightView = glm::lookAt(3.0f * scene.sun->direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 lightSpace = lightProjection * lightView;
         scene.drawDepthMap(scene.node["world"], lightSpace);
     }
@@ -153,7 +188,7 @@ void display(void)
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    
     scene.draw(scene.node["UI_root"]);
 
     scene.drawText();
@@ -170,7 +205,13 @@ void display(void)
     glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
+    //renderQuad(near_plane, far_plane, scene.shadowMapOffset);
 
+    if (DEBUG_QUAD_VIEW) {
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderQuad(near_plane, far_plane, scene.shadowMapOffset);
+    }
     glutSwapBuffers();
     glFlush();
 }

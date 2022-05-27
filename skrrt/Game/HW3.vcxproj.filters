@@ -53,6 +53,7 @@
     <ClInclude Include="include\TextShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\DepthShader.h" />
+    <ClInclude Include="include\QuadShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -71,5 +72,7 @@
     <None Include="shaders\depthShader.vert" />
     <None Include="shaders\projectiveShadowsDisabled.vert" />
     <None Include="shaders\projectiveShadowsEnabled.vert" />
+    <None Include="shaders\quad.frag" />
+    <None Include="shaders\quad.vert" />
   </ItemGroup>
 </Project>

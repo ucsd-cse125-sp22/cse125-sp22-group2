@@ -160,9 +160,10 @@ void Scene::init(void) {
             sun->ambient = 0.5f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
             sun->diffuse = 0.99f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
             sun->specular = 0.7f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-
         }
     }
+
+    /*
     pointLights["sun"] = new PointLight;
     pointLights["sun"]->position = vec4(20.0f, 2.0f, 0.0f, 1.0f);
     pointLights["sun"]->constant = 1.0f;
@@ -172,7 +173,6 @@ void Scene::init(void) {
     pointLights["sun"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
     pointLights["sun"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
-
     pointLights["bulb"] = new PointLight;
     pointLights["bulb"]->position = vec4(-20.0f, 2.0f, 0.0f, 1.0f);
     pointLights["bulb"]->constant = 1.0f;
@@ -181,12 +181,13 @@ void Scene::init(void) {
     pointLights["bulb"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
     pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
     pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    */
 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         for (int n = 0; n < 2; n++) {
             const std::string headlightName = "player" + std::to_string(i) + "Headlight" + std::to_string(n);
             spotLights[headlightName] = new SpotLight;
-            spotLights[headlightName]->position = vec4(0.0f, 5.0f, 0.0f, 1.0f);
+            spotLights[headlightName]->position = vec4(0.0f, -5.0f, 0.0f, 1.0f);
             spotLights[headlightName]->direction = vec3(0.0f, -1.0f, 0.0f);
             spotLights[headlightName]->innerCutoff = glm::cos(glm::radians(12.0f));
             spotLights[headlightName]->outerCutoff = glm::cos(glm::radians(20.0f));
@@ -475,6 +476,12 @@ void Scene::init(void) {
         depth_shader->compile();
         glUseProgram(depth_shader->program);
         depth_shader->initUniforms();
+
+        quad_shader = new QuadShader;
+        quad_shader->read_source("shaders/quad.vert", "shaders/quad.frag");
+        quad_shader->compile();
+        glUseProgram(quad_shader->program);
+        quad_shader->initUniforms();
     } else {
         shader = new SurfaceShader;
         shader->read_source("shaders/projectiveShadowsDisabled.vert", "shaders/lightingShadowsDisabled.frag");
