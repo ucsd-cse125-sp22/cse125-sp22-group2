@@ -23,7 +23,7 @@ namespace cse125framing {
 		int ctr;
 		MovementKey movementKey;
 		vec3 cameraDirection;
-		bool replayMatch = false; // whether this client is ready to replay another match
+		bool readyToPlay = false; // whether this client is waiting to play another match
 	} ClientFrame;
 
 	enum class AudioId {

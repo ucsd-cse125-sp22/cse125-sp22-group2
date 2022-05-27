@@ -29,7 +29,7 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
                     std::deque<cse125framing::ClientFrame>& serverQueue,
                     std::mutex& queueMtx,
                     unsigned int& clientsConnected,
-                    bool (&clientsReplaying)[cse125constants::NUM_PLAYERS]);
+                    bool (&clientsWaitingToPlay)[cse125constants::NUM_PLAYERS]);
 
     /**
      * @brief Begin the session by reading for a packet
@@ -51,7 +51,7 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
     boost::asio::ip::tcp::socket socket;
     int id;
     unsigned int& clientsConnected;
-    bool(&clientsReplaying)[cse125constants::NUM_PLAYERS];
+    bool(&clientsReady)[cse125constants::NUM_PLAYERS];
     std::deque<cse125framing::ClientFrame>& serverQueue;
     std::mutex& queueMtx;
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
@@ -74,9 +74,9 @@ class GraphicsServer
      */
     unsigned int clientsConnected;
     /**
-     * @brief whether the ith client is ready to replay a match 
+     * @brief whether each client is ready to play a match 
      */
-    bool clientsReplaying[cse125constants::NUM_PLAYERS];
+    bool clientsReady[cse125constants::NUM_PLAYERS];
 
     /**
      * @brief Construct a new Graphics Server object
@@ -92,15 +92,15 @@ class GraphicsServer
      */
     void writePackets(cse125framing::ServerFrame* serverFrame);
     /**
-     * @brief Returns true if all clients are ready to replay, false otherwise
+     * @brief Returns true if all clients are ready to play, false otherwise
      *
-     * @return true if all clients are ready to replay, false otherwise
+     * @return true if all clients are ready to play, false otherwise
      */
-    bool readyToReplay();
+    bool readyToPlay();
     /**
-     * @brief Resets all clients to NOT be ready to replay
+     * @brief Sets the waiting-to-play status of all clients
      */
-    void resetReplayStatus();
+    void setReadyToPlay(const bool& status);
 
 
   private:

@@ -33,7 +33,7 @@ int main()
     // Initialize ticker
     cse125clocktick::ClockTick ticker(cse125config::TICK_RATE);
 
-    // Block until 4 clients connected
+    // Block until all clients connected
     std::cout << "Waiting for " << cse125constants::NUM_PLAYERS
               << " clients to connect..." << std::endl;
 
@@ -44,12 +44,9 @@ int main()
 
     // Wait for all clients to be be ready to start playing
     std::cerr << "Waiting for clients to start playing..." << std::endl;
-    while (!server->readyToReplay()) {
-        // Idle wait
-    }
-    // Reset number of clients replaying
-    server->resetReplayStatus();
-    std::cerr << "All clients ready to start playing " << std::endl;
+    server->setReadyToPlay(false);
+    while (!server->readyToPlay()) {} // Idle wait
+    std::cerr << "All clients ready to start playing! " << std::endl;
 
     // server loop
     bool runServer = true; 
@@ -155,13 +152,9 @@ int main()
         server->writePackets(&matchEndFrame);
 
         // Wait for all clients to be ready to play again
-        std::cerr << "Waiting for clients to restart..." << std::endl;
-        while (!server->readyToReplay()) {
-            // Idle wait
-        }
-
-        // Reset number of clients replaying
-        server->resetReplayStatus();
+        std::cerr << "Waiting for clients to replay..." << std::endl;
+        server->setReadyToPlay(false);
+        while (!server->readyToPlay()) {}
 
         // Reset the server packet queue
         server->queueMtx.lock();
