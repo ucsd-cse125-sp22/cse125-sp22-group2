@@ -57,6 +57,18 @@ void Scene::init(void){
     geometry["cones"] = new Obj; 
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
+    geometry["flowers"] = new Obj; 
+    geometry["flowers"]->init("models/FlowersPillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["dress"] = new Obj; 
+    geometry["dress"]->init("models/Dress.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["cake"] = new Obj; 
+    geometry["cake"]->init("models/CakePillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["curtains"] = new Obj; 
+    geometry["curtains"]->init("models/Curtains.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
     //*****************************
     //********** UI obj ***********
     //*****************************
@@ -98,6 +110,7 @@ void Scene::init(void){
 
     geometry["end_menu_background"] = new Obj;
     geometry["end_menu_background"]->init("models/Plane.obj", "textures/white.png", "textures/no_emission.png", "textures/no_emission.png", 20);
+
 
     // Create a material palette
     material["wood"] = new Material;
@@ -164,6 +177,22 @@ void Scene::init(void){
     model["cones"] = new Model; 
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
+
+    model["flowers"] = new Model; 
+    model["flowers"]->geometry = geometry["flowers"]; 
+    model["flowers"]->material = material["ceramic"];
+
+    model["dress"] = new Model; 
+    model["dress"]->geometry = geometry["dress"]; 
+    model["dress"]->material = material["ceramic"];
+
+    model["cake"] = new Model; 
+    model["cake"]->geometry = geometry["cake"]; 
+    model["cake"]->material = material["ceramic"];
+
+    model["curtains"] = new Model; 
+    model["curtains"]->geometry = geometry["curtains"]; 
+    model["curtains"]->material = material["ceramic"];
 
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
@@ -362,15 +391,36 @@ void Scene::init(void){
         node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
 
+    for (int i = 0; i < 4; i++) {
+        node["flowers" + std::to_string(i)] = new Node("flowers" + std::to_string(i));
+        node["flowers" + std::to_string(i)]->models.push_back(model["flowers"]);
+        node["flowers" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    for (int i = 0; i < 2; i++) {
+        node["cake" + std::to_string(i)] = new Node("cake" + std::to_string(i));
+        node["cake" + std::to_string(i)]->models.push_back(model["cake"]);
+        node["cake" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    node["dress"] = new Node("dress"); 
+    node["dress"]->models.push_back(model["dress"]); 
+    node["dress"]->modeltransforms.push_back(mat4(1.0f));
+    
+    node["curtains"] = new Node("curtains"); 
+    node["curtains"]->models.push_back(model["curtains"]); 
+    node["curtains"]->modeltransforms.push_back(mat4(1.0f));
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
     mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
+    float car_scale = 1.0f;
 
     node["world"]->childnodes.push_back(node["player0"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player0"]->childnodes.push_back(node["pink_car"]);
     node["player0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["pink_car"]->childnodes.push_back(node["p_tire_f"]);
@@ -383,7 +433,7 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(particle_transform);
     
     node["world"]->childnodes.push_back(node["player1"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
     node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
@@ -396,7 +446,7 @@ void Scene::init(void){
     node["blue_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player2"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player2"]->childnodes.push_back(node["yellow_car"]);
     node["player2"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["yellow_car"]->childnodes.push_back(node["y_tire_f"]);
@@ -409,7 +459,7 @@ void Scene::init(void){
     node["yellow_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player3"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player3"]->childnodes.push_back(node["green_car"]);
     node["player3"]->childtransforms.push_back(translate(vec3(6.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["green_car"]->childnodes.push_back(node["g_tire_f"]);
@@ -457,6 +507,26 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["cones2"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["flowers0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(5.0f, -0.5f, 5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(5.0f, -0.5f, -5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-5.0f, -0.5f, 5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers3"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-5.0f, -0.5f, -5.0f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["cake0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-19.0f, -0.5f, -19.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cake1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-17.0f, -0.5f, -21.0f)) * scale(0.5f * vec3(1.0f)));
+
+    //node["world"]->childnodes.push_back(node["dress"]);
+    //node["world"]->childtransforms.push_back(translate(vec3(-17.0f, -0.5f, -21.0f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["curtains"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(1.0f * vec3(1.0f)));
 
     // Put a camera
     camera = new Camera;
@@ -565,14 +635,14 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 1782.0f / 751.0f; 
-    const float mascara_bar_ratio = 1440.0f / 353.0f;
+    const float mascara_bar_ratio = 1133.0f / 353.0f;
     node["screen"]->childnodes.push_back(node["mascara_icon"]);
-    //node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -20.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
-    node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -15.0f, 0.0f)) * scale(1.5f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-7.0f, -20.0f, 0.0f)) * scale(2.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    //node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -15.0f, 0.0f)) * scale(2.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
     //node["screen"]->childnodes.push_back(node["mascara_bar"]);
     //node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["white_bar"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.8f, -20.0f, -0.1f)) * scale(1.4f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
 
     node["screen"]->childnodes.push_back(node["drips"]); 
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));

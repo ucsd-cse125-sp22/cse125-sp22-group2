@@ -12,7 +12,7 @@ namespace this_sucks {
 //using namespace this_sucks;
 
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew) {
-	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -1, (createNew ? 1 : 0));
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -0.5, (createNew ? 4 : 0));
 }
 
 /*

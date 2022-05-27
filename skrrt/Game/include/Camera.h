@@ -29,7 +29,7 @@ public:
     //float aspect_default = 4.0f/3.0f;
     float aspect_default = ((float)cse125constants::WINDOW_WIDTH) / cse125constants::WINDOW_HEIGHT;
     float near_default = 0.01f;
-    float far_default = 500.0f;
+    float far_default = 800.0f;
     //float far_default = 100.0f;
     
     glm::mat4 view = glm::mat4(1.0f);   // view matrix
