@@ -455,6 +455,7 @@ void keyboard(unsigned char key, int x, int y){
             // Audio Engine
             vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
             std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            game.triggerFx("Collision.wav", position);
             break;
         }
 
@@ -598,6 +599,9 @@ void idle() {
         render = true;
     }
 
+    // Update Engine Audio Positions
+    game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
+
 
     // Handle direction triggers 
     if (triggers["up"]) {
@@ -656,6 +660,8 @@ void idle() {
 
                     // Play Game Music
                     game.playMusic("BattleTheme.wav", -10.0);
+                    game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
+;
                 }
                 // Delete the frame
                 delete frame;

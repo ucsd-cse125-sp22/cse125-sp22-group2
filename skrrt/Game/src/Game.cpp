@@ -114,15 +114,17 @@ void Game::stopAllSounds()
     audioEngine.stopAllChannels();
 }
 
-void Game::playMusic(const char* musicName, float db)
+int Game::playMusic(const char* musicName, float db)
 {
     audioEngine.stopAllChannels();
-    audioEngine.playSound(musicName, { 0,0,0 }, db);
+    int channel = audioEngine.playSound(musicName, { 0,0,0 }, db);
+    return channel;
 }
 
-void Game::triggerFx(const char* fxName, const vec3& position, float dB)
+int Game::triggerFx(const char* fxName, const vec3& position, float dB)
 {
-    audioEngine.playSound(fxName, position);
+    int channel = audioEngine.playSound(fxName, position, dB);
+    return channel;
 }
 
 vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos)
@@ -145,4 +147,35 @@ vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playe
     eventRelativeToCameraPos.z = glm::sin(theta) * distance.x + glm::cos(theta) * distance.z;
 
     return eventRelativeToCameraPos;
+}
+
+void Game::startCarEngines(int clientId, vec3& cameraPos)
+{
+    vec3 playerPos = players[clientId]->getPosition();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) 
+    {
+        float db = OTHER_PLAYER_ENGINE_DB;
+        vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+        if (i == clientId) 
+        {
+            db = CLIENT_ENGINE_DB; // turn down player engine volume
+        }
+        // Start Car Engine
+        int channel = Game::triggerFx("Engine.wav", enginePosition, db);
+        // Add channel number to carEngineChannels
+        carEngineChannels[i] = channel;
+        printf("channel name: %d | channel: %d", i, channel);
+    }
+}
+
+void Game::updateCarEngines(int clientId, vec3& cameraPos)
+{
+    vec3 playerPos = players[clientId]->getPosition();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        // Move Player Car Engine Positions
+        vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+        //vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, vec3{ 0,0,0 }); // FOR TESTING SOUNDS ONLY
+        audioEngine.setChannel3dPosition(carEngineChannels[i], enginePosition);
+    }
 }

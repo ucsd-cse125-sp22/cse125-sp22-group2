@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Config.cpp" />
+    <ClCompile Include="..\..\Definitions.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
     <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="main.cpp" />

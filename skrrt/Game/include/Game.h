@@ -112,12 +112,14 @@ public:
 
     /* AUDIO TRIGGERS */
     void stopAllSounds();
-    void playMusic(const char* soundName, float db = 0.0);
+    int playMusic(const char* soundName, float db = 0.0);
     //void stopMusic(const char* soundName);
-    void triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
+    int triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
 
     vec3 computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
 
+    void startCarEngines(int clientId, vec3& cameraPos);
+    void updateCarEngines(int clientId, vec3& cameraPos);
 };
 
 

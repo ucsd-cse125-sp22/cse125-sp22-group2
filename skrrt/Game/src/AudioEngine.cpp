@@ -49,6 +49,10 @@ void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLoop
     if (is3d) 
     {
         fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE);
+        if (soundName == "Engine.wav")
+        {
+            fmod_sound->set3DMinMaxDistance(MIN_CAR_ENGINE, MAX_3D_DISTANCE);
+        }
     }
 
     if (fmod_sound)
@@ -97,12 +101,6 @@ AudioEngine::~AudioEngine()
 }
 
 /* UTILITY FUNCTIONS */
-
-bool AudioEngine::stopSound(const char* soundName)
-{
-    // TODO
-    return false;
-}
 
 int AudioEngine::playSound(const char* soundName, const vec3& position, float dB)
 {
@@ -155,7 +153,9 @@ void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
     if (channelIter != channels.end())
     {
         FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
-        channelIter->second->set3DAttributes(&fmod_position, NULL);
+        std::string e = "Set 3D Position: ";
+        AudioEngine::errorCheck(e, channelIter->second->set3DAttributes(&fmod_position, NULL));
+        AudioEngine::system->update();
     }
 }
 
