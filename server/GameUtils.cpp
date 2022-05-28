@@ -20,7 +20,6 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         ObjPowerup* powerup = (ObjPowerup*)manager->objects->at(manager->powerupIDOffset + id);
         frame->powerup[id].powerupPosition = powerup->position;
         frame->powerup[id].powerupVisible = powerup->spawned;
-        cout << powerup->spawned << "\n";
     }
 
     // initialize audio triggers

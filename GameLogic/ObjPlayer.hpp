@@ -67,6 +67,8 @@ public:
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
 	// Special movement function for when another player is pushing you
 	bool movePushed(glm::vec3 dir, float pushSpeed);
+	// Check whether we are in the floor region of the arena (regardless of whether we are above or below it)
+	bool detectFloor(BoundingBox bb, glm::vec3 center = MAP_CENTER);
 	// Apply gravity if there is no object directly below us
 	void applyGravity();
 	// Adhere to the terrain

@@ -24,6 +24,9 @@ const float SCORE_WEIGHT = 1.0f;
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
 const float MAP_RADIUS = 31.5f; //63.5f; // For big map
+const float MAP_PIT_RADIUS_INNER = 8.79f;
+const float MAP_PIT_RADIUS_OUTER = 19.0f;
+const float MAP_PIT_ROAD_HALF_WIDTH = 3.5f;
 
 // Makeup
 const float MAKEUP_MAX = 100.0f;
@@ -59,8 +62,8 @@ const float TRAIL_LIFE = 4.0f;
 const float TRAIL_DIMENSIONS = 1.0f;
 
 // Gravity
-const float GRAVITY_MAX = 0.1f;
-const float GRAVITY_FORCE = 0.001f;
+const float GRAVITY_MAX = 0.4f;
+const float GRAVITY_FORCE = 0.02f;
 
 // Invincibility Frames
 const float CROWN_IFRAMES = 2.0f;

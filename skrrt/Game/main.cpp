@@ -280,7 +280,6 @@ void updatePowerupState(cse125framing::ServerFrame* frame) {
     // None of this is right
     scene.node["blowdryer"]->modeltransforms[0] = glm::translate(frame->powerup[0].powerupPosition);
     scene.node["blowdryer"]->visible = frame->powerup[0].powerupVisible;
-    std::cout << frame->powerup[0].powerupPosition.x << " " << frame->powerup[0].powerupVisible << "\n";
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)

@@ -148,16 +148,17 @@ void ObjPlayer::step(float gameTime) {
 		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * this->speed / 2.0f, this->direction, this->up));
 	}
 
-	//if (!id) {
-	//	cout << hasPowerup << " " << powerupTime << " " << speed << "\n";
-	//}
+	// Gravity
+	applyGravity();
 
+	//if (!id) {
+	//	cout << detectFloor(this->boundingBox) << "\n";
+	//}
 	// TODO: uncomment this probably
 	//if (!id) {
 	//	applyGravity();
 	//	matchTerrain();
 	//}
-	//applyGravity();
 	//matchTerrain();
 }
 
@@ -452,87 +453,196 @@ bool ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 	return result;
 }
 
+bool ObjPlayer::detectFloor(BoundingBox bb, glm::vec3 center) {
+	if (bounding::checkWithinRadii(this->boundingBox, center, MAP_PIT_RADIUS_INNER, MAP_PIT_RADIUS_OUTER)) {
+		if ((bb.bbMin.x > MAP_PIT_ROAD_HALF_WIDTH || bb.bbMax.x < -MAP_PIT_ROAD_HALF_WIDTH) &&
+			(bb.bbMin.z > MAP_PIT_ROAD_HALF_WIDTH || bb.bbMax.z < -MAP_PIT_ROAD_HALF_WIDTH)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void ObjPlayer::applyGravity() {
-	BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
+	// Check logical floor
+	bool f = detectFloor(this->boundingBox);
 
 	// Check whether we are in the air
-	if (checkPlaceFree(bb) && position.y > -12.0f) {
+	if (this->position.y != 0.0f || !f) {
+		BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
+		// Check whether something is below us
+		if (checkPlaceFree(bb)) {
+			// Increase the amount gravity is pulling us
+			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
+			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			if (f && this->position.y > 0.0f) {
+				destination.y = max(destination.y, 0.0f);
+			}
 
-		// Increase the amount gravity is pulling us
-		this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
-		glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			// Generate a bounding box at our destination and check what we would collide with
+			bb = generateBoundingBox(destination, this->direction, this->up);
 
-		// Generate a bounding box at our destination and check what we would collide with
-		bb = generateBoundingBox(destination, this->direction, this->up);
+			// Get the collisions for our destination
+			vector<int> collisions = findCollisionObjects(bb);
 
-		// Get the collisions for our destination
-		vector<int> collisions = findCollisionObjects(bb);
+			// Use to determine whether to cancel the move
+			bool destinationFree = true;
+			// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
+			bool adjusted = false;
 
-		// Use to determine whether to cancel the move
-		bool destinationFree = true;
-		// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
-		bool adjusted = false;
+			// Go through every object we collided with (this includes non-solids that we can overlap with)
+			for (unsigned int i = 0; i < collisions.size(); i++) {
+				PhysicalObject*& obj = this->objects->at(collisions[i]);
 
-		// Go through every object we collided with (this includes non-solids that we can overlap with)
-		for (unsigned int i = 0; i < collisions.size(); i++) {
-			PhysicalObject*& obj = this->objects->at(collisions[i]);
-
-			// A solid object is blocking us
-			if (obj->solid && !adjusted) {
-				destinationFree = false;
-				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
-				glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
-				//cout <<  " Shifting " << glm::length(adjust) << " ";
-				if (glm::length(adjust) < MAX_ADJUSTMENT) {
-					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
-					if (glm::dot(obj->position - this->position, adjust) > 0) {
-						//cout << " FLIPPING ";
-						adjust = -adjust;
-					}
-					BoundingBox temp = generateBoundingBox(destination + adjust, this->direction, this->up);
-					if (checkPlaceFree(temp)) {
-						//cout << "Adjusted\n";
-						destination += adjust;
-						bb = temp;
-						destinationFree = true;
-						adjusted = true;
+				// A solid object is blocking us
+				if (obj->solid && !adjusted) {
+					destinationFree = false;
+					//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+					glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
+					//cout <<  " Shifting " << glm::length(adjust) << " ";
+					if (glm::length(adjust) < MAX_ADJUSTMENT) {
+						//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+						if (glm::dot(obj->position - this->position, adjust) > 0) {
+							//cout << " FLIPPING ";
+							adjust = -adjust;
+						}
+						BoundingBox temp = generateBoundingBox(destination + adjust, this->direction, this->up);
+						if (checkPlaceFree(temp)) {
+							//cout << "Adjusted\n";
+							destination += adjust;
+							bb = temp;
+							destinationFree = true;
+							adjusted = true;
+						}
+						else {
+							//cout << "Cancelled\n";
+							destinationFree = false;
+						}
 					}
 					else {
-						//cout << "Cancelled\n";
+						//cout << "Confirmed\n";
 						destinationFree = false;
 					}
 				}
-				else {
-					//cout << "Confirmed\n";
-					destinationFree = false;
-				}
+
+				// Transfer/take the crown
+				crownTransfer(obj);
+				// Pick up powerup
+				pickupPowerup(obj);
 			}
 
-			// Transfer/take the crown
-			crownTransfer(obj);
-			// Pick up powerup
-			pickupPowerup(obj);
+			// If our destination is free, complete the move
+			if (destinationFree) {
+				this->position = destination;
+				this->boundingBox = bb;
+			}
 		}
+		else {
+			// We have something solid beneath us, so reset gravity
+			this->gravity = 0.0f;
+		}
+	}
 
-		// If our destination is free, complete the move
-		if (destinationFree) {
-			this->position = destination;
+	// Let players get back onto the ground if they are only slightly below it
+	if (f && position.y > -0.1f && position.y < 0.0f) {
+		BoundingBox bb = generateBoundingBox(glm::vec3(this->position.x, 0.0f, this->position.y), this->direction, this->up);
+		if (checkPlaceFree(bb)) {
+			this->position.y = 0.0f;
 			this->boundingBox = bb;
 		}
 	}
-	else {
-		// We have something solid beneath us, so reset gravity
-		this->gravity = 0.0f;
-	}
 
-	// REMOVE THIS AFTER SLOPES/RESPAWNING
+
+	// TODO REMOVE THIS AFTER SLOPES/RESPAWNING
 	if (position.y < -8.0f) {
 		position.y = 8.0f;
 		boundingBox = generateBoundingBox(position, this->direction, this->up);
+		gravity = 0.0f;
 	}
 }
 
 void ObjPlayer::matchTerrain() {
+
+	//void ObjPlayer::applyGravity() {
+	//	BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
+	//
+	//	// Check whether we are in the air
+	//	if (checkPlaceFree(bb) && position.y > -12.0f) {
+	//
+	//		// Increase the amount gravity is pulling us
+	//		this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
+	//		glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+	//
+	//		// Generate a bounding box at our destination and check what we would collide with
+	//		bb = generateBoundingBox(destination, this->direction, this->up);
+	//
+	//		// Get the collisions for our destination
+	//		vector<int> collisions = findCollisionObjects(bb);
+	//
+	//		// Use to determine whether to cancel the move
+	//		bool destinationFree = true;
+	//		// Attempt to move out of a single collision (this is limited to one attempt to avoid an infinite loop)
+	//		bool adjusted = false;
+	//
+	//		// Go through every object we collided with (this includes non-solids that we can overlap with)
+	//		for (unsigned int i = 0; i < collisions.size(); i++) {
+	//			PhysicalObject*& obj = this->objects->at(collisions[i]);
+	//
+	//			// A solid object is blocking us
+	//			if (obj->solid && !adjusted) {
+	//				destinationFree = false;
+	//				//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
+	//				glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
+	//				//cout <<  " Shifting " << glm::length(adjust) << " ";
+	//				if (glm::length(adjust) < MAX_ADJUSTMENT) {
+	//					//cout << "Adjusting?  Dot:" << glm::dot(dir, adjust) << " ";
+	//					if (glm::dot(obj->position - this->position, adjust) > 0) {
+	//						//cout << " FLIPPING ";
+	//						adjust = -adjust;
+	//					}
+	//					BoundingBox temp = generateBoundingBox(destination + adjust, this->direction, this->up);
+	//					if (checkPlaceFree(temp)) {
+	//						//cout << "Adjusted\n";
+	//						destination += adjust;
+	//						bb = temp;
+	//						destinationFree = true;
+	//						adjusted = true;
+	//					}
+	//					else {
+	//						//cout << "Cancelled\n";
+	//						destinationFree = false;
+	//					}
+	//				}
+	//				else {
+	//					//cout << "Confirmed\n";
+	//					destinationFree = false;
+	//				}
+	//			}
+	//
+	//			// Transfer/take the crown
+	//			crownTransfer(obj);
+	//			// Pick up powerup
+	//			pickupPowerup(obj);
+	//		}
+	//
+	//		// If our destination is free, complete the move
+	//		if (destinationFree) {
+	//			this->position = destination;
+	//			this->boundingBox = bb;
+	//		}
+	//	}
+	//	else {
+	//		// We have something solid beneath us, so reset gravity
+	//		this->gravity = 0.0f;
+	//	}
+	//
+	//	// REMOVE THIS AFTER SLOPES/RESPAWNING
+	//	if (position.y < -8.0f) {
+	//		position.y = 8.0f;
+	//		boundingBox = generateBoundingBox(position, this->direction, this->up);
+	//	}
+	//}
+
 	////this->up = glm::vec3(0.0f, 1.0f, 0.0f);
 	BoundingBox bb = this->boundingBox;
 	// For each vertex, find the floor beneath it
@@ -660,4 +770,3 @@ void ObjPlayer::matchTerrain() {
 	// Part III: Construct a new bounding box
 	// Part IV: Adjust the bounding box again to not collide with the floor
 }
-
