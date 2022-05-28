@@ -156,7 +156,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
 
         text_shader->textColor = countdown_time_text->getColor();
         text_shader->setUniforms();
-        countdown_time_text->updateText(std::to_string(countdownTimeRemaining));
+        countdown_time_text->updateText(std::to_string((int)countdownTimeRemaining));
         countdown_time_text->RenderText();
         countdown_time_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
     }

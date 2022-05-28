@@ -652,7 +652,8 @@ void idle() {
                 cse125framing::ServerFrame* frame = receiveDataFromServer();    
 
                 // Update static player positions
-                scene.camera->reset(); // need this or else the camera position changes each time
+                // scene.camera->reset(); // need this or else the camera position changes each time
+                scene.camera->reset();
                 updatePlayerState(frame);
                 triggerAnimations(frame->animations);
                 triggerAudio(frame->audio);
@@ -660,6 +661,16 @@ void idle() {
                 // Update countdown time
                 countdownTimeRemaining = frame->countdownTimeRemaining;
                 if (countdownTimeRemaining <= 0) {
+                    glm::vec3& cam = scene.camera->eye;
+                    std::cerr << "Camera eye: " << cam.x << ", " << cam.y << ", " << cam.z << std::endl;
+                    cam = scene.camera->target;
+                    std::cerr << "Camera target: " << cam.x << ", " << cam.y << ", " << cam.z << std::endl;
+                    cam = scene.camera->up;
+                    std::cerr << "Camera up: " << cam.x << ", " << cam.y << ", " << cam.z << std::endl;
+
+
+
+
                     std::cerr << "Countdown time remaining = " << countdownTimeRemaining << std::endl;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
            
