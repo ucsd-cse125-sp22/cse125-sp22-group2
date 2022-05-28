@@ -33,6 +33,7 @@ private:
 	RealNumber score = 0;
 
 	// Player's powerup info
+	Node* blowdryer_node;
 	bool using_powerup = false;
 	bool has_powerup = false;
 
@@ -66,6 +67,7 @@ public:
 		initial_car_transform = player->childtransforms[0];
 	};
 	void setCrown(Node* crown) { crown_node = crown; };
+	void setBlowdryer(Node* blowdryer) { blowdryer_node = blowdryer; };
 	void setPosition(glm::vec3 position) { current_position = position; };
 	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
@@ -95,6 +97,7 @@ public:
 
 	void setUsingPowerup(bool status) {
 		using_powerup = status;
+		blowdryer_node->visible = status;
 	};
 
 	bool getCrownStatus() {

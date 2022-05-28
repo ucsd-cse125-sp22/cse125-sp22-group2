@@ -128,6 +128,7 @@ void initialize(void)
     for (int i = 0; i < 4; i++) {
         game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
         game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+        game.players[i]->setBlowdryer(scene.node["blowdryer" + std::to_string(i)]);
     }
 
     game.init(scene.node["world"], scene.node["UI_root"]);

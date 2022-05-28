@@ -59,6 +59,8 @@ void Scene::init(void){
 
     geometry["blowdryer"] = new Obj;
     geometry["blowdryer"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+    geometry["blowdryer_on_car"] = new Obj;
+    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     //*****************************
     //********** UI obj ***********
@@ -159,6 +161,9 @@ void Scene::init(void){
     model["blowdryer"] = new Model;
     model["blowdryer"]->geometry = geometry["blowdryer"];
     model["blowdryer"]->material = material["silver"];
+    model["blowdryer_on_car"] = new Model;
+    model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
+    model["blowdryer_on_car"]->material = material["silver"];
 
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
@@ -317,6 +322,19 @@ void Scene::init(void){
     node["crown_world"]->models.push_back(model["crown"]);
     node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
 
+
+    // Powerups
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+    //for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+    //}
+    node["blowdryer"] = new Node("blowdryer", true);
+    node["blowdryer"]->models.push_back(model["blowdryer"]);
+    node["blowdryer"]->modeltransforms.push_back(mat4(1.0f));
+
     // Map
     node["map"] = new Node("map");
     node["map"]->models.push_back(model["map"]);
@@ -346,18 +364,12 @@ void Scene::init(void){
         node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
 
-    // Powerups
-    //for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
-    //}
-    node["blowdryer"] = new Node("blowdryer", true);
-    node["blowdryer"]->models.push_back(model["blowdryer"]);
-    node["blowdryer"]->modeltransforms.push_back(mat4(1.0f));
-
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
+    mat4 blowdryer_transform = translate(vec3(0.0f, -1.8f, 0.0f)) * rotate(-1.0f * radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
 
     node["world"]->childnodes.push_back(node["player0"]);
@@ -370,6 +382,8 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
+    node["pink_car"]->childnodes.push_back(node["blowdryer0"]);
+    node["pink_car"]->childtransforms.push_back(blowdryer_transform);
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
     
@@ -383,6 +397,8 @@ void Scene::init(void){
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
     node["blue_car"]->childnodes.push_back(node["crown1"]);
     node["blue_car"]->childtransforms.push_back(crown_transform);
+    node["blue_car"]->childnodes.push_back(node["blowdryer1"]);
+    node["blue_car"]->childtransforms.push_back(blowdryer_transform);
     node["blue_car"]->childnodes.push_back(node["particles1"]);
     node["blue_car"]->childtransforms.push_back(particle_transform);
 
@@ -396,6 +412,8 @@ void Scene::init(void){
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["crown2"]);
     node["yellow_car"]->childtransforms.push_back(crown_transform);
+    node["yellow_car"]->childnodes.push_back(node["blowdryer2"]);
+    node["yellow_car"]->childtransforms.push_back(blowdryer_transform);
     node["yellow_car"]->childnodes.push_back(node["particles2"]);
     node["yellow_car"]->childtransforms.push_back(particle_transform);
 
@@ -409,6 +427,8 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(back_tire_transform);
     node["green_car"]->childnodes.push_back(node["crown3"]);
     node["green_car"]->childtransforms.push_back(crown_transform);
+    node["green_car"]->childnodes.push_back(node["blowdryer3"]);
+    node["green_car"]->childtransforms.push_back(blowdryer_transform);
     node["green_car"]->childnodes.push_back(node["particles3"]);
     node["green_car"]->childtransforms.push_back(particle_transform);
 

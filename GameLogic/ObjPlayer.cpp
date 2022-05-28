@@ -53,6 +53,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->thresholdDecay = 0.0f;
 	this->hasPowerup = false;
 	this->powerupTime = 0.0f;
+	this->boostTargetDirection = direction;
 }
 
 ObjPlayer::~ObjPlayer() {}
@@ -105,7 +106,8 @@ void ObjPlayer::step(float gameTime) {
 			boothTime = 0.0f;
 			objects->at(((ObjMakeup*)objects->at(booth))->barID)->solid = false;
 			speed = SPEED_LEAVE_BOOTH;
-			iframes = MAKEUP_IFRAMES;
+			boostTargetDirection = glm::normalize((2.0f * objects->at(booth)->direction + 1.5f * glm::normalize(objects->at(booth)->position) * -1.0f) / 3.5f);
+			iframes = MAKEUP_IFRAMES * cse125config::TICK_RATE;
 		}
 		
 	}
@@ -130,10 +132,23 @@ void ObjPlayer::step(float gameTime) {
 
 	// Adjust speed above threshold
 	if (speed > SPEED_THRESHOLD) {
+		cout << glm::dot(direction, boostTargetDirection) << " ";
+		if (glm::dot(direction, boostTargetDirection) < 0.95f) {
+			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.35f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
+			BoundingBox bb = generateBoundingBox(position, targetDir, this->up);
+			cout << direction << " " << boostTargetDirection << " ";
+			if (checkPlaceFree(bb)) {
+				this->direction = targetDir;
+				this->boundingBox = bb;
+				cout << "Succeeded";
+			}
+		}
 		speed -= thresholdDecay;
 		thresholdDecay += 0.01f;
+		cout << "\n";
 	}
 	else {
+		boostTargetDirection = direction;
 		thresholdDecay = 0.0f;
 		// Lower speed if above maxSpeed
 		if (speed > maxSpeed) {
@@ -383,6 +398,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->hasCrown = true;
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
+			this->speed = SPEED_STEAL_CROWN;
 		}
 	}
 }

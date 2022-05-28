@@ -45,6 +45,8 @@ public:
 	bool hasPowerup;
 	// How much longer we have the powerup
 	float powerupTime;
+	// Direction to change to during boost
+	glm::vec3 boostTargetDirection;
 
 
 	ObjPlayer();
