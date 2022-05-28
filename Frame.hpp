@@ -59,14 +59,14 @@ namespace cse125framing {
 
 	// Data for loose crown
 	typedef struct CrownData {
-		vec3 crownPosition;
-		bool crownVisible;
+		vec3 crownPosition = vec3(0.0f);;
+		bool crownVisible = false;
 	} CrownData;
 
 	// Data for powerups
 	typedef struct PowerupData {
-		vec3 powerupPosition;
-		bool powerupVisible;
+		vec3 powerupPosition = vec3(0.0f);
+		bool powerupVisible = false;
 	} PowerupData;
 
 	typedef struct ServerFrame {

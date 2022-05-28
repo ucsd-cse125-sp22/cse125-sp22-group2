@@ -15,11 +15,12 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     frame->crown.crownVisible = crown->loose;
 
     // initialize powerup frame data
-    for (int id = manager->powerupIDOffset; id < cse125constants::NUM_POWERUPS; id++)
+    for (int id = 0; id < cse125constants::NUM_POWERUPS; id++)
     {
-        ObjPowerup* powerup = (ObjPowerup*)manager->objects->at(id);
+        ObjPowerup* powerup = (ObjPowerup*)manager->objects->at(manager->powerupIDOffset + id);
         frame->powerup[id].powerupPosition = powerup->position;
         frame->powerup[id].powerupVisible = powerup->spawned;
+        cout << powerup->spawned << "\n";
     }
 
     // initialize audio triggers

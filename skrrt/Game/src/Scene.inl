@@ -57,6 +57,9 @@ void Scene::init(void){
     geometry["cones"] = new Obj; 
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
+    geometry["blowdryer"] = new Obj;
+    geometry["blowdryer"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+
     //*****************************
     //********** UI obj ***********
     //*****************************
@@ -123,7 +126,7 @@ void Scene::init(void){
 
     model["crown"] = new Model; 
     model["crown"]->geometry = geometry["crown"];
-    model["crown"]->material = material["silver"]; 
+    model["crown"]->material = material["silver"];
 
     model["map"] = new Model; 
     model["map"]->geometry = geometry["map"];
@@ -152,6 +155,10 @@ void Scene::init(void){
     model["cones"] = new Model; 
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
+
+    model["blowdryer"] = new Model;
+    model["blowdryer"]->geometry = geometry["blowdryer"];
+    model["blowdryer"]->material = material["silver"];
 
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
@@ -339,6 +346,13 @@ void Scene::init(void){
         node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
 
+    // Powerups
+    //for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+    //}
+    node["blowdryer"] = new Node("blowdryer", true);
+    node["blowdryer"]->models.push_back(model["blowdryer"]);
+    node["blowdryer"]->modeltransforms.push_back(mat4(1.0f));
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate); 
@@ -434,6 +448,10 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["cones2"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
+    // Powerups
+    node["world"]->childnodes.push_back(node["blowdryer"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 
     // Put a camera
     camera = new Camera;

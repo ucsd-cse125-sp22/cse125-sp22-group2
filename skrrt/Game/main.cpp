@@ -276,6 +276,13 @@ void updateCrownState(cse125framing::ServerFrame* frame) {
     scene.node["crown_world"]->visible = frame->crown.crownVisible;
 }
 
+void updatePowerupState(cse125framing::ServerFrame* frame) {
+    // None of this is right
+    scene.node["blowdryer"]->modeltransforms[0] = glm::translate(frame->powerup[0].powerupPosition);
+    scene.node["blowdryer"]->visible = frame->powerup[0].powerupVisible;
+    std::cout << frame->powerup[0].powerupPosition.x << " " << frame->powerup[0].powerupVisible << "\n";
+}
+
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
 {
     // makeup booth animation
@@ -569,7 +576,7 @@ void idle() {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
             game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
-            std::cout << (time - lastRenderTime) / 50.0f << "\n";
+            //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
@@ -617,6 +624,8 @@ void idle() {
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
             if (frame->matchInProgress) {
+                // Use the frame to update the powerups' state
+                updatePowerupState(frame);
                 // Use the frame to update the crown's state
                 updateCrownState(frame);
                 // Use the frame to update the player's state
