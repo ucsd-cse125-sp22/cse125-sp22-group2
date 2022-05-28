@@ -40,6 +40,8 @@ public:
     void zoom(const float factor);
     void computeMatrices(void);
     void reset(void);
+    void reset(int playerId);
+
 
     void movePosition(const float distance, const glm::vec3 direction);
     void setPosition(const glm::vec3 newTarget);

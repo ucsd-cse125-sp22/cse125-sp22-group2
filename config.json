@@ -2,6 +2,6 @@
   "host": "localhost",
   "port": "8000",
   "tickRate": 30,
-  "gameTime": 3,
-  "countdownTime": 1
+  "gameTime": 2,
+  "countdownTime": 3
 }

@@ -69,7 +69,7 @@ public:
     Text* scores[4];
     Text* game_time;
     Text* countdown_instructions_text;
-    Text* countdown_time_text;
+    Text* countdown_go_text;
     Text* match_end_text;
 
     // The following are containers of objects serving as the object palettes.

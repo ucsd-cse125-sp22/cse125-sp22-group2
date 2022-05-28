@@ -6,6 +6,7 @@ Scene.cpp contains the implementation of the draw command
 #include "Obj.h"
 #include "Debug.h"
 #include "TextureConstants.h"
+#include "../../../Config.hpp"
 
 // The scene init definition 
 #include "Scene.inl"
@@ -136,40 +137,60 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         scores[i]->setColor(text_colors[i]);
         text_shader->textColor = scores[i]->getColor(); 
 		text_shader->setUniforms();
-        scores[i]->RenderText();
         //scores[i]->setPosition(cse125constants::WINDOW_WIDTH - 120.0f, cse125constants::WINDOW_HEIGHT - 50.0f * i - 75.0f);
         scores[i]->setPosition(120.0f, cse125constants::WINDOW_HEIGHT - 75.0f * i - 100.0f);
+        scores[i]->RenderText();
     }
 
     // Draw game time
 	text_shader->textColor = game_time->getColor(); 
     text_shader->setUniforms();
-    game_time->RenderText();
 	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
+    game_time->RenderText();
 
     // Draw countdown timer text
     if (countdownTimeRemaining > 0) {
         text_shader->textColor = countdown_instructions_text->getColor();
         text_shader->setUniforms();
+        countdown_instructions_text->setPosition(cse125constants::WINDOW_WIDTH / 4.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
         countdown_instructions_text->RenderText();
-        countdown_instructions_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
 
-        text_shader->textColor = countdown_time_text->getColor();
-        text_shader->setUniforms();
-        countdown_time_text->updateText(std::to_string((int)countdownTimeRemaining));
-        countdown_time_text->RenderText();
-        countdown_time_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+        const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
+        switch (secondsLeft) {
+        case 2:
+            text_shader->textColor = countdown_go_text->getColor();
+            text_shader->setUniforms();
+            countdown_go_text->updateText("READY ...");
+            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->RenderText();
+        case 1:
+            text_shader->textColor = countdown_go_text->getColor();
+            text_shader->setUniforms();
+            countdown_go_text->updateText("SET ...");
+            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->RenderText();
+            break;
+        case 0:
+            text_shader->textColor = countdown_go_text->getColor();
+            text_shader->setUniforms();
+            countdown_go_text->updateText("GO!");
+            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->RenderText();
+            break;
+        default:
+            break;
+        }
     }
+    
 
     // Draw end-of-match text
     if (renderMatchEndText) {
         text_shader->textColor = match_end_text->getColor();
         text_shader->setUniforms();
         match_end_text->updateText(matchEndText);
-        match_end_text->RenderText();
         match_end_text->setPosition(cse125constants::WINDOW_WIDTH / 4.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
+        match_end_text->RenderText();
     }
-
 }
 
 void Scene::drawUI(void) {
