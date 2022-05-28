@@ -125,7 +125,7 @@ void Scene::updateScreen(void) {
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
 }
 
-void Scene::drawText(const bool& renderMatchEndText, const std::string& matchEndText) {
+void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText) {
     glUseProgram(text_shader->program);
 
     text_shader->projection = glm::ortho(0.0f, (float)cse125constants::WINDOW_WIDTH, 0.0f, (float)cse125constants::WINDOW_HEIGHT);
@@ -147,7 +147,21 @@ void Scene::drawText(const bool& renderMatchEndText, const std::string& matchEnd
     game_time->RenderText();
 	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
 
+    // Draw countdown timer text
+    if (countdownTimeRemaining > 0) {
+        text_shader->textColor = countdown_instructions_text->getColor();
+        text_shader->setUniforms();
+        countdown_instructions_text->RenderText();
+        countdown_instructions_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
 
+        text_shader->textColor = countdown_time_text->getColor();
+        text_shader->setUniforms();
+        countdown_time_text->updateText(std::to_string(countdownTimeRemaining));
+        countdown_time_text->RenderText();
+        countdown_time_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+    }
+
+    // Draw end-of-match text
     if (renderMatchEndText) {
         text_shader->textColor = match_end_text->getColor();
         text_shader->setUniforms();

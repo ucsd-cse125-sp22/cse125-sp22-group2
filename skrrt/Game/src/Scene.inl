@@ -581,6 +581,12 @@ void Scene::init(void){
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
 
+    countdown_time_text = new Text(text_shader->program);
+    countdown_time_text->updateText("Countdown text");
+
+    countdown_instructions_text = new Text(text_shader->program);
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+
     match_end_text = new Text(text_shader->program);
     match_end_text->updateText("End of match text");
 

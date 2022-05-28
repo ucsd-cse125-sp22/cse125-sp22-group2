@@ -51,9 +51,8 @@ public:
 	/**
 	 * @brief Update general game state once per tick 
 	 *
-	 * @param matchInProgress pointer to bool that will be set to false if the game has ended, unchanged otherwise
-	 * @param winnerId        pointer to int that will be set to the id of the match winner if the game has ended, unchanged otherwise
-
+	 * @param matchInProgress      pointer to bool that will be set to false if the game has ended, unchanged otherwise
+	 * @param winnerId             pointer to int that will be set to the id of the match winner if the game has ended, unchanged otherwise
 	 */
 	void step(bool* matchInProgress, int* winnerId);
 	

@@ -13,6 +13,7 @@
 
 PhysicalObjectManager* manager;
 boost::asio::io_context io_context;
+const int COUNTDOWN_LENGTH = 3;
 
 void launchServer()
 {
@@ -42,24 +43,32 @@ int main()
         // idle wait for clients
     }
 
-    // Wait for all clients to be be ready to start playing
+    // Wait for all clients to be ready to start playing
     std::cerr << "Waiting for clients to start playing..." << std::endl;
     server->setReadyToPlay(false);
     while (!server->readyToPlay()) {} // Idle wait
     std::cerr << "All clients ready to start playing! " << std::endl;
 
+    const int numCountdownTicks = cse125config::TICK_RATE * cse125config::COUNTDOWN_LENGTH;
     // server loop
+    manager = initializeGame();
     bool runServer = true; 
     while (runServer) 
     {
-        // Initialize or re-initialize game manager
-        manager = initializeGame();
+        // Pre-match countdown loop
+        for (int i = 0; i <= numCountdownTicks; i++) {
+            ticker.tickStart();
+            cse125framing::ServerFrame countdownFrame;
+            initializeServerFrame(manager, &countdownFrame);
+            countdownFrame.countdownTimeRemaining = numCountdownTicks - i;
+            server->writePackets(&countdownFrame);
+            ticker.tickEnd();
+        }
 
         // State about the current match
         bool matchInProgress = true;
         int winnerId = cse125constants::DEFAULT_WINNER_ID;
-
-        std::cout << "Starting Skrrt Skirt!" << std::endl;
+        std::cerr << "Starting Skrrt Skirt!" << std::endl;
         while (matchInProgress)
         {
             // Start the clock tick
@@ -161,9 +170,13 @@ int main()
         server->serverQueue.clear();
         server->queueMtx.unlock();
 
+        // Re-initialize the manager so that the starting positions of players are set
+        manager = initializeGame();
+
         // All clients are ready: notify clients that the game has restarted
         cse125framing::ServerFrame matchRestartedFrame;
-        matchRestartedFrame.matchInProgress = true;
+        initializeServerFrame(manager, &matchRestartedFrame);
+        matchRestartedFrame.countdownTimeRemaining = numCountdownTicks;
 
         std::cerr << "All clients ready to restart! Notifying clients..." << std::endl;
         server->writePackets(&matchRestartedFrame);

@@ -68,6 +68,8 @@ public:
 
     Text* scores[4];
     Text* game_time;
+    Text* countdown_instructions_text;
+    Text* countdown_time_text;
     Text* match_end_text;
 
     // The following are containers of objects serving as the object palettes.
@@ -99,10 +101,11 @@ public:
     /**
      * @brief Draws the text-based UI elements on the screen
      *
+     * @param countdownTimeRemaining the amount of time left in the countdown
      * @param renderMatchEndText whether to render the end of match text
      * @param matchEndText       the end of match text to render
      */
-    void drawText(const bool& renderMatchEndText, const std::string& matchEndText = "");
+    void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
 
     void updateScreen(void);
