@@ -4,6 +4,7 @@ Camera is a class for a camera object.
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <algorithm>
 #include "../../../Constants.hpp"
 
 #pragma once
@@ -42,7 +43,7 @@ public:
     void reset(void);
 
     void movePosition(const float distance, const glm::vec3 direction);
-    void setPosition(const glm::vec3 newTarget);
+    void setPosition(const glm::vec3 newTarget, bool clamped = false);
     glm::vec3 Camera::forwardVectorXZ();
     glm::vec3 Camera::leftVectorXZ();
 };

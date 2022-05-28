@@ -266,7 +266,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         scene.spotLights[headlightName + "1"]->direction = dir;
     }
     if (!TOP_DOWN_VIEW) {
-        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition), true);
     }
 }
 
