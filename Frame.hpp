@@ -40,8 +40,8 @@ namespace cse125framing {
 	} AudioTrigger;
 
 	typedef struct AnimationTrigger {
-		bool makeupBooth[cse125constants::NUM_MAKEUP_STATIONS];
-		bool playerCrash[cse125constants::NUM_PLAYERS];
+		bool makeupBooth[cse125constants::NUM_MAKEUP_STATIONS] = { false };
+		bool playerCrash[cse125constants::NUM_PLAYERS] = { false };
 	} AnimationTrigger;
 
 	// Data for individual player

@@ -32,7 +32,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     int audioIndex = 0;
 
     // initialize animation triggers
-    frame->animations = {}; // initialize to false --> no animations
+    frame->animations = { }; // initialize to false --> no animations
 
     // initialize each player frame data
     for (int id = 0; id < cse125constants::NUM_PLAYERS; id++)
