@@ -45,7 +45,11 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->hasCrown = false;
 	this->booth = -1;
 	this->boothTime = 0.0f;
+	this->gravity = 0.0f;
+	this->crashed = false;
+	this->tookCrown = false;
 	this->momentum = 0.0f;
+	this->maxSpeed = DEFAULT_MAX_SPEED;
 	this->thresholdDecay = 0.0f;
 	this->hasPowerup = false;
 	this->powerupTime = 0.0f;

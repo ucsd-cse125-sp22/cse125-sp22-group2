@@ -254,6 +254,8 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         game.players[i]->setPlayerScore(frame->players[i].score);
+        game.players[i]->setHasPowerup(frame->players[i].hasPowerup);
+        game.players[i]->setUsingPowerup(frame->players[i].powerupActive);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
         game.players[i]->setSpeed(frame->players[i].playerSpeed);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
@@ -562,11 +564,12 @@ void idle() {
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
-        std::cout << time - lastRenderTime << "\n";
+        //std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles(1);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
+            std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }

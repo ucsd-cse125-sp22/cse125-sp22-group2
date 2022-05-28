@@ -32,6 +32,10 @@ private:
 	// Player's score 
 	RealNumber score = 0;
 
+	// Player's powerup info
+	bool using_powerup = false;
+	bool has_powerup = false;
+
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -85,8 +89,24 @@ public:
 		crown_node->visible = status;
 	};
 
+	void setHasPowerup(bool status) {
+		has_powerup = status;
+	};
+
+	void setUsingPowerup(bool status) {
+		using_powerup = status;
+	};
+
 	bool getCrownStatus() {
 		return has_crown;
+	};
+
+	bool getHasPowerup() {
+		return has_powerup;
+	};
+
+	bool getUsingPowerup() {
+		return using_powerup;
 	};
 
 	glm::vec3 getPosition() {

@@ -52,7 +52,7 @@ public:
 
 	void Integrate(float deltaTime) {
 
-		lifespan -= 1;
+		lifespan -= deltaTime;
 
 		if (!fixed) {
 			glm::vec3 accel = (1 / Mass) * Force; 

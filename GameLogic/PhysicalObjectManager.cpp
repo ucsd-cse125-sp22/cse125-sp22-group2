@@ -142,6 +142,7 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 void PhysicalObjectManager::step(bool* matchInProgress, int* winnerId) {
 	if (gameTime > 0.0f) {
 		gameTime -= 1.0f / cse125config::TICK_RATE;
+
 		if (gameTime <= 0.0f) {
 			gameTime = 0.0f;
 			endGame(winnerId);

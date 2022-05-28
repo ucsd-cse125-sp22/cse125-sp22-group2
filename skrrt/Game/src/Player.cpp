@@ -78,19 +78,16 @@ void Player::updateParticles(float time) {
 	vec3 position = particle_direction - vec3(0.0f, 0.4f, 0.0f) + current_position;
 	vec3 velocity = 0.06f * particle_direction; 
 
-
-	//vec3 position = vec3(0.6f, -0.4f, 0.0f) + current_position;
-	particle_direction = normalize(-current_direction);
-	position = particle_direction - vec3(0.0f, 0.4f, 0.0f) + current_position;
-	//vec3 velocity = 0.06f * particle_direction; 
-	velocity = vec3(0.0f);
+	vec3 positionPowerup = particle_direction * 1.2f - vec3(0.0f, 0.1f, 0.0f) + current_position;
+	vec3 velocityPowerup = vec3(0.0f, -0.002f, 0.0f);
 
 	// Call update for the particle source 
 	for (Node* child : car_node->childnodes) {
 		if (child->isParticleSource) {
-			//child->particles->Update(time, position, velocity, this->current_speed > 0.0f);
+			child->particles->Update(time, position, velocity, (this->current_speed > 0.0f) & !using_powerup);
 			// NOTE: the 4 is for lifespan, sorry it is hardcoded for now
-			child->particlesPowerup->Update(time, position, velocity, 6, 20 * 4 + 2, 0.4f, 0, 2, 0.1f, this->current_speed > 0.0f);
+			//void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew) {
+			child->particlesPowerup->Update(time, positionPowerup, velocityPowerup, 4, 20 * 4 + 2, 0.4f, 0, 2, 0.12f, using_powerup);
 		}
 	}
 }
