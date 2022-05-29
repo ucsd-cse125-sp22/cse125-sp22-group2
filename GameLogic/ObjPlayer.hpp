@@ -47,6 +47,8 @@ public:
 	float powerupTime;
 	// Direction to change to during boost
 	glm::vec3 boostTargetDirection;
+	// Change the speed depending on the tick rate
+	//float speedModifier;
 
 
 	ObjPlayer();

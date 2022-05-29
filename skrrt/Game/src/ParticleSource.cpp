@@ -70,7 +70,11 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 
 		//std::cout << "Varied position: " << deltaPos.x << ", " << deltaPos.y << ", " << deltaPos.z << std::endl;
 
-		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, particleRadius);
+		float rad = particleRad;
+		if (particleRad > 0.1f) {
+			rad += distribution(gen) * 0.02f;
+		}
+		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad);
 
 		float random = ((float)rand() / INT_MAX);
 

@@ -66,11 +66,11 @@ const float GRAVITY_MAX = 0.35f;
 const float GRAVITY_FORCE = 0.025f;
 
 // Invincibility Frames
-const float CROWN_IFRAMES = 2.0f;
-const float MAKEUP_IFRAMES = 2.0f;
+const float CROWN_IFRAMES = 1.5f;
+const float MAKEUP_IFRAMES = 1.5f;
 
 // Stun Frames
-const float STEAL_STUN_FRAMES = 0.25f;
+const float STEAL_STUN_FRAMES = 0.5f;
 
 // Dimensions (oPlayer)
 const float PLAYER_LENGTH = 2.1f;

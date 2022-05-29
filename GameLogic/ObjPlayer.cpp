@@ -54,6 +54,8 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->hasPowerup = false;
 	this->powerupTime = 0.0f;
 	this->boostTargetDirection = direction;
+
+	//this->speedModifier = 30.0f / cse125config::TICK_RATE;
 }
 
 ObjPlayer::~ObjPlayer() {}
@@ -249,6 +251,11 @@ void ObjPlayer::move(glm::vec3 dir) {
 		bb = generateBoundingBox(destination, dir, this->up);
 	}
 
+	// Check for the floor
+	if (this->position.y < -0.1f && detectFloor(bb)) {
+		destination = this->position;
+	}
+
 	// Get the collisions for our destination
 	vector<int> collisions = findCollisionObjects(bb);
 
@@ -394,7 +401,8 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->hasCrown = true;
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
-			this->speed = SPEED_STEAL_CROWN;
+			// Too easy to drive off of the edge
+			//this->speed = SPEED_STEAL_CROWN / 2.0f;
 		}
 	}
 }
@@ -438,6 +446,11 @@ bool ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
 		destination += arenaAdjustment;
 		bb = generateBoundingBox(destination, dir, this->up);
 		result = false;
+	}
+
+	// Check for the floor
+	if (this->position.y < -0.1f && detectFloor(bb)) {
+		destination = this->position;
 	}
 
 	vector<int> collisions = findCollisionObjects(bb);
@@ -486,7 +499,7 @@ void ObjPlayer::applyGravity() {
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
 			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
-			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity * , 0.0f);
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
 			}
@@ -556,7 +569,7 @@ void ObjPlayer::applyGravity() {
 	}
 
 	// Let players get back onto the ground if they are only slightly below it
-	if (f && position.y > -0.1f && position.y < 0.0f) {
+	if (f && position.y > -0.15f && position.y < 0.0f) {
 		BoundingBox bb = generateBoundingBox(glm::vec3(this->position.x, 0.0f, this->position.y), this->direction, this->up);
 		if (checkPlaceFree(bb)) {
 			this->position.y = 0.0f;

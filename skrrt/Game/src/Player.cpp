@@ -87,7 +87,7 @@ void Player::updateParticles(float time) {
 			child->particles->Update(time, position, velocity, (this->current_speed > 0.0f) & !using_powerup);
 			// NOTE: the 4 is for lifespan, sorry it is hardcoded for now
 			//void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew) {
-			child->particlesPowerup->Update(time, positionPowerup, velocityPowerup, 4, 20 * 4 + 2, 0.4f, 0, 2, 0.12f, using_powerup);
+			child->particlesPowerup->Update(time, positionPowerup, velocityPowerup, 6, 20 * 4 + 2, 0.4f, 0, 2, 0.11f, using_powerup);
 		}
 	}
 }
