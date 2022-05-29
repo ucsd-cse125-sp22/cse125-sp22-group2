@@ -51,6 +51,11 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(-29.6f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(20.8f, 0.0f, 4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 
+	createObject(oWall, glm::vec3(-6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(-6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+
 	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
 	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
@@ -93,10 +98,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	case (oWall):
 		switch (modifier) {
 		case(oTireRack):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, TIRERACK_LENGTH, TIRERACK_WIDTH, TIRERACK_HEIGHT, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.0f, dir, up));
 			break;
 		case(oCones):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, CONES_LENGTH, CONES_WIDTH, CONES_HEIGHT, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 2.0f, dir, up));
+			break;
+		case(oPillar):
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.3f, 1.3f, 30.0f, dir, up));
 			break;
 		default:
 			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.0f, 1.0f, 1.0f, dir, up));

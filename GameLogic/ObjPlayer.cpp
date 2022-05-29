@@ -132,20 +132,16 @@ void ObjPlayer::step(float gameTime) {
 
 	// Adjust speed above threshold
 	if (speed > SPEED_THRESHOLD) {
-		cout << glm::dot(direction, boostTargetDirection) << " ";
 		if (glm::dot(direction, boostTargetDirection) < 0.95f) {
 			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.35f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
 			BoundingBox bb = generateBoundingBox(position, targetDir, this->up);
-			cout << direction << " " << boostTargetDirection << " ";
 			if (checkPlaceFree(bb)) {
 				this->direction = targetDir;
 				this->boundingBox = bb;
-				cout << "Succeeded";
 			}
 		}
 		speed -= thresholdDecay;
 		thresholdDecay += 0.01f;
-		cout << "\n";
 	}
 	else {
 		boostTargetDirection = direction;

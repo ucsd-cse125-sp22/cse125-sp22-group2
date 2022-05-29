@@ -62,8 +62,8 @@ const float TRAIL_LIFE = 4.0f;
 const float TRAIL_DIMENSIONS = 1.0f;
 
 // Gravity
-const float GRAVITY_MAX = 0.4f;
-const float GRAVITY_FORCE = 0.02f;
+const float GRAVITY_MAX = 0.35f;
+const float GRAVITY_FORCE = 0.025f;
 
 // Invincibility Frames
 const float CROWN_IFRAMES = 2.0f;
@@ -93,15 +93,5 @@ const float BOOTH_MAKEUP_HEIGHT = 0.8f;
 const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.2f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 2.0f);
-
-// Dimensions (Tire Rack)
-const float TIRERACK_LENGTH = 1.36f;
-const float TIRERACK_WIDTH = 6.51f;
-const float TIRERACK_HEIGHT = 2.0f;
-
-// Dimensions (Cones)
-const float CONES_LENGTH = 3.71f;
-const float CONES_WIDTH = 0.83f;
-const float CONES_HEIGHT = 2.0f;
 
 #endif
