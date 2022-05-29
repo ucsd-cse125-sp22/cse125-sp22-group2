@@ -62,8 +62,8 @@ const float TRAIL_LIFE = 4.0f;
 const float TRAIL_DIMENSIONS = 1.0f;
 
 // Gravity
-const float GRAVITY_MAX = 0.35f;
-const float GRAVITY_FORCE = 0.025f;
+const float GRAVITY_MAX = 0.5f;
+const float GRAVITY_FORCE = 0.028f;
 
 // Invincibility Frames
 const float CROWN_IFRAMES = 1.5f;

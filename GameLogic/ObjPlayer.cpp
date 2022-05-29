@@ -499,7 +499,7 @@ void ObjPlayer::applyGravity() {
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
 			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
-			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity * , 0.0f);
+			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
 			}
@@ -567,6 +567,10 @@ void ObjPlayer::applyGravity() {
 			this->gravity = 0.0f;
 		}
 	}
+	else {
+		// We are on the ground, reset gravity
+		this->gravity = 0.0f;
+	}
 
 	// Let players get back onto the ground if they are only slightly below it
 	if (f && position.y > -0.15f && position.y < 0.0f) {
@@ -579,10 +583,15 @@ void ObjPlayer::applyGravity() {
 
 
 	// TODO REMOVE THIS AFTER SLOPES/RESPAWNING
-	if (position.y < -8.0f) {
-		position.y = 8.0f;
-		boundingBox = generateBoundingBox(position, this->direction, this->up);
-		gravity = 0.0f;
+	//if (position.y < -8.0f) {
+	//	position.y = 8.0f;
+	//	boundingBox = generateBoundingBox(position, this->direction, this->up);
+	//	gravity = 0.0f;
+	//}
+
+	// Trampoline
+	if (position.y < -6.0f) {
+		this->gravity = -0.8f;
 	}
 }
 
