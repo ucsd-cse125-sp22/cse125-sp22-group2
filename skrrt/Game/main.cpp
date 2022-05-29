@@ -160,17 +160,65 @@ void renderQuad(float nearPlane, float farPlane, GLuint texId) {
     glBindVertexArray(0);
 }
 
-void display(void)
-{
-    float near_plane = -10.0f;
-    float far_plane = 10.0f;
+glm::mat4 makeLightSpaceMatrix() {
+	// find the center of camera viewing frustrum by averaging it's corners
+	std::vector<glm::vec4> corners = scene.camera->getFrustrumCornersWorld();
+	glm::vec3 center = glm::vec3(0.0f);
+	for (glm::vec4 corner : corners) {
+		center += glm::vec3(corner);
+	}
+	center = center / (float) corners.size();
+
+    //construct light view
+	glm::mat4 lightView = glm::lookAt(center + scene.sun->direction, center, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // construct light projection
+
+    //find a square in light space that fits the viewing frustrum
+    float minX = std::numeric_limits<float>::max();
+	float maxX = std::numeric_limits<float>::min();
+	float minY = std::numeric_limits<float>::max();
+	float maxY = std::numeric_limits<float>::min();
+	float minZ = std::numeric_limits<float>::max();
+	float maxZ = std::numeric_limits<float>::min();
+	for (glm::vec4 corner: corners) {
+		glm::vec4 trf = lightView * corner;
+		minX = std::min(minX, trf.x);
+		maxX = std::max(maxX, trf.x);
+		minY = std::min(minY, trf.y);
+		maxY = std::max(maxY, trf.y);
+		minZ = std::min(minZ, trf.z);
+		maxZ = std::max(maxZ, trf.z);
+	}
+
+    // change the position of the front and back viewing planes
+    // to have more stuff in the world cast shadows
+	if (minZ < 0) {
+		minZ *= Z_MULT;
+	} else {
+		minZ /= Z_MULT;
+	}
+
+	if (maxZ < 0) { 
+		maxZ /= Z_MULT;
+	} else {
+		maxZ *= Z_MULT;
+	}  
+
+    glm::mat4 lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+	
+	glm::mat4 lightSpace = lightProjection * lightView;
+    return lightSpace;
+}
+
+void display(void) {
     if (ENABLE_SHADOW_MAP) {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,-10.0f,10.0f,near_plane,far_plane);
-        glm::mat4 lightView = glm::lookAt(3.0f * scene.sun->direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 lightSpace = lightProjection * lightView;
+
+        glm::mat4 lightSpace = makeLightSpaceMatrix();
+
         scene.shader->lightSpace = lightSpace;
         scene.drawDepthMap(scene.node["world"], lightSpace);
     }
@@ -211,7 +259,7 @@ void display(void)
     if (DEBUG_QUAD_VIEW) {
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderQuad(near_plane, far_plane, scene.shadowMapOffset);
+       // renderQuad(near_plane, far_plane, scene.shadowMapOffset);
     }
     glutSwapBuffers();
     glFlush();

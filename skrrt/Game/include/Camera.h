@@ -3,6 +3,7 @@ Camera is a class for a camera object.
 *****************************************************/
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <vector>
 #include <glm/gtx/transform.hpp>
 
 #pragma once
@@ -29,8 +30,7 @@ public:
     float fovy_default = 30.0f;
     float aspect_default = 4.0f/3.0f;
     float near_default = 4.0f;
-    float far_default = 500.0f;
-    //float far_default = 100.0f;
+    float far_default = 50.0f;
     
     glm::mat4 view = glm::mat4(1.0f);   // view matrix
     glm::mat4 proj = glm::mat4(1.0f);   // projection matrix
@@ -50,5 +50,24 @@ public:
         width = w;
         height = h;
         aspect = (float)width / (float)height;
+        computeMatrices();
+    }
+
+    std::vector<glm::vec4> getFrustrumCornersWorld() {
+        computeMatrices();
+        glm::mat4 invProjView = glm::inverse(proj * view);
+        std::vector<glm::vec4> frustrumCorners;
+        for (int x = 0; x < 2; x++) {
+            for (int y = 0; y < 2; y++) {
+                for (int z = 0; z < 2; z++) {
+                    // scale to [-1, 1]
+                    glm::vec4 corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+                    corner = invProjView * corner;
+                    corner = corner / corner.w;
+                    frustrumCorners.push_back(corner);
+                }
+            }
+        }
+        return frustrumCorners;
     }
 };
