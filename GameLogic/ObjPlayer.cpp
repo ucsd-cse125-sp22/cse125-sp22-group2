@@ -58,6 +58,7 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->gotPowerup = false;
 	this->bounced = false;
 
+	this->distribution = normal_distribution<float>(0, 1);
 	//this->speedModifier = 30.0f / cse125config::TICK_RATE;
 }
 
@@ -407,7 +408,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			// Too easy to drive off of the edge
-			//this->speed = SPEED_STEAL_CROWN / 2.0f;
+			this->speed = SPEED_STEAL_CROWN / 2.0f;
 		}
 	}
 }
@@ -570,7 +571,14 @@ void ObjPlayer::applyGravity() {
 		}
 		else {
 			// We have something solid beneath us, so reset gravity
-			this->gravity = 0.0f;
+			this->gravity = 0.2f;
+			this->speed = max(this->speed, DEFAULT_MAX_SPEED);
+			glm::vec3 newDir = this->direction + glm::normalize(glm::vec3(distribution(generator), 0.0f, distribution(generator)));
+			newDir = glm::normalize(lerp(this->direction, newDir, 0.25f));
+			bb = generateBoundingBox(this->position, newDir, this->up);
+			if (checkPlaceFree(bb)) {
+				this->direction = newDir;
+			}
 		}
 	}
 	else {

@@ -37,6 +37,9 @@ private:
 	bool using_powerup = false;
 	bool has_powerup = false;
 
+	// Player's state
+	bool invincible = false;
+
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -71,7 +74,8 @@ public:
 	void setPosition(glm::vec3 position) { current_position = position; };
 	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
-	void setPlayerScore(RealNumber s) { score = s; }; 
+	void setPlayerScore(RealNumber s) { score = s; };
+	void setInvincibility(bool inv) { invincible = inv; }
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 
@@ -121,6 +125,7 @@ public:
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 	RealNumber getScore(void) { return score; }
+	bool getInvincibility() { return invincible; }
 };
 
 #endif

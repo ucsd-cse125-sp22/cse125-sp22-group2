@@ -56,6 +56,10 @@ public:
 	// Whether we bounced this frame
 	bool bounced;
 
+	// Randomness
+	default_random_engine generator;
+	normal_distribution<float> distribution;
+
 
 	ObjPlayer();
 	ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec3 position, glm::vec3 direction, glm::vec3 up);

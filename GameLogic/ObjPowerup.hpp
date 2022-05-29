@@ -14,7 +14,7 @@ public:
 	float respawnTime;
 	// List of potential spawn locations
 	vector<glm::vec3> locations;
-	// 
+	// Randomness
 	default_random_engine generator;
 	uniform_int_distribution<int> distribution;
 

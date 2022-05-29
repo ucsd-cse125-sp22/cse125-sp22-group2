@@ -98,10 +98,12 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	case (oWall):
 		switch (modifier) {
 		case(oTireRack):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.0f, dir, up));
+			//this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.0f, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.5f, dir, up));
 			break;
 		case(oCones):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 2.0f, dir, up));
+			//this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 2.0f, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 1.0f, dir, up));
 			break;
 		case(oPillar):
 			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.3f, 1.3f, 30.0f, dir, up));

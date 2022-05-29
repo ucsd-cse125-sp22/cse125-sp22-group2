@@ -12,10 +12,10 @@ namespace this_sucks {
 //using namespace this_sucks;
 
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew) {
-	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -1, (createNew ? 1 : 0));
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -6, (createNew ? 1 : 0));
 }
-void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew) {
-	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -1, (createNew ? createRate : 0), lifeSpan, posVar, velVar, lifespVar, 0.0f, 5.22f, 0.1f, particleRad);
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, glm::vec3 color, bool createNew) {
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -6, (createNew ? createRate : 0), lifeSpan, posVar, velVar, lifespVar, 0.0f, 5.225f, 0.1f, particleRad, -1, 0, color);
 }
 
 /*
@@ -29,7 +29,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 							glm::vec3 windDir, float floor, float createRate, float lifeSp,
 							float posVar, float velVar, float lifespVar, float g,
 							float airDen, float d, float particleRad,
-							float colElast, float colFrict) {
+							float colElast, float colFrict, glm::vec3 color) {
 
 	//std::cout << "Called Particle Source Update" << std::endl;
 
@@ -74,7 +74,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 		if (particleRad > 0.1f) {
 			rad += distribution(gen) * 0.02f;
 		}
-		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad);
+		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad, color);
 
 		float random = ((float)rand() / INT_MAX);
 
