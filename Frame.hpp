@@ -30,6 +30,9 @@ namespace cse125framing {
 		COLLISION = 0,
 		MAKEUP,
 		CROWN_CHANGE,
+		POWERUP_PICKUP,
+		POWERUP_USE,
+		BOUNCE,
 		NUM_AUDIO,
 		NO_AUDIO = -1
 	};
@@ -55,6 +58,7 @@ namespace cse125framing {
 		bool hasCrown;
 		bool hasPowerup;
 		bool powerupActive;
+		bool invincible;
 	} PlayerData;
 
 	// Data for loose crown

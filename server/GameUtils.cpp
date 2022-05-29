@@ -47,6 +47,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].score = player->score;
         frame->players[id].hasPowerup = player->hasPowerup;
         frame->players[id].powerupActive = player->powerupTime;
+        frame->players[id].invincible = player->iframes > 0;
 
         // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
@@ -71,6 +72,26 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         if (player->tookCrown)
         {
             frame->audio[audioIndex].id = cse125framing::AudioId::CROWN_CHANGE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        // powerup audio
+        if (player->gotPowerup)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::POWERUP_PICKUP;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        if (player->powerupTime == POWERUP_TIME)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::POWERUP_USE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        // bounce audio
+        if (player->bounced)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::BOUNCE;
             frame->audio[audioIndex].position = player->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }

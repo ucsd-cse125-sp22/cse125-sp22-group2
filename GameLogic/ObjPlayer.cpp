@@ -46,14 +46,17 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->booth = -1;
 	this->boothTime = 0.0f;
 	this->gravity = 0.0f;
-	this->crashed = false;
-	this->tookCrown = false;
 	this->momentum = 0.0f;
 	this->maxSpeed = DEFAULT_MAX_SPEED;
 	this->thresholdDecay = 0.0f;
 	this->hasPowerup = false;
 	this->powerupTime = 0.0f;
 	this->boostTargetDirection = direction;
+
+	this->crashed = false;
+	this->tookCrown = false;
+	this->gotPowerup = false;
+	this->bounced = false;
 
 	//this->speedModifier = 30.0f / cse125config::TICK_RATE;
 }
@@ -63,9 +66,11 @@ ObjPlayer::~ObjPlayer() {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ObjPlayer::step(float gameTime) {
-	// Reset crash and crown check
+	// Reset triggers
 	crashed = false;
 	tookCrown = false;
+	gotPowerup = false;
+	bounced = false;
 
 	// Update iframes
 	if (iframes) {
@@ -413,6 +418,7 @@ void ObjPlayer::pickupPowerup(const PhysicalObject* obj) {
 			((ObjPowerup*)obj)->spawned = false;
 			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME;
 			this->hasPowerup = true;
+			this->gotPowerup = true;
 		}
 	}
 }
@@ -573,11 +579,12 @@ void ObjPlayer::applyGravity() {
 	}
 
 	// Let players get back onto the ground if they are only slightly below it
-	if (f && position.y > -0.15f && position.y < 0.0f) {
+	if (f && position.y > -0.15f && position.y < 0.0f && gravity > 0.0f) {
 		BoundingBox bb = generateBoundingBox(glm::vec3(this->position.x, 0.0f, this->position.y), this->direction, this->up);
 		if (checkPlaceFree(bb)) {
 			this->position.y = 0.0f;
 			this->boundingBox = bb;
+			this->gravity = 0.0f;
 		}
 	}
 
@@ -590,8 +597,9 @@ void ObjPlayer::applyGravity() {
 	//}
 
 	// Trampoline
-	if (position.y < -6.0f) {
+	if (this->position.y < -6.0f) {
 		this->gravity = -0.8f;
+		this->bounced = true;
 	}
 }
 

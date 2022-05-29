@@ -30,10 +30,6 @@ public:
 	float boothTime;
 	// Current gravity force (represented as a positive float)
 	float gravity;
-	// Whether we crashed this frame
-	bool crashed;
-	// Whether we took the crown this frame
-	bool tookCrown;
 
 	// How much we have moved without stopping or crashing
 	float momentum;
@@ -49,6 +45,16 @@ public:
 	glm::vec3 boostTargetDirection;
 	// Change the speed depending on the tick rate
 	//float speedModifier;
+
+	// Triggers
+	// Whether we crashed this frame
+	bool crashed;
+	// Whether we took the crown this frame
+	bool tookCrown;
+	// Whether we got a powerup this frame
+	bool gotPowerup;
+	// Whether we bounced this frame
+	bool bounced;
 
 
 	ObjPlayer();
