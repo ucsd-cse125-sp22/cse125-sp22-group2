@@ -161,11 +161,19 @@ void Game::startCarEngines(int clientId, vec3& cameraPos)
             db = CLIENT_ENGINE_DB; // turn down player engine volume
         }
         // Start Car Engine
-        int channel = Game::triggerFx("Engine.wav", enginePosition, db);
+        int idle = Game::triggerFx("EngineIdle.wav", enginePosition, db);
+        int accelerate = Game::triggerFx("EngineAccelerate.wav", enginePosition, VOLUME_OFF);
         // Add channel number to carEngineChannels
-        carEngineChannels[i] = channel;
-        printf("channel name: %d | channel: %d", i, channel);
+        carEngineChannels[i] = CarEngine{ idle, accelerate };
     }
+}
+
+float Game::fadeEngine(int channelId, float targetDb)
+{
+    float currVolume = audioEngine.getChannelVolume(channelId);
+    float currDb = audioEngine.volumeToDb(currVolume);
+    currDb += (targetDb - currDb) * 0.5;
+    return currDb;
 }
 
 void Game::updateCarEngines(int clientId, vec3& cameraPos)
@@ -173,9 +181,25 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
     vec3 playerPos = players[clientId]->getPosition();
     for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
     {
-        // Move Player Car Engine Positions
+        // Interpolate carEngine sound to play
+        RealNumber speed = players[i]->getSpeed();
+        CarEngine carEngine = carEngineChannels[i];
+        RealNumber c = speed / 0.5; // speed ratio %
+        float idleDb = i == clientId ? CLIENT_ENGINE_DB : OTHER_PLAYER_ENGINE_DB;
+        if (speed == 0.5)
+        {
+            audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, VOLUME_OFF));
+            audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, idleDb));
+        }
+        else {
+            audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, VOLUME_OFF));
+            audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, idleDb));
+        }
+
+        // Update Player car engine location
         vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
         //vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, vec3{ 0,0,0 }); // FOR TESTING SOUNDS ONLY
-        audioEngine.setChannel3dPosition(carEngineChannels[i], enginePosition);
+        audioEngine.setChannel3dPosition(carEngine.idle, enginePosition);
+        audioEngine.setChannel3dPosition(carEngine.accelerate, enginePosition);
     }
 }

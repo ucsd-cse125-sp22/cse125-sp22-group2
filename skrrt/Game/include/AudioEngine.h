@@ -11,13 +11,15 @@ AudioEngine is a class to manage all sounds for the game
 
 #define MAX_CHANNELS 32
 
-#define MIN_3D_DISTANCE 3.0f
+#define MIN_3D_DISTANCE 1.0f
 #define MAX_3D_DISTANCE 15.0f
 
-#define MIN_CAR_ENGINE 1.0f
+#define MIN_COLLISION_DISTANCE 3.0f
 
 #define CLIENT_ENGINE_DB -16.0f
 #define OTHER_PLAYER_ENGINE_DB -4.0f
+
+#define VOLUME_OFF -60.0f
 
 class AudioEngine
 {
@@ -28,6 +30,7 @@ public:
         bool isStream;
     } metadata;
 
+
     const std::unordered_map<std::string, metadata> audioFiles {
         //                  <3d>    <loop>    <stream>
         { "MenuTheme.wav", {false,   true,     true}},
@@ -37,7 +40,8 @@ public:
         { "GetCrown.wav", {false,    false,   false}},
         //{ "Horn.wav", {true, false, false}},
         { "Makeup.wav",   {false,    false,   false}},
-        { "Engine.wav",   {true,     true,    true}},
+        { "EngineIdle.wav",{true,    true,    true}},
+        { "EngineAccelerate.wav", {true,    true,    true}},
         { "Collision.wav", {true,    false,   false}},
     };
 
@@ -52,11 +56,11 @@ public:
     void unloadSound(const std::string& soundName);
 
     int playSound(const char* soundName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
-    //bool stopSound(const char* soundName);
     //void stopChannel(int channelId);
     void stopAllChannels();
     void setChannel3dPosition(int channelId, const vec3& newPosition);
     void setChannelVolume(int channelId, float db);
+    float getChannelVolume(int channelId);
 
     float dbToVolume(float dB)
     {
@@ -83,7 +87,6 @@ public:
         vec.z = position.z;
         return vec;
     }
-
 
 
 private:

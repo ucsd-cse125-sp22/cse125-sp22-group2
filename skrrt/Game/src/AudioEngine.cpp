@@ -14,8 +14,7 @@ bool AudioEngine::errorCheck(const std::string& message, FMOD_RESULT engine)
 
 void AudioEngine::update()
 {
-    //std::vector<AudioEngine::channels::iterator> stoppedChannels;
-    // dead code for now
+    AudioEngine::system->update();
 }
 
 std::string AudioEngine::loadFile(const std::string& fileName)
@@ -48,11 +47,15 @@ void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLoop
     // Set 3D parameters
     if (is3d) 
     {
-        fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE);
-        if (soundName == "Engine.wav")
+        if (soundName == "Collision.wav")
         {
-            fmod_sound->set3DMinMaxDistance(MIN_CAR_ENGINE, MAX_3D_DISTANCE);
+            fmod_sound->set3DMinMaxDistance(MIN_COLLISION_DISTANCE, MAX_3D_DISTANCE);
         }
+        else
+        {
+            fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE); // atm just car engine sounds
+        }
+
     }
 
     if (fmod_sound)
@@ -155,7 +158,7 @@ void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
         FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
         std::string e = "Set 3D Position: ";
         AudioEngine::errorCheck(e, channelIter->second->set3DAttributes(&fmod_position, NULL));
-        AudioEngine::system->update();
+        AudioEngine::update();
     }
 }
 
@@ -164,8 +167,20 @@ void AudioEngine::setChannelVolume(int channelId, float dB)
     auto channelIter = channels.find(channelId);
     if (channelIter != channels.end())
     {
-        channelIter->second->setVolume(AudioEngine::dbToVolume(dB));
+        std::string e = "Set channel volume: ";
+        AudioEngine::errorCheck(e, channelIter->second->setVolume(AudioEngine::dbToVolume(dB)));
     }
+}
+
+float AudioEngine::getChannelVolume(int channelId)
+{
+    float volume = 0.0f;
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        channelIter->second->getVolume(&volume);
+    }
+    return volume;
 }
 
 

@@ -42,8 +42,15 @@ private:
 
     //Animation gateAnimation;
     std::map <std::string, Animation*> animations; 
+
+    // Audio Engine
+    typedef struct {
+        int idle;
+        int accelerate;
+    } CarEngine;
+
     AudioEngine audioEngine;
-    std::map<int, int> carEngineChannels;
+    std::map<int, CarEngine> carEngineChannels;
     void applyAnimations(); 
 
 public: 
@@ -117,6 +124,8 @@ public:
     int triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
 
     vec3 computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
+
+    float fadeEngine(int channelId, float targetDB);
 
     void startCarEngines(int clientId, vec3& cameraPos);
     void updateCarEngines(int clientId, vec3& cameraPos);
