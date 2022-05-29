@@ -156,17 +156,33 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         countdown_instructions_text->RenderText();
 
         const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
+
+        // Determine the number of ellipses to display to simulate animation
+        // Each 1/3 of a whole number corresponds to one ellipsis
+        float secondsInteger = 0.0f;
+        float secondsFraction = 1.0f - modf(countdownTimeRemaining / cse125config::TICK_RATE, &secondsInteger);
+        std::string ellipses = "";
+        if (secondsFraction >= 0.0f) {
+            ellipses += ".";
+        }
+        if (secondsFraction >= 0.33f) {
+            ellipses += ".";
+        }
+        if (secondsFraction >= 0.67f) {
+            ellipses += ".";
+        }
+
         switch (secondsLeft) {
         case 2:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("READY ...");
+            countdown_go_text->updateText("READY " + ellipses);
             countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
             countdown_go_text->RenderText();
         case 1:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("SET ...");
+            countdown_go_text->updateText("SET " + ellipses);
             countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
             countdown_go_text->RenderText();
             break;

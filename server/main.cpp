@@ -13,7 +13,6 @@
 
 PhysicalObjectManager* manager;
 boost::asio::io_context io_context;
-const int COUNTDOWN_LENGTH = 3;
 
 void launchServer()
 {
@@ -55,15 +54,17 @@ int main()
     bool runServer = true; 
     while (runServer) 
     {
-        // Pre-match countdown loop
-        for (int i = 0; i <= numCountdownTicks; i++) {
-            ticker.tickStart();
-            cse125framing::ServerFrame countdownFrame;
-            initializeServerFrame(manager, &countdownFrame);
-            countdownFrame.countdownTimeRemaining = numCountdownTicks - i;
-            server->writePackets(&countdownFrame);
-            ticker.tickEnd();
-        }
+        if (cse125config::ENABLE_COUNTDOWN) {
+            // Pre-match countdown loop
+            for (int i = 0; i <= numCountdownTicks; i++) {
+                ticker.tickStart();
+                cse125framing::ServerFrame countdownFrame;
+                initializeServerFrame(manager, &countdownFrame);
+                countdownFrame.countdownTimeRemaining = numCountdownTicks - i;
+                server->writePackets(&countdownFrame);
+                ticker.tickEnd();
+            }
+        }      
 
         // State about the current match
         bool matchInProgress = true;

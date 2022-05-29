@@ -3,5 +3,6 @@
   "port": "8000",
   "tickRate": 30,
   "gameTime": 2,
+  "enableCountdown": true,
   "countdownTime": 3
 }

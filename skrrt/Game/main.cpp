@@ -651,22 +651,28 @@ void idle() {
 
                 cse125framing::ServerFrame* frame = receiveDataFromServer();    
 
-                // Update static player positions
-                // scene.camera->reset(); // need this or else the camera position changes each time
-                scene.camera->reset(clientId);
-                updatePlayerState(frame);
-                triggerAnimations(frame->animations);
-                triggerAudio(frame->audio);
-
-                // Update countdown time
-                countdownTimeRemaining = frame->countdownTimeRemaining;
-                if (countdownTimeRemaining <= 0) {
-                    cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");           
+                if (cse125config::ENABLE_COUNTDOWN) {
+                    scene.camera->reset(clientId);
+                    updatePlayerState(frame);
+                    triggerAnimations(frame->animations);
+                    triggerAudio(frame->audio);
+                    // Update countdown time
+                    countdownTimeRemaining = frame->countdownTimeRemaining;
+                    if (countdownTimeRemaining <= 0) {
+                        cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
+                        matchInProgress = true;
+                        waitingToStartMatch = false;
+                        // Play Game Music
+                        game.playMusic("BattleTheme.wav", -10.0);
+                    }
+                }
+                else {
+                    cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                     matchInProgress = true;
                     waitingToStartMatch = false;
                     // Play Game Music
                     game.playMusic("BattleTheme.wav", -10.0);
-                }
+                }                
                 
                 // Delete the frame
                 delete frame;
