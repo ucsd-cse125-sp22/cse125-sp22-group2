@@ -16,10 +16,9 @@ Scene.inl contains the definition of the scene graph
 //#define ENABLE_DRIPS true
 #define ENABLE_DRIPS false
 
-static bool night = false;
 
 using namespace glm;
-void Scene::init(void) {
+void Scene::init(int width, int height) {
 
 
     // Create a geometry palette
@@ -147,11 +146,12 @@ void Scene::init(void) {
     }
     // Normal Light pallet add new stuff here
     else {
+        bool night = false;
         if (night) {
             sun = new DirectionalLight;
             sun->direction = vec3(1.0f, 1.0f, 1.0f);
-            sun->ambient = 0.6f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
-            sun->diffuse = 0.8f * vec4(0.1f, 0.1f, 0.2f, 1.0f);
+            sun->ambient = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+            sun->diffuse = vec4(0.1f, 0.1f, 0.2f, 1.0f);
             sun->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
         }
         else {
@@ -390,6 +390,7 @@ void Scene::init(void) {
 
     // Put a camera
     camera = new Camera;
+    camera->setAspect(width, height);
     if (!TOP_DOWN_VIEW) {
         camera->target_default = vec3(0.0f, 1.0f, 0.0f);
         camera->eye_default = vec3(0.0f, 1.0f, 5.0f);
@@ -452,8 +453,10 @@ void Scene::init(void) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
 
         // attach depth texture to FBO depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, directionalDepthMapFBO);

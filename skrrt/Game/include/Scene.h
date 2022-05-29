@@ -102,7 +102,7 @@ public:
         node["UI_root"] = new Node("UI_root");
     }
     
-    void init( void );
+    void init(int width, int height);
     void draw(Node* current_node);
 
     glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f), 

@@ -29,8 +29,8 @@
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = 1200;
-static const int height = 900;
+static int width = 1200; // screen width
+static int height = 900; // screen height
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -96,7 +96,7 @@ void initialize(void)
     glViewport(0, 0, width, height);
 
     // Initialize scene
-    scene.init();
+    scene.init(width, height);
     
     // Initialize triggers map 
     triggers["up"] = false; 
@@ -670,6 +670,13 @@ void mouseMovement(int x, int y) {
     }
 }
 
+void onScreenResize(int newWidth, int newHeight) {
+    width = newWidth;
+    height = newHeight;
+    scene.camera->setAspect(width, height);
+    glViewport(0, 0, width, height);
+}
+
 int main(int argc, char** argv)
 {
     // BEGIN CREATE WINDOW
@@ -713,6 +720,7 @@ int main(int argc, char** argv)
     glutIdleFunc(idle);
     glutPassiveMotionFunc(mouseMovement);
     glutMotionFunc(mouseMovement);  
+    glutReshapeFunc(onScreenResize);
     glutMainLoop();
     return 0; /* ANSI C requires main to return int. */
 }

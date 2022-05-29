@@ -90,22 +90,42 @@ uniform sampler2D directionalDepthMap;
 uniform sampler2D spotDepthMaps[maxNumSpotLights];
 uniform sampler2D pointDepthMaps[maxNumPointLights];
 
+const float minShadowBias = 0.005f;
+const float maxShadowBias = 0.01f;
+
+const int radius = 1;
+
 // Output the frag color
 out vec4 fragColor;
 
-float ShadowCalculation(vec4 fragPosLightSpace) {
-	// perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+float ShadowCalculation(vec4 fragPosLightSpace, float bias, sampler2D shadowMap) {
     // transform to [0,1] range
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5f + 0.5f;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(directionalDepthMap, projCoords.xy).r; 
-    // get depth of current fragment from light's perspective
+	// In light space, xy corresponds to the depth map, z is the depth
     float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth  ? 0.0f : 1.0f;
 
-    return shadow;
+	// 0 means no shadow, 1 means full shadow
+	float shadow = 0.0;
+	//average shadow over a group of pixels
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for(int x = -radius; x <= radius; ++x) {
+		for(int y = -radius; y <= radius; ++y) {
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+		}    
+	}
+	// number of pixels we average over, must be a float
+	shadow /= (2.0f * radius + 1.0f) * (2.0f * radius + 1.0f); 
+
+
+	// Don't change color if out of range
+	if(currentDepth > 1.0f) {
+		shadow = 0.0f;
+	}
+
+	// Need to inverse shadow
+    return 1.0f - shadow;
 }
 
 void main (void){
@@ -129,7 +149,8 @@ void main (void){
 	// Calc Directional Light //
 	////////////////////////////
 	vec3 sunDirNorm = normalize(view * vec4(sun.direction,0.0f)).xyz; // Transform sun to eye coord
-	float shadow = ShadowCalculation(posDirectionalLightSpace);
+	float shadowBias = max(maxShadowBias * (1.0f - dot(sunDirNorm, n_eye_norm)), minShadowBias);
+	float shadow = ShadowCalculation(posDirectionalLightSpace, shadowBias, directionalDepthMap);
 
 	// Calculate ambient
 	vec4 acum = sun.ambient * texColor;
