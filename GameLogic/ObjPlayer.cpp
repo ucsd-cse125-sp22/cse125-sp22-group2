@@ -212,6 +212,11 @@ void ObjPlayer::action(glm::vec3 dir, bool trigger) {
 		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
 
 		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		if (powerupTime && momentum == 0.0f) {
+			speed = 0.0f;
+			momentum = 0.01f;
+			newDir = glm::normalize(lerp(this->direction, dir, 0.2f));
+		}
 
 		// Move
 		move(newDir);
@@ -240,6 +245,7 @@ void ObjPlayer::idle() {
 void ObjPlayer::move(glm::vec3 dir) {
 	// Where we are trying to move (might change during collision loop)
 	glm::vec3 destination = this->position + this->speed * dir;
+
 	// Generate a bounding box at our destination and check what we would collide with
 	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 

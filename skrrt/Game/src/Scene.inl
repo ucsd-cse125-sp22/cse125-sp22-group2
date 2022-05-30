@@ -44,7 +44,7 @@ void Scene::init(void){
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 4);
 
     geometry["drips"] = new Obj;
-    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+    geometry["drips"]->init("models/Plane.obj", "textures/drips_test.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station"] = new Obj; 
     geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
@@ -93,7 +93,7 @@ void Scene::init(void){
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
 
     geometry["blowdryer_icon"] = new Obj;
-    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -581,7 +581,7 @@ void Scene::init(void){
 
     const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
     node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.5f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 179.0f / 177.0f; 
     const float mascara_bar_ratio = 557.0f / 70.0f;
