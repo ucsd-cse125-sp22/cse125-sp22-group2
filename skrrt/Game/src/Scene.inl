@@ -340,7 +340,7 @@ void Scene::init(void){
     //}
     node["blowdryer_world"] = new Node("blowdryer_world", true);
     node["blowdryer_world"]->models.push_back(model["blowdryer_world"]);
-    node["blowdryer_world"]->modeltransforms.push_back(mat4(1.0f));
+    node["blowdryer_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
 
     // Map
     node["map"] = new Node("map");

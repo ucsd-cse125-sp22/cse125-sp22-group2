@@ -32,7 +32,7 @@ void Game::bobPowerup(int time) {
     // Change position of the crown based on time 
     if (blowdryer_pickup_node != nullptr) {
         glm::mat4 offset = glm::translate(vec3(0.0f, 0.5f + sin(time * float(M_PI) / 1400.0f) / 4.0f, 0.0f)) * glm::rotate((float)time / 800.0f, vec3(0.0f, 1.0f, 0.0f));
-        blowdryer_pickup_node->modeltransforms[0] = initial_blowdryer_transform * offset;
+        blowdryer_pickup_node->modeltransforms[0] = blowdryer_translation * offset * initial_blowdryer_transform;
     }
 }
 
@@ -128,14 +128,12 @@ void Game::stopAllSounds()
 
 void Game::playMusic(const char* musicName, float db)
 {
-    return;
     audioEngine.stopAllChannels();
     audioEngine.playSound(musicName, { 0,0,0 }, db);
 }
 
 void Game::triggerFx(const char* fxName, const vec3& position, float dB)
 {
-    return;
     audioEngine.playSound(fxName, position);
 }
 
