@@ -61,7 +61,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
         // crash animation + audio
-        if (player->crashed)
+        if (player->crashed && !player->boothTime)
         {
             frame->animations.playerCrash[id] = true;
             frame->audio[audioIndex].id = cse125framing::AudioId::COLLISION;

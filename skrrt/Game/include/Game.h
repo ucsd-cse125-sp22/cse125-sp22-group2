@@ -35,7 +35,9 @@ private:
     glm::mat4 initial_drip_transform;
 
     Node* makeup_status_bar = nullptr; 
-    glm::mat4 initial_makeup_transform; 
+    glm::mat4 initial_makeup_transform;
+
+    Node* blowdryer_status_icon = nullptr;
 
     std::vector<Node*> makeup_gate_arms;
     std::vector<glm::mat4> initial_arm_transforms;
@@ -76,6 +78,11 @@ public:
             if (child->name == "white_bar") {
                 makeup_status_bar = child;
             }
+
+            if (child->name == "blowdryer_icon") {
+                blowdryer_status_icon = child;
+            }
+
         }
 
         initial_drip_transform = drips->modeltransforms[0];
@@ -101,7 +108,8 @@ public:
     float getTime() { return game_time; };
 
     void updateDrips(int time, RealNumber makeupLevel); 
-    void updateMakeupStatusBar(int time, RealNumber makeupLevel); 
+    void updateMakeupStatusBar(int time, RealNumber makeupLevel);
+    void updateBlowdryerIcon(bool visible);
     void updateAnimations(); 
 
     void parseGateAnimation();

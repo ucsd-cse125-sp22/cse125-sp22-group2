@@ -153,3 +153,28 @@ void Camera::reset(){
     farPlane = far_default; // far clipping distance
     zoom(3.0f);
 }
+
+void Camera::reset(int playerId)
+{
+    // TODO: Figure out eye positions for each player
+    switch (playerId) {
+    case 0:     
+        break;
+    case 1:
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    default:
+        break;
+    }
+    eye = eye_default;
+    target = target_default;  // look at target
+    up = up_default;      // up vector
+    fovy = fovy_default;  // field of view in degrees
+    aspect = aspect_default; // aspect ratio
+    nearPlane = near_default; // near clipping distance
+    farPlane = far_default; // far clipping distance
+    zoom(3.0f);
+}

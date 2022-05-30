@@ -24,6 +24,10 @@ void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
     makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
 }
 
+void Game::updateBlowdryerIcon(bool visible) {
+    blowdryer_status_icon->visible = visible;
+}
+
 // *******************************************
 // ************* Gate Animation **************
 // *******************************************

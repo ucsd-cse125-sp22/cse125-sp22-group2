@@ -11,7 +11,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS false
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(void){
@@ -58,9 +58,9 @@ void Scene::init(void){
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
     geometry["blowdryer"] = new Obj;
-    geometry["blowdryer"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+    geometry["blowdryer"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
     geometry["blowdryer_on_car"] = new Obj;
-    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
     //*****************************
     //********** UI obj ***********
@@ -91,6 +91,9 @@ void Scene::init(void){
 
     geometry["start_menu"] = new Obj;
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
+    geometry["blowdryer_icon"] = new Obj;
+    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -193,6 +196,10 @@ void Scene::init(void){
     model["crown_icon"] = new Model; 
     model["crown_icon"]->geometry = geometry["crown_icon"];
     model["crown_icon"]->material = material["ceramic"];
+
+    model["blowdryer_icon"] = new Model;
+    model["blowdryer_icon"]->geometry = geometry["blowdryer_icon"];
+    model["blowdryer_icon"]->material = material["ceramic"];
 
     model["mascara_icon"] = new Model; 
     model["mascara_icon"]->geometry = geometry["mascara_icon"];
@@ -537,6 +544,10 @@ void Scene::init(void){
     node["crown_icon"]->models.push_back(model["crown_icon"]);
     node["crown_icon"]->modeltransforms.push_back(UI_rotation);
 
+    node["blowdryer_icon"] = new Node("blowdryer_icon");
+    node["blowdryer_icon"]->models.push_back(model["blowdryer_icon"]);
+    node["blowdryer_icon"]->modeltransforms.push_back(UI_rotation);
+
     node["mascara_icon"] = new Node("mascara_icon");
     node["mascara_icon"]->models.push_back(model["mascara_icon"]);
     node["mascara_icon"]->modeltransforms.push_back(UI_rotation);
@@ -565,6 +576,10 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 13.8f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+    const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
+    node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 179.0f / 177.0f; 
     const float mascara_bar_ratio = 557.0f / 70.0f;
@@ -618,6 +633,13 @@ void Scene::init(void){
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    countdown_instructions_text = new Text(text_shader->program);
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+
+    countdown_go_text = new Text(text_shader->program);
+    countdown_go_text->updateText("Default countdown text");
+    countdown_go_text->setScale(3.0f);
 
     match_end_text = new Text(text_shader->program);
     match_end_text->updateText("End of match text");

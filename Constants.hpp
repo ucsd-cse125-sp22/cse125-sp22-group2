@@ -5,6 +5,7 @@ namespace cse125constants {
 
 	const int DEFAULT_CLIENT_ID = -1;
 	const int DEFAULT_WINNER_ID = -1;
+	const int DEFAULT_COUNTDOWN_TIME_REMAINING = 0;
 	const int DEFAULT_MAKEUP_LEVEL = 100;
 	const int DEFAULT_SCORE = 0;
 	const int NUM_MAKEUP_STATIONS = 2;

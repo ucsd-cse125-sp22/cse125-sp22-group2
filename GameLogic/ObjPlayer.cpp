@@ -230,7 +230,7 @@ void ObjPlayer::idle() {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
 		speed = max(0.0f, speed - SPEED_DECAY);
 	}
-	if (speed > 0.0f) {
+	if (speed > 0.0f && !boothTime) {
 		move(direction);
 	}
 }
