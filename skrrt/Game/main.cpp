@@ -145,6 +145,7 @@ void initialize(void)
 
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
+
 }
 
 void display(void)
@@ -314,10 +315,20 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
     {
         AudioTrigger audio = triggers[i];
+        vec3 position;
         switch (audio.id)
         {
         case AudioId::COLLISION:
-            // game.triggerCarCollisionAudio(audio.position);
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            game.triggerFx("Collision.wav", position);
+            break;
+        case AudioId::MAKEUP:
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            game.triggerFx("Makeup.wav", position);
+            break;
+        case AudioId::CROWN_CHANGE:
+            game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
+            break;
         case AudioId::NO_AUDIO:
         default:
             break;
@@ -447,6 +458,23 @@ void keyboard(unsigned char key, int x, int y){
             game.triggerCarCollisionAnimation(3); 
             glutPostRedisplay(); 
             break; 
+
+            /* AUDIO TRIGGERS */
+        case ',':
+            // Audio Engine
+            game.stopAllSounds();
+            break;
+        case 'm':
+            // Audio Engine
+            game.playMusic("BattleTheme.wav", -10.0);
+            break;
+        case 'n':
+        {
+            // Audio Engine
+            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
+            std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            break;
+        }
 
         case 'p': 
             // Print player0's location 
@@ -654,6 +682,9 @@ void idle() {
                     gameStarted = true;
                     matchInProgress = true;
                     waitingToStartMatch = false;
+
+                    // Play Game Music
+                    game.playMusic("BattleTheme.wav", -10.0);
                 }
                 // Delete the frame
                 delete frame;
