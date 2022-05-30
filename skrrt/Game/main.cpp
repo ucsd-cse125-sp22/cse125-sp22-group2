@@ -56,10 +56,11 @@ bool startScreenVisibility = false;
 bool winScreenVisibility = false;
 
 // Game / match flow variables
-bool gameStarted = false;
+bool showStartMenu = true;
 bool matchInProgress = false;
 bool waitingToStartMatch = false;
 bool enableSendPlay = true;
+float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 
 // Time
@@ -131,6 +132,7 @@ void initialize(void)
     }
 
     game.init(scene.node["world"], scene.node["UI_root"]);
+    game.updateTime(cse125config::MATCH_LENGTH);
 
     // Initialize time
     startTime = std::chrono::system_clock::now();
@@ -163,10 +165,10 @@ void display(void)
     // Create the end of match text
     const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
     if (showMatchEndText) {
-        scene.drawText(true, makeMatchEndText(clientId, winnerId));
+        scene.drawText(countdownTimeRemaining, true, makeMatchEndText(clientId, winnerId));
     }
     else {
-        scene.drawText(false);
+        scene.drawText(countdownTimeRemaining, false);
     }
 
     /*
@@ -205,7 +207,7 @@ void saveScreenShot(const char* filename = "test.png")
 void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 {
     // Only send data to server if the match is in progress
-    if (matchInProgress) {
+    if (matchInProgress) {     
         boost::system::error_code error;
         size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
         if (error) {
@@ -219,7 +221,7 @@ void sendPlayToServer() {
         // Send packet to server indicating client is ready to play
         boost::system::error_code error;
         // Check for a packet from the server indicating that the game is ready to restart
-        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
+        cse125debug::log(LOG_LEVEL_INFO, "Sending play packet to server...\n");
         networkClient->play(&error);
         if (!error) {
             enableSendPlay = false;
@@ -613,9 +615,6 @@ void idle() {
         handleMoveRight();
     }
 
-    // Handle menu screen visibility
-    const bool showStartMenu = !gameStarted;
-    const bool showEndMenu = gameStarted && !matchInProgress;
     toggleStartMenuVisibility(showStartMenu);
 
     // Handle server communication
@@ -643,20 +642,38 @@ void idle() {
         }
         else {
             if (waitingToStartMatch) {
-                cse125debug::log(LOG_LEVEL_INFO, "Waiting for match start packet from server...\n");
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
-                cse125framing::ServerFrame* frame = receiveDataFromServer();
-                triggerAudio(frame->audio);
-                if (frame->matchInProgress) {
+                // Stop showing the start menu
+                showStartMenu = false;
+                // Display the game time
+                game.updateTime(cse125config::MATCH_LENGTH);
+
+                cse125framing::ServerFrame* frame = receiveDataFromServer();    
+
+                if (cse125config::ENABLE_COUNTDOWN) {
+                    scene.camera->reset(clientId);
+                    updatePlayerState(frame);
+                    triggerAnimations(frame->animations);
+                    triggerAudio(frame->audio);
+                    // Update countdown time
+                    countdownTimeRemaining = frame->countdownTimeRemaining;
+                    if (countdownTimeRemaining <= 0) {
+                        cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
+                        matchInProgress = true;
+                        waitingToStartMatch = false;
+                        // Play Game Music
+                        game.playMusic("BattleTheme.wav", -10.0);
+                    }
+                }
+                else {
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
-                    gameStarted = true;
                     matchInProgress = true;
                     waitingToStartMatch = false;
-
                     // Play Game Music
                     game.playMusic("BattleTheme.wav", -10.0);
-                }
+                }                
+                
                 // Delete the frame
                 delete frame;
             }

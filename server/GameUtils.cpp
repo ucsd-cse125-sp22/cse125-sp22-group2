@@ -5,7 +5,6 @@ void initializeServerFrame(PhysicalObjectManager* manager,
                            cse125framing::ServerFrame* frame)
 {
     static unsigned int frameCtr = 0;
-    static unsigned int gameTime = 0;
 
     frame->ctr = frameCtr++;
     frame->gameTime = manager->gameTime;

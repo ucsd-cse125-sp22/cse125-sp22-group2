@@ -130,6 +130,7 @@ void PhysicalObjectManager::step(bool* matchInProgress, int* winnerId) {
 			gameTime = 0.0f;
 			endGame(winnerId);
 			*matchInProgress = false;
+			
 		}
 	}
 	for (unsigned int i = 0; i < objects->size(); i++) {

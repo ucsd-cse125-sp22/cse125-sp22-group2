@@ -71,6 +71,7 @@ namespace cse125framing {
 		RealNumber gameTime;
 		bool matchInProgress = true;
 		int winnerId = cse125constants::DEFAULT_WINNER_ID;
+		float countdownTimeRemaining = -1;
 	} ServerFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);
