@@ -58,6 +58,9 @@ void PhysicalObjectManager::startGame() {
 
 	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
 	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(-8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));

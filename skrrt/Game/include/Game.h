@@ -38,9 +38,9 @@ private:
     glm::mat4 initial_makeup_transform;
 
     Node* blowdryer_status_icon = nullptr;
-    Node* blowdryer_pickup_node = nullptr;
-    glm::mat4 blowdryer_translation = glm::mat4(1.0f);
-    glm::mat4 initial_blowdryer_transform = glm::mat4(1.0f);
+    std::vector<Node*> blowdryer_pickup_node;
+    std::vector<glm::mat4> blowdryer_translation;
+    glm::mat4 initial_blowdryer_transform;
 
     std::vector<Node*> makeup_gate_arms;
     std::vector<glm::mat4> initial_arm_transforms;
@@ -94,8 +94,9 @@ public:
         // Find makeup gate arms
         for (Node* child : world->childnodes) {
             // Find blowdryer pick up
-            if (child->name == "blowdryer_world") {
-                blowdryer_pickup_node = child;
+            if (child->name.find("blowdryer_world") != std::string::npos) {
+                blowdryer_pickup_node.push_back(child);
+                blowdryer_translation.push_back(glm::mat4(1.0f));
                 initial_blowdryer_transform = child->modeltransforms[0];
             }
 
@@ -118,7 +119,7 @@ public:
     void updateDrips(int time, RealNumber makeupLevel); 
     void updateMakeupStatusBar(int time, RealNumber makeupLevel);
     void updateBlowdryerIcon(bool visible);
-    void setBlowdryerTransform(glm::mat4 t) { blowdryer_translation = t; }
+    void setBlowdryerTransform(int i, glm::mat4 t, bool v) { blowdryer_translation[i] = t; blowdryer_pickup_node[i]->visible = v; }
     void bobPowerup(int time);
     void updateAnimations(); 
 

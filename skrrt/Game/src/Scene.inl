@@ -336,11 +336,11 @@ void Scene::init(void){
         node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
         node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
-    //for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
-    //}
-    node["blowdryer_world"] = new Node("blowdryer_world", true);
-    node["blowdryer_world"]->models.push_back(model["blowdryer_world"]);
-    node["blowdryer_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["blowdryer_world" + std::to_string(i)] = new Node("blowdryer_world" + std::to_string(i), true);
+        node["blowdryer_world" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer_world" + std::to_string(i)]->modeltransforms.push_back(glm::scale(glm::vec3(0.6f)));
+    }
 
     // Map
     node["map"] = new Node("map");
@@ -477,8 +477,10 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
 
     // Powerups
-    node["world"]->childnodes.push_back(node["blowdryer_world"]);
-    node["world"]->childtransforms.push_back(glm::mat4(1.0f));
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["world"]->childnodes.push_back(node["blowdryer_world" + std::to_string(i)]);
+        node["world"]->childtransforms.push_back(glm::mat4(1.0f));
+    }
 
     // Put a camera
     camera = new Camera;

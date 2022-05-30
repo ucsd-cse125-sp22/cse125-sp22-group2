@@ -282,9 +282,9 @@ void updateCrownState(cse125framing::ServerFrame* frame) {
 }
 
 void updatePowerupState(cse125framing::ServerFrame* frame) {
-    // None of this is right
-    game.setBlowdryerTransform(glm::translate(frame->powerup[0].powerupPosition));
-    scene.node["blowdryer_world"]->visible = frame->powerup[0].powerupVisible;
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        game.setBlowdryerTransform(i, glm::translate(frame->powerup[i].powerupPosition), frame->powerup[i].powerupVisible);
+    }
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)

@@ -29,10 +29,10 @@ void Game::updateBlowdryerIcon(bool visible) {
 }
 
 void Game::bobPowerup(int time) {
-    // Change position of the crown based on time 
-    if (blowdryer_pickup_node != nullptr) {
-        glm::mat4 offset = glm::translate(vec3(0.0f, 0.5f + sin(time * float(M_PI) / 1400.0f) / 4.0f, 0.0f)) * glm::rotate((float)time / 800.0f, vec3(0.0f, 1.0f, 0.0f));
-        blowdryer_pickup_node->modeltransforms[0] = blowdryer_translation * offset * initial_blowdryer_transform;
+    // Change position of the powerup based on time 
+    glm::mat4 offset = glm::translate(vec3(0.0f, 0.5f + sin(time * float(M_PI) / 1400.0f) / 4.0f, 0.0f)) * glm::rotate((float)time / 800.0f, vec3(0.0f, 1.0f, 0.0f));
+    for (int i = 0; i < blowdryer_pickup_node.size(); i++) {
+        blowdryer_pickup_node[i]->modeltransforms[0] = blowdryer_translation[i] * offset * initial_blowdryer_transform;
     }
 }
 
