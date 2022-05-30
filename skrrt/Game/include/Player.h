@@ -32,6 +32,14 @@ private:
 	// Player's score 
 	RealNumber score = 0;
 
+	// Player's powerup info
+	Node* blowdryer_node;
+	bool using_powerup = false;
+	bool has_powerup = false;
+
+	// Player's state
+	bool invincible = false;
+
 	// Current world position 
 	// Current object's rotation 
 	glm::vec3 current_position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -62,10 +70,12 @@ public:
 		initial_car_transform = player->childtransforms[0];
 	};
 	void setCrown(Node* crown) { crown_node = crown; };
+	void setBlowdryer(Node* blowdryer) { blowdryer_node = blowdryer; };
 	void setPosition(glm::vec3 position) { current_position = position; };
 	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
-	void setPlayerScore(RealNumber s) { score = s; }; 
+	void setPlayerScore(RealNumber s) { score = s; };
+	void setInvincibility(bool inv) { invincible = inv; }
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 
@@ -85,8 +95,25 @@ public:
 		crown_node->visible = status;
 	};
 
+	void setHasPowerup(bool status) {
+		has_powerup = status;
+	};
+
+	void setUsingPowerup(bool status) {
+		using_powerup = status;
+		blowdryer_node->visible = status;
+	};
+
 	bool getCrownStatus() {
 		return has_crown;
+	};
+
+	bool getHasPowerup() {
+		return has_powerup;
+	};
+
+	bool getUsingPowerup() {
+		return using_powerup;
 	};
 
 	glm::vec3 getPosition() {
@@ -98,6 +125,7 @@ public:
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 	RealNumber getScore(void) { return score; }
+	bool getInvincibility() { return invincible; }
 };
 
 #endif

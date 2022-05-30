@@ -8,8 +8,10 @@
 #include "ObjFloor.hpp"
 #include "ObjCrown.hpp"
 #include "ObjMakeup.hpp"
+#include "ObjTrail.hpp"
+#include "ObjPowerup.hpp"
 
-enum Obstacles { oTireRack, oCones };
+enum Obstacles { oTireRack, oCones, oPillar };
 
 class PhysicalObjectManager
 {
@@ -34,6 +36,8 @@ public:
 	unsigned int numMakeups;
 	// ID for the loose crown
 	unsigned int crownID;
+	// ID for the first powerup
+	unsigned int powerupIDOffset;
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();

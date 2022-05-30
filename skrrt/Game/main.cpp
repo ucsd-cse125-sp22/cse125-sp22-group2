@@ -129,6 +129,7 @@ void initialize(void)
     for (int i = 0; i < 4; i++) {
         game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
         game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+        game.players[i]->setBlowdryer(scene.node["blowdryer" + std::to_string(i)]);
     }
 
     game.init(scene.node["world"], scene.node["UI_root"]);
@@ -257,8 +258,11 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         game.players[i]->setPlayerScore(frame->players[i].score);
+        game.players[i]->setHasPowerup(frame->players[i].hasPowerup);
+        game.players[i]->setUsingPowerup(frame->players[i].powerupActive);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
         game.players[i]->setSpeed(frame->players[i].playerSpeed);
+        game.players[i]->setInvincibility(frame->players[i].invincible);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -267,14 +271,18 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         scene.spotLights[headlightName + "1"]->direction = dir;
     }
     if (!TOP_DOWN_VIEW) {
-        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition), true);
     }
 }
 
 void updateCrownState(cse125framing::ServerFrame* frame) {
-    // None of this is right
-    scene.node["crown_world"]->modeltransforms[0] = glm::translate(frame->crown.crownPosition);
-    scene.node["crown_world"]->visible = frame->crown.crownVisible;
+    game.setCrownTransform(glm::translate(frame->crown.crownPosition), frame->crown.crownVisible);
+}
+
+void updatePowerupState(cse125framing::ServerFrame* frame) {
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        game.setBlowdryerTransform(i, glm::translate(frame->powerup[i].powerupPosition), frame->powerup[i].powerupVisible);
+    }
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
@@ -347,6 +355,13 @@ void handleMoveLeft() {
     sendDataToServer(MovementKey::LEFT, scene.camera->forwardVectorXZ());
 }
 
+void handleSpace() {
+    // Just pretend I don't handle game logic client-side here
+    if (game.players[clientId]->getHasPowerup()) {
+        sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+    }
+}
+
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
@@ -371,21 +386,25 @@ void keyboard(unsigned char key, int x, int y){
             scene.camera -> reset();
             glutPostRedisplay();
             break;
+        case 'A':
         case 'a':
             //handleMoveLeft();
             triggers["left"] = true;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             //handleMoveRight();
             triggers["right"] = true;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             //handleMoveForward();
             triggers["up"] = true;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = true;
             //handleMoveBackward();
@@ -487,9 +506,12 @@ void keyboard(unsigned char key, int x, int y){
             break;
         // Key for starting the game initially
         case ' ':
+            handleSpace();
             sendPlayToServer();
             break;
-
+        case 'q':
+            handleSpace();
+            break;
         default:
             //glutPostRedisplay();
             break;
@@ -498,18 +520,22 @@ void keyboard(unsigned char key, int x, int y){
 
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
+        case 'A':
         case 'a':
             triggers["left"] = false;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             triggers["right"] = false;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             triggers["up"] = false;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = false;
             //glutPostRedisplay();
@@ -577,18 +603,25 @@ void idle() {
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
+        //std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles(1);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
+            //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
+        // Update crown on the map
+        game.bobCrown(time);
+        // Update powerups on the map
+        game.bobPowerup(time);
 
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
 		game.updateMakeupStatusBar(time, currentMakeupLevel);
+        game.updateBlowdryerIcon(game.players[clientId]->getHasPowerup());
 
         // Update all animations 
         game.updateAnimations(); 
@@ -625,6 +658,8 @@ void idle() {
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
             if (frame->matchInProgress) {
+                // Use the frame to update the powerups' state
+                updatePowerupState(frame);
                 // Use the frame to update the crown's state
                 updateCrownState(frame);
                 // Use the frame to update the player's state

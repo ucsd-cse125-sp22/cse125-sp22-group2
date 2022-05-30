@@ -10,6 +10,7 @@ namespace cse125gameaction {
 		unsigned int forward : 1;
 		unsigned int left : 1;
 		unsigned int backward : 1;
+		unsigned int action : 1;
 		vec3 cameraDirection;
 	} GameActionContainer;
 
@@ -64,6 +65,13 @@ namespace cse125gameaction {
 		* @param the id of the player to move
 		*/
 		void moveBackward(int playerId);
+
+		/*
+		* @brief Sets the action movement bit for the player with the given id
+		*
+		* @param the id of the player to move
+		*/
+		void moveAction(int playerId);
 
 		/*
 		* @brief Returns the GameActionContainer for the player with the given id

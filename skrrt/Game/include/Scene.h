@@ -38,11 +38,14 @@ public:
         visible = v; 
         isParticleSource = p;
         if (p) {
-			particles = new ParticleSource(); 
+			particles = new ParticleSource();
+            //particlesPowerup = new ParticleSource(8, 20 * 4 + 6, 2, 0, 6);
+            particlesPowerup = new ParticleSource();
             std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
             particles = NULL;
+            particlesPowerup = NULL;
         }
     };
 
@@ -51,6 +54,7 @@ public:
     bool isParticleSource; 
 
     ParticleSource* particles;
+    ParticleSource* particlesPowerup;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;

@@ -99,11 +99,18 @@ void Camera::movePosition(const float distance, const glm::vec3 direction) {
     eye += delta; 
 }
 
-void Camera::setPosition(const glm::vec3 newTarget) {
+void Camera::setPosition(const glm::vec3 newTarget, bool clamped) {
     glm::vec3 delta = newTarget - target;
 
     target = newTarget;
     eye += delta; 
+
+    // Potentially use for falling/respawning, needs some tweaking
+    //if (clamped && newTarget.y < 0.0f) {
+    //    eye.y = std::max(eye.y, -(newTarget.y / 2.0f));
+    //    eye.x = (eye.x + newTarget.x) / 2.0f;
+    //    eye.z = (eye.z + newTarget.z) / 2.0f;
+    //}
 }
 
 void Camera::computeMatrices(){

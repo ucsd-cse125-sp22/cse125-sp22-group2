@@ -2,7 +2,7 @@
   "host": "localhost",
   "port": "8000",
   "tickRate": 30,
-  "gameTime": 2,
+  "gameTime": 120,
   "enableCountdown": true,
   "countdownTime": 3
 }
