@@ -327,7 +327,7 @@ void Scene::init(void){
     }
     node["crown_world"] = new Node("crown_world", true); 
     node["crown_world"]->models.push_back(model["crown"]);
-    node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
+    node["crown_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
 
 
     // Powerups

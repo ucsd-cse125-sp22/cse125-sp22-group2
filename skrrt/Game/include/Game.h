@@ -37,6 +37,10 @@ private:
     Node* makeup_status_bar = nullptr; 
     glm::mat4 initial_makeup_transform;
 
+    Node* loose_crown = nullptr;
+    glm::mat4 loose_crown_translation;
+    glm::mat4 initial_crown_transform;
+
     Node* blowdryer_status_icon = nullptr;
     std::vector<Node*> blowdryer_pickup_node;
     std::vector<glm::mat4> blowdryer_translation;
@@ -93,6 +97,13 @@ public:
 
         // Find makeup gate arms
         for (Node* child : world->childnodes) {
+            // Find loose crown
+            if (child->name == "crown_world") {
+                loose_crown = child;
+                loose_crown_translation = glm::mat4(1.0f);
+                initial_crown_transform = child->modeltransforms[0];
+            }
+
             // Find blowdryer pick up
             if (child->name.find("blowdryer_world") != std::string::npos) {
                 blowdryer_pickup_node.push_back(child);
@@ -119,7 +130,9 @@ public:
     void updateDrips(int time, RealNumber makeupLevel); 
     void updateMakeupStatusBar(int time, RealNumber makeupLevel);
     void updateBlowdryerIcon(bool visible);
+    void setCrownTransform(glm::mat4 t, bool v) { loose_crown_translation = t; loose_crown->visible = v; }
     void setBlowdryerTransform(int i, glm::mat4 t, bool v) { blowdryer_translation[i] = t; blowdryer_pickup_node[i]->visible = v; }
+    void bobCrown(int time);
     void bobPowerup(int time);
     void updateAnimations(); 
 

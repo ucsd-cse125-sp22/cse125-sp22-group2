@@ -28,6 +28,12 @@ void Game::updateBlowdryerIcon(bool visible) {
     blowdryer_status_icon->visible = visible;
 }
 
+void Game::bobCrown(int time) {
+    // Change position of the powerup based on time 
+    glm::mat4 offset = glm::translate(vec3(0.0f, 0.5f + sin(time * float(M_PI) / 2000.0f) / 9.0f, 0.0f)) * glm::rotate((float)time / 5000.0f, vec3(0.0f, 1.0f, 0.0f));
+    loose_crown->modeltransforms[0] = loose_crown_translation * offset * initial_crown_transform;
+}
+
 void Game::bobPowerup(int time) {
     // Change position of the powerup based on time 
     glm::mat4 offset = glm::translate(vec3(0.0f, 0.5f + sin(time * float(M_PI) / 1400.0f) / 4.0f, 0.0f)) * glm::rotate((float)time / 800.0f, vec3(0.0f, 1.0f, 0.0f));

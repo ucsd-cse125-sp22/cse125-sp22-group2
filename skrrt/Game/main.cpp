@@ -276,9 +276,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
 }
 
 void updateCrownState(cse125framing::ServerFrame* frame) {
-    // None of this is right
-    scene.node["crown_world"]->modeltransforms[0] = glm::translate(frame->crown.crownPosition);
-    scene.node["crown_world"]->visible = frame->crown.crownVisible;
+    game.setCrownTransform(glm::translate(frame->crown.crownPosition), frame->crown.crownVisible);
 }
 
 void updatePowerupState(cse125framing::ServerFrame* frame) {
@@ -614,6 +612,8 @@ void idle() {
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
+        // Update crown on the map
+        game.bobCrown(time);
         // Update powerups on the map
         game.bobPowerup(time);
 
