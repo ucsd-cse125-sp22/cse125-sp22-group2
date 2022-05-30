@@ -283,8 +283,8 @@ void updateCrownState(cse125framing::ServerFrame* frame) {
 
 void updatePowerupState(cse125framing::ServerFrame* frame) {
     // None of this is right
-    scene.node["blowdryer"]->modeltransforms[0] = glm::translate(frame->powerup[0].powerupPosition);
-    scene.node["blowdryer"]->visible = frame->powerup[0].powerupVisible;
+    game.setBlowdryerTransform(glm::translate(frame->powerup[0].powerupPosition));
+    scene.node["blowdryer_world"]->visible = frame->powerup[0].powerupVisible;
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
@@ -358,7 +358,10 @@ void handleMoveLeft() {
 }
 
 void handleSpace() {
-    sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+    // Just pretend I don't handle game logic client-side here
+    if (game.players[clientId]->getHasPowerup()) {
+        sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+    }
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -611,6 +614,8 @@ void idle() {
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
+        // Update powerups on the map
+        game.bobPowerup(time);
 
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();

@@ -57,8 +57,8 @@ void Scene::init(void){
     geometry["cones"] = new Obj; 
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
-    geometry["blowdryer"] = new Obj;
-    geometry["blowdryer"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_world"] = new Obj;
+    geometry["blowdryer_world"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
     geometry["blowdryer_on_car"] = new Obj;
     geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
@@ -161,9 +161,9 @@ void Scene::init(void){
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
 
-    model["blowdryer"] = new Model;
-    model["blowdryer"]->geometry = geometry["blowdryer"];
-    model["blowdryer"]->material = material["silver"];
+    model["blowdryer_world"] = new Model;
+    model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
+    model["blowdryer_world"]->material = material["silver"];
     model["blowdryer_on_car"] = new Model;
     model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
     model["blowdryer_on_car"]->material = material["silver"];
@@ -338,9 +338,9 @@ void Scene::init(void){
     }
     //for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
     //}
-    node["blowdryer"] = new Node("blowdryer", true);
-    node["blowdryer"]->models.push_back(model["blowdryer"]);
-    node["blowdryer"]->modeltransforms.push_back(mat4(1.0f));
+    node["blowdryer_world"] = new Node("blowdryer_world", true);
+    node["blowdryer_world"]->models.push_back(model["blowdryer_world"]);
+    node["blowdryer_world"]->modeltransforms.push_back(mat4(1.0f));
 
     // Map
     node["map"] = new Node("map");
@@ -477,8 +477,8 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
 
     // Powerups
-    node["world"]->childnodes.push_back(node["blowdryer"]);
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+    node["world"]->childnodes.push_back(node["blowdryer_world"]);
+    node["world"]->childtransforms.push_back(glm::mat4(1.0f));
 
     // Put a camera
     camera = new Camera;
