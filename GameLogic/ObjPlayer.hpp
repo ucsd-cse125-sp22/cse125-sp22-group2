@@ -43,8 +43,7 @@ public:
 	float powerupTime;
 	// Direction to change to during boost
 	glm::vec3 boostTargetDirection;
-	// Change the speed depending on the tick rate
-	//float speedModifier;
+	//
 
 	// Triggers
 	// Whether we crashed this frame
@@ -56,9 +55,17 @@ public:
 	// Whether we bounced this frame
 	bool bounced;
 
+	// Change the speed depending on the tick rate
+	//float speedModifier;
+
 	// Randomness
 	default_random_engine generator;
 	normal_distribution<float> distribution;
+
+	// Respawning
+	//uniform_int_distribution<int> distributionInt;
+	//glm::vec3 respawnLocations[4] = { glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -21.0f) };
+	//glm::vec3 respawnDirections[4] = { glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
 
 
 	ObjPlayer();

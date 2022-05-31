@@ -59,6 +59,8 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->bounced = false;
 
 	this->distribution = normal_distribution<float>(0, 1);
+	// Respawning
+	//this->distributionInt = uniform_int_distribution<int>(0, 3);
 	//this->speedModifier = 30.0f / cse125config::TICK_RATE;
 }
 
@@ -507,12 +509,17 @@ void ObjPlayer::applyGravity() {
 
 	// Check whether we are in the air
 	if (this->position.y != 0.0f || !f) {
+		//float offset = 0.01f;
+		//if (this->gravity < 0.0f) {
+		//	offset = -0.01f
+		//}
 		BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
 		// Check whether something is below us
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
 			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
 			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			// Make sure we don't fall through the floor
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
 			}
@@ -535,6 +542,10 @@ void ObjPlayer::applyGravity() {
 				// A solid object is blocking us
 				if (obj->solid && !adjusted) {
 					destinationFree = false;
+					// If the object is above us, cancel potential upwards velocity
+					if (obj->position.y > this->position.y) {
+						this->gravity = max(this->gravity, 0.0f);
+					}
 					//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 					glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 					//cout <<  " Shifting " << glm::length(adjust) << " ";
@@ -615,6 +626,17 @@ void ObjPlayer::applyGravity() {
 		this->gravity = -0.8f;
 		this->bounced = true;
 	}
+
+	// Respawn
+	//if (this->position.y < -6.0f) {
+	//	do
+	//	{
+	//		int respawn = distributionInt(generator);
+	//		this->position = respawnLocations[respawn];
+	//		this->direction = respawnDirections[respawn];
+	//		this->boundingBox = generateBoundingBox(this->position, this->direction, this->up);
+	//	} while (!checkPlaceFree(boundingBox));
+	//}
 }
 
 void ObjPlayer::matchTerrain() {

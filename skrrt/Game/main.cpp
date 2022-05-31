@@ -329,6 +329,9 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
+        //case AudioId::BOUNCE:
+        //    scene.camera->reset();
+        //    break;
         case AudioId::NO_AUDIO:
         default:
             break;
