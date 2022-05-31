@@ -61,6 +61,7 @@ int main()
                 cse125framing::ServerFrame countdownFrame;
                 initializeServerFrame(manager, &countdownFrame);
                 countdownFrame.countdownTimeRemaining = numCountdownTicks - i;
+                countdownFrame.matchInProgress = false;
                 server->writePackets(&countdownFrame);
                 ticker.tickEnd();
             }
@@ -189,6 +190,7 @@ int main()
         cse125framing::ServerFrame matchRestartedFrame;
         initializeServerFrame(manager, &matchRestartedFrame);
         matchRestartedFrame.countdownTimeRemaining = numCountdownTicks;
+        matchRestartedFrame.matchInProgress = false;
 
         std::cerr << "All clients ready to restart! Notifying clients..." << std::endl;
         server->writePackets(&matchRestartedFrame);

@@ -20,7 +20,8 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
      * @param socket boost socket in charge of network communication
      * @param id client id number to index client's data
      * @param serverQueue reference to server's frame queue to add frames to
-     * @param queueMtx mutex variable to ensure syncronous writes
+     * @param queueMtx mutex variable to ensure synchronous writes
+     * @param connectedMtx mutex variable to ensure synchronous access to clientsConnected
      * @param clientsConnected tells server when another client is connected
      * @param clientsReplaying tells server when clients are ready to replay
      */
@@ -29,6 +30,7 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
                     std::deque<cse125framing::ClientFrame>& serverQueue,
                     std::mutex& queueMtx,
                     unsigned int& clientsConnected,
+                    std::mutex& connectedMtx,
                     bool (&clientsWaitingToPlay)[cse125constants::NUM_PLAYERS]);
 
     /**
@@ -54,6 +56,7 @@ class GraphicsSession : public std::enable_shared_from_this<GraphicsSession>
     bool(&clientsReady)[cse125constants::NUM_PLAYERS];
     std::deque<cse125framing::ClientFrame>& serverQueue;
     std::mutex& queueMtx;
+    std::mutex& connectedMtx;
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
     boost::array<char, cse125framing::SERVER_FRAME_BUFFER_SIZE> serverBuffer;
 };
@@ -73,6 +76,10 @@ class GraphicsServer
      * @brief number of clients connected to the server
      */
     unsigned int clientsConnected;
+    /**
+     * @brief mutex variable associated with clientsConnected
+     */
+    std::mutex connectedMtx;
     /**
      * @brief whether each client is ready to play a match 
      */
@@ -108,4 +115,5 @@ class GraphicsServer
     std::vector<std::shared_ptr<GraphicsSession>> sessions;
     boost::asio::ip::tcp::acceptor acceptor;
     unsigned int numConnections;
+    std::mutex connectionsMtx;
 };
