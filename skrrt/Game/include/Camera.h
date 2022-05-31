@@ -30,7 +30,7 @@ public:
     float fovy_default = 30.0f;
     float aspect_default = 4.0f/3.0f;
     float near_default = 4.0f;
-    float far_default = 50.0f;
+    float far_default = 100.0f;
     
     glm::mat4 view = glm::mat4(1.0f);   // view matrix
     glm::mat4 proj = glm::mat4(1.0f);   // projection matrix
