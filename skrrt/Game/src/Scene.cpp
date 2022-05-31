@@ -204,30 +204,33 @@ void Scene::updateScreen(void) {
 void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText) {
     glUseProgram(text_shader->program);
 
-    text_shader->projection = glm::ortho(0.0f, (float)cse125constants::WINDOW_WIDTH, 0.0f, (float)cse125constants::WINDOW_HEIGHT);
-    //text_shader->projection = glm::ortho(0.0f, cse125constants::WINDOW_HEIGHT, 0.0f, cse125constants::WINDOW_WIDTH);
+    int currentWidth = glutGet(GLUT_WINDOW_WIDTH);
+    int currentHeight = glutGet(GLUT_WINDOW_HEIGHT);
+
+    text_shader->projection = glm::ortho(0.0f, (float)currentWidth, 0.0f, (float)currentHeight);
+    //text_shader->projection = glm::ortho(0.0f, currentHeight, 0.0f, currentWidth);
 
     // Draw all scores 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         scores[i]->setColor(text_colors[i]);
         text_shader->textColor = scores[i]->getColor(); 
 		text_shader->setUniforms();
-        //scores[i]->setPosition(cse125constants::WINDOW_WIDTH - 120.0f, cse125constants::WINDOW_HEIGHT - 50.0f * i - 75.0f);
-        scores[i]->setPosition(120.0f, cse125constants::WINDOW_HEIGHT - 75.0f * i - 100.0f);
+        //scores[i]->setPosition(currentWidth - 120.0f, currentHeight - 50.0f * i - 75.0f);
+        scores[i]->setPosition(120.0f, currentHeight - 75.0f * i - 100.0f);
         scores[i]->RenderText();
     }
 
     // Draw game time
 	text_shader->textColor = game_time->getColor(); 
     text_shader->setUniforms();
-	game_time->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 75.0f);
+	game_time->setPosition(currentWidth / 2.0f, currentHeight - 75.0f);
     game_time->RenderText();
 
     // Draw countdown timer text
     if (countdownTimeRemaining > 0) {
         text_shader->textColor = countdown_instructions_text->getColor();
         text_shader->setUniforms();
-        countdown_instructions_text->setPosition(cse125constants::WINDOW_WIDTH / 4.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
+        countdown_instructions_text->setPosition(currentWidth / 4.0f, currentHeight - 200.0f);
         countdown_instructions_text->RenderText();
 
         const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
@@ -252,20 +255,20 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
             countdown_go_text->updateText("READY " + ellipses);
-            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
             countdown_go_text->RenderText();
         case 1:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
             countdown_go_text->updateText("SET " + ellipses);
-            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
             countdown_go_text->RenderText();
             break;
         case 0:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
             countdown_go_text->updateText("GO!");
-            countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
+            countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
             countdown_go_text->RenderText();
             break;
         default:
@@ -279,7 +282,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         text_shader->textColor = match_end_text->getColor();
         text_shader->setUniforms();
         match_end_text->updateText(matchEndText);
-        match_end_text->setPosition(cse125constants::WINDOW_WIDTH / 4.0f, cse125constants::WINDOW_HEIGHT - 200.0f);
+        match_end_text->setPosition(currentWidth / 4.0f, currentHeight - 200.0f);
         match_end_text->RenderText();
     }
 }

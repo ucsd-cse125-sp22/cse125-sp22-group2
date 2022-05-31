@@ -508,7 +508,7 @@ void Scene::init(int width, int height) {
     camera->setAspect(width, height);
     if (!TOP_DOWN_VIEW) {
         camera->target_default = vec3(0.0f, 1.0f, 0.0f);
-        camera->eye_default = vec3(0.0f, 1.0f, 5.0f);
+        camera->eye_default = vec3(0.0f, 2.0f, 5.0f);
         camera->up_default = vec3(0.0f, 1.0f, 0.0f);
     }
     else {
