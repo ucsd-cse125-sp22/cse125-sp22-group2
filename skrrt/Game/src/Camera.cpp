@@ -156,19 +156,6 @@ void Camera::reset(){
 
 void Camera::reset(int playerId)
 {
-    // TODO: Figure out eye positions for each player
-    switch (playerId) {
-    case 0:     
-        break;
-    case 1:
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    default:
-        break;
-    }
     eye = eye_default;
     target = target_default;  // look at target
     up = up_default;      // up vector
@@ -177,4 +164,25 @@ void Camera::reset(int playerId)
     nearPlane = near_default; // near clipping distance
     farPlane = far_default; // far clipping distance
     zoom(3.0f);
+
+    switch (playerId) {
+    case 0:
+        rotateUp(30);
+        rotateRight(-90);
+        break;
+    case 1:
+        rotateUp(30);
+        rotateRight(90);
+        break;
+    case 2:
+        rotateUp(30);
+        rotateRight(0);
+        break;
+    case 3:
+        rotateUp(30);
+        rotateRight(180);
+        break;
+    default:
+        break;
+    }
 }
