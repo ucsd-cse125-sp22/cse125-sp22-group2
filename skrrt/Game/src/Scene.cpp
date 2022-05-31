@@ -49,6 +49,8 @@ void Scene::draw(Node* current_node){
         for (int i = 0; i < pointDepthMaps.size(); i++) {
             shader->pointDepthMaps[i] = pointDepthMaps[i];
         }
+        shader->farPlane = CAMERA_FAR_PLANE;
+        shader->viewPos = camera->eye;
     }
 
     // Define stacks for depth-first search (DFS)

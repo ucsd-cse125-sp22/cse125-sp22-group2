@@ -183,7 +183,7 @@ glm::mat4 makeLightSpaceMatrix(float nearPlane, float farPlane) {
 	float maxY = std::numeric_limits<float>::min();
 	float minZ = std::numeric_limits<float>::max();
 	float maxZ = std::numeric_limits<float>::min();
-	for (glm::vec4 corner: corners) {
+	for (const glm::vec4& corner: corners) {
 		glm::vec4 trf = lightView * corner;
 		minX = std::min(minX, trf.x);
 		maxX = std::max(maxX, trf.x);
@@ -282,7 +282,7 @@ void display(void) {
     if (DEBUG_QUAD_VIEW) {
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       // renderQuad(near_plane, far_plane, scene.shadowMapOffset);
+        //renderQuad(scene.shadowMapOffset);
     }
     glutSwapBuffers();
     glFlush();
