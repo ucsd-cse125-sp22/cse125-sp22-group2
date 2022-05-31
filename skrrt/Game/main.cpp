@@ -149,6 +149,7 @@ void initialize(void)
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
 
+    scene.camera->setAspect(width, height);
 }
 
 unsigned int quadVAO = 0;

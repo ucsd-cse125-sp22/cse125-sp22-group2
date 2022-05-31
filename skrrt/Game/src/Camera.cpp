@@ -176,5 +176,6 @@ void Camera::reset(int playerId)
     aspect = aspect_default; // aspect ratio
     nearPlane = near_default; // near clipping distance
     farPlane = far_default; // far clipping distance
+    setAspect(width, height);
     zoom(3.0f);
 }
