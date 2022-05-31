@@ -82,6 +82,9 @@ public:
     std::map< std::string, SpotLight* > spotLights;
     DirectionalLight* sun;
 
+    // lightSpaceUBOs
+    unsigned int directionalLightSpaceUBO;
+
     // Where the depth map textures live 
 	GLuint directionalDepthMap;
 	std::vector<GLuint> pointDepthMaps;
@@ -115,7 +118,7 @@ public:
     void updateScreen(void);
 
     void calculateShadowMaps();
-    void drawDepthMap(Node* current_node, glm::mat4 lightSpace);
+    void drawDepthMap(Node* current_node);
     // destructor
     ~Scene(){
         // The containers of pointers own the object pointed to by the pointers.

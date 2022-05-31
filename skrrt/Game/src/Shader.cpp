@@ -4,6 +4,12 @@
 
 using namespace std ;
 
+void Shader::read_source(const char* vertexshader_filename, const char* fragmentshader_filename, const char* geomshader_filename) {
+    read_source(vertexshader_filename, fragmentshader_filename);
+    geomshader_source = textFileRead(geomshader_filename);
+    hasGeomShader = true;
+}
+
 void Shader::read_source(const char * vertexshader_filename, const char * fragmentshader_filename)  {
     vertexshader_source = textFileRead(vertexshader_filename);
     fragmentshader_source = textFileRead(fragmentshader_filename);
@@ -19,6 +25,20 @@ void Shader::compile()  {
     glCompileShader( fragmentshader );
     glGetShaderiv ( vertexshader, GL_COMPILE_STATUS, &compiled_vs ) ;
     glGetShaderiv ( fragmentshader, GL_COMPILE_STATUS, &compiled_fs ) ;
+
+    if (hasGeomShader) {
+		geomshader = glCreateShader(GL_GEOMETRY_SHADER);
+		const GLchar * cstr_gs = geomshader_source.c_str() ; // convert source to const GLchar *
+		glShaderSource( geomshader, 1, &cstr_gs, NULL) ;
+		glCompileShader( geomshader );
+		glGetShaderiv ( geomshader, GL_COMPILE_STATUS, &compiled_gs ) ;
+		if (!compiled_gs) {
+			cout << "Geometry Shader ";
+			shadererrors( geomshader ) ;
+			throw 3 ;
+		}
+    }
+
     if (!compiled_vs) {
         cout << "Vertex Shader ";
         shadererrors( vertexshader ) ;
@@ -32,6 +52,11 @@ void Shader::compile()  {
     program = glCreateProgram() ;
     glAttachShader(program, vertexshader) ;
     glAttachShader(program, fragmentshader) ;
+    
+    if (hasGeomShader) {
+        glAttachShader(program, geomshader);
+    }
+
     glLinkProgram(program) ;
     glGetProgramiv(program, GL_LINK_STATUS, &linked) ;
     if (linked){
@@ -39,6 +64,10 @@ void Shader::compile()  {
         glDetachShader( program, fragmentshader );
         glDeleteShader( vertexshader );
         glDeleteShader( fragmentshader );
+        if (hasGeomShader) {
+			glDetachShader( program, geomshader );
+			glDeleteShader( geomshader );
+        }
     }else{
         programerrors(program) ;
         throw 4 ;

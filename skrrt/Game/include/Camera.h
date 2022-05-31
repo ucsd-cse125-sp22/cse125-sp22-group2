@@ -8,6 +8,9 @@ Camera is a class for a camera object.
 
 #pragma once
 
+const float CAMERA_NEAR_PLANE = 4.0f;
+const float CAMERA_FAR_PLANE = 50.0f;
+
 class Camera {
 public:
     glm::vec3 eye;// position of the eye
@@ -29,8 +32,8 @@ public:
     glm::vec3 up_default = glm::vec3(0.0f, 1.0f, 0.0f);
     float fovy_default = 30.0f;
     float aspect_default = 4.0f/3.0f;
-    float near_default = 4.0f;
-    float far_default = 50.0f;
+    float near_default = CAMERA_NEAR_PLANE;
+    float far_default = CAMERA_FAR_PLANE;
     
     glm::mat4 view = glm::mat4(1.0f);   // view matrix
     glm::mat4 proj = glm::mat4(1.0f);   // projection matrix
@@ -53,7 +56,9 @@ public:
         computeMatrices();
     }
 
-    std::vector<glm::vec4> getFrustrumCornersWorld() {
+    std::vector<glm::vec4> getFrustrumCornersWorld(float nearP, float farP) {
+        nearPlane = nearP;
+        farPlane = farP;
         computeMatrices();
         glm::mat4 invProjView = glm::inverse(proj * view);
         std::vector<glm::vec4> frustrumCorners;
@@ -68,6 +73,9 @@ public:
                 }
             }
         }
+        nearPlane = CAMERA_NEAR_PLANE;
+        farPlane = CAMERA_FAR_PLANE;
+        computeMatrices();
         return frustrumCorners;
     }
 };

@@ -123,12 +123,9 @@ void Scene::draw(Node* current_node){
     } // End of DFS while loop.
 }
 
-void Scene::drawDepthMap(Node* current_node, glm::mat4 lightSpace){
+void Scene::drawDepthMap(Node* current_node){
 
     glUseProgram(depth_shader->program);
-
-    // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
-    depth_shader->lightSpace = lightSpace;
 
     // Define stacks for depth-first search (DFS)
     std::stack < Node* > dfs_stack;

@@ -443,26 +443,42 @@ void Scene::init(int width, int height) {
 
     // Initalize depth maps
     if (ENABLE_SHADOW_MAP) {
+        // Light SPace UBO
+		glGenBuffers(1, &directionalLightSpaceUBO);
+		glBindBuffer(GL_UNIFORM_BUFFER, directionalLightSpaceUBO);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4x4) * MAX_CASCADE_LEVEL_SIZE, nullptr, GL_STATIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, directionalLightSpaceUBO);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
         // create depth map FBO
         glGenFramebuffers(1, &directionalDepthMapFBO);
 
         // create depth texture
         glGenTextures(1, &directionalDepthMap);
 		glActiveTexture(GL_TEXTURE0 + shadowMapOffset);
-        glBindTexture(GL_TEXTURE_2D, directionalDepthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, directionalDepthMap);
+        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, SHADOW_WIDTH, SHADOW_HEIGHT, SHADOW_CASCADE_LEVELS.size() + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
+        glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);  
 
         // attach depth texture to FBO depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, directionalDepthMapFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, directionalDepthMap, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, directionalDepthMap, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
+
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE)
+		{
+			std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!";
+			exit(-1);
+		}
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -475,7 +491,7 @@ void Scene::init(int width, int height) {
         shader->initUniforms();
 
         depth_shader = new DepthShader;
-        depth_shader->read_source("shaders/depthShader.vert", "shaders/depthShader.frag");
+        depth_shader->read_source("shaders/depthShader.vert", "shaders/depthShader.frag", "shaders/depthShader.geom");
         depth_shader->compile();
         glUseProgram(depth_shader->program);
         depth_shader->initUniforms();

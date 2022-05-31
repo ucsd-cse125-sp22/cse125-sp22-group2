@@ -1,9 +1,8 @@
-#version 330 core
+#version 420 core
 
 in vec4 position; // raw position in the model coord
 in vec3 normal;   // raw normal in the model coord
 in vec2 TexCoord; // texture coordinates
-in vec4 posDirectionalLightSpace;
 
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
@@ -85,20 +84,81 @@ const int maxNumSpotLights = 10;
 uniform int numSpotLights;
 uniform SpotLight spotLights[maxNumSpotLights];
 
+//Camera
+uniform vec3 viewPos;
+uniform float farPlane;
+
 //Shadow maps
-uniform sampler2D directionalDepthMap;
+layout (std140, binding = 0) uniform LightSpaceMatrices
+{
+    mat4 lightSpaceMatrices[16];
+};
+uniform float cascadePlaneDistances[16];
+uniform int cascadeCount;
+
+uniform sampler2DArray directionalDepthMap;
 uniform sampler2D spotDepthMaps[maxNumSpotLights];
 uniform sampler2D pointDepthMaps[maxNumPointLights];
 
 const float minShadowBias = 0.005f;
 const float maxShadowBias = 0.01f;
+const float biasModifier = 0.5f;
 
 const int radius = 1;
 
 // Output the frag color
 out vec4 fragColor;
 
-float ShadowCalculation(vec4 fragPosLightSpace, float bias, sampler2D shadowMap) {
+float ShadowCalculation(vec4 fragPosViewSpace, vec4 fragPosWorldSpace, float shadowBias) {
+    // select cascade layer
+    float depthValue = abs(fragPosViewSpace.z);
+
+    int layer = cascadeCount;
+    for (int i = 0; i < cascadeCount; ++i) {
+        if (depthValue < cascadePlaneDistances[i]) {
+            layer = i;
+            break;
+        }
+    }
+
+    vec4 fragPosLightSpace = lightSpaceMatrices[layer] * fragPosWorldSpace;
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5f + 0.5f;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (currentDepth > 1.0f) {
+		// Invert shadow for easier math
+        return 1.0f - 0.0f;
+    }
+    // calculate bias (based on depth map resolution and slope)
+    if (layer == cascadeCount) {
+        shadowBias *= 1 / (farPlane * biasModifier);
+    } else {
+        shadowBias *= 1 / (cascadePlaneDistances[layer] * biasModifier);
+    }
+
+    // PCF
+    float shadow = 0.0f;
+    vec2 texelSize = 1.0f / vec2(textureSize(directionalDepthMap, 0));
+    for(int x = -radius; x <= radius; ++x) {
+        for(int y = -radius; y <= radius; ++y) {
+            float pcfDepth = texture(directionalDepthMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+            shadow += (currentDepth - shadowBias) > pcfDepth ? 1.0f : 0.0f;        
+        }    
+    }
+	shadow /= (2.0f * radius + 1.0f) * (2.0f * radius + 1.0f); 
+        
+	// Invert shadow for easier math
+    return 1.0f - shadow;
+}
+
+
+float OLDShadowCalculation(vec4 fragPosLightSpace, float bias, sampler2D shadowMap) {
     // transform to [0,1] range
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5f + 0.5f;
@@ -127,7 +187,6 @@ float ShadowCalculation(vec4 fragPosLightSpace, float bias, sampler2D shadowMap)
 	// Need to inverse shadow
     return 1.0f - shadow;
 }
-
 void main (void){
 	fragColor = vec4(0.0f,0.0f,0.0f,0.0f);
 
@@ -141,6 +200,7 @@ void main (void){
 	vec3 n_eye_norm = normalize(a_modelview * normal);
 
 	vec4 pos_eye = modelview * position;
+	vec4 pos_world = inverse(view) * pos_eye;
 
 	// avoid divide by zero
 	vec3 v_eye_norm = normalize((pos_eye.w * vec3(0.0f,0.0f,0.0f)) - (1.0f * pos_eye.xyz));
@@ -150,7 +210,7 @@ void main (void){
 	////////////////////////////
 	vec3 sunDirNorm = normalize(view * vec4(sun.direction,0.0f)).xyz; // Transform sun to eye coord
 	float shadowBias = max(maxShadowBias * (1.0f - dot(sunDirNorm, n_eye_norm)), minShadowBias);
-	float shadow = ShadowCalculation(posDirectionalLightSpace, shadowBias, directionalDepthMap);
+	float shadow = ShadowCalculation(pos_eye, pos_world, shadowBias);
 
 	// Calculate ambient
 	vec4 acum = sun.ambient * texColor;
@@ -187,7 +247,7 @@ void main (void){
 		acum += (pointLights[i].specular * specColor) * pow(max(nh,0), material.shininess);
 
 		// Calculate attenuation
-		float lenFragLight = length(pointLights[i].position - (inverse(view) * pos_eye)); // inverse view matrix to get fragment world pos
+		float lenFragLight = length(pointLights[i].position - pos_world); // inverse view matrix to get fragment world pos
 		float attenuation = 1.0f / (pointLights[i].constant + pointLights[i].linear * lenFragLight + pointLights[i].quadradic * lenFragLight * lenFragLight);
 		acum *= attenuation;
 
@@ -216,7 +276,7 @@ void main (void){
 		acum += (spotLights[i].specular * specColor) * pow(max(nh,0), material.shininess);
 
 		// Calculate attenuation
-		float lenFragLight = length(spotLights[i].position - (inverse(view) * pos_eye)); // inverse view matrix to get fragment world pos
+		float lenFragLight = length(spotLights[i].position - pos_world); // inverse view matrix to get fragment world pos
 		float attenuation = 1.0f / (spotLights[i].constant + spotLights[i].linear * lenFragLight + spotLights[i].quadradic * lenFragLight * lenFragLight);
 		acum *= attenuation;
 

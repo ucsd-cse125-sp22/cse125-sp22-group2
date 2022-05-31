@@ -122,6 +122,8 @@ void initialize(void)
     glEnable(GL_DEPTH_TEST);
     glLineWidth(3.0f);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
@@ -160,11 +162,11 @@ void renderQuad(float nearPlane, float farPlane, GLuint texId) {
     glBindVertexArray(0);
 }
 
-glm::mat4 makeLightSpaceMatrix() {
+glm::mat4 makeLightSpaceMatrix(float nearPlane, float farPlane) {
 	// find the center of camera viewing frustrum by averaging it's corners
-	std::vector<glm::vec4> corners = scene.camera->getFrustrumCornersWorld();
+	std::vector<glm::vec4> corners = scene.camera->getFrustrumCornersWorld(nearPlane, farPlane);
 	glm::vec3 center = glm::vec3(0.0f);
-	for (glm::vec4 corner : corners) {
+	for (const glm::vec4& corner : corners) {
 		center += glm::vec3(corner);
 	}
 	center = center / (float) corners.size();
@@ -211,25 +213,46 @@ glm::mat4 makeLightSpaceMatrix() {
     return lightSpace;
 }
 
+std::vector<glm::mat4> makeLightSpaceMatrixArray() {
+    std::vector<glm::mat4> output;
+    for (int i = 0; i < SHADOW_CASCADE_LEVELS.size() + 1; i++) {
+        //First sub-frustrum
+        if (i == 0) {
+            output.push_back(makeLightSpaceMatrix(CAMERA_NEAR_PLANE, SHADOW_CASCADE_LEVELS[i]));
+        // Middle sub-frustrum
+        } else if (i < SHADOW_CASCADE_LEVELS.size()) {
+            output.push_back(makeLightSpaceMatrix(SHADOW_CASCADE_LEVELS[i-1], SHADOW_CASCADE_LEVELS[i]));
+        //Last sub-frustrum
+        } else {
+            output.push_back(makeLightSpaceMatrix(SHADOW_CASCADE_LEVELS[i-1], CAMERA_FAR_PLANE));
+        }
+    }
+    return output;
+}
+
 void display(void) {
     if (ENABLE_SHADOW_MAP) {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 lightSpace = makeLightSpaceMatrix();
+        std::vector<glm::mat4> lightSpaces = makeLightSpaceMatrixArray();
+        glBindBuffer(GL_UNIFORM_BUFFER, scene.directionalLightSpaceUBO);
+        for (int i = 0; i < lightSpaces.size(); i++) {
+            glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(glm::mat4x4), sizeof(glm::mat4x4), &lightSpaces[i]);
+        }
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        scene.shader->lightSpace = lightSpace;
-        scene.drawDepthMap(scene.node["world"], lightSpace);
+        scene.drawDepthMap(scene.node["world"]);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Update shadowmaps?
+    //Update shadowmaps
     if (ENABLE_SHADOW_MAP) {
         glActiveTexture(GL_TEXTURE0 + scene.shadowMapOffset);
-        glBindTexture(GL_TEXTURE_2D, scene.directionalDepthMap);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, scene.directionalDepthMap);
     }
 
     scene.draw(scene.node["world"]);
@@ -734,7 +757,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGBA |
                         GLUT_DEPTH);
 #else
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 #endif
     glutInitWindowSize(width, height);
     glutCreateWindow(title);

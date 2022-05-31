@@ -86,6 +86,7 @@
     <None Include="run2.sh" />
     <None Include="run4.sh" />
     <None Include="shaders\depthShader.frag" />
+    <None Include="shaders\depthShader.geom" />
     <None Include="shaders\depthShader.vert" />
     <None Include="shaders\lightingShadowsDisabled.frag" />
     <None Include="shaders\lightingShadowsEnabled.frag" />

@@ -105,9 +105,14 @@ struct SurfaceShader : Shader {
     GLuint emission_id;
     GLuint emission_id_loc;
 
-    glm::mat4 lightSpace;
-    GLuint lightSpace_loc;
-    
+    //camera 
+    float farPlane; GLuint farPlane_loc;
+    glm::vec3 viewPos; GLuint viewPos_loc;
+
+    // Shadowmaps
+    GLuint cascadeCount_loc;
+    std::vector<GLuint> cascadePlaneDistances_loc;
+
     void initUniforms(){
         if (ENABLE_SHADOW_MAP) {
             directionalDepthMap_loc = glGetUniformLocation(program, "directionalDepthMap");
@@ -117,15 +122,22 @@ struct SurfaceShader : Shader {
 			for (int i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
                 pointDepthMaps_loc[i] = glGetUniformLocation(program, ("[pointDepthMaps[" + std::to_string(i) + "]").c_str());
 			}
+
+            for (int i = 0; i < MAX_CASCADE_LEVEL_SIZE; i++) {
+                GLuint loc = glGetUniformLocation(program, ("[cascadePlaneDistances[" + std::to_string(i) + "]").c_str());
+                cascadePlaneDistances_loc.push_back(loc);
+            }
+            cascadeCount_loc = glGetUniformLocation(program, "cascadeCount");
         }
+
+        farPlane_loc = glGetUniformLocation(program, "farPlane");
+        viewPos_loc = glGetUniformLocation(program, "viewPos");
 
         view_loc  = glGetUniformLocation( program, "view" );
         modelview_loc  = glGetUniformLocation( program, "modelview" );
         projection_loc = glGetUniformLocation( program, "projection" );
         material_loc.shininess    = glGetUniformLocation( program, "material.shininess" );
 
-        lightSpace_loc = glGetUniformLocation(program, "lightSpace");
-        
         numPointLights_loc = glGetUniformLocation( program, "numPointLights" );
         for (int i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
             pointLights_loc[i].position = glGetUniformLocation(program, ("pointLights[" + std::to_string(i) + "].position").c_str());
@@ -174,11 +186,17 @@ struct SurfaceShader : Shader {
         emission_id_loc = glGetUniformLocation(program, "emission_id");
     }
     void setUniforms() {
+        glUniform1f(farPlane_loc, farPlane);
+        glUniform3fv(viewPos_loc, 1, &viewPos[0]);
+
+        glUniform1i(cascadeCount_loc, SHADOW_CASCADE_LEVELS.size());
+        for (int i = 0; i < SHADOW_CASCADE_LEVELS.size(); i++) {
+            glUniform1f(cascadePlaneDistances_loc[i], SHADOW_CASCADE_LEVELS[i]);
+        }
+
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &modelview[0][0]);
         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &projection[0][0]);
-
-        glUniformMatrix4fv(lightSpace_loc, 1, GL_FALSE, &lightSpace[0][0]);
 
         // set material
         glUniform1f(material_loc.shininess, material->shininess);

@@ -74,5 +74,6 @@
     <None Include="shaders\projectiveShadowsEnabled.vert" />
     <None Include="shaders\quad.frag" />
     <None Include="shaders\quad.vert" />
+    <None Include="shaders\depthShader.geom" />
   </ItemGroup>
 </Project>
