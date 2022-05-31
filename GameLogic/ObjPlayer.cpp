@@ -53,10 +53,12 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->powerupTime = 0.0f;
 	this->boostTargetDirection = direction;
 
+	this->activatePowerup = false;
 	this->crashed = false;
 	this->tookCrown = false;
 	this->gotPowerup = false;
 	this->bounced = false;
+	this->honked = false;
 
 	this->distribution = normal_distribution<float>(0, 1);
 	// Respawning
@@ -70,10 +72,12 @@ ObjPlayer::~ObjPlayer() {}
 
 void ObjPlayer::step(float gameTime) {
 	// Reset triggers
-	crashed = false;
-	tookCrown = false;
-	gotPowerup = false;
-	bounced = false;
+	this->activatePowerup = false;
+	this->crashed = false;
+	this->tookCrown = false;
+	this->gotPowerup = false;
+	this->bounced = false;
+	this->honked = false;
 
 	// Update iframes
 	if (iframes) {
@@ -183,14 +187,11 @@ void ObjPlayer::step(float gameTime) {
 	//matchTerrain();
 }
 
-void ObjPlayer::action(glm::vec3 dir, bool trigger) {
-	if (trigger) {
+void ObjPlayer::action(glm::vec3 dir) {
+	if (this->activatePowerup) {
 		if (hasPowerup && !stun && !boothTime) {
 			this->powerupTime = POWERUP_TIME;
 			this->hasPowerup = false;
-		}
-		else if (!boothTime) {
-			idle();
 		}
 	}
 
@@ -231,7 +232,12 @@ void ObjPlayer::action(glm::vec3 dir, bool trigger) {
 }
 
 void ObjPlayer::idle() {
-	// If we above a certain threshold, the player should not be able to control their movement as well
+	if (this->activatePowerup) {
+		if (hasPowerup && !stun && !boothTime) {
+			this->powerupTime = POWERUP_TIME;
+			this->hasPowerup = false;
+		}
+	}
 
 	if (speed < SPEED_THRESHOLD) {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
@@ -416,7 +422,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			// Too easy to drive off of the edge
-			this->speed = SPEED_STEAL_CROWN / 2.0f;
+			this->speed = SPEED_STEAL_CROWN / 1.5f;
 		}
 	}
 }

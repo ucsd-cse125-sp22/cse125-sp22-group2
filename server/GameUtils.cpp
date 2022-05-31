@@ -95,6 +95,13 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             frame->audio[audioIndex].position = player->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
+        // honk audio
+        if (player->honked)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::HONK;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
     }
 
     // set game restart values
@@ -163,8 +170,6 @@ void gameLoop(PhysicalObjectManager* manager,
         break;
 
     // Other game actions
-    case GameAction::ACTION:
-        player->action(glm::normalize(cameraDirection), true);
     case GameAction::IDLE:
         // Idle behavior
         player->idle();

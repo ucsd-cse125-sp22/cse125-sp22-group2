@@ -329,6 +329,9 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
+        case AudioId::HONK:
+            game.triggerFx("Horn.wav", position, -3.0);
+            break;
         //case AudioId::BOUNCE:
         //    scene.camera->reset();
         //    break;
@@ -359,10 +362,13 @@ void handleMoveLeft() {
 }
 
 void handleSpace() {
-    // Just pretend I don't handle game logic client-side here
-    if (game.players[clientId]->getHasPowerup()) {
-        sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
-    }
+    // Just pretend I don't handle game logic client-side here (fixed)
+    //if (game.players[clientId]->getHasPowerup()) {
+    sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+}
+
+void handleHonk() {
+    sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -371,15 +377,9 @@ void keyboard(unsigned char key, int x, int y){
             networkClient->closeConnection();
             exit(0);
             break;
-        case 'h': // print help
-            printHelp();
-        /*
-        case ' ':
-            hw3AutoScreenshots();
-            glutPostRedisplay();
-
-            break;
-        */
+        case 'H':
+        case 'h':
+            handleHonk();
             break;
         case 'o': // save screenshot
             saveScreenShot();
