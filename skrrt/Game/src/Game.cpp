@@ -190,7 +190,22 @@ void Game::startCarEngines(int clientId, vec3& cameraPos)
         // Add channel number to carEngineChannels
         carEngineChannels[i] = CarEngine{ idle, accelerate };
         printf("player: %d | idle: %d accelerate: %d\n", i, idle, accelerate);
+
+        // Update so we can have multiple instances of the same sound
+        audioEngine.update();
     }
+    carEngineState = true;
+}
+
+void Game::stopCarEngines()
+{
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        CarEngine carEngine = carEngineChannels[i];
+        audioEngine.stopChannel(carEngine.idle);
+        audioEngine.stopChannel(carEngine.accelerate);
+    }
+    carEngineState = false;
 }
 
 float Game::fadeEngine(int channelId, float targetDb)
@@ -203,6 +218,12 @@ float Game::fadeEngine(int channelId, float targetDb)
 
 void Game::updateCarEngines(int clientId, vec3& cameraPos)
 {
+    // If Car Engines aren't on
+    if (!carEngineState)
+    {
+        return;
+    }
+
     vec3 playerPos = players[clientId]->getPosition();
     for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
     {

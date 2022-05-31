@@ -51,6 +51,7 @@ private:
 
     //Animation gateAnimation;
     std::map <std::string, Animation*> animations; 
+    void applyAnimations(); 
 
     // Audio Engine
     typedef struct {
@@ -60,11 +61,11 @@ private:
 
     AudioEngine audioEngine;
     std::map<int, CarEngine> carEngineChannels;
-    void applyAnimations(); 
 
 public: 
     std::vector<int> scores; 
     std::vector<Player*> players; 
+    bool carEngineState;
 
     Game(int numPlayers) {
         for (int i = 0; i < numPlayers; i++) {
@@ -161,6 +162,7 @@ public:
     float fadeEngine(int channelId, float targetDB);
 
     void startCarEngines(int clientId, vec3& cameraPos);
+    void stopCarEngines();
     void updateCarEngines(int clientId, vec3& cameraPos);
 
     // TESTING ONLY

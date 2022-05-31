@@ -194,7 +194,7 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
-        //game.playMusic("MenuTheme.wav");
+        game.playMusic("MenuTheme.wav", -6.0f);
     }
 }
 
@@ -708,7 +708,8 @@ void idle() {
                         matchInProgress = true;
                         waitingToStartMatch = false;
                         // Play Game Music
-                        //game.playMusic("BattleTheme.wav", -10.0);
+                        game.stopAllSounds();
+                        //game.playMusic("BattleTheme.wav", -8.0f);
                         game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
                     }
                 }

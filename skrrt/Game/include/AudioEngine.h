@@ -33,15 +33,15 @@ public:
 
     const std::unordered_map<std::string, metadata> audioFiles {
         //                  <3d>    <loop>    <stream>
-        { "MenuTheme.wav", {false,   true,     true}},
+        { "MenuTheme.wav", {false,   true,    true}},
         { "BattleTheme.wav", {false, false,   true}},
         { "WinTheme.wav", {false,    false,   true}},
         { "LoseTheme.wav", {false,   false,   true}},
         { "GetCrown.wav", {false,    false,   false}},
         //{ "Horn.wav", {true, false, false}},
         { "Makeup.wav",   {false,    false,   false}},
-        { "EngineIdle.wav",{true,    true,    true}},
-        { "EngineAccelerate.wav", {true,    true,    true}},
+        { "EngineIdle.wav",{true,    true,    false}},
+        { "EngineAccelerate.wav", {true,true, false}},
         { "Collision.wav", {true,    false,   false}},
     };
 
