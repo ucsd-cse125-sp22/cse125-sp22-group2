@@ -16,8 +16,7 @@ AudioEngine is a class to manage all sounds for the game
 
 #define MIN_COLLISION_DISTANCE 3.0f
 
-//#define CLIENT_ENGINE_DB -16.0f
-#define CLIENT_ENGINE_DB -70.0f
+#define CLIENT_ENGINE_DB -16.0f
 #define OTHER_PLAYER_ENGINE_DB -4.0f
 
 #define VOLUME_OFF -60.0f
@@ -57,7 +56,8 @@ public:
     void unloadSound(const std::string& soundName);
 
     int playSound(const char* soundName, const vec3& position = { 0,0,0 }, float dB = 0.0f);
-    //void stopChannel(int channelId);
+    bool isPlaying(int channelId);
+    void stopChannel(int channelId);
     void stopAllChannels();
     void setChannel3dPosition(int channelId, const vec3& newPosition);
     void setChannelVolume(int channelId, float db);
@@ -87,6 +87,11 @@ public:
         vec.y = position.y;
         vec.z = position.z;
         return vec;
+    }
+
+    int getChannelsSize()
+    {
+        return channels.size();
     }
 
 

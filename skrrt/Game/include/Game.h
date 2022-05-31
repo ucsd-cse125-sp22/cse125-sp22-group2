@@ -150,6 +150,7 @@ public:
     void triggerCarCollisionAnimation(int playerNum);
 
     /* AUDIO TRIGGERS */
+    void updateAudio();
     void stopAllSounds();
     int playMusic(const char* soundName, float db = 0.0);
     //void stopMusic(const char* soundName);
@@ -161,6 +162,12 @@ public:
 
     void startCarEngines(int clientId, vec3& cameraPos);
     void updateCarEngines(int clientId, vec3& cameraPos);
+
+    // TESTING ONLY
+    int audioChannelsSize()
+    {
+        return audioEngine.getChannelsSize();
+    }
 };
 
 

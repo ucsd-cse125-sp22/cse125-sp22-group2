@@ -14,6 +14,23 @@ bool AudioEngine::errorCheck(const std::string& message, FMOD_RESULT engine)
 
 void AudioEngine::update()
 {
+    // Clear unused channels
+    std::vector<std::unordered_map<int, FMOD::Channel*>::iterator> pStoppedChannels;
+    for (auto it = channels.begin(), itEnd = channels.end(); it != itEnd; ++it)
+    {
+        bool bIsPlaying = false;
+        it->second->isPlaying(&bIsPlaying);
+        if (!bIsPlaying)
+        {
+             pStoppedChannels.push_back(it);
+        }
+    }
+    for (auto& it : pStoppedChannels)
+    {
+         channels.erase(it);
+    }
+
+    // Update FMOD Low Level API
     AudioEngine::system->update();
 }
 
@@ -134,6 +151,30 @@ int AudioEngine::playSound(const char* soundName, const vec3& position, float dB
         }
     }
     return channelId;
+}
+
+bool AudioEngine::isPlaying(int channelId)
+{
+    auto channelIter = channels.find(channelId);
+    bool bisPlaying = false;
+    if (channelIter != channels.end())
+    {
+        std::string e = "Stopping Channel";
+        e += channelId;
+        channelIter->second->isPlaying(&bisPlaying);
+    }
+    return bisPlaying;
+}
+
+void AudioEngine::stopChannel(int channelId)
+{
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        std::string e = "Stopping Channel";
+        e += channelId;
+        AudioEngine::errorCheck(e, channelIter->second->stop());
+    }
 }
 
 void AudioEngine::stopAllChannels()

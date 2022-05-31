@@ -471,7 +471,8 @@ void keyboard(unsigned char key, int x, int y){
         case 'm':
             // Audio Engine
             //game.playMusic("BattleTheme.wav", -10.0);
-            game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
+            //game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
+            std::cout << "Audio Channels: " << game.audioChannelsSize() << std::endl;
             break;
         case 'n':
         {
@@ -631,6 +632,9 @@ void idle() {
 
         // Update time 
         scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
+
+        // Update Audio Engine
+        game.updateAudio();
 
 		lastRenderTime = time;
         render = true;

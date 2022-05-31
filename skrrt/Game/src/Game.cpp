@@ -127,6 +127,12 @@ void Game::applyAnimations() {
 // *********************************
 // AUDIO TRIGGERS
 // *********************************
+void Game::updateAudio()
+{
+    // Update Audio Engine
+    audioEngine.update();
+}
+
 void Game::stopAllSounds()
 {
     audioEngine.stopAllChannels();
