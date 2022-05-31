@@ -13,7 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS true
+#define ENABLE_DRIPS false
 
 using namespace glm;
 void Scene::init(int width, int height) {
@@ -252,25 +252,60 @@ void Scene::init(int width, int height) {
 		sun->specular = sun_day->specular;
     }
 
-    pointLights["sun"] = new PointLight;
-    pointLights["sun"]->position = vec4(20.0f, 2.0f, 0.0f, 1.0f);
-    pointLights["sun"]->constant = 1.0f;
-    pointLights["sun"]->linear = 0.09f;
-    pointLights["sun"]->quadradic = 0.032f;
-    pointLights["sun"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    pointLights["sun"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    pointLights["sun"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight0"] = new PointLight;
+    pointLights["runwayLight0"]->position = vec4(13.5f, 1.0f, 0.0f, 1.0f);
+    pointLights["runwayLight0"]->constant = 1.0f;
+    pointLights["runwayLight0"]->linear = 0.09f;
+    pointLights["runwayLight0"]->quadradic = 0.032f;
+    pointLights["runwayLight0"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight0"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight0"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
-    pointLights["bulb"] = new PointLight;
-    pointLights["bulb"]->position = vec4(-20.0f, 2.0f, 0.0f, 1.0f);
-    pointLights["bulb"]->constant = 1.0f;
-    pointLights["bulb"]->linear = 0.09f;
-    pointLights["bulb"]->quadradic = 0.032f;
-    pointLights["bulb"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight1"] = new PointLight;
+    pointLights["runwayLight1"]->position = vec4(-13.5f, 1.0f, 0.0f, 1.0f);
+    pointLights["runwayLight1"]->constant = 1.0f;
+    pointLights["runwayLight1"]->linear = 0.09f;
+    pointLights["runwayLight1"]->quadradic = 0.032f;
+    pointLights["runwayLight1"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight1"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight1"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
-    
+    pointLights["runwayLight2"] = new PointLight;
+    pointLights["runwayLight2"]->position = vec4(0.0f, 1.0f, 13.5f, 1.0f);
+    pointLights["runwayLight2"]->constant = 1.0f;
+    pointLights["runwayLight2"]->linear = 0.09f;
+    pointLights["runwayLight2"]->quadradic = 0.032f;
+    pointLights["runwayLight2"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight2"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight2"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+    pointLights["runwayLight3"] = new PointLight;
+    pointLights["runwayLight3"]->position = vec4(0.0f, 1.0f, -13.5f, 1.0f);
+    pointLights["runwayLight3"]->constant = 1.0f;
+    pointLights["runwayLight3"]->linear = 0.09f;
+    pointLights["runwayLight3"]->quadradic = 0.032f;
+    pointLights["runwayLight3"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight3"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["runwayLight3"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+    pointLights["makeupBooth0"] = new PointLight;
+    pointLights["makeupBooth0"]->position = vec4(-20.0f, 5.0f, 20.0f, 1.0f);
+    pointLights["makeupBooth0"]->constant = 1.0f;
+    pointLights["makeupBooth0"]->linear = 0.045f;
+    pointLights["makeupBooth0"]->quadradic = 0.0075f;
+    pointLights["makeupBooth0"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["makeupBooth0"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["makeupBooth0"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
+    pointLights["makeupBooth1"] = new PointLight;
+    pointLights["makeupBooth1"]->position = vec4(20.0f, 5.0f, -20.0f, 1.0f);
+    pointLights["makeupBooth1"]->constant = 1.0f;
+    pointLights["makeupBooth1"]->linear = 0.045f;
+    pointLights["makeupBooth1"]->quadradic = 0.0075f;
+    pointLights["makeupBooth1"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["makeupBooth1"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+    pointLights["makeupBooth1"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
+
     for (std::pair<std::string, PointLight*> entry : pointLights) {
 		pointLights_init[entry.first] = new PointLight;
         pointLights_init[entry.first]->position = entry.second->position;
