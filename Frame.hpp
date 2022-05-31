@@ -58,7 +58,7 @@ namespace cse125framing {
 		bool hasCrown;
 		bool hasPowerup;
 		bool powerupActive;
-		bool invincible;
+		float iframes;
 	} PlayerData;
 
 	// Data for loose crown

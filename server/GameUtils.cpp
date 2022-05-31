@@ -47,7 +47,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].score = player->score;
         frame->players[id].hasPowerup = player->hasPowerup;
         frame->players[id].powerupActive = player->powerupTime;
-        frame->players[id].invincible = player->iframes > 0;
+        frame->players[id].iframes = player->iframes / cse125config::TICK_RATE;
 
         // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
