@@ -69,6 +69,10 @@ static std::chrono::time_point<std::chrono::system_clock> startTime;
 
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
+static float brightnessDir = 1.0f;
+static bool sunOn = true;
+static float brightnessHeadlight = 1.0f;
+static float brightnessOther = 1.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
@@ -617,6 +621,41 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'q':
             handleSpace();
+            break;
+        case '5':
+            brightnessOther += 0.05;
+            scene.setPointLights(brightnessOther);
+            std::cout << "Brightness Other: " << brightnessOther << "\n";
+            break;
+        case '6':
+            brightnessOther -= 0.05;
+            scene.setPointLights(brightnessOther);
+            std::cout << "Brightness Other: " << brightnessOther << "\n";
+            break;
+        case '7':
+            brightnessHeadlight += 0.05;
+            scene.setSpotLights(brightnessHeadlight);
+            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            break;
+        case '8':
+            brightnessHeadlight -= 0.05;
+            scene.setSpotLights(brightnessHeadlight);
+            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            break;
+        case '9':
+            brightnessDir += 0.05;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            break;
+        case '0':
+            brightnessDir -= 0.05;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            break;
+        case '-':
+            sunOn = !sunOn;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Sun on: " << sunOn << "\n";
             break;
         default:
             //glutPostRedisplay();

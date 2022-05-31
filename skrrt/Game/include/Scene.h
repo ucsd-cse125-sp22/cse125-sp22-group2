@@ -91,6 +91,41 @@ public:
     std::map< std::string, SpotLight* > spotLights;
     DirectionalLight* sun;
 
+    std::map< std::string, PointLight* > pointLights_init;
+    std::map< std::string, SpotLight* > spotLights_init;
+    DirectionalLight* sun_day;
+    DirectionalLight* sun_night;
+
+    void setSun(float brightness, bool sunOn) {
+        if (sunOn) { 
+            sun->direction = sun_day->direction;
+            sun->ambient = brightness*sun_day->ambient;
+            sun->diffuse = brightness*sun_day->diffuse;
+            sun->specular = brightness*sun_day->specular;
+        } else {
+            sun->direction = sun_night->direction;
+            sun->ambient = brightness*sun_night->ambient;
+            sun->diffuse = brightness*sun_night->diffuse;
+            sun->specular = brightness*sun_night->specular;
+        }
+    }
+
+    void setPointLights(float brightness) {
+        for (std::pair<std::string, PointLight*> entry : pointLights_init) {
+            pointLights[entry.first]->ambient = brightness * entry.second->ambient;
+            pointLights[entry.first]->diffuse = brightness * entry.second->diffuse;
+            pointLights[entry.first]->specular = brightness * entry.second->specular;
+        }
+    }
+
+    void setSpotLights(float brightness) {
+        for (std::pair<std::string, SpotLight*> entry : spotLights_init) {
+            spotLights[entry.first]->ambient = brightness * entry.second->ambient;
+            spotLights[entry.first]->diffuse = brightness * entry.second->diffuse;
+            spotLights[entry.first]->specular = brightness * entry.second->specular;
+        }
+    }
+
     // Where the depth map textures live 
 	GLuint directionalDepthMap;
 	std::vector<GLuint> pointDepthMaps;

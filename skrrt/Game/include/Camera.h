@@ -32,7 +32,7 @@ public:
     float fovy_default = 30.0f;
     //float aspect_default = 4.0f/3.0f;
     float aspect_default = ((float)cse125constants::WINDOW_WIDTH) / cse125constants::WINDOW_HEIGHT;
-    float near_default = 4.0f;
+    float near_default = 0.001f;
     float far_default = 100.0f;
     //float far_default = 100.0f;
     

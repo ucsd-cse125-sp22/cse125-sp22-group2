@@ -233,24 +233,25 @@ void Scene::init(int width, int height) {
     }
     // Normal Light pallet add new stuff here
     else {
-        bool night = false;
-        if (night) {
-            sun = new DirectionalLight;
-            sun->direction = vec3(1.0f, 1.0f, 1.0f);
-            sun->ambient = vec4(0.1f, 0.1f, 0.2f, 1.0f);
-            sun->diffuse = vec4(0.1f, 0.1f, 0.2f, 1.0f);
-            sun->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
-        }
-        else {
-            sun = new DirectionalLight;
-            sun->direction = vec3(1.0f, 1.0f, 1.0f);
-            sun->ambient = 0.5f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-            sun->diffuse = 0.99f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-            sun->specular = 0.7f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-        }
+		sun_day = new DirectionalLight;
+		sun_day->direction = vec3(1.0f, 1.0f, 1.0f);
+		sun_day->ambient = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+		sun_day->diffuse = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+		sun_day->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+
+		sun_night = new DirectionalLight;
+		sun_night->direction = vec3(1.0f, 1.0f, 1.0f);
+		sun_night->ambient = 0.5f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+		sun_night->diffuse = 0.99f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+		sun_night->specular = 0.7f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+
+        sun = new DirectionalLight;
+		sun->direction = sun_day->direction;
+		sun->ambient = sun_day->ambient;
+		sun->diffuse = sun_day->diffuse;
+		sun->specular = sun_day->specular;
     }
 
-    /*
     pointLights["sun"] = new PointLight;
     pointLights["sun"]->position = vec4(20.0f, 2.0f, 0.0f, 1.0f);
     pointLights["sun"]->constant = 1.0f;
@@ -268,7 +269,18 @@ void Scene::init(int width, int height) {
     pointLights["bulb"]->ambient = 0.2f * vec4(1.0f, 0.961f, 0.714f, 1.0f);
     pointLights["bulb"]->diffuse = vec4(1.0f, 0.961f, 0.714f, 1.0f);
     pointLights["bulb"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
-    */
+
+    
+    for (std::pair<std::string, PointLight*> entry : pointLights) {
+		pointLights_init[entry.first] = new PointLight;
+        pointLights_init[entry.first]->position = entry.second->position;
+		pointLights_init[entry.first]->constant = entry.second->constant; 
+		pointLights_init[entry.first]->linear = entry.second->linear; 
+		pointLights_init[entry.first]->quadradic = entry.second->quadradic;
+		pointLights_init[entry.first]->ambient = entry.second->ambient; 
+		pointLights_init[entry.first]->diffuse = entry.second->diffuse; 
+		pointLights_init[entry.first]->specular = entry.second->specular; 
+    }
 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         for (int n = 0; n < 2; n++) {
@@ -287,6 +299,20 @@ void Scene::init(int width, int height) {
         }
 
     }
+
+    for (std::pair<std::string, SpotLight*> entry : spotLights) {
+		spotLights_init[entry.first] = new SpotLight;
+        spotLights_init[entry.first]->position = entry.second->position;
+		spotLights_init[entry.first]->constant = entry.second->constant; 
+		spotLights_init[entry.first]->linear = entry.second->linear; 
+		spotLights_init[entry.first]->quadradic = entry.second->quadradic;
+		spotLights_init[entry.first]->ambient = entry.second->ambient; 
+		spotLights_init[entry.first]->diffuse = entry.second->diffuse; 
+		spotLights_init[entry.first]->specular = entry.second->specular; 
+		spotLights_init[entry.first]->innerCutoff = entry.second->innerCutoff; 
+		spotLights_init[entry.first]->outerCutoff = entry.second->outerCutoff; 
+    }
+
 
     // Build the scene graph
     for (int i = 0; i < NUM_PLAYERS; i++) {
