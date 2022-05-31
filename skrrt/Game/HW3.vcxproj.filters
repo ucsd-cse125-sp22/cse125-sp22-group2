@@ -17,6 +17,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\AudioEngine.cpp" />
     <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="include\Debug.cpp" />
   </ItemGroup>
@@ -48,12 +49,15 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+    <ClInclude Include="include\AudioEngine.h" />
+    <ClInclude Include="include\Animation.h" />
     <ClInclude Include="include\TextureConstants.h" />
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\DepthShader.h" />
     <ClInclude Include="include\QuadShader.h" />
+    <ClInclude Include="include\UIShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -74,5 +78,7 @@
     <None Include="shaders\projectiveShadowsEnabled.vert" />
     <None Include="shaders\quad.frag" />
     <None Include="shaders\quad.vert" />
+    <None Include="shaders\text.vert" />
+    <None Include="shaders\text.frag" />
   </ItemGroup>
 </Project>

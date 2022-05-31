@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <format>
 // OSX systems need their own headers
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -29,8 +30,8 @@
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static int width = 1200; // screen width
-static int height = 900; // screen height
+static int width = cse125constants::WINDOW_WIDTH;
+static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -50,9 +51,18 @@ static int particleTime = 0;
 int clientId = cse125constants::DEFAULT_CLIENT_ID; // this client's unique id
 std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
-// Game restart variables
+// Optimization to prevent accessing the scene graph to toggle menu visibility
+// if the current visibility is the same as the toggled visibility
+bool startScreenVisibility = false;
+bool winScreenVisibility = false;
+
+// Game / match flow variables
+bool showStartMenu = true;
 bool matchInProgress = false;
-bool readyToReplay = false;
+bool waitingToStartMatch = false;
+bool enableSendPlay = true;
+float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
+int winnerId = cse125constants::DEFAULT_WINNER_ID;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -62,6 +72,17 @@ static int mouseY = 0.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
+
+std::string makeMatchEndText(int playerId, int winnerId) {
+    std::string matchEndText = "";
+    if (playerId == winnerId) {
+        matchEndText = "You won the pageant! Press Space to play again!";
+    }
+    else {
+        matchEndText = "Player " + std::to_string(winnerId + 1) + " won the pageant! Better luck next time! Press Space to play again!";
+    }
+    return matchEndText;
+}
 
 void printHelp(){
 
@@ -109,9 +130,11 @@ void initialize(void)
     for (int i = 0; i < 4; i++) {
         game.players[i]->setPlayer(scene.node["player" + std::to_string(i)]);
         game.players[i]->setCrown(scene.node["crown" + std::to_string(i)]);
+        game.players[i]->setBlowdryer(scene.node["blowdryer" + std::to_string(i)]);
     }
 
     game.init(scene.node["world"], scene.node["UI_root"]);
+    game.updateTime(cse125config::MATCH_LENGTH);
 
     // Initialize time
     startTime = std::chrono::system_clock::now();
@@ -125,6 +148,7 @@ void initialize(void)
 
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
+
 }
 
 unsigned int quadVAO = 0;
@@ -237,10 +261,19 @@ void display(void) {
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    scene.draw(scene.node["UI_root"]);
 
-    scene.drawText();
+    //scene.draw(scene.node["UI_root"]);
+    scene.drawUI();
+
+
+    // Create the end of match text
+    const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
+    if (showMatchEndText) {
+        scene.drawText(countdownTimeRemaining, true, makeMatchEndText(clientId, winnerId));
+    }
+    else {
+        scene.drawText(countdownTimeRemaining, false);
+    }
 
     /*
 	std::cout << "car transformation : " << std::endl; 
@@ -265,6 +298,14 @@ void display(void) {
     glFlush();
 }
 
+// Toggles the visibility of the start menu and background
+void toggleStartMenuVisibility(const bool& visibility) {
+    if (visibility != startScreenVisibility) {
+        startScreenVisibility = visibility;
+        scene.node["start_menu"]->visible = visibility;
+    }
+}
+
 void saveScreenShot(const char* filename = "test.png")
 {
     int currentwidth = glutGet(GLUT_WINDOW_WIDTH);
@@ -276,26 +317,29 @@ void saveScreenShot(const char* filename = "test.png")
 void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 {
     // Only send data to server if the match is in progress
-    if (matchInProgress) {
+    if (matchInProgress) {     
         boost::system::error_code error;
         size_t numWritten = networkClient->send(movementKey, cameraDirection, &error);
+        if (error) {
+            cse125debug::log(LOG_LEVEL_ERROR, "Error sending packet to server\n");
+        }
     }
 }
 
-void sendReplayToServer() {
-    // Only allow replay packet to be sent when match is not in progress 
-     // and if it hasn't been sent already
-    if (!matchInProgress && !readyToReplay) {
-        // Send packet to server indicating client is ready to replay
+void sendPlayToServer() {
+    if (enableSendPlay) {
+        // Send packet to server indicating client is ready to play
         boost::system::error_code error;
         // Check for a packet from the server indicating that the game is ready to restart
-        cse125debug::log(LOG_LEVEL_INFO, "Sending replay packet to server...\n");
-        networkClient->replay(&error);
+        cse125debug::log(LOG_LEVEL_INFO, "Sending play packet to server...\n");
+        networkClient->play(&error);
         if (!error) {
-            readyToReplay = true;
-            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent replay packet to server...\n");
-            // Reset graphics side state HERE
-            
+            enableSendPlay = false;
+            waitingToStartMatch = true;
+            cse125debug::log(LOG_LEVEL_INFO, "Successfully sent play packet to server...\n");
+        }
+        else {
+            cse125debug::log(LOG_LEVEL_ERROR, "Error sending play packet to server\n");
         }
     }
 }
@@ -304,8 +348,10 @@ cse125framing::ServerFrame* receiveDataFromServer()
 {
     cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
     boost::system::error_code error;
-
     size_t numRead = networkClient->receive(frame, &error);
+    if (error) {
+        cse125debug::log(LOG_LEVEL_ERROR, "Error receiving packet from server\n");
+    }
 
     return frame;
 }
@@ -321,8 +367,11 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setCrownStatus(frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         game.players[i]->setPlayerScore(frame->players[i].score);
+        game.players[i]->setHasPowerup(frame->players[i].hasPowerup);
+        game.players[i]->setUsingPowerup(frame->players[i].powerupActive);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
         game.players[i]->setSpeed(frame->players[i].playerSpeed);
+        game.players[i]->setInvincibility(frame->players[i].invincible);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -331,14 +380,18 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         scene.spotLights[headlightName + "1"]->direction = dir;
     }
     if (!TOP_DOWN_VIEW) {
-        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition));
+        scene.camera->setPosition(glm::vec3(frame->players[clientId].playerPosition), true);
     }
 }
 
 void updateCrownState(cse125framing::ServerFrame* frame) {
-    // None of this is right
-    scene.node["crown_world"]->modeltransforms[0] = glm::translate(frame->crown.crownPosition);
-    scene.node["crown_world"]->visible = frame->crown.crownVisible;
+    game.setCrownTransform(glm::translate(frame->crown.crownPosition), frame->crown.crownVisible);
+}
+
+void updatePowerupState(cse125framing::ServerFrame* frame) {
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        game.setBlowdryerTransform(i, glm::translate(frame->powerup[i].powerupPosition), frame->powerup[i].powerupVisible);
+    }
 }
 
 void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
@@ -371,10 +424,20 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
     {
         AudioTrigger audio = triggers[i];
+        vec3 position;
         switch (audio.id)
         {
         case AudioId::COLLISION:
-            // game.triggerCarCollisionAudio(audio.position);
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            game.triggerFx("Collision.wav", position);
+            break;
+        case AudioId::MAKEUP:
+            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
+            game.triggerFx("Makeup.wav", position);
+            break;
+        case AudioId::CROWN_CHANGE:
+            game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
+            break;
         case AudioId::NO_AUDIO:
         default:
             break;
@@ -395,11 +458,17 @@ void handleMoveBackward() {
 
 void handleMoveRight() {
     sendDataToServer(MovementKey::RIGHT, scene.camera->forwardVectorXZ());
-
 }
 
 void handleMoveLeft() {
     sendDataToServer(MovementKey::LEFT, scene.camera->forwardVectorXZ());
+}
+
+void handleSpace() {
+    // Just pretend I don't handle game logic client-side here
+    if (game.players[clientId]->getHasPowerup()) {
+        sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+    }
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -426,21 +495,25 @@ void keyboard(unsigned char key, int x, int y){
             scene.camera -> reset();
             glutPostRedisplay();
             break;
+        case 'A':
         case 'a':
             //handleMoveLeft();
             triggers["left"] = true;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             //handleMoveRight();
             triggers["right"] = true;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             //handleMoveForward();
             triggers["up"] = true;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = true;
             //handleMoveBackward();
@@ -494,6 +567,23 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay(); 
             break; 
 
+            /* AUDIO TRIGGERS */
+        case ',':
+            // Audio Engine
+            game.stopAllSounds();
+            break;
+        case 'm':
+            // Audio Engine
+            game.playMusic("BattleTheme.wav", -10.0);
+            break;
+        case 'n':
+        {
+            // Audio Engine
+            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
+            std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            break;
+        }
+
         case 'p': 
             // Print player0's location 
             std::cout << "Player0's location: " << game.players[0]->getPosition().x << " " << game.players[0]->getPosition().y<< " " << game.players[0]->getPosition().z << std::endl;
@@ -517,9 +607,16 @@ void keyboard(unsigned char key, int x, int y){
 
         // Key for telling server that player is ready for another match
         case 'r':
-            sendReplayToServer();         
+            sendPlayToServer();         
             break;
-
+        // Key for starting the game initially
+        case ' ':
+            handleSpace();
+            sendPlayToServer();
+            break;
+        case 'q':
+            handleSpace();
+            break;
         default:
             //glutPostRedisplay();
             break;
@@ -528,18 +625,22 @@ void keyboard(unsigned char key, int x, int y){
 
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
+        case 'A':
         case 'a':
             triggers["left"] = false;
             //glutPostRedisplay();
             break;
+        case 'D':
         case 'd':
             triggers["right"] = false;
             //glutPostRedisplay();
             break;
+        case 'W':
         case 'w':
             triggers["up"] = false;
             //glutPostRedisplay();
             break;
+        case 'S':
         case 's':
             triggers["down"] = false;
             //glutPostRedisplay();
@@ -607,17 +708,25 @@ void idle() {
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
     if (time - lastRenderTime > 50) {
+        //std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles(1);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
+            //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
         }
+        // Update crown on the map
+        game.bobCrown(time);
+        // Update powerups on the map
+        game.bobPowerup(time);
 
 		// Update drip level based on current player's makeup level 
 		RealNumber currentMakeupLevel = game.players[clientId]->getMakeupLevel();
 		game.updateDrips(time, currentMakeupLevel);
+		game.updateMakeupStatusBar(time, currentMakeupLevel);
+        game.updateBlowdryerIcon(game.players[clientId]->getHasPowerup());
 
         // Update all animations 
         game.updateAnimations(); 
@@ -644,47 +753,71 @@ void idle() {
         handleMoveRight();
     }
 
-    // Only get data from server once the client has registered with the server
-    if (clientId != cse125constants::DEFAULT_CLIENT_ID) {
-        // Get data from server and allocate a new frame variable
+    toggleStartMenuVisibility(showStartMenu);
 
+    // Handle server communication
+    const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
+    if (connectedToServer) {
         if (matchInProgress) {
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
             triggerAudio(frame->audio);
             if (frame->matchInProgress) {
+                // Use the frame to update the powerups' state
+                updatePowerupState(frame);
                 // Use the frame to update the crown's state
                 updateCrownState(frame);
                 // Use the frame to update the player's state
                 updatePlayerState(frame);
-
                 game.updateTime(frame->gameTime);
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
-               // The match has ended
+               winnerId = frame->winnerId;
                matchInProgress = false;
+               enableSendPlay = true;
             }
             // Delete the frame
             delete frame;
         }
         else {
-            // Check for a packet from the server indicating that the game is ready to restart
-            if (readyToReplay) {
-                cse125debug::log(LOG_LEVEL_INFO, "Waiting for restart packet from server...\n");
-                cse125framing::ServerFrame* frame = receiveDataFromServer();
-                triggerAudio(frame->audio);
-                if (frame->matchInProgress) {
-                    cse125debug::log(LOG_LEVEL_INFO, "Ready to replay!\n");
-                    matchInProgress = true;
-                    readyToReplay = false;
+            if (waitingToStartMatch) {
+                // Reset the winner id for this new match
+                winnerId = cse125constants::DEFAULT_WINNER_ID;
+                // Stop showing the start menu
+                showStartMenu = false;
+                // Display the game time
+                game.updateTime(cse125config::MATCH_LENGTH);
+
+                cse125framing::ServerFrame* frame = receiveDataFromServer();    
+
+                if (cse125config::ENABLE_COUNTDOWN) {
+                    scene.camera->reset(clientId);
+                    updatePlayerState(frame);
+                    triggerAnimations(frame->animations);
+                    triggerAudio(frame->audio);
+                    // Update countdown time
+                    countdownTimeRemaining = frame->countdownTimeRemaining;
+                    if (countdownTimeRemaining <= 0) {
+                        cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
+                        matchInProgress = true;
+                        waitingToStartMatch = false;
+                        // Play Game Music
+                        game.playMusic("BattleTheme.wav", -10.0);
+                    }
                 }
+                else {
+                    cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
+                    matchInProgress = true;
+                    waitingToStartMatch = false;
+                    // Play Game Music
+                    game.playMusic("BattleTheme.wav", -10.0);
+                }                
+                
                 // Delete the frame
                 delete frame;
-
             }
         }
-
     }
 
 
@@ -756,7 +889,6 @@ int main(int argc, char** argv)
     networkClient = std::make_unique<cse125networkclient::NetworkClient>(cse125config::SERVER_HOST, cse125config::SERVER_PORT);
     // Connect to the server and set the client's id
     clientId = networkClient->getId();
-    matchInProgress = true;
     
     // Graphics binding
     initialize();

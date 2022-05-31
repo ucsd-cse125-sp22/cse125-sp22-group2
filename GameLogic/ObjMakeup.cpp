@@ -38,8 +38,19 @@ ObjMakeup::ObjMakeup(vector<PhysicalObject*>* objects, unsigned int id, unsigned
 
 	this->solid = false;
 	this->makeupID = makeupID;
+	this->ready = true;
 }
 
 ObjMakeup::~ObjMakeup() {
 
+}
+
+void ObjMakeup::step() {
+	// Attept to reset the bar
+	if (!this->occupied && !this->ready) {
+		if (!objectPosition(this->objects->at(this->barID)->boundingBox, oPlayer)) {
+			this->ready = true;
+			this->objects->at(this->barID)->solid = true;
+		}
+	}
 }

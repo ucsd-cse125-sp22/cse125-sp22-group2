@@ -24,6 +24,7 @@
 #include "DepthShader.h"
 #include "QuadShader.h"
 #include "Text.h"
+#include "UIShader.h"
 
 #include "../../../Constants.hpp"
 
@@ -39,11 +40,14 @@ public:
         visible = v; 
         isParticleSource = p;
         if (p) {
-			particles = new ParticleSource(); 
+			particles = new ParticleSource();
+            //particlesPowerup = new ParticleSource(8, 20 * 4 + 6, 2, 0, 6);
+            particlesPowerup = new ParticleSource();
             std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
             particles = NULL;
+            particlesPowerup = NULL;
         }
     };
 
@@ -52,6 +56,7 @@ public:
     bool isParticleSource; 
 
     ParticleSource* particles;
+    ParticleSource* particlesPowerup;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
@@ -67,9 +72,13 @@ public:
     TextShader* text_shader;
     DepthShader* depth_shader;
     QuadShader* quad_shader;
+    UIShader* ui_shader;
 
     Text* scores[4];
     Text* game_time;
+    Text* countdown_instructions_text;
+    Text* countdown_go_text;
+    Text* match_end_text;
 
     int shadowMapOffset;
 
@@ -105,12 +114,20 @@ public:
     void init(int width, int height);
     void draw(Node* current_node);
 
-    glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f), 
-                                glm::vec3(0.91f, 0.90f, 0.32f), 
-                                glm::vec3(0.31f, 0.68f, 0.89f), 
-                                glm::vec3(0.41f, 0.76f, 0.24f)};
+    glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f),  // pink
+                                glm::vec3(0.31f, 0.68f, 0.89f),  // blue
+                                glm::vec3(0.91f, 0.90f, 0.32f),  // yellow
+                                glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
-    void drawText(void);
+    /**
+     * @brief Draws the text-based UI elements on the screen
+     *
+     * @param countdownTimeRemaining the amount of time left in the countdown
+     * @param renderMatchEndText whether to render the end of match text
+     * @param matchEndText       the end of match text to render
+     */
+    void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
+    void drawUI(void); 
 
     void updateScreen(void);
 
@@ -149,6 +166,7 @@ public:
         delete camera;
         delete shader;
         delete text_shader;
+        delete ui_shader;
         delete sun;
     }
 };

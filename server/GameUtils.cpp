@@ -5,7 +5,6 @@ void initializeServerFrame(PhysicalObjectManager* manager,
                            cse125framing::ServerFrame* frame)
 {
     static unsigned int frameCtr = 0;
-    static unsigned int gameTime = 0;
 
     frame->ctr = frameCtr++;
     frame->gameTime = manager->gameTime;
@@ -14,6 +13,14 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     ObjCrown* crown = (ObjCrown*)manager->objects->at(manager->crownID);
     frame->crown.crownPosition = crown->position;
     frame->crown.crownVisible = crown->loose;
+
+    // initialize powerup frame data
+    for (int id = 0; id < cse125constants::NUM_POWERUPS; id++)
+    {
+        ObjPowerup* powerup = (ObjPowerup*)manager->objects->at(manager->powerupIDOffset + id);
+        frame->powerup[id].powerupPosition = powerup->position;
+        frame->powerup[id].powerupVisible = powerup->spawned;
+    }
 
     // initialize audio triggers
     for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++)
@@ -25,7 +32,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
     int audioIndex = 0;
 
     // initialize animation triggers
-    frame->animations = {}; // initialize to false --> no animations
+    frame->animations = { }; // initialize to false --> no animations
 
     // initialize each player frame data
     for (int id = 0; id < cse125constants::NUM_PLAYERS; id++)
@@ -38,6 +45,9 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].playerUp = player->up;
         frame->players[id].playerPosition = vec4(player->position, 1.0f);
         frame->players[id].score = player->score;
+        frame->players[id].hasPowerup = player->hasPowerup;
+        frame->players[id].powerupActive = player->powerupTime;
+        frame->players[id].invincible = player->iframes > 0;
 
         // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
@@ -47,11 +57,11 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             assert(makeupID < cse125constants::NUM_MAKEUP_STATIONS);
             frame->animations.makeupBooth[makeupID] = true;
             frame->audio[audioIndex].id = cse125framing::AudioId::MAKEUP;
-            frame->audio[audioIndex].position = ((ObjMakeup*)manager->objects->at(makeupID))->position;
+            frame->audio[audioIndex].position = manager->objects->at(player->booth)->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
         // crash animation + audio
-        if (player->crashed)
+        if (player->crashed && !player->boothTime)
         {
             frame->animations.playerCrash[id] = true;
             frame->audio[audioIndex].id = cse125framing::AudioId::COLLISION;
@@ -65,10 +75,36 @@ void initializeServerFrame(PhysicalObjectManager* manager,
             frame->audio[audioIndex].position = player->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
+        // powerup audio
+        if (player->gotPowerup)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::POWERUP_PICKUP;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        if (player->powerupTime == POWERUP_TIME)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::POWERUP_USE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        // bounce audio
+        if (player->bounced)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::BOUNCE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
     }
 
     // set game restart values
     frame->matchInProgress = true;
+}
+
+void initMatchEndFrame(bool matchInProgress, int winnerId, cse125framing::ServerFrame* frame)
+{
+    frame->matchInProgress = matchInProgress;
+    frame->winnerId = winnerId;
 }
 
 // Initializes and returns the PhysicalObjectManager
@@ -127,8 +163,10 @@ void gameLoop(PhysicalObjectManager* manager,
         break;
 
     // Other game actions
+    case GameAction::ACTION:
+        player->action(glm::normalize(cameraDirection), true);
     case GameAction::IDLE:
-        // TODO: Idle behavior
+        // Idle behavior
         player->idle();
         break;
     default:

@@ -13,9 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-//#define ENABLE_DRIPS true
-#define ENABLE_DRIPS false
-
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(int width, int height) {
@@ -50,16 +48,54 @@ void Scene::init(int width, int height) {
     geometry["drips"] = new Obj;
     geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
-    geometry["makeup_station"] = new Obj;
-    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
-    geometry["makeup_station_bar"] = new Obj;
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emissions.png", 6);
+    geometry["makeup_station"] = new Obj; 
+    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["makeup_station_bar"] = new Obj; 
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
 
-    geometry["tire_rack"] = new Obj;
-    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
+    geometry["tire_rack"] = new Obj; 
+    geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
-    geometry["cones"] = new Obj;
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emmision.png", "textures/no_emmisions.png", 7);
+    geometry["cones"] = new Obj; 
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
+
+    geometry["blowdryer_world"] = new Obj;
+    geometry["blowdryer_world"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_on_car"] = new Obj;
+    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+
+    //*****************************
+    //********** UI obj ***********
+    //*****************************
+
+    geometry["clock"] = new Obj;
+    geometry["clock"]->init("models/Plane.obj", "textures/Timer_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 8);
+
+    geometry["pink_tire"] = new Obj;
+    geometry["pink_tire"]->init("models/Plane.obj", "textures/PlayerPink.png", "textures/map_specular.png", "textures/map_emission.png", 9);
+    geometry["blue_tire"] = new Obj;
+    geometry["blue_tire"]->init("models/Plane.obj", "textures/PlayerBlue.png", "textures/map_specular.png", "textures/map_emission.png", 10);
+    geometry["yellow_tire"] = new Obj;
+    geometry["yellow_tire"]->init("models/Plane.obj", "textures/PlayerYellow.png", "textures/map_specular.png", "textures/map_emission.png", 11);
+    geometry["green_tire"] = new Obj;
+    geometry["green_tire"]->init("models/Plane.obj", "textures/PlayerGreen.png", "textures/map_specular.png", "textures/map_emission.png", 12);
+
+    geometry["crown_icon"] = new Obj;
+    geometry["crown_icon"]->init("models/Plane.obj", "textures/Crown_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 13);
+
+    geometry["mascara_icon"] = new Obj;
+    geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 14);
+    geometry["mascara_bar"] = new Obj;
+    geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
+
+    geometry["white_bar"] = new Obj;
+    geometry["white_bar"]->init("models/StatusBar.obj", "textures/white.png", "textures/map_specular.png", "textures/map_emission.png", 16);
+
+    geometry["start_menu"] = new Obj;
+    geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
+    geometry["blowdryer_icon"] = new Obj;
+    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     ////////////////////////////////////////
     //          SET THIS VALUE            //
@@ -133,6 +169,57 @@ void Scene::init(int width, int height) {
     model["cones"] = new Model;
     model["cones"]->geometry = geometry["cones"];
     model["cones"]->material = material["ceramic"];
+
+    model["blowdryer_world"] = new Model;
+    model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
+    model["blowdryer_world"]->material = material["silver"];
+    model["blowdryer_on_car"] = new Model;
+    model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
+    model["blowdryer_on_car"]->material = material["silver"];
+
+    model["start_menu"] = new Model;
+    model["start_menu"]->geometry = geometry["start_menu"];
+    model["start_menu"]->material = material["ceramic"];
+
+    //********************************************
+    //*********** UI elem ************************
+    //********************************************
+
+    model["clock"] = new Model; 
+    model["clock"]->geometry = geometry["clock"];
+    model["clock"]->material = material["ceramic"];
+
+    model["pink_tire"] = new Model; 
+    model["pink_tire"]->geometry = geometry["pink_tire"];
+    model["pink_tire"]->material = material["ceramic"];
+    model["blue_tire"] = new Model; 
+    model["blue_tire"]->geometry = geometry["blue_tire"];
+    model["blue_tire"]->material = material["ceramic"];
+    model["yellow_tire"] = new Model; 
+    model["yellow_tire"]->geometry = geometry["yellow_tire"];
+    model["yellow_tire"]->material = material["ceramic"];
+    model["green_tire"] = new Model; 
+    model["green_tire"]->geometry = geometry["green_tire"];
+    model["green_tire"]->material = material["ceramic"];
+
+    model["crown_icon"] = new Model; 
+    model["crown_icon"]->geometry = geometry["crown_icon"];
+    model["crown_icon"]->material = material["ceramic"];
+
+    model["blowdryer_icon"] = new Model;
+    model["blowdryer_icon"]->geometry = geometry["blowdryer_icon"];
+    model["blowdryer_icon"]->material = material["ceramic"];
+
+    model["mascara_icon"] = new Model; 
+    model["mascara_icon"]->geometry = geometry["mascara_icon"];
+    model["mascara_icon"]->material = material["ceramic"];
+    model["mascara_bar"] = new Model; 
+    model["mascara_bar"]->geometry = geometry["mascara_bar"];
+    model["mascara_bar"]->material = material["ceramic"];
+
+    model["white_bar"] = new Model; 
+    model["white_bar"]->geometry = geometry["white_bar"];
+    model["white_bar"]->material = material["ceramic"];
 
     // Create a light palette
 
@@ -261,7 +348,20 @@ void Scene::init(int width, int height) {
     }
     node["crown_world"] = new Node("crown_world", true);
     node["crown_world"]->models.push_back(model["crown"]);
-    node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
+    node["crown_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
+
+
+    // Powerups
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["blowdryer_world" + std::to_string(i)] = new Node("blowdryer_world" + std::to_string(i), true);
+        node["blowdryer_world" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer_world" + std::to_string(i)]->modeltransforms.push_back(glm::scale(glm::vec3(0.6f)));
+    }
 
     // Map
     node["map"] = new Node("map");
@@ -297,6 +397,7 @@ void Scene::init(int width, int height) {
     mat4 front_tire_transform = translate(front_tire_translate);
     mat4 back_tire_transform = translate(back_tire_translate);
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
+    mat4 blowdryer_transform = translate(vec3(0.0f, -1.8f, 0.0f)) * rotate(-1.0f * radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
 
     node["world"]->childnodes.push_back(node["player0"]);
@@ -309,6 +410,8 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
+    node["pink_car"]->childnodes.push_back(node["blowdryer0"]);
+    node["pink_car"]->childtransforms.push_back(blowdryer_transform);
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
@@ -322,6 +425,8 @@ void Scene::init(int width, int height) {
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
     node["blue_car"]->childnodes.push_back(node["crown1"]);
     node["blue_car"]->childtransforms.push_back(crown_transform);
+    node["blue_car"]->childnodes.push_back(node["blowdryer1"]);
+    node["blue_car"]->childtransforms.push_back(blowdryer_transform);
     node["blue_car"]->childnodes.push_back(node["particles1"]);
     node["blue_car"]->childtransforms.push_back(particle_transform);
 
@@ -335,6 +440,8 @@ void Scene::init(int width, int height) {
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["crown2"]);
     node["yellow_car"]->childtransforms.push_back(crown_transform);
+    node["yellow_car"]->childnodes.push_back(node["blowdryer2"]);
+    node["yellow_car"]->childtransforms.push_back(blowdryer_transform);
     node["yellow_car"]->childnodes.push_back(node["particles2"]);
     node["yellow_car"]->childtransforms.push_back(particle_transform);
 
@@ -348,6 +455,8 @@ void Scene::init(int width, int height) {
     node["green_car"]->childtransforms.push_back(back_tire_transform);
     node["green_car"]->childnodes.push_back(node["crown3"]);
     node["green_car"]->childtransforms.push_back(crown_transform);
+    node["green_car"]->childnodes.push_back(node["blowdryer3"]);
+    node["green_car"]->childtransforms.push_back(blowdryer_transform);
     node["green_car"]->childnodes.push_back(node["particles3"]);
     node["green_car"]->childtransforms.push_back(particle_transform);
 
@@ -388,6 +497,12 @@ void Scene::init(int width, int height) {
     node["world"]->childnodes.push_back(node["cones2"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
 
+    // Powerups
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["world"]->childnodes.push_back(node["blowdryer_world" + std::to_string(i)]);
+        node["world"]->childtransforms.push_back(glm::mat4(1.0f));
+    }
+
     // Put a camera
     camera = new Camera;
     camera->setAspect(width, height);
@@ -425,16 +540,90 @@ void Scene::init(int width, int height) {
     node["back_drips"] = new Node("back_drips");
     node["back_drips"]->models.push_back(model["drips"]);
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
-    node["back_drips"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    node["UI_root"]->childnodes.push_back(node["screen"]);
+    node["start_menu"] = new Node("start_menu");
+    node["start_menu"]->models.push_back(model["start_menu"]);
+    node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
+
+    node["clock"] = new Node("clock");
+    node["clock"]->models.push_back(model["clock"]);
+    node["clock"]->modeltransforms.push_back(UI_rotation);
+
+    node["pink_tire"] = new Node("pink_tire");
+    node["pink_tire"]->models.push_back(model["pink_tire"]);
+    node["pink_tire"]->modeltransforms.push_back(UI_rotation);
+    node["blue_tire"] = new Node("blue_tire");
+    node["blue_tire"]->models.push_back(model["blue_tire"]);
+    node["blue_tire"]->modeltransforms.push_back(UI_rotation);
+    node["yellow_tire"] = new Node("yellow_tire");
+    node["yellow_tire"]->models.push_back(model["yellow_tire"]);
+    node["yellow_tire"]->modeltransforms.push_back(UI_rotation);
+    node["green_tire"] = new Node("green_tire");
+    node["green_tire"]->models.push_back(model["green_tire"]);
+    node["green_tire"]->modeltransforms.push_back(UI_rotation);
+    
+    node["crown_icon"] = new Node("crown_icon");
+    node["crown_icon"]->models.push_back(model["crown_icon"]);
+    node["crown_icon"]->modeltransforms.push_back(UI_rotation);
+
+    node["blowdryer_icon"] = new Node("blowdryer_icon");
+    node["blowdryer_icon"]->models.push_back(model["blowdryer_icon"]);
+    node["blowdryer_icon"]->modeltransforms.push_back(UI_rotation);
+
+    node["mascara_icon"] = new Node("mascara_icon");
+    node["mascara_icon"]->models.push_back(model["mascara_icon"]);
+    node["mascara_icon"]->modeltransforms.push_back(UI_rotation);
+    node["mascara_bar"] = new Node("mascara_bar");
+    node["mascara_bar"]->models.push_back(model["mascara_bar"]);
+    node["mascara_bar"]->modeltransforms.push_back(UI_rotation);
+    node["white_bar"] = new Node("white_bar");
+    node["white_bar"]->models.push_back(model["white_bar"]);
+    node["white_bar"]->modeltransforms.push_back(UI_rotation);
+
+    node["UI_root"]->childnodes.push_back(node["screen"]); 
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
 
-    node["screen"]->childnodes.push_back(node["test_UI_elem"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
+    //node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
+    //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
+    const float clock_ratio = 85.0f / 101.0f; 
+    node["screen"]->childnodes.push_back(node["clock"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
-    node["screen"]->childnodes.push_back(node["drips"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(35.0f, 600.0f, 1.0f)));
+    const float tire_icon_ratio = 65.0f / 64.0f;
+    node["screen"]->childnodes.push_back(node["pink_tire"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 20.4f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["blue_tire"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 17.1f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["yellow_tire"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 13.8f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["green_tire"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+    const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
+    node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
+
+    const float mascara_icon_ratio = 179.0f / 177.0f; 
+    const float mascara_bar_ratio = 557.0f / 70.0f;
+    node["screen"]->childnodes.push_back(node["mascara_icon"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-10.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["mascara_bar"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["white_bar"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
+
+    node["screen"]->childnodes.push_back(node["drips"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
+
+    node["screen"]->childnodes.push_back(node["start_menu"]);
+    // TODO: Dynamic scaling? based on window size
+    const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
+    const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(START_MENU_SCALE * START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
+
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
@@ -494,7 +683,7 @@ void Scene::init(int width, int height) {
     }
     // Initialize text shader 
     text_shader = new TextShader; 
-    text_shader->read_source("shaders/ui.vert", "shaders/ui.frag");
+    text_shader->read_source("shaders/text.vert", "shaders/text.frag");
     text_shader->compile(); 
     glUseProgram(text_shader->program);
     text_shader->initUniforms(); 
@@ -502,8 +691,7 @@ void Scene::init(int width, int height) {
     // Initialize text 
     for (int i = 0; i < NUM_PLAYERS; i++) {
         scores[i] = new Text(text_shader->program);
-        //scores[i]->updateText("1234567890");
-        scores[i]->updateText("000");
+        scores[i]->updateText("0");
     }
     /*
 	scores[0]->updateText("911");
@@ -514,4 +702,21 @@ void Scene::init(int width, int height) {
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    countdown_instructions_text = new Text(text_shader->program);
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+
+    countdown_go_text = new Text(text_shader->program);
+    countdown_go_text->updateText("Default countdown text");
+    countdown_go_text->setScale(3.0f);
+
+    match_end_text = new Text(text_shader->program);
+    match_end_text->updateText("End of match text");
+
+    // Initialize UI shader 
+    ui_shader = new UIShader; 
+    ui_shader->read_source("shaders/ui.vert", "shaders/ui.frag"); 
+    ui_shader->compile(); 
+    glUseProgram(ui_shader->program); 
+    ui_shader->initUniforms(); 
 }

@@ -8,8 +8,10 @@
 #include "ObjFloor.hpp"
 #include "ObjCrown.hpp"
 #include "ObjMakeup.hpp"
+#include "ObjTrail.hpp"
+#include "ObjPowerup.hpp"
 
-enum Obstacles { oTireRack, oCones };
+enum Obstacles { oTireRack, oCones, oPillar };
 
 class PhysicalObjectManager
 {
@@ -34,6 +36,8 @@ public:
 	unsigned int numMakeups;
 	// ID for the loose crown
 	unsigned int crownID;
+	// ID for the first powerup
+	unsigned int powerupIDOffset;
 
 	PhysicalObjectManager();
 	~PhysicalObjectManager();
@@ -42,7 +46,7 @@ public:
 	void startGame();
 
 	// End the game
-	void endGame();
+	void endGame(int* winnerId);
 
 	// Create an instance
 	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), int modifier = 0);
@@ -51,9 +55,10 @@ public:
 	/**
 	 * @brief Update general game state once per tick 
 	 *
-	 * @param matchInProgress will be set to false if the game has ended, unchanged otherwise
+	 * @param matchInProgress      pointer to bool that will be set to false if the game has ended, unchanged otherwise
+	 * @param winnerId             pointer to int that will be set to the id of the match winner if the game has ended, unchanged otherwise
 	 */
-	void step(bool* matchInProgress);
+	void step(bool* matchInProgress, int* winnerId);
 	
 	// These will not be used for now
 	vector<vector<int>*>* createGrid(glm::vec3 gridMin, glm::vec3 gridMax, glm::vec3 gridSizes);
