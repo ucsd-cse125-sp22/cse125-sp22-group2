@@ -330,7 +330,7 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
         case AudioId::HONK:
-            game.triggerFx("Horn.wav", position, -3.0);
+            game.triggerFx("Horn.wav", position);
             break;
         //case AudioId::BOUNCE:
         //    scene.camera->reset();

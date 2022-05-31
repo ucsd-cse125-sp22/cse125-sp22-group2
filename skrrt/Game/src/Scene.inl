@@ -44,7 +44,7 @@ void Scene::init(void){
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 4);
 
     geometry["drips"] = new Obj;
-    geometry["drips"]->init("models/Plane.obj", "textures/drips_test.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
+    geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station"] = new Obj; 
     geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
@@ -58,9 +58,7 @@ void Scene::init(void){
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
     geometry["blowdryer_world"] = new Obj;
-    geometry["blowdryer_world"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
-    geometry["blowdryer_on_car"] = new Obj;
-    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
     //*****************************
     //********** UI obj ***********
@@ -93,7 +91,7 @@ void Scene::init(void){
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
 
     geometry["blowdryer_icon"] = new Obj;
-    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon.png", "textures/no_emission.png", "textures/no_emission.png", 18);
+    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -164,9 +162,6 @@ void Scene::init(void){
     model["blowdryer_world"] = new Model;
     model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
     model["blowdryer_world"]->material = material["silver"];
-    model["blowdryer_on_car"] = new Model;
-    model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
-    model["blowdryer_on_car"]->material = material["silver"];
 
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
@@ -333,8 +328,13 @@ void Scene::init(void){
     // Powerups
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
-        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
-        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(glm::translate(glm::vec3(-0.95f, 2.22f, -0.9f)) * glm::scale(glm::vec3(0.4f)));
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(glm::translate(glm::vec3(0.95f, 2.22f, -0.9f)) * glm::scale(glm::vec3(0.4f)));
+
+        //node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
+        //node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
     for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
         node["blowdryer_world" + std::to_string(i)] = new Node("blowdryer_world" + std::to_string(i), true);
