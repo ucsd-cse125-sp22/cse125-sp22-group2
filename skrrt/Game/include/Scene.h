@@ -38,11 +38,14 @@ public:
         visible = v; 
         isParticleSource = p;
         if (p) {
-			particles = new ParticleSource(); 
+			particles = new ParticleSource();
+            //particlesPowerup = new ParticleSource(8, 20 * 4 + 6, 2, 0, 6);
+            particlesPowerup = new ParticleSource();
             std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
             particles = NULL;
+            particlesPowerup = NULL;
         }
     };
 
@@ -51,6 +54,7 @@ public:
     bool isParticleSource; 
 
     ParticleSource* particles;
+    ParticleSource* particlesPowerup;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
@@ -68,6 +72,8 @@ public:
 
     Text* scores[4];
     Text* game_time;
+    Text* countdown_instructions_text;
+    Text* countdown_go_text;
     Text* match_end_text;
 
     // The following are containers of objects serving as the object palettes.
@@ -99,10 +105,11 @@ public:
     /**
      * @brief Draws the text-based UI elements on the screen
      *
+     * @param countdownTimeRemaining the amount of time left in the countdown
      * @param renderMatchEndText whether to render the end of match text
      * @param matchEndText       the end of match text to render
      */
-    void drawText(const bool& renderMatchEndText, const std::string& matchEndText = "");
+    void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
 
     void updateScreen(void);

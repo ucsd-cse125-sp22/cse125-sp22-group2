@@ -14,9 +14,9 @@ public:
 	float respawnTime;
 	// List of potential spawn locations
 	vector<glm::vec3> locations;
-	// 
+	// Randomness
 	default_random_engine generator;
-	uniform_int_distribution<int> distribution = uniform_int_distribution<int>(0, cse125constants::NUM_POWERUP_LOCATIONS - 1);
+	uniform_int_distribution<int> distribution;
 
 	ObjPowerup();
 	ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector<glm::vec3> locations, glm::vec3 direction, glm::vec3 up);

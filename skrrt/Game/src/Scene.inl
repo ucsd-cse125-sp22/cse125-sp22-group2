@@ -57,6 +57,11 @@ void Scene::init(void){
     geometry["cones"] = new Obj; 
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
+    geometry["blowdryer_world"] = new Obj;
+    geometry["blowdryer_world"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_on_car"] = new Obj;
+    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+
     //*****************************
     //********** UI obj ***********
     //*****************************
@@ -86,6 +91,9 @@ void Scene::init(void){
 
     geometry["start_menu"] = new Obj;
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
+    geometry["blowdryer_icon"] = new Obj;
+    geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -123,7 +131,7 @@ void Scene::init(void){
 
     model["crown"] = new Model; 
     model["crown"]->geometry = geometry["crown"];
-    model["crown"]->material = material["silver"]; 
+    model["crown"]->material = material["silver"];
 
     model["map"] = new Model; 
     model["map"]->geometry = geometry["map"];
@@ -153,6 +161,13 @@ void Scene::init(void){
     model["cones"]->geometry = geometry["cones"]; 
     model["cones"]->material = material["ceramic"];
 
+    model["blowdryer_world"] = new Model;
+    model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
+    model["blowdryer_world"]->material = material["silver"];
+    model["blowdryer_on_car"] = new Model;
+    model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
+    model["blowdryer_on_car"]->material = material["silver"];
+
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
     model["start_menu"]->material = material["ceramic"];
@@ -181,6 +196,10 @@ void Scene::init(void){
     model["crown_icon"] = new Model; 
     model["crown_icon"]->geometry = geometry["crown_icon"];
     model["crown_icon"]->material = material["ceramic"];
+
+    model["blowdryer_icon"] = new Model;
+    model["blowdryer_icon"]->geometry = geometry["blowdryer_icon"];
+    model["blowdryer_icon"]->material = material["ceramic"];
 
     model["mascara_icon"] = new Model; 
     model["mascara_icon"]->geometry = geometry["mascara_icon"];
@@ -308,7 +327,20 @@ void Scene::init(void){
     }
     node["crown_world"] = new Node("crown_world", true); 
     node["crown_world"]->models.push_back(model["crown"]);
-    node["crown_world"]->modeltransforms.push_back(mat4(1.0f));
+    node["crown_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
+
+
+    // Powerups
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["blowdryer_world" + std::to_string(i)] = new Node("blowdryer_world" + std::to_string(i), true);
+        node["blowdryer_world" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer_world" + std::to_string(i)]->modeltransforms.push_back(glm::scale(glm::vec3(0.6f)));
+    }
 
     // Map
     node["map"] = new Node("map");
@@ -344,6 +376,7 @@ void Scene::init(void){
     mat4 front_tire_transform = translate(front_tire_translate); 
     mat4 back_tire_transform = translate(back_tire_translate);
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
+    mat4 blowdryer_transform = translate(vec3(0.0f, -1.8f, 0.0f)) * rotate(-1.0f * radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
 
     node["world"]->childnodes.push_back(node["player0"]);
@@ -356,6 +389,8 @@ void Scene::init(void){
     node["pink_car"]->childtransforms.push_back(back_tire_transform);
     node["pink_car"]->childnodes.push_back(node["crown0"]);
     node["pink_car"]->childtransforms.push_back(crown_transform);
+    node["pink_car"]->childnodes.push_back(node["blowdryer0"]);
+    node["pink_car"]->childtransforms.push_back(blowdryer_transform);
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
     
@@ -369,6 +404,8 @@ void Scene::init(void){
     node["blue_car"]->childtransforms.push_back(back_tire_transform);
     node["blue_car"]->childnodes.push_back(node["crown1"]);
     node["blue_car"]->childtransforms.push_back(crown_transform);
+    node["blue_car"]->childnodes.push_back(node["blowdryer1"]);
+    node["blue_car"]->childtransforms.push_back(blowdryer_transform);
     node["blue_car"]->childnodes.push_back(node["particles1"]);
     node["blue_car"]->childtransforms.push_back(particle_transform);
 
@@ -382,6 +419,8 @@ void Scene::init(void){
     node["yellow_car"]->childtransforms.push_back(back_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["crown2"]);
     node["yellow_car"]->childtransforms.push_back(crown_transform);
+    node["yellow_car"]->childnodes.push_back(node["blowdryer2"]);
+    node["yellow_car"]->childtransforms.push_back(blowdryer_transform);
     node["yellow_car"]->childnodes.push_back(node["particles2"]);
     node["yellow_car"]->childtransforms.push_back(particle_transform);
 
@@ -395,6 +434,8 @@ void Scene::init(void){
     node["green_car"]->childtransforms.push_back(back_tire_transform);
     node["green_car"]->childnodes.push_back(node["crown3"]);
     node["green_car"]->childtransforms.push_back(crown_transform);
+    node["green_car"]->childnodes.push_back(node["blowdryer3"]);
+    node["green_car"]->childtransforms.push_back(blowdryer_transform);
     node["green_car"]->childnodes.push_back(node["particles3"]);
     node["green_car"]->childtransforms.push_back(particle_transform);
 
@@ -434,6 +475,12 @@ void Scene::init(void){
     node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["cones2"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
+    // Powerups
+    for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
+        node["world"]->childnodes.push_back(node["blowdryer_world" + std::to_string(i)]);
+        node["world"]->childtransforms.push_back(glm::mat4(1.0f));
+    }
 
     // Put a camera
     camera = new Camera;
@@ -499,6 +546,10 @@ void Scene::init(void){
     node["crown_icon"]->models.push_back(model["crown_icon"]);
     node["crown_icon"]->modeltransforms.push_back(UI_rotation);
 
+    node["blowdryer_icon"] = new Node("blowdryer_icon");
+    node["blowdryer_icon"]->models.push_back(model["blowdryer_icon"]);
+    node["blowdryer_icon"]->modeltransforms.push_back(UI_rotation);
+
     node["mascara_icon"] = new Node("mascara_icon");
     node["mascara_icon"]->models.push_back(model["mascara_icon"]);
     node["mascara_icon"]->modeltransforms.push_back(UI_rotation);
@@ -527,6 +578,10 @@ void Scene::init(void){
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 13.8f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+    const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
+    node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 179.0f / 177.0f; 
     const float mascara_bar_ratio = 557.0f / 70.0f;
@@ -580,6 +635,13 @@ void Scene::init(void){
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    countdown_instructions_text = new Text(text_shader->program);
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+
+    countdown_go_text = new Text(text_shader->program);
+    countdown_go_text->updateText("Default countdown text");
+    countdown_go_text->setScale(3.0f);
 
     match_end_text = new Text(text_shader->program);
     match_end_text->updateText("End of match text");

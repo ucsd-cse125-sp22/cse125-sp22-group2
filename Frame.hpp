@@ -30,6 +30,9 @@ namespace cse125framing {
 		COLLISION = 0,
 		MAKEUP,
 		CROWN_CHANGE,
+		POWERUP_PICKUP,
+		POWERUP_USE,
+		BOUNCE,
 		NUM_AUDIO,
 		NO_AUDIO = -1
 	};
@@ -40,8 +43,8 @@ namespace cse125framing {
 	} AudioTrigger;
 
 	typedef struct AnimationTrigger {
-		bool makeupBooth[cse125constants::NUM_MAKEUP_STATIONS];
-		bool playerCrash[cse125constants::NUM_PLAYERS];
+		bool makeupBooth[cse125constants::NUM_MAKEUP_STATIONS] = { false };
+		bool playerCrash[cse125constants::NUM_PLAYERS] = { false };
 	} AnimationTrigger;
 
 	// Data for individual player
@@ -53,24 +56,35 @@ namespace cse125framing {
 		RealNumber makeupLevel;
 		RealNumber score;
 		bool hasCrown;
+		bool hasPowerup;
+		bool powerupActive;
+		bool invincible;
 	} PlayerData;
 
 	// Data for loose crown
 	typedef struct CrownData {
-		vec3 crownPosition;
-		bool crownVisible;
+		vec3 crownPosition = vec3(0.0f);;
+		bool crownVisible = false;
 	} CrownData;
+
+	// Data for powerups
+	typedef struct PowerupData {
+		vec3 powerupPosition = vec3(0.0f);
+		bool powerupVisible = false;
+	} PowerupData;
 
 	typedef struct ServerFrame {
 		int id; // index in players
 		int ctr;
 		CrownData crown;
+		PowerupData powerup[cse125constants::NUM_POWERUPS];
 		PlayerData players[cse125constants::NUM_PLAYERS];
 		AudioTrigger audio[cse125constants::MAX_NUM_SOUNDS];
 		AnimationTrigger animations;
 		RealNumber gameTime;
 		bool matchInProgress = true;
 		int winnerId = cse125constants::DEFAULT_WINNER_ID;
+		float countdownTimeRemaining = -1;
 	} ServerFrame;
 
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);

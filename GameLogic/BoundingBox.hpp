@@ -44,6 +44,10 @@ namespace bounding {
 	bool checkCollision(BoundingBox a, BoundingBox b);
 	// Check whether two bounding boxes overlap and return a potential value to adjust a by
 	glm::vec3 checkCollisionAdjust(BoundingBox a, BoundingBox b);
+	// Check whether a bounding box is within a radius
+	bool checkOnRadius(BoundingBox a, glm::vec3 center, float r);
+	// Check whether a bounding box is within a pair of radii (non-inclusive)
+	bool checkWithinRadii(BoundingBox a, glm::vec3 center, float r_min, float r_max);
 	// Check whether a bounding box is within a radius and return a potential value to adjust a by
 	glm::vec3 checkCollisionRadius(BoundingBox a, glm::vec3 center, float r);
 	// Check whether a vertex is colliding with the floor and return a potential value to adjust it by
