@@ -16,7 +16,8 @@ AudioEngine is a class to manage all sounds for the game
 
 #define MIN_COLLISION_DISTANCE 3.0f
 
-#define CLIENT_ENGINE_DB -16.0f
+//#define CLIENT_ENGINE_DB -16.0f
+#define CLIENT_ENGINE_DB -70.0f
 #define OTHER_PLAYER_ENGINE_DB -4.0f
 
 #define VOLUME_OFF -60.0f

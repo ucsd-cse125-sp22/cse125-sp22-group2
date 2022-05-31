@@ -94,9 +94,9 @@ AudioEngine::AudioEngine()
 AudioEngine::~AudioEngine()
 {
     // Unload sounds
-    for (auto const& sound : library)
+    while (!library.empty())
     {
-        AudioEngine::unloadSound(sound.first);
+        AudioEngine::unloadSound(library.begin()->first);
     }
     std::cerr << "Audio Library Unloaded!" << std::endl;
     AudioEngine::engine = AudioEngine::system->close();
@@ -169,6 +169,7 @@ void AudioEngine::setChannelVolume(int channelId, float dB)
     {
         std::string e = "Set channel volume: ";
         AudioEngine::errorCheck(e, channelIter->second->setVolume(AudioEngine::dbToVolume(dB)));
+        AudioEngine::update();
     }
 }
 

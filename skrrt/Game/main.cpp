@@ -194,6 +194,7 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
+        //game.playMusic("MenuTheme.wav");
     }
 }
 
@@ -469,7 +470,8 @@ void keyboard(unsigned char key, int x, int y){
             break;
         case 'm':
             // Audio Engine
-            game.playMusic("BattleTheme.wav", -10.0);
+            //game.playMusic("BattleTheme.wav", -10.0);
+            game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
             break;
         case 'n':
         {
@@ -702,7 +704,8 @@ void idle() {
                         matchInProgress = true;
                         waitingToStartMatch = false;
                         // Play Game Music
-                        game.playMusic("BattleTheme.wav", -10.0);
+                        //game.playMusic("BattleTheme.wav", -10.0);
+                        game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
                     }
                 }
                 else {

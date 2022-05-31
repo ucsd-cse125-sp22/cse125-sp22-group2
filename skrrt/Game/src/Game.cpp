@@ -183,6 +183,7 @@ void Game::startCarEngines(int clientId, vec3& cameraPos)
         int accelerate = Game::triggerFx("EngineAccelerate.wav", enginePosition, VOLUME_OFF);
         // Add channel number to carEngineChannels
         carEngineChannels[i] = CarEngine{ idle, accelerate };
+        printf("player: %d | idle: %d accelerate: %d\n", i, idle, accelerate);
     }
 }
 
@@ -190,7 +191,7 @@ float Game::fadeEngine(int channelId, float targetDb)
 {
     float currVolume = audioEngine.getChannelVolume(channelId);
     float currDb = audioEngine.volumeToDb(currVolume);
-    currDb += (targetDb - currDb) * 0.5;
+    currDb += (targetDb - currDb) * 0.5f;
     return currDb;
 }
 
@@ -202,7 +203,7 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
         // Interpolate carEngine sound to play
         RealNumber speed = players[i]->getSpeed();
         CarEngine carEngine = carEngineChannels[i];
-        RealNumber c = speed / 0.5; // speed ratio %
+        RealNumber c = speed / 0.5; // audio fade coefficient based on speed
         float idleDb = i == clientId ? CLIENT_ENGINE_DB : OTHER_PLAYER_ENGINE_DB;
         if (speed == 0.5)
         {
@@ -210,8 +211,8 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
             audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, idleDb));
         }
         else {
-            audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, VOLUME_OFF));
             audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, idleDb));
+            audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, VOLUME_OFF));
         }
 
         // Update Player car engine location
