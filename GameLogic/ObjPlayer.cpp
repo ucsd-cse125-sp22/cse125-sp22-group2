@@ -53,12 +53,16 @@ ObjPlayer::ObjPlayer(vector<PhysicalObject*>* objects, unsigned int id, glm::vec
 	this->powerupTime = 0.0f;
 	this->boostTargetDirection = direction;
 
+	this->activatePowerup = false;
 	this->crashed = false;
 	this->tookCrown = false;
 	this->gotPowerup = false;
 	this->bounced = false;
+	this->honked = false;
 
 	this->distribution = normal_distribution<float>(0, 1);
+	// Respawning
+	//this->distributionInt = uniform_int_distribution<int>(0, 3);
 	//this->speedModifier = 30.0f / cse125config::TICK_RATE;
 }
 
@@ -68,10 +72,12 @@ ObjPlayer::~ObjPlayer() {}
 
 void ObjPlayer::step(float gameTime) {
 	// Reset triggers
-	crashed = false;
-	tookCrown = false;
-	gotPowerup = false;
-	bounced = false;
+	this->activatePowerup = false;
+	this->crashed = false;
+	this->tookCrown = false;
+	this->gotPowerup = false;
+	this->bounced = false;
+	this->honked = false;
 
 	// Update iframes
 	if (iframes) {
@@ -181,14 +187,11 @@ void ObjPlayer::step(float gameTime) {
 	//matchTerrain();
 }
 
-void ObjPlayer::action(glm::vec3 dir, bool trigger) {
-	if (trigger) {
+void ObjPlayer::action(glm::vec3 dir) {
+	if (this->activatePowerup) {
 		if (hasPowerup && !stun && !boothTime) {
 			this->powerupTime = POWERUP_TIME;
 			this->hasPowerup = false;
-		}
-		else if (!boothTime) {
-			idle();
 		}
 	}
 
@@ -212,6 +215,11 @@ void ObjPlayer::action(glm::vec3 dir, bool trigger) {
 		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
 
 		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		if (powerupTime && momentum == 0.0f) {
+			speed = 0.0f;
+			momentum = 0.01f;
+			newDir = glm::normalize(lerp(this->direction, dir, 0.2f));
+		}
 
 		// Move
 		move(newDir);
@@ -224,7 +232,12 @@ void ObjPlayer::action(glm::vec3 dir, bool trigger) {
 }
 
 void ObjPlayer::idle() {
-	// If we above a certain threshold, the player should not be able to control their movement as well
+	if (this->activatePowerup) {
+		if (hasPowerup && !stun && !boothTime) {
+			this->powerupTime = POWERUP_TIME;
+			this->hasPowerup = false;
+		}
+	}
 
 	if (speed < SPEED_THRESHOLD) {
 		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
@@ -240,6 +253,7 @@ void ObjPlayer::idle() {
 void ObjPlayer::move(glm::vec3 dir) {
 	// Where we are trying to move (might change during collision loop)
 	glm::vec3 destination = this->position + this->speed * dir;
+
 	// Generate a bounding box at our destination and check what we would collide with
 	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 
@@ -408,7 +422,7 @@ void ObjPlayer::crownTransfer(const PhysicalObject* obj) {
 			this->tookCrown = true;
 			this->iframes = CROWN_IFRAMES * cse125config::TICK_RATE;
 			// Too easy to drive off of the edge
-			this->speed = SPEED_STEAL_CROWN / 2.0f;
+			this->speed = SPEED_STEAL_CROWN / 1.5f;
 		}
 	}
 }
@@ -501,12 +515,17 @@ void ObjPlayer::applyGravity() {
 
 	// Check whether we are in the air
 	if (this->position.y != 0.0f || !f) {
+		//float offset = 0.01f;
+		//if (this->gravity < 0.0f) {
+		//	offset = -0.01f
+		//}
 		BoundingBox bb = generateBoundingBox(this->position - glm::vec3(0.0f, 0.01f, 0.0f), this->direction, this->up);
 		// Check whether something is below us
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
 			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
 			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			// Make sure we don't fall through the floor
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
 			}
@@ -529,6 +548,10 @@ void ObjPlayer::applyGravity() {
 				// A solid object is blocking us
 				if (obj->solid && !adjusted) {
 					destinationFree = false;
+					// If the object is above us, cancel potential upwards velocity
+					if (obj->position.y > this->position.y) {
+						this->gravity = max(this->gravity, 0.0f);
+					}
 					//cout << "!COLLISION!  " << " " << width << " " << height << "; ";
 					glm::vec3 adjust = bounding::checkCollisionAdjust(bb, obj->boundingBox);
 					//cout <<  " Shifting " << glm::length(adjust) << " ";
@@ -609,6 +632,17 @@ void ObjPlayer::applyGravity() {
 		this->gravity = -0.8f;
 		this->bounced = true;
 	}
+
+	// Respawn
+	//if (this->position.y < -6.0f) {
+	//	do
+	//	{
+	//		int respawn = distributionInt(generator);
+	//		this->position = respawnLocations[respawn];
+	//		this->direction = respawnDirections[respawn];
+	//		this->boundingBox = generateBoundingBox(this->position, this->direction, this->up);
+	//	} while (!checkPlaceFree(boundingBox));
+	//}
 }
 
 void ObjPlayer::matchTerrain() {

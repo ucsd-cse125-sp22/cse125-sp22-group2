@@ -79,11 +79,11 @@ const float PLAYER_HEIGHT = 0.98f;
 
 // Dimensions (oBooth)
 const float BOOTH_WALL_L_LENGTH = 5.6f;
-const float BOOTH_WALL_L_WIDTH = 0.5f;
+const float BOOTH_WALL_L_WIDTH = 0.9f;
 const float BOOTH_WALL_L_HEIGHT = 6.0f;
 //const float BOOTH_WALL_L_HEIGHT = 2.98f;
 const float BOOTH_WALL_R_LENGTH = 5.6f;
-const float BOOTH_WALL_R_WIDTH = 1.85f;
+const float BOOTH_WALL_R_WIDTH = 1.7f;
 const float BOOTH_WALL_R_HEIGHT = 6.0f;
 //const float BOOTH_WALL_R_HEIGHT = 2.98f;
 const float BOOTH_BAR_LENGTH = 0.2f;
@@ -93,8 +93,8 @@ const float BOOTH_BAR_HEIGHT = 6.0f;
 const float BOOTH_MAKEUP_LENGTH = 0.8f;
 const float BOOTH_MAKEUP_WIDTH = 0.8f;
 const float BOOTH_MAKEUP_HEIGHT = 0.8f;
-const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-1.92f, 0.0f, 0.157f);
-const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.2f, 0.0f, 0.157f);
+const glm::vec3 BOOTH_WALL_L_OFFSET = glm::vec3(-2.12f, 0.0f, 0.157f);
+const glm::vec3 BOOTH_WALL_R_OFFSET = glm::vec3(2.12f, 0.0f, 0.157f);
 const glm::vec3 BOOTH_BAR_OFFSET = glm::vec3(0.0f, 0.0f, 2.0f);
 
 #endif

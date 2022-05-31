@@ -58,9 +58,7 @@ void Scene::init(void){
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
     geometry["blowdryer_world"] = new Obj;
-    geometry["blowdryer_world"]->init("models/BlowDryer(SpeedBoost).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
-    geometry["blowdryer_on_car"] = new Obj;
-    geometry["blowdryer_on_car"]->init("models/BlowDryer(OnCar).obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
     //*****************************
     //********** UI obj ***********
@@ -164,9 +162,6 @@ void Scene::init(void){
     model["blowdryer_world"] = new Model;
     model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
     model["blowdryer_world"]->material = material["silver"];
-    model["blowdryer_on_car"] = new Model;
-    model["blowdryer_on_car"]->geometry = geometry["blowdryer_on_car"];
-    model["blowdryer_on_car"]->material = material["silver"];
 
     model["start_menu"] = new Model;
     model["start_menu"]->geometry = geometry["start_menu"];
@@ -333,8 +328,13 @@ void Scene::init(void){
     // Powerups
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
-        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
-        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(glm::translate(glm::vec3(-0.95f, 2.22f, -0.9f)) * glm::scale(glm::vec3(0.4f)));
+        node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_world"]);
+        node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(glm::translate(glm::vec3(0.95f, 2.22f, -0.9f)) * glm::scale(glm::vec3(0.4f)));
+
+        //node["blowdryer" + std::to_string(i)]->models.push_back(model["blowdryer_on_car"]);
+        //node["blowdryer" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
     for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
         node["blowdryer_world" + std::to_string(i)] = new Node("blowdryer_world" + std::to_string(i), true);
@@ -581,7 +581,7 @@ void Scene::init(void){
 
     const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
     node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.5f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 179.0f / 177.0f; 
     const float mascara_bar_ratio = 557.0f / 70.0f;

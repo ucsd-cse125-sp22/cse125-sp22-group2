@@ -75,6 +75,9 @@ int main()
             // Start the clock tick
             ticker.tickStart();
 
+            // Update basic game state (score, makeup levels; not dependent on input)
+            manager->step(&matchInProgress, &winnerId);
+
             const std::deque<cse125framing::ClientFrame> serverQueue(
                 server->serverQueue);
 
@@ -94,9 +97,20 @@ int main()
             {
                 const cse125framing::ClientFrame& clientFrame = *it;
 
-                gameActionTracker.setAction(clientFrame.id,
-                    clientFrame.movementKey,
-                    clientFrame.cameraDirection);
+                switch (clientFrame.movementKey) {
+
+                case MovementKey::HONK:
+                    ((ObjPlayer*)manager->objects->at(clientFrame.id))->honked = true;
+                    break;
+                case MovementKey::SPACE:
+                    ((ObjPlayer*)manager->objects->at(clientFrame.id))->activatePowerup = true;
+                    break;
+                default:
+                    gameActionTracker.setAction(clientFrame.id,
+                        clientFrame.movementKey,
+                        clientFrame.cameraDirection);
+                    break;
+                }
 
                 // Track the priority order for this player
                 // Note: Higher values indicate higher priority
@@ -123,9 +137,6 @@ int main()
             {
                 sortedPriorities[playerPriorities[i]] = i;
             }
-
-            // Update basic game state (score, makeup levels; not dependent on input)
-            manager->step(&matchInProgress, &winnerId);
 
             // Update the game state in player priority order
             for (auto it = sortedPriorities.begin();
