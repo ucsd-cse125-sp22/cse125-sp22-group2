@@ -99,7 +99,7 @@ void Scene::init(int width, int height) {
     //          SET THIS VALUE            //
     //      WHEN YOU ADD A NEW OBJECT     //
     ////////////////////////////////////////
-    int maxObjectNumber = 18; // THIS VALUE RIGHT HERE :)
+    int maxObjectNumber = 19; // THIS VALUE RIGHT HERE :)
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
     bloomTexOffsets[0] = shadowMapOffset + 1;
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
