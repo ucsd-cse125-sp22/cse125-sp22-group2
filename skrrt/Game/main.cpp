@@ -494,8 +494,8 @@ void handleHonk() {
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
-            exit(0);
             networkClient->closeConnection();
+            exit(0);
             break;
         case 'H':
         case 'h':
