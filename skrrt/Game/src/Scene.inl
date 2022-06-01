@@ -653,26 +653,26 @@ void Scene::init(int width, int height) {
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
     const float clock_ratio = 85.0f / 101.0f;
     node["screen"]->childnodes.push_back(node["clock"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f+1.5f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
     const float tire_icon_ratio = 65.0f / 64.0f;
     node["screen"]->childnodes.push_back(node["pink_tire"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 20.4f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 20.4f + 2.05f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["blue_tire"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 17.1f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 17.1f + 1.68f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["yellow_tire"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 13.8f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 13.8f + 1.28f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f, 10.5f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 10.5f + 0.92f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
 
     const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
     node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(36.0f + 5.0f, -16.0f - 5.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
     const float mascara_icon_ratio = 179.0f / 177.0f;
     const float mascara_bar_ratio = 557.0f / 70.0f;
     node["screen"]->childnodes.push_back(node["mascara_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-10.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-10.0f+2.0f, -20.0f+0.20f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["mascara_bar"]);
     node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["white_bar"]);
