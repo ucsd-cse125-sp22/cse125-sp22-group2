@@ -197,11 +197,6 @@ void ObjPlayer::action(glm::vec3 dir) {
 
 	// Can't move when stunned or locked in booth
 	if (!stun && !boothTime) {
-		// Increase speed (Note: if we are above the max speed we need to ignore this)
-		if (speed < maxSpeed) {
-			speed = min(maxSpeed, speed + SPEED_FORCE);
-		}
-
 		// SLOPES!!!
 		//glm::vec3 angledDir = dir;
 		//if (this->up.y < 0.9f) {
@@ -214,7 +209,14 @@ void ObjPlayer::action(glm::vec3 dir) {
 		//cout << up.x << "    " << up.y << "    " << up.z << " up\n";
 		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
 
+		// Set direction
 		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+
+		// Increase speed (Note: if we are above the max speed we need to ignore this)
+		if (speed < maxSpeed) {
+			speed = min(maxSpeed, speed + SPEED_FORCE);
+		}
+
 		if (powerupTime && momentum == 0.0f) {
 			speed = 0.0f;
 			momentum = 0.01f;
@@ -431,7 +433,7 @@ void ObjPlayer::pickupPowerup(const PhysicalObject* obj) {
 	if (obj->type == oPowerup && !this->hasPowerup) {
 		if (((ObjPowerup*)obj)->spawned) {
 			((ObjPowerup*)obj)->spawned = false;
-			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME + ((ObjPowerup*)obj)->distributionNormal(generator);
+			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME + ((ObjPowerup*)obj)->distributionNormal(((ObjPowerup*)obj)->generator);
 			this->hasPowerup = true;
 			this->gotPowerup = true;
 		}

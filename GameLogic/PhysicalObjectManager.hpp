@@ -28,7 +28,7 @@ public:
 	// Index for the current sound effect
 	int audioIndex = 0;
 	// Array of audio triggers
-	cse125framing::AudioTrigger audioTriggers[cse125constants::MAX_NUM_SOUNDS];
+	//cse125framing::AudioTrigger audioTriggers[cse125constants::MAX_NUM_SOUNDS];
 
 	// How much of the match remains
 	float gameTime;
@@ -51,13 +51,7 @@ public:
 	// Create an instance
 	void createObject(int objType, glm::vec3 pos, glm::vec3 dir, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), int modifier = 0);
 
-
-	/**
-	 * @brief Update general game state once per tick 
-	 *
-	 * @param matchInProgress      pointer to bool that will be set to false if the game has ended, unchanged otherwise
-	 * @param winnerId             pointer to int that will be set to the id of the match winner if the game has ended, unchanged otherwise
-	 */
+	// Update general game state once per tick
 	void step(bool* matchInProgress, int* winnerId);
 	
 	// These will not be used for now

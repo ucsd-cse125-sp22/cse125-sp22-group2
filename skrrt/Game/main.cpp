@@ -692,6 +692,8 @@ void idle() {
                 if (cse125config::ENABLE_COUNTDOWN) {
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);
+                    updateCrownState(frame);
+                    updatePowerupState(frame);
                     triggerAnimations(frame->animations);
                     triggerAudio(frame->audio);
                     // Update countdown time

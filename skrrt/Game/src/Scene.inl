@@ -637,7 +637,7 @@ void Scene::init(void){
     game_time->updateText("100");
 
     countdown_instructions_text = new Text(text_shader->program);
-    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready  ");
 
     countdown_go_text = new Text(text_shader->program);
     countdown_go_text->updateText("Default countdown text");

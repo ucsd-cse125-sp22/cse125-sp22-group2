@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <chrono>
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"

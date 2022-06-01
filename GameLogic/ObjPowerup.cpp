@@ -25,6 +25,7 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 
 	this->distribution = uniform_int_distribution<int>(0, locations.size() - 1);
 	this->distributionNormal = normal_distribution<float>(1, 1);
+	generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	this->position = locations.at(distribution(generator));
 	this->length = POWERUP_DIMENSIONS;
 	this->width = POWERUP_DIMENSIONS;
@@ -39,7 +40,7 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 	this->solid = false;
 
 	this->spawned = false;
-	this->respawnTime = POWERUP_RESPAWN_TIME + distributionNormal(generator);
+	this->respawnTime = POWERUP_RESPAWN_TIME / 2.0f + distributionNormal(generator);
 	this->locations = locations;
 }
 
@@ -58,7 +59,7 @@ void ObjPowerup::step() {
 		BoundingBox bb = generateBoundingBox(this->position, this->direction, this->up);
 		if (checkPlaceEmpty(bb)) {
 			this->boundingBox = bb;
-			spawned = true;
+			this->spawned = true;
 		}
 	}
 }
