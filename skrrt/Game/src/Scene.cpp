@@ -163,7 +163,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         float secondsInteger = 0.0f;
         float secondsFraction = 1.0f - modf(countdownTimeRemaining / cse125config::TICK_RATE, &secondsInteger);
         std::string ellipses = "";
-        if (secondsFraction >= 0.0f) {
+        if (secondsFraction >= 0.01f) {
             ellipses += ".";
         }
         if (secondsFraction >= 0.33f) {
@@ -177,13 +177,13 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         case 2:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("READY " + ellipses);
+            countdown_go_text->updateText("READY" + ellipses);
             countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
             countdown_go_text->RenderTextCenter();
         case 1:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("SET " + ellipses);
+            countdown_go_text->updateText("SET" + ellipses);
             countdown_go_text->setPosition(cse125constants::WINDOW_WIDTH / 2.0f, cse125constants::WINDOW_HEIGHT - 400.0f);
             countdown_go_text->RenderTextCenter();
             break;
