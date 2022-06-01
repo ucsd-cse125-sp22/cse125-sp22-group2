@@ -24,6 +24,7 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 	this->id = id;
 
 	this->distribution = uniform_int_distribution<int>(0, locations.size() - 1);
+	this->distributionNormal = normal_distribution<float>(1, 1);
 	this->position = locations.at(distribution(generator));
 	this->length = POWERUP_DIMENSIONS;
 	this->width = POWERUP_DIMENSIONS;
@@ -37,8 +38,8 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 
 	this->solid = false;
 
-	this->spawned = true;
-	this->respawnTime = 0.0f;
+	this->spawned = false;
+	this->respawnTime = POWERUP_RESPAWN_TIME + distributionNormal(generator);
 	this->locations = locations;
 }
 

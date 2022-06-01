@@ -57,10 +57,16 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
 
 	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
-	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(-8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPowerup, glm::vec3(11.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPowerup, glm::vec3(0.0f, 0.0f, 11.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPowerup, glm::vec3(0.0f, 0.0f, -11.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPowerup, glm::vec3(-11.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(9.5f, 2.5f, 9.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(-9.5f, 2.5f, -9.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(9.5f, 2.5f, -9.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPowerup, glm::vec3(0.0f, 2.75f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(18.0f, 0.0f, 18.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//vector<glm::vec3>{ glm::vec3(9.5f, 2.5f, 9.5f), glm::vec3(-9.5f, 2.5f, 9.5f), glm::vec3(9.5f, 2.5f, -9.5f), glm::vec3(-9.5f, 2.5f, -9.5f) }
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));

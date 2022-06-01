@@ -431,7 +431,7 @@ void ObjPlayer::pickupPowerup(const PhysicalObject* obj) {
 	if (obj->type == oPowerup && !this->hasPowerup) {
 		if (((ObjPowerup*)obj)->spawned) {
 			((ObjPowerup*)obj)->spawned = false;
-			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME;
+			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME + ((ObjPowerup*)obj)->distributionNormal(generator);
 			this->hasPowerup = true;
 			this->gotPowerup = true;
 		}
