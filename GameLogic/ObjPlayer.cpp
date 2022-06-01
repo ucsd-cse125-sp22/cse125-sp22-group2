@@ -209,14 +209,18 @@ void ObjPlayer::action(glm::vec3 dir) {
 		//cout << up.x << "    " << up.y << "    " << up.z << " up\n";
 		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
 
-		// Set direction
-		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
-
 		// Increase speed (Note: if we are above the max speed we need to ignore this)
 		if (speed < maxSpeed) {
 			speed = min(maxSpeed, speed + SPEED_FORCE);
 		}
 
+		// Set direction
+		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		if (glm::dot(newDir, dir) > 0.9999f) {
+			newDir = dir;
+		}
+
+		// Allow breaking away from walls while using a powerup
 		if (powerupTime && momentum == 0.0f) {
 			speed = 0.0f;
 			momentum = 0.01f;
