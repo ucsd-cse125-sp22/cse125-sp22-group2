@@ -15,12 +15,14 @@ GraphicsSession::GraphicsSession(
     std::deque<cse125framing::ClientFrame>& serverQueue,
     std::mutex& queueMtx,
     unsigned int& clientsConnected,
+    std::mutex& connectedMtx,
     bool(&clientsReplaying)[cse125constants::NUM_PLAYERS])
     : socket(std::move(socket)),
       id(myid),
       serverQueue(serverQueue),
       queueMtx(queueMtx),
       clientsConnected(clientsConnected),
+      connectedMtx(connectedMtx),
       clientsReady(clientsReplaying)
 {
     this->sessionTerminated = false;
@@ -54,6 +56,8 @@ void GraphicsSession::do_read()
                 {
                     cse125framing::ServerFrame frame;
                     frame.id = this->id;
+                    frame.matchInProgress = false;
+                    std::cerr << "Sending id = " << this->id << " back to client\n";
                     do_write(&frame);
                 }
                 // Check if this client is indicating that it's ready to play a match
@@ -100,12 +104,14 @@ void GraphicsSession::do_write(cse125framing::ServerFrame* serverFrame)
             {
                 // do_write will be called once per client until all clients are
                 // connected
+                this->connectedMtx.lock();
                 if (this->clientsConnected < cse125constants::NUM_PLAYERS)
                 {
                     this->clientsConnected++;
                     std::cerr << clientsConnected << " client(s) connected..."
                               << std::endl;
                 }
+                this->connectedMtx.unlock();
             }
             else
             {
@@ -157,22 +163,22 @@ void GraphicsServer::do_accept()
             if (!ec)
             {
                 // create new session for the connection
-                std::shared_ptr<GraphicsSession> session =
-                    std::make_shared<GraphicsSession>(
-                        std::move(socket), this->numConnections,
-                        this->serverQueue, this->queueMtx,
-                        this->clientsConnected, this->clientsReady);
-                sessions.push_back(session);
-                session->start();
-
-                this->numConnections++;
-            }
-
-            // only accept 4 connections
-            if (this->numConnections < cse125constants::NUM_PLAYERS)
-            {
-                do_accept();
-            }
+                connectionsMtx.lock();
+                // only accept 4 connections
+                if (this->numConnections < cse125constants::NUM_PLAYERS)
+                {
+                    std::shared_ptr<GraphicsSession> session =
+                        std::make_shared<GraphicsSession>(
+                            std::move(socket), this->numConnections,
+                            this->serverQueue, this->queueMtx,
+                            this->clientsConnected, this->connectedMtx, this->clientsReady);
+                    sessions.push_back(session);
+                    session->start();
+                    this->numConnections++;
+                    connectionsMtx.unlock();
+                    do_accept();
+                }               
+            }          
         });
 }
 

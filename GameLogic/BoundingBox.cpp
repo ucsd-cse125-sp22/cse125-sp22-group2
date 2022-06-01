@@ -128,22 +128,23 @@ bool bounding::checkCollision(BoundingBox a, BoundingBox b) {
 
 	// SAT collision test
 	// Get all the axes along which we check for a gap between the objects
+	// NOTE: Commented out axes are not needed if the up vectors of the bounding boxes are fixed
 	vector<glm::vec3> axes;
 	axes.push_back(a.aVec);
 	axes.push_back(a.bVec);
 	axes.push_back(a.cVec);
 	axes.push_back(b.aVec);
-	axes.push_back(b.bVec);
+	//axes.push_back(b.bVec);
 	axes.push_back(b.cVec);
-	axes.push_back(glm::cross(a.aVec, b.aVec));
-	axes.push_back(glm::cross(a.aVec, b.bVec));
-	axes.push_back(glm::cross(a.aVec, b.cVec));
-	axes.push_back(glm::cross(a.bVec, b.aVec));
-	axes.push_back(glm::cross(a.bVec, b.bVec));
-	axes.push_back(glm::cross(a.bVec, b.cVec));
-	axes.push_back(glm::cross(a.cVec, b.aVec));
-	axes.push_back(glm::cross(a.cVec, b.bVec));
-	axes.push_back(glm::cross(a.cVec, b.cVec));
+	//axes.push_back(glm::cross(a.aVec, b.aVec));
+	//axes.push_back(glm::cross(a.aVec, b.bVec));
+	//axes.push_back(glm::cross(a.aVec, b.cVec));
+	//axes.push_back(glm::cross(a.bVec, b.aVec));
+	//axes.push_back(glm::cross(a.bVec, b.bVec));
+	//axes.push_back(glm::cross(a.bVec, b.cVec));
+	//axes.push_back(glm::cross(a.cVec, b.aVec));
+	//axes.push_back(glm::cross(a.cVec, b.bVec));
+	//axes.push_back(glm::cross(a.cVec, b.cVec));
 
 	// Go through each of the axes we found above
 	for (unsigned int i = 0; i < axes.size(); i++) {

@@ -15,6 +15,7 @@ enum class MovementKey {
 	RIGHT,
 	LEFT,
 	SPACE,
+	HONK,
 };
 
 enum class GameAction {
@@ -26,7 +27,6 @@ enum class GameAction {
 	MOVE_FORWARD_LEFT,
 	MOVE_BACKWARD_LEFT,
 	MOVE_BACKWARD_RIGHT,
-	ACTION,
 	IDLE,
 };
 

@@ -30,7 +30,7 @@ public:
         { "WinTheme.wav", {false, false, true}},
         { "LoseTheme.wav", {false, false, true}},
         { "GetCrown.wav", {false, false, false}},
-        //{ "Horn.wav", {true, false, false}},
+        { "Horn.wav", {true, false, false}},
         { "Makeup.wav", {false, false, false}},
         { "Engine.wav", {true, true, false}},
         { "Collision.wav", {true, false, false}},

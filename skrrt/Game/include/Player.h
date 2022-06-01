@@ -38,7 +38,7 @@ private:
 	bool has_powerup = false;
 
 	// Player's state
-	bool invincible = false;
+	RealNumber iframes = 0.0f;
 
 	// Current world position 
 	// Current object's rotation 
@@ -75,7 +75,7 @@ public:
 	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
 	void setPlayerScore(RealNumber s) { score = s; };
-	void setInvincibility(bool inv) { invincible = inv; }
+	void setInvincibility(RealNumber inv) { iframes = inv; }
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 
@@ -125,7 +125,7 @@ public:
 
 	RealNumber getMakeupLevel(void) { return makeupLevel; }
 	RealNumber getScore(void) { return score; }
-	bool getInvincibility() { return invincible; }
+	RealNumber getInvincibility() { return iframes; }
 };
 
 #endif

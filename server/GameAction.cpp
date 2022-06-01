@@ -85,10 +85,7 @@ const cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker
 
 GameAction cse125gameaction::gameActionFromContainer(const GameActionContainer*& gac)
 {
-	if (gac->action) {
-		return GameAction::ACTION;
-	}
-	else if (gac->forward && gac->right) {
+	if (gac->forward && gac->right) {
 		return GameAction::MOVE_FORWARD_RIGHT;
 	}
 	else if (gac->forward && gac->left) {

@@ -382,7 +382,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         game.players[i]->setUsingPowerup(frame->players[i].powerupActive);
         //std::cout << "makeup level for player " << i << ": " << game.players[i]->getMakeupLevel() << std::endl;
         game.players[i]->setSpeed(frame->players[i].playerSpeed);
-        game.players[i]->setInvincibility(frame->players[i].invincible);
+        game.players[i]->setInvincibility(frame->players[i].iframes);
         glm::vec3 offsetDir = glm::normalize(glm::cross(dir, up));
         const std::string headlightName = "player" + std::to_string(i) + "Headlight";
         scene.spotLights[headlightName + "0"]->position = vec4(pos + (1.0f * glm::normalize(dir)) + (0.5f * offsetDir), 1.0f);
@@ -449,6 +449,12 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
+        case AudioId::HONK:
+            game.triggerFx("Horn.wav", position);
+            break;
+        //case AudioId::BOUNCE:
+        //    scene.camera->reset();
+        //    break;
         case AudioId::NO_AUDIO:
         default:
             break;
@@ -476,10 +482,13 @@ void handleMoveLeft() {
 }
 
 void handleSpace() {
-    // Just pretend I don't handle game logic client-side here
-    if (game.players[clientId]->getHasPowerup()) {
-        sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
-    }
+    // Just pretend I don't handle game logic client-side here (fixed)
+    //if (game.players[clientId]->getHasPowerup()) {
+    sendDataToServer(MovementKey::SPACE, scene.camera->forwardVectorXZ());
+}
+
+void handleHonk() {
+    sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -488,15 +497,9 @@ void keyboard(unsigned char key, int x, int y){
             exit(0);
             networkClient->closeConnection();
             break;
-        case 'h': // print help
-            printHelp();
-        /*
-        case ' ':
-            hw3AutoScreenshots();
-            glutPostRedisplay();
-
-            break;
-        */
+        case 'H':
+        case 'h':
+            handleHonk();
             break;
         case 'o': // save screenshot
             saveScreenShot();

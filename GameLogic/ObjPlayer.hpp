@@ -43,10 +43,10 @@ public:
 	float powerupTime;
 	// Direction to change to during boost
 	glm::vec3 boostTargetDirection;
-	// Change the speed depending on the tick rate
-	//float speedModifier;
 
 	// Triggers
+	// Whether we are trying to use a powerup
+	bool activatePowerup;
 	// Whether we crashed this frame
 	bool crashed;
 	// Whether we took the crown this frame
@@ -55,10 +55,20 @@ public:
 	bool gotPowerup;
 	// Whether we bounced this frame
 	bool bounced;
+	// Whether we honked the horn this frame
+	bool honked;
+
+	// Change the speed depending on the tick rate
+	//float speedModifier;
 
 	// Randomness
 	default_random_engine generator;
 	normal_distribution<float> distribution;
+
+	// Respawning
+	//uniform_int_distribution<int> distributionInt;
+	//glm::vec3 respawnLocations[4] = { glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -21.0f) };
+	//glm::vec3 respawnDirections[4] = { glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
 
 
 	ObjPlayer();
@@ -67,7 +77,7 @@ public:
 
 	void step(float gameTime);
 	// Anything that happens because of user input goes here, calls move function to handle crown transfer
-	void action(glm::vec3 dir, bool trigger = false);
+	void action(glm::vec3 dir);
 	// Call when no action is performed
 	void idle();
 
