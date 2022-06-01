@@ -23,14 +23,15 @@
 #include "Game.h"
 #include "Player.h"
 #include "NetworkClient.hpp"
+#include "ShadowMapConstants.h"
 
 #include "../../../Config.hpp"
 #include "../../../Frame.hpp"
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static const int width = cse125constants::WINDOW_WIDTH;
-static const int height = cse125constants::WINDOW_HEIGHT;
+const static int width = cse125constants::WINDOW_WIDTH;
+const static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -68,6 +69,10 @@ static std::chrono::time_point<std::chrono::system_clock> startTime;
 
 static int mouseX = 0.0f;
 static int mouseY = 0.0f;
+static float brightnessDir = 1.0f;
+static bool sunOn = true;
+static float brightnessHeadlight = 1.0f;
+static float brightnessOther = 1.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
@@ -116,7 +121,8 @@ void initialize(void)
     glViewport(0, 0, width, height);
 
     // Initialize scene
-    scene.init();
+    scene.init(width, height);
+    glutFullScreen();
     
     // Initialize triggers map 
     triggers["up"] = false; 
@@ -148,19 +154,127 @@ void initialize(void)
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
 
+    scene.camera->setAspect(width, height);
+    scene.setPointLights(0.7f);
+    scene.setSpotLights(1.0f);
+    scene.setSun(0.75, true);
 }
 
-void display(void)
-{
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad(GLuint texId) {
+    glUseProgram(scene.quad_shader->program);
+    scene.quad_shader->texture_id = texId;
+    scene.quad_shader->setUniforms();
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
+glm::mat4 makeLightSpaceMatrix() {
+	// find the center of camera viewing frustrum by averaging it's corners
+	std::vector<glm::vec4> corners = scene.camera->getFrustrumCornersWorld();
+	glm::vec3 center = glm::vec3(0.0f);
+	for (const glm::vec4& corner : corners) {
+		center += glm::vec3(corner);
+	}
+	center = center / (float) corners.size();
+
+    //construct light view
+	glm::mat4 lightView = glm::lookAt(center + scene.sun->direction, center, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // construct light projection
+
+    //find a square in light space that fits the viewing frustrum
+    float minX = std::numeric_limits<float>::max();
+	float maxX = std::numeric_limits<float>::min();
+	float minY = std::numeric_limits<float>::max();
+	float maxY = std::numeric_limits<float>::min();
+	float minZ = std::numeric_limits<float>::max();
+	float maxZ = std::numeric_limits<float>::min();
+	for (const glm::vec4& corner: corners) {
+		glm::vec4 trf = lightView * corner;
+		minX = std::min(minX, trf.x);
+		maxX = std::max(maxX, trf.x);
+		minY = std::min(minY, trf.y);
+		maxY = std::max(maxY, trf.y);
+		minZ = std::min(minZ, trf.z);
+		maxZ = std::max(maxZ, trf.z);
+	}
+
+    // change the position of the front and back viewing planes
+    // to have more stuff in the world cast shadows
+	if (minZ < 0) {
+		minZ *= Z_MULT;
+	} else {
+		minZ /= Z_MULT;
+	}
+
+	if (maxZ < 0) { 
+		maxZ /= Z_MULT;
+	} else {
+		maxZ *= Z_MULT;
+	}  
+
+    glm::mat4 lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+	
+	glm::mat4 lightSpace = lightProjection * lightView;
+    return lightSpace;
+}
+
+void display(void) {
+    if (ENABLE_SHADOW_MAP) {
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        glm::mat4 lightSpace = makeLightSpaceMatrix();
+
+        scene.shader->lightSpace = lightSpace;
+        scene.drawDepthMap(scene.node["world"], lightSpace);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    glViewport(0, 0, width, height);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Update shadowmaps?
+    if (ENABLE_SHADOW_MAP) {
+        glActiveTexture(GL_TEXTURE0 + scene.shadowMapOffset);
+        glBindTexture(GL_TEXTURE_2D, scene.directionalDepthMap);
+    }
+
     scene.draw(scene.node["world"]);
     scene.updateScreen();
+
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //scene.draw(scene.node["UI_root"]);
+    scene.camera->nearPlane = scene.camera->ui_near_default;
     scene.drawUI();
+    scene.camera->nearPlane = scene.camera->near_default;
 
 
     // Create the end of match text
@@ -184,7 +298,13 @@ void display(void)
     glDisable(GL_BLEND);
 
     //testcube->draw(glm::mat4(1.0f), scene.shader->program);
+    //renderQuad(near_plane, far_plane, scene.shadowMapOffset);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
+	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
+    renderQuad(scene.bloomTexOffsets[0]);
     glutSwapBuffers();
     glFlush();
 }
@@ -430,10 +550,6 @@ void keyboard(unsigned char key, int x, int y){
             break;
         */
             break;
-        case 'l':
-            scene.shader -> enablelighting = !(scene.shader -> enablelighting);
-            glutPostRedisplay();
-            break;
         case 'u': 
             // Test to trigger gate animation 
             game.triggerGateAnimation(0); 
@@ -515,6 +631,43 @@ void keyboard(unsigned char key, int x, int y){
         case 'q':
             handleSpace();
             break;
+            /*
+        case '5':
+            brightnessOther += 0.05;
+            scene.setPointLights(brightnessOther);
+            std::cout << "Brightness Other: " << brightnessOther << "\n";
+            break;
+        case '6':
+            brightnessOther -= 0.05;
+            scene.setPointLights(brightnessOther);
+            std::cout << "Brightness Other: " << brightnessOther << "\n";
+            break;
+        case '7':
+            brightnessHeadlight += 0.05;
+            scene.setSpotLights(brightnessHeadlight);
+            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            break;
+        case '8':
+            brightnessHeadlight -= 0.05;
+            scene.setSpotLights(brightnessHeadlight);
+            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            break;
+        case '9':
+            brightnessDir += 0.05;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            break;
+        case '0':
+            brightnessDir -= 0.05;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            break;
+        case '-':
+            sunOn = !sunOn;
+            scene.setSun(brightnessDir, sunOn);
+            std::cout << "Sun on: " << sunOn << "\n";
+            break;
+            */
         default:
             //glutPostRedisplay();
             break;
@@ -749,6 +902,26 @@ void mouseMovement(int x, int y) {
     }
 }
 
+void onScreenResize(int newWidth, int newHeight) {
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "Old aspect: " << width << ":" << height << " (w:h)\n";
+    }
+    //width = newWidth;
+   // height = newHeight;
+    glutReshapeWindow(width, height);
+    scene.camera->setAspect(width, height);
+    glViewport(0, 0, width, height);
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "New aspect: " << newWidth << ":" << newHeight << " (w:h)\n";
+		int gWidth = glutGet(GLUT_WINDOW_WIDTH);
+		int gHeight = glutGet(GLUT_WINDOW_HEIGHT);
+        std::cout << "GLUT aspect: " << gWidth << ":" << gHeight << " (w:h)\n";
+		gWidth = glutGet(GLUT_SCREEN_WIDTH);
+		gHeight = glutGet(GLUT_SCREEN_HEIGHT);
+        std::cout << "GLUT screen aspect: " << gWidth << ":" << gHeight << " (w:h)\n";
+    }
+}
+
 int main(int argc, char** argv)
 {
     // BEGIN CREATE WINDOW
@@ -791,6 +964,7 @@ int main(int argc, char** argv)
     glutIdleFunc(idle);
     glutPassiveMotionFunc(mouseMovement);
     glutMotionFunc(mouseMovement);  
+    glutReshapeFunc(onScreenResize);
     glutMainLoop();
     return 0; /* ANSI C requires main to return int. */
 }
