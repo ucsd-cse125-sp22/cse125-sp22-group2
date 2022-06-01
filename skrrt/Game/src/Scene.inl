@@ -48,15 +48,15 @@ void Scene::init(int width, int height) {
     geometry["drips"] = new Obj;
     geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
-    geometry["makeup_station"] = new Obj; 
+    geometry["makeup_station"] = new Obj;
     geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
-    geometry["makeup_station_bar"] = new Obj; 
+    geometry["makeup_station_bar"] = new Obj;
     geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
 
-    geometry["tire_rack"] = new Obj; 
+    geometry["tire_rack"] = new Obj;
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
-    geometry["cones"] = new Obj; 
+    geometry["cones"] = new Obj;
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
     geometry["blowdryer_world"] = new Obj;
@@ -101,8 +101,10 @@ void Scene::init(int width, int height) {
     //          SET THIS VALUE            //
     //      WHEN YOU ADD A NEW OBJECT     //
     ////////////////////////////////////////
-    int maxObjectNumber = 7; // THIS VALUE RIGHT HERE :)
+    int maxObjectNumber = 18; // THIS VALUE RIGHT HERE :)
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
+    bloomTexOffsets[0] = shadowMapOffset + 1;
+    bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
 
     // Create a material palette
     material["wood"] = new Material;
@@ -185,24 +187,24 @@ void Scene::init(int width, int height) {
     //*********** UI elem ************************
     //********************************************
 
-    model["clock"] = new Model; 
+    model["clock"] = new Model;
     model["clock"]->geometry = geometry["clock"];
     model["clock"]->material = material["ceramic"];
 
-    model["pink_tire"] = new Model; 
+    model["pink_tire"] = new Model;
     model["pink_tire"]->geometry = geometry["pink_tire"];
     model["pink_tire"]->material = material["ceramic"];
-    model["blue_tire"] = new Model; 
+    model["blue_tire"] = new Model;
     model["blue_tire"]->geometry = geometry["blue_tire"];
     model["blue_tire"]->material = material["ceramic"];
-    model["yellow_tire"] = new Model; 
+    model["yellow_tire"] = new Model;
     model["yellow_tire"]->geometry = geometry["yellow_tire"];
     model["yellow_tire"]->material = material["ceramic"];
-    model["green_tire"] = new Model; 
+    model["green_tire"] = new Model;
     model["green_tire"]->geometry = geometry["green_tire"];
     model["green_tire"]->material = material["ceramic"];
 
-    model["crown_icon"] = new Model; 
+    model["crown_icon"] = new Model;
     model["crown_icon"]->geometry = geometry["crown_icon"];
     model["crown_icon"]->material = material["ceramic"];
 
@@ -210,14 +212,14 @@ void Scene::init(int width, int height) {
     model["blowdryer_icon"]->geometry = geometry["blowdryer_icon"];
     model["blowdryer_icon"]->material = material["ceramic"];
 
-    model["mascara_icon"] = new Model; 
+    model["mascara_icon"] = new Model;
     model["mascara_icon"]->geometry = geometry["mascara_icon"];
     model["mascara_icon"]->material = material["ceramic"];
-    model["mascara_bar"] = new Model; 
+    model["mascara_bar"] = new Model;
     model["mascara_bar"]->geometry = geometry["mascara_bar"];
     model["mascara_bar"]->material = material["ceramic"];
 
-    model["white_bar"] = new Model; 
+    model["white_bar"] = new Model;
     model["white_bar"]->geometry = geometry["white_bar"];
     model["white_bar"]->material = material["ceramic"];
 
@@ -233,23 +235,23 @@ void Scene::init(int width, int height) {
     }
     // Normal Light pallet add new stuff here
     else {
-		sun_day = new DirectionalLight;
-		sun_day->direction = vec3(1.0f, 1.0f, 1.0f);
-		sun_day->ambient = vec4(0.1f, 0.1f, 0.2f, 1.0f);
-		sun_day->diffuse = vec4(0.1f, 0.1f, 0.2f, 1.0f);
-		sun_day->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun_day = new DirectionalLight;
+        sun_day->direction = vec3(1.0f, 1.0f, 1.0f);
+        sun_day->ambient = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun_day->diffuse = vec4(0.1f, 0.1f, 0.2f, 1.0f);
+        sun_day->specular = vec4(0.1f, 0.1f, 0.2f, 1.0f);
 
-		sun_night = new DirectionalLight;
-		sun_night->direction = vec3(1.0f, 1.0f, 1.0f);
-		sun_night->ambient = 0.5f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-		sun_night->diffuse = 0.99f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
-		sun_night->specular = 0.7f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+        sun_night = new DirectionalLight;
+        sun_night->direction = vec3(1.0f, 1.0f, 1.0f);
+        sun_night->ambient = 0.5f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+        sun_night->diffuse = 0.99f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
+        sun_night->specular = 0.7f * vec4(0.992f, 0.984f, 0.827f, 1.0f);
 
         sun = new DirectionalLight;
-		sun->direction = sun_day->direction;
-		sun->ambient = sun_day->ambient;
-		sun->diffuse = sun_day->diffuse;
-		sun->specular = sun_day->specular;
+        sun->direction = sun_day->direction;
+        sun->ambient = sun_day->ambient;
+        sun->diffuse = sun_day->diffuse;
+        sun->specular = sun_day->specular;
     }
 
     pointLights["runwayLight0"] = new PointLight;
@@ -307,14 +309,14 @@ void Scene::init(int width, int height) {
     pointLights["makeupBooth1"]->specular = vec4(1.0f, 0.961f, 0.714f, 1.0f);
 
     for (std::pair<std::string, PointLight*> entry : pointLights) {
-		pointLights_init[entry.first] = new PointLight;
+        pointLights_init[entry.first] = new PointLight;
         pointLights_init[entry.first]->position = entry.second->position;
-		pointLights_init[entry.first]->constant = entry.second->constant; 
-		pointLights_init[entry.first]->linear = entry.second->linear; 
-		pointLights_init[entry.first]->quadradic = entry.second->quadradic;
-		pointLights_init[entry.first]->ambient = entry.second->ambient; 
-		pointLights_init[entry.first]->diffuse = entry.second->diffuse; 
-		pointLights_init[entry.first]->specular = entry.second->specular; 
+        pointLights_init[entry.first]->constant = entry.second->constant;
+        pointLights_init[entry.first]->linear = entry.second->linear;
+        pointLights_init[entry.first]->quadradic = entry.second->quadradic;
+        pointLights_init[entry.first]->ambient = entry.second->ambient;
+        pointLights_init[entry.first]->diffuse = entry.second->diffuse;
+        pointLights_init[entry.first]->specular = entry.second->specular;
     }
 
     for (int i = 0; i < NUM_PLAYERS; i++) {
@@ -336,16 +338,16 @@ void Scene::init(int width, int height) {
     }
 
     for (std::pair<std::string, SpotLight*> entry : spotLights) {
-		spotLights_init[entry.first] = new SpotLight;
+        spotLights_init[entry.first] = new SpotLight;
         spotLights_init[entry.first]->position = entry.second->position;
-		spotLights_init[entry.first]->constant = entry.second->constant; 
-		spotLights_init[entry.first]->linear = entry.second->linear; 
-		spotLights_init[entry.first]->quadradic = entry.second->quadradic;
-		spotLights_init[entry.first]->ambient = entry.second->ambient; 
-		spotLights_init[entry.first]->diffuse = entry.second->diffuse; 
-		spotLights_init[entry.first]->specular = entry.second->specular; 
-		spotLights_init[entry.first]->innerCutoff = entry.second->innerCutoff; 
-		spotLights_init[entry.first]->outerCutoff = entry.second->outerCutoff; 
+        spotLights_init[entry.first]->constant = entry.second->constant;
+        spotLights_init[entry.first]->linear = entry.second->linear;
+        spotLights_init[entry.first]->quadradic = entry.second->quadradic;
+        spotLights_init[entry.first]->ambient = entry.second->ambient;
+        spotLights_init[entry.first]->diffuse = entry.second->diffuse;
+        spotLights_init[entry.first]->specular = entry.second->specular;
+        spotLights_init[entry.first]->innerCutoff = entry.second->innerCutoff;
+        spotLights_init[entry.first]->outerCutoff = entry.second->outerCutoff;
     }
 
 
@@ -601,7 +603,7 @@ void Scene::init(int width, int height) {
     node["back_drips"] = new Node("back_drips");
     node["back_drips"]->models.push_back(model["drips"]);
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
-    node["back_drips"]->modeltransforms.push_back(rotate(90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    node["back_drips"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
     node["start_menu"] = new Node("start_menu");
     node["start_menu"]->models.push_back(model["start_menu"]);
@@ -625,7 +627,7 @@ void Scene::init(int width, int height) {
     node["green_tire"] = new Node("green_tire");
     node["green_tire"]->models.push_back(model["green_tire"]);
     node["green_tire"]->modeltransforms.push_back(UI_rotation);
-    
+
     node["crown_icon"] = new Node("crown_icon");
     node["crown_icon"]->models.push_back(model["crown_icon"]);
     node["crown_icon"]->modeltransforms.push_back(UI_rotation);
@@ -644,12 +646,12 @@ void Scene::init(int width, int height) {
     node["white_bar"]->models.push_back(model["white_bar"]);
     node["white_bar"]->modeltransforms.push_back(UI_rotation);
 
-    node["UI_root"]->childnodes.push_back(node["screen"]); 
+    node["UI_root"]->childnodes.push_back(node["screen"]);
     node["UI_root"]->childtransforms.push_back(mat4(1.0f));
 
     //node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    const float clock_ratio = 85.0f / 101.0f; 
+    const float clock_ratio = 85.0f / 101.0f;
     node["screen"]->childnodes.push_back(node["clock"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
@@ -667,7 +669,7 @@ void Scene::init(int width, int height) {
     node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
     node["screen"]->childtransforms.push_back(translate(vec3(36.0f, -16.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
-    const float mascara_icon_ratio = 179.0f / 177.0f; 
+    const float mascara_icon_ratio = 179.0f / 177.0f;
     const float mascara_bar_ratio = 557.0f / 70.0f;
     node["screen"]->childnodes.push_back(node["mascara_icon"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-10.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
@@ -676,7 +678,7 @@ void Scene::init(int width, int height) {
     node["screen"]->childnodes.push_back(node["white_bar"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
 
-    node["screen"]->childnodes.push_back(node["drips"]); 
+    node["screen"]->childnodes.push_back(node["drips"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
 
     node["screen"]->childnodes.push_back(node["start_menu"]);
@@ -698,7 +700,7 @@ void Scene::init(int width, int height) {
 
         // create depth texture
         glGenTextures(1, &directionalDepthMap);
-		glActiveTexture(GL_TEXTURE0 + shadowMapOffset);
+        glActiveTexture(GL_TEXTURE0 + shadowMapOffset);
         glBindTexture(GL_TEXTURE_2D, directionalDepthMap);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -706,7 +708,7 @@ void Scene::init(int width, int height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
         // attach depth texture to FBO depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, directionalDepthMapFBO);
@@ -715,6 +717,39 @@ void Scene::init(int width, int height) {
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+
+    // Framebuffers for bloom
+    glGenFramebuffers(1, &hdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+    glGenTextures(2, colorBuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + bloomTexOffsets[i]);
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // attach texture to framebuffer
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0
+        );
+    }
+    unsigned int rboDepth;
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Bloom Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Initialize shader
     if (ENABLE_SHADOW_MAP) {

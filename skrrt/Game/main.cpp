@@ -30,8 +30,8 @@
 #include "../../../Definitions.hpp"
 #include "Debug.h"
 
-static int width = cse125constants::WINDOW_WIDTH;
-static int height = cse125constants::WINDOW_HEIGHT;
+const static int width = cse125constants::WINDOW_WIDTH;
+const static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
 static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
 static Scene scene;
@@ -115,7 +115,6 @@ void printHelp(){
 
 void initialize(void)
 {
-    glutFullScreen();
     printHelp();
     glClearColor(background[0], background[1], background[2],
                  background[3]); // background color
@@ -123,6 +122,7 @@ void initialize(void)
 
     // Initialize scene
     scene.init(width, height);
+    glutFullScreen();
     
     // Initialize triggers map 
     triggers["up"] = false; 
@@ -162,10 +162,8 @@ void initialize(void)
 
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-void renderQuad(float nearPlane, float farPlane, GLuint texId) {
+void renderQuad(GLuint texId) {
     glUseProgram(scene.quad_shader->program);
-    scene.quad_shader->near_plane = nearPlane;
-    scene.quad_shader->far_plane = farPlane;
     scene.quad_shader->texture_id = texId;
     scene.quad_shader->setUniforms();
     if (quadVAO == 0)
@@ -197,7 +195,7 @@ glm::mat4 makeLightSpaceMatrix() {
 	// find the center of camera viewing frustrum by averaging it's corners
 	std::vector<glm::vec4> corners = scene.camera->getFrustrumCornersWorld();
 	glm::vec3 center = glm::vec3(0.0f);
-	for (glm::vec4 corner : corners) {
+	for (const glm::vec4& corner : corners) {
 		center += glm::vec3(corner);
 	}
 	center = center / (float) corners.size();
@@ -214,7 +212,7 @@ glm::mat4 makeLightSpaceMatrix() {
 	float maxY = std::numeric_limits<float>::min();
 	float minZ = std::numeric_limits<float>::max();
 	float maxZ = std::numeric_limits<float>::min();
-	for (glm::vec4 corner: corners) {
+	for (const glm::vec4& corner: corners) {
 		glm::vec4 trf = lightView * corner;
 		minX = std::min(minX, trf.x);
 		maxX = std::max(maxX, trf.x);
@@ -255,8 +253,9 @@ void display(void) {
         scene.shader->lightSpace = lightSpace;
         scene.drawDepthMap(scene.node["world"], lightSpace);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
     glViewport(0, 0, width, height);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Update shadowmaps?
@@ -267,6 +266,12 @@ void display(void) {
 
     scene.draw(scene.node["world"]);
     scene.updateScreen();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
+	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
+    renderQuad(scene.bloomTexOffsets[0]);
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -301,9 +306,6 @@ void display(void) {
     //renderQuad(near_plane, far_plane, scene.shadowMapOffset);
 
     if (DEBUG_QUAD_VIEW) {
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       // renderQuad(near_plane, far_plane, scene.shadowMapOffset);
     }
     glutSwapBuffers();
     glFlush();
@@ -903,12 +905,13 @@ void onScreenResize(int newWidth, int newHeight) {
     if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
         std::cout << "Old aspect: " << width << ":" << height << " (w:h)\n";
     }
-    width = newWidth;
-    height = newHeight;
+    //width = newWidth;
+   // height = newHeight;
+    glutReshapeWindow(width, height);
     scene.camera->setAspect(width, height);
     glViewport(0, 0, width, height);
     if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
-        std::cout << "New aspect: " << width << ":" << height << " (w:h)\n";
+        std::cout << "New aspect: " << newWidth << ":" << newHeight << " (w:h)\n";
 		int gWidth = glutGet(GLUT_WINDOW_WIDTH);
 		int gHeight = glutGet(GLUT_WINDOW_HEIGHT);
         std::cout << "GLUT aspect: " << gWidth << ":" << gHeight << " (w:h)\n";

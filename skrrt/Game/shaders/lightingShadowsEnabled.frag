@@ -5,6 +5,8 @@ in vec3 normal;   // raw normal in the model coord
 in vec2 TexCoord; // texture coordinates
 in vec4 posDirectionalLightSpace;
 
+uniform float iFrames; // 0.0f means no glow, 1.0f means full glow
+
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
 
@@ -96,7 +98,8 @@ const float maxShadowBias = 0.01f;
 const int radius = 1;
 
 // Output the frag color
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 float ShadowCalculation(vec4 fragPosLightSpace, float bias, sampler2D shadowMap) {
     // transform to [0,1] range
@@ -231,6 +234,14 @@ void main (void){
 	}
 
 	fragColor += emisColor; 
+	
+	fragColor += iFrames * vec4(0.5f,0.5f,0.5f,0.0f);
 
 	fragColor.w = texColor.w;
+	float brightness = dot(fragColor.xyz, vec3(0.2126f, 0.7152f, 0.0722f)); // convert to greyscale
+	if(brightness > 1.0f) {
+		brightColor = vec4(fragColor.xyz, 1.0f);
+	} else {
+		brightColor = vec4(0.0f,0.0f,0.0f,1.0f);
+	}
 }

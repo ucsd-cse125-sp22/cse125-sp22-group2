@@ -81,6 +81,7 @@ public:
     Text* match_end_text;
 
     int shadowMapOffset;
+    int bloomTexOffsets[2];
 
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
@@ -111,6 +112,10 @@ public:
 	GLuint directionalDepthMapFBO;
 	std::vector<GLuint> pointDepthMapsFBO;
 	std::vector<GLuint> spotDepthMapsFBO;
+
+    //Bloom
+    GLuint hdrFBO;
+	GLuint colorBuffers[2];
     
 
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.

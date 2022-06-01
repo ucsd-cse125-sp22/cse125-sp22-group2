@@ -51,6 +51,7 @@ void Scene::draw(Node* current_node){
             shader->pointDepthMaps[i] = pointDepthMaps[i];
         }
     }
+    shader->iFrames = 0.0f;
 
     // Define stacks for depth-first search (DFS)
     std::stack < Node* > dfs_stack;

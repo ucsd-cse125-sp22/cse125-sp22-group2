@@ -108,7 +108,10 @@ struct SurfaceShader : Shader {
     glm::mat4 lightSpace;
     GLuint lightSpace_loc;
     
+    float iFrames; GLuint iFrames_loc;
+    
     void initUniforms(){
+        iFrames_loc = glGetUniformLocation(program, "iFrames");
         if (ENABLE_SHADOW_MAP) {
             directionalDepthMap_loc = glGetUniformLocation(program, "directionalDepthMap");
 			for (int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++) {
@@ -182,6 +185,8 @@ struct SurfaceShader : Shader {
 
         // set material
         glUniform1f(material_loc.shininess, material->shininess);
+
+        glUniform1f(iFrames_loc, iFrames);
 
         //set point lights
         for (int i = 0; i < numPointLights; i++) {
