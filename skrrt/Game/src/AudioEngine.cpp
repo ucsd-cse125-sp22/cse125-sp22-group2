@@ -28,6 +28,7 @@ void AudioEngine::update()
     for (auto& it : pStoppedChannels)
     {
          channels.erase(it);
+         //std::cerr << "Erasing a channel!" << std::endl;
     }
 
     // Update FMOD Low Level API
@@ -72,7 +73,6 @@ void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLoop
         {
             fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE); // atm just car engine sounds
         }
-
     }
 
     if (fmod_sound)
@@ -124,7 +124,7 @@ AudioEngine::~AudioEngine()
 
 int AudioEngine::playSound(const char* soundName, const vec3& position, float dB)
 {
-    int channelId = channels.size();
+    int channelId = soundCounter++;
     auto soundIter = library.find(soundName);
     if (soundIter != library.end())
     {
@@ -189,6 +189,7 @@ void AudioEngine::stopAllChannels()
             pChannel->stop();
         }
     }
+    soundCounter = 0;
 }
 
 void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
@@ -199,7 +200,6 @@ void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
         FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
         std::string e = "Set 3D Position: ";
         AudioEngine::errorCheck(e, channelIter->second->set3DAttributes(&fmod_position, NULL));
-        AudioEngine::update();
     }
 }
 
@@ -210,7 +210,6 @@ void AudioEngine::setChannelVolume(int channelId, float dB)
     {
         std::string e = "Set channel volume: ";
         AudioEngine::errorCheck(e, channelIter->second->setVolume(AudioEngine::dbToVolume(dB)));
-        AudioEngine::update();
     }
 }
 

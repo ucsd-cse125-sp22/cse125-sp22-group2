@@ -94,11 +94,17 @@ public:
         return channels.size();
     }
 
+    int getSoundCount()
+    {
+        return soundCounter;
+    }
+
 
 private:
     FMOD::System* system;
     FMOD_RESULT engine;
     std::unordered_map<std::string, FMOD::Sound*> library;
     std::unordered_map<int, FMOD::Channel*> channels;
+    int soundCounter;
 };
 

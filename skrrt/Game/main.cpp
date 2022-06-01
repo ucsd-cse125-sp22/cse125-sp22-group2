@@ -469,17 +469,20 @@ void keyboard(unsigned char key, int x, int y){
             game.stopAllSounds();
             break;
         case 'm':
-            // Audio Engine
-            //game.playMusic("BattleTheme.wav", -10.0);
-            //game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
-            std::cout << "Audio Channels: " << game.audioChannelsSize() << std::endl;
+            // Audio Engine restart (in case something fails)
+            game.stopCarEngines();
+            game.stopAllSounds();
+            game.playMusic("BattleTheme.wav", -10.0);
+            game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
             break;
         case 'n':
         {
             // Audio Engine
-            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
-            std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
-            game.triggerFx("Collision.wav", position);
+            //vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
+            //std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            //game.triggerFx("Collision.wav", position);
+            std::cerr << "Sound Chanels Playing: " << game.audioChannelsSize() << std::endl;
+            std::cerr << "Total sounds played: " << game.soundCount() << std::endl;
             break;
         }
 
@@ -606,7 +609,8 @@ void idle() {
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
-    if (time - lastRenderTime > 50) {
+    //if (time - lastRenderTime > 50) {
+    if (time - lastRenderTime > 1) { // INCREASE RENDER SPEED, Need to check particle logic
         //std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
@@ -633,6 +637,8 @@ void idle() {
         // Update time 
         scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
 
+        // Update Engine Audio Positions
+        game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
         // Update Audio Engine
         game.updateAudio();
 
@@ -640,8 +646,6 @@ void idle() {
         render = true;
     }
 
-    // Update Engine Audio Positions
-    game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
 
 
     // Handle direction triggers 
@@ -709,7 +713,7 @@ void idle() {
                         waitingToStartMatch = false;
                         // Play Game Music
                         game.stopAllSounds();
-                        //game.playMusic("BattleTheme.wav", -8.0f);
+                        game.playMusic("BattleTheme.wav", -8.0f);
                         game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
                     }
                 }

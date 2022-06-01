@@ -170,6 +170,11 @@ public:
     {
         return audioEngine.getChannelsSize();
     }
+    
+    int soundCount()
+    {
+        return audioEngine.getSoundCount();
+    }
 };
 
 
