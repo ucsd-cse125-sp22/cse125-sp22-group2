@@ -343,6 +343,82 @@ void Scene::drawUI(void) {
         }
 
     } // End of DFS while loop.
+}
 
 
+void Scene::setSpotLights(float brightness) {
+	for (std::pair<std::string, SpotLight*> entry : spotLights_init) {
+		spotLights[entry.first]->ambient = brightness * entry.second->ambient;
+		spotLights[entry.first]->diffuse = brightness * entry.second->diffuse;
+		spotLights[entry.first]->specular = brightness * entry.second->specular;
+	}
+}
+
+void Scene::setPointLights(float brightness) {
+	for (std::pair<std::string, PointLight*> entry : pointLights_init) {
+		pointLights[entry.first]->ambient = brightness * entry.second->ambient;
+		pointLights[entry.first]->diffuse = brightness * entry.second->diffuse;
+		pointLights[entry.first]->specular = brightness * entry.second->specular;
+	}
+}
+
+void Scene::setSun(float brightness, bool sunOn) {
+	if (sunOn) { 
+		sun->direction = sun_day->direction;
+		sun->ambient = brightness*sun_day->ambient;
+		sun->diffuse = brightness*sun_day->diffuse;
+		sun->specular = brightness*sun_day->specular;
+	} else {
+		sun->direction = sun_night->direction;
+		sun->ambient = brightness*sun_night->ambient;
+		sun->diffuse = brightness*sun_night->diffuse;
+		sun->specular = brightness*sun_night->specular;
+	}
+}
+
+void Scene::scaleUi(int width, int height) {
+	const float inital_width = 1920.0f;
+	const float inital_height = 1080.0f;
+
+	const float heightRatio = (float) width/ inital_width;
+	const float widthRatio = (float) height/inital_height;
+
+	//screen
+	node["UI_root"]->childtransforms[0] = (glm::mat4(1.0f));
+
+	const float clock_ratio = 85.0f / 101.0f; 
+	//clock
+	node["screen"]->childtransforms[0]=(translate(vec3(-3.0f * widthRatio, 21.5f* heightRatio, 0.0f))* scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+
+	const float tire_icon_ratio = 65.0f / 64.0f;
+	//pink tire
+	node["screen"]->childtransforms[1] = (translate(vec3(-39.0f * widthRatio, 20.4f * heightRatio, 0.0f))* scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+	//blue tire
+	node["screen"]->childtransforms[2] = (translate(vec3(-39.0f * widthRatio, 17.1f * heightRatio, 0.0f))* scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+	//yellow tire
+	node["screen"]->childtransforms[3] = (translate(vec3(-39.0f * widthRatio, 13.8f * heightRatio, 0.0f))* scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+	//green tire
+	node["screen"]->childtransforms[4] = (translate(vec3(-39.0f * widthRatio, 10.5f * heightRatio, 0.0f))* scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+	const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
+	//blowdrier icon
+	node["screen"]->childtransforms[5] = (translate(vec3(36.0f * widthRatio, -16.0f * heightRatio, 0.0f))* scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
+
+	const float mascara_icon_ratio = 179.0f / 177.0f; 
+	const float mascara_bar_ratio = 557.0f / 70.0f;
+	//mascera icon
+	node["screen"]->childtransforms[6] = (translate(vec3(-10.0f * widthRatio, -20.0f * heightRatio, 0.0f))* scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+	//mascera bar
+	node["screen"]->childtransforms[7] = (translate(vec3(1.0f * widthRatio, -20.0f * heightRatio, 0.0f))* scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
+	//white bar
+	node["screen"]->childtransforms[8] = (translate(vec3(-6.8f * widthRatio, -20.0f * heightRatio, -0.1f))* scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
+
+	//drips
+	node["screen"]->childtransforms[9] = (translate(vec3(0.0f * widthRatio, 0.0f * heightRatio, -1.0f))* scale(vec3(70.0f, 600.0f, 1.0f)));
+
+	// TODO: Dynamic scaling? based on window size
+	const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
+	const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
+	//start menu
+	node["screen"]->childtransforms[10] = (translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(START_MENU_SCALE* START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
 }

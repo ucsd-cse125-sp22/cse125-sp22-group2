@@ -115,6 +115,7 @@ void printHelp(){
 
 void initialize(void)
 {
+    glutFullScreen();
     printHelp();
     glClearColor(background[0], background[1], background[2],
                  background[3]); // background color
@@ -154,6 +155,9 @@ void initialize(void)
     glutSetCursor(GLUT_CURSOR_NONE);
 
     scene.camera->setAspect(width, height);
+    scene.setPointLights(0.7f);
+    scene.setSpotLights(1.0f);
+    scene.setSun(0.75, true);
 }
 
 unsigned int quadVAO = 0;
@@ -268,7 +272,9 @@ void display(void) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //scene.draw(scene.node["UI_root"]);
+    scene.camera->nearPlane = scene.camera->ui_near_default;
     scene.drawUI();
+    scene.camera->nearPlane = scene.camera->near_default;
 
 
     // Create the end of match text
@@ -479,8 +485,8 @@ void handleSpace() {
 void keyboard(unsigned char key, int x, int y){
     switch(key){
         case 27: // Escape to quit
-            networkClient->closeConnection();
             exit(0);
+            networkClient->closeConnection();
             break;
         case 'h': // print help
             printHelp();
@@ -622,6 +628,7 @@ void keyboard(unsigned char key, int x, int y){
         case 'q':
             handleSpace();
             break;
+            /*
         case '5':
             brightnessOther += 0.05;
             scene.setPointLights(brightnessOther);
@@ -657,6 +664,7 @@ void keyboard(unsigned char key, int x, int y){
             scene.setSun(brightnessDir, sunOn);
             std::cout << "Sun on: " << sunOn << "\n";
             break;
+            */
         default:
             //glutPostRedisplay();
             break;
@@ -892,10 +900,22 @@ void mouseMovement(int x, int y) {
 }
 
 void onScreenResize(int newWidth, int newHeight) {
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "Old aspect: " << width << ":" << height << " (w:h)\n";
+    }
     width = newWidth;
     height = newHeight;
     scene.camera->setAspect(width, height);
     glViewport(0, 0, width, height);
+    if (DEBUG_LEVEL >= LOG_LEVEL_INFO) {
+        std::cout << "New aspect: " << width << ":" << height << " (w:h)\n";
+		int gWidth = glutGet(GLUT_WINDOW_WIDTH);
+		int gHeight = glutGet(GLUT_WINDOW_HEIGHT);
+        std::cout << "GLUT aspect: " << gWidth << ":" << gHeight << " (w:h)\n";
+		gWidth = glutGet(GLUT_SCREEN_WIDTH);
+		gHeight = glutGet(GLUT_SCREEN_HEIGHT);
+        std::cout << "GLUT screen aspect: " << gWidth << ":" << gHeight << " (w:h)\n";
+    }
 }
 
 int main(int argc, char** argv)
