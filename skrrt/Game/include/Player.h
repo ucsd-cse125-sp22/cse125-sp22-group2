@@ -63,7 +63,7 @@ public:
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
 	void bobCrown(float time);
-	void updateParticles(float time);
+	void updateParticles(float time, glm::vec3 c = glm::vec3(1.0f));
 
 	void setPlayer(Node* player) { 
 		player_node = player; 

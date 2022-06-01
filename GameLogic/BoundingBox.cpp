@@ -204,7 +204,7 @@ glm::vec3 bounding::checkCollisionAdjust(BoundingBox a, BoundingBox b) {
 	axes.push_back(a.bVec);
 	axes.push_back(a.cVec);
 	axes.push_back(b.aVec);
-	axes.push_back(b.bVec);
+	//axes.push_back(b.bVec);
 	axes.push_back(b.cVec);
 	axes.push_back(glm::cross(a.aVec, b.aVec));
 	axes.push_back(glm::cross(a.aVec, b.bVec));

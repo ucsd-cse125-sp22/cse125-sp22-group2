@@ -371,7 +371,7 @@ void handleHonk() {
     sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
 }
 
-void keyboard(unsigned char key, int x, int y){
+void keyboard(unsigned char key, int x, int y) {
     switch(key){
         case 27: // Escape to quit
             networkClient->closeConnection();
@@ -610,7 +610,7 @@ void idle() {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, scene.text_colors[i]);
             //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));

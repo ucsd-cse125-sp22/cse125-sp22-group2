@@ -116,3 +116,67 @@ void Text::RenderText(void)
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Text::RenderTextCenter(void)
+{
+    // activate corresponding render state	
+    //s.Use();
+    glUseProgram(shader);
+
+    //glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
+    //********
+    glActiveTexture(GL_TEXTURE0);
+    //********
+    glBindVertexArray(VAO);
+
+    // adjust the start position by the scaled string length
+    //x -= 11.5 * scale * text.length();
+    float offset = 0.0f;
+
+    // iterate through all characters
+    std::string::const_iterator i;
+    for (i = text.begin(); i != text.end(); i++)
+    {
+        offset += (Characters[*i].Advance >> 6) * scale;
+    }
+
+    x -= offset / 2.0f;
+
+    // iterate through all characters
+    std::string::const_iterator c;
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = Characters[*c];
+
+        float xpos = x + ch.Bearing.x * scale;
+        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+        float w = ch.Size.x * scale;
+        //float w = ch.Size.x * (scale / 2.0f);
+        float h = ch.Size.y * scale;
+        // update VBO for each character
+        float vertices[6][4] = {
+            { xpos,     ypos + h,   0.0f, 0.0f },
+            { xpos,     ypos,       0.0f, 1.0f },
+            { xpos + w, ypos,       1.0f, 1.0f },
+
+            { xpos,     ypos + h,   0.0f, 0.0f },
+            { xpos + w, ypos,       1.0f, 1.0f },
+            { xpos + w, ypos + h,   1.0f, 0.0f }
+        };
+        // render glyph texture over quad
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        // update content of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+        //x += (ch.Advance >> 6) * (scale / 2.0f) + 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+    }
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}

@@ -593,6 +593,13 @@ void ObjPlayer::applyGravity() {
 			}
 		}
 		else {
+			// Check if there is a player right below us
+			int tempID = findObjectPosition(bb, oPlayer);
+			if (tempID != -1) {
+				// Transfer/take the crown
+				crownTransfer(this->objects->at(tempID));
+			}
+
 			// We have something solid beneath us, so reset gravity
 			this->gravity = 0.2f;
 			this->speed = max(this->speed, DEFAULT_MAX_SPEED);
