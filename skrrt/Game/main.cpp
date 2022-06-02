@@ -63,6 +63,7 @@ bool waitingToStartMatch = false;
 bool enableSendPlay = true;
 float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
+bool playMenuTheme = true;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -381,7 +382,6 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
-        game.playMusic("MenuTheme.wav", -6.0f);
     }
 }
 
@@ -887,6 +887,13 @@ void idle() {
 
     toggleStartMenuVisibility(showStartMenu);
 
+    // Only play the start menu theme once
+    if (playMenuTheme) {
+       game.playMusic("MenuTheme.wav", -6.0f);
+       playMenuTheme = false;
+    }
+
+
     // Handle server communication
     const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
     if (connectedToServer) {
@@ -923,6 +930,7 @@ void idle() {
 
                 cse125framing::ServerFrame* frame = receiveDataFromServer();    
 
+                // Ready / Set / Go part
                 if (cse125config::ENABLE_COUNTDOWN) {
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);
