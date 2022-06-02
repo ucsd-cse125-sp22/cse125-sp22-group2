@@ -14,8 +14,25 @@ bool AudioEngine::errorCheck(const std::string& message, FMOD_RESULT engine)
 
 void AudioEngine::update()
 {
-    //std::vector<AudioEngine::channels::iterator> stoppedChannels;
-    // dead code for now
+    // Clear unused channels
+    std::vector<std::unordered_map<int, FMOD::Channel*>::iterator> pStoppedChannels;
+    for (auto it = channels.begin(), itEnd = channels.end(); it != itEnd; ++it)
+    {
+        bool bIsPlaying = false;
+        it->second->isPlaying(&bIsPlaying);
+        if (!bIsPlaying)
+        {
+             pStoppedChannels.push_back(it);
+        }
+    }
+    for (auto& it : pStoppedChannels)
+    {
+         channels.erase(it);
+         //std::cerr << "Erasing a channel!" << std::endl;
+    }
+
+    // Update FMOD Low Level API
+    AudioEngine::system->update();
 }
 
 std::string AudioEngine::loadFile(const std::string& fileName)
@@ -48,7 +65,14 @@ void AudioEngine::loadSound(const std::string& soundName, bool is3d, bool isLoop
     // Set 3D parameters
     if (is3d) 
     {
-        fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE);
+        if (soundName == "Collision.wav")
+        {
+            fmod_sound->set3DMinMaxDistance(MIN_COLLISION_DISTANCE, MAX_3D_DISTANCE);
+        }
+        else
+        {
+            fmod_sound->set3DMinMaxDistance(MIN_3D_DISTANCE, MAX_3D_DISTANCE); // atm just car engine sounds
+        }
     }
 
     if (fmod_sound)
@@ -87,9 +111,9 @@ AudioEngine::AudioEngine()
 AudioEngine::~AudioEngine()
 {
     // Unload sounds
-    for (auto const& sound : library)
+    while (!library.empty())
     {
-        AudioEngine::unloadSound(sound.first);
+        AudioEngine::unloadSound(library.begin()->first);
     }
     std::cerr << "Audio Library Unloaded!" << std::endl;
     AudioEngine::engine = AudioEngine::system->close();
@@ -98,15 +122,9 @@ AudioEngine::~AudioEngine()
 
 /* UTILITY FUNCTIONS */
 
-bool AudioEngine::stopSound(const char* soundName)
-{
-    // TODO
-    return false;
-}
-
 int AudioEngine::playSound(const char* soundName, const vec3& position, float dB)
 {
-    int channelId = channels.size();
+    int channelId = soundCounter++;
     auto soundIter = library.find(soundName);
     if (soundIter != library.end())
     {
@@ -135,6 +153,30 @@ int AudioEngine::playSound(const char* soundName, const vec3& position, float dB
     return channelId;
 }
 
+bool AudioEngine::isPlaying(int channelId)
+{
+    auto channelIter = channels.find(channelId);
+    bool bisPlaying = false;
+    if (channelIter != channels.end())
+    {
+        std::string e = "Stopping Channel";
+        e += channelId;
+        channelIter->second->isPlaying(&bisPlaying);
+    }
+    return bisPlaying;
+}
+
+void AudioEngine::stopChannel(int channelId)
+{
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        std::string e = "Stopping Channel";
+        e += channelId;
+        AudioEngine::errorCheck(e, channelIter->second->stop());
+    }
+}
+
 void AudioEngine::stopAllChannels()
 {
     for (int i = 0; i < MAX_CHANNELS; i++)
@@ -147,6 +189,7 @@ void AudioEngine::stopAllChannels()
             pChannel->stop();
         }
     }
+    soundCounter = 0;
 }
 
 void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
@@ -155,7 +198,8 @@ void AudioEngine::setChannel3dPosition(int channelId, const vec3& position)
     if (channelIter != channels.end())
     {
         FMOD_VECTOR fmod_position = AudioEngine::vecToFmodVec(position);
-        channelIter->second->set3DAttributes(&fmod_position, NULL);
+        std::string e = "Set 3D Position: ";
+        AudioEngine::errorCheck(e, channelIter->second->set3DAttributes(&fmod_position, NULL));
     }
 }
 
@@ -164,8 +208,20 @@ void AudioEngine::setChannelVolume(int channelId, float dB)
     auto channelIter = channels.find(channelId);
     if (channelIter != channels.end())
     {
-        channelIter->second->setVolume(AudioEngine::dbToVolume(dB));
+        std::string e = "Set channel volume: ";
+        AudioEngine::errorCheck(e, channelIter->second->setVolume(AudioEngine::dbToVolume(dB)));
     }
+}
+
+float AudioEngine::getChannelVolume(int channelId)
+{
+    float volume = 0.0f;
+    auto channelIter = channels.find(channelId);
+    if (channelIter != channels.end())
+    {
+        channelIter->second->getVolume(&volume);
+    }
+    return volume;
 }
 
 

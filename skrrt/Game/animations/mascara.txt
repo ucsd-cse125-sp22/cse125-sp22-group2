@@ -1,0 +1,48 @@
+# Fake animations format 
+
+# Rotations 
+# r frameNum x.rotation y.rotation z.rotation
+r 0 0 0 0
+r 0 0 20 0
+r 0 0 40 0
+r 0 0 60 0
+r 0 0 70 0  
+r 0 0 80 0
+r 0 0 100 0
+r 0 0 120 0
+r 0 0 140 0
+r 0 0 160 0
+r 0 0 180 0
+r 0 0 200 0
+r 0 0 220 0
+r 0 0 240 0
+r 0 0 260 0
+r 0 0 280 0 
+r 0 0 300 0
+r 0 0 320 0
+r 0 0 340 0
+r 0 0 0 0
+r 0 0 20 0
+r 0 0 40 0
+r 0 0 60 0
+r 0 0 80 0
+r 0 0 100 0
+r 0 0 120 0
+r 0 0 140 0
+r 0 0 160 0
+r 0 0 180 0
+r 0 0 200 0
+r 0 0 220 0
+r 0 0 240 0
+r 0 0 260 0
+r 0 0 280 0
+r 0 0 300 0
+r 0 0 320 0
+r 0 0 340 0
+
+
+# Translations
+# t frameNum x.offset y.offset z.offset
+
+# Scaling 
+# s frameNum x.scaling y.scaling z.scaling 

@@ -41,6 +41,19 @@ private:
     glm::mat4 loose_crown_translation;
     glm::mat4 initial_crown_transform;
 
+	std::vector<Node*> lipsticks;
+	std::vector<glm::mat4> initial_lipstick_transforms;
+
+	std::vector<Node*> mascaras;
+	std::vector<glm::mat4> initial_mascaras_transforms;
+
+	std::vector<Node*> powder_brushes;
+	std::vector<glm::mat4> initial_powder_transforms;
+
+	//Animation gateAnimation;
+	std::map <std::string, Animation*> animations; 
+	void applyAnimations(); 
+
     Node* blowdryer_status_icon = nullptr;
     std::vector<Node*> blowdryer_pickup_node;
     std::vector<glm::mat4> blowdryer_translation;
@@ -50,14 +63,20 @@ private:
     std::vector<glm::mat4> initial_arm_transforms;
 
     //Animation gateAnimation;
-    std::map <std::string, Animation*> animations; 
+  
+    // Audio Engine
+    typedef struct {
+        int idle;
+        int accelerate;
+    } CarEngine;
+
     AudioEngine audioEngine;
-    std::map<int, int> carEngineChannels;
-    void applyAnimations(); 
+    std::map<int, CarEngine> carEngineChannels;
 
 public: 
     std::vector<int> scores; 
     std::vector<Player*> players; 
+    bool carEngineState;
 
     Game(int numPlayers) {
         for (int i = 0; i < numPlayers; i++) {
@@ -89,9 +108,7 @@ public:
             if (child->name == "blowdryer_icon") {
                 blowdryer_status_icon = child;
             }
-
-        }
-
+		}
         initial_drip_transform = drips->modeltransforms[0];
         initial_makeup_transform = makeup_status_bar->modeltransforms[0]; 
 
@@ -115,6 +132,18 @@ public:
             if (child->name.find("makeup_station") != std::string::npos) {
                 makeup_gate_arms.push_back(child->childnodes[0]); 
                 initial_arm_transforms.push_back(child->childnodes[0]->modeltransforms[0]);
+
+				// lipstick 
+				lipsticks.push_back(child->childnodes[1]); 
+				initial_lipstick_transforms.push_back(child->childnodes[1]->modeltransforms[0]);
+
+				// mascaras
+				mascaras.push_back(child->childnodes[2]);
+				initial_mascaras_transforms.push_back(child->childnodes[2]->modeltransforms[0]);
+
+				// powder brush 
+				powder_brushes.push_back(child->childnodes[3]);
+				initial_powder_transforms.push_back(child->childnodes[3]->modeltransforms[0]);
             }
         }
 
@@ -143,13 +172,30 @@ public:
     void triggerCarCollisionAnimation(int playerNum);
 
     /* AUDIO TRIGGERS */
+    void updateAudio();
     void stopAllSounds();
-    void playMusic(const char* soundName, float db = 0.0);
+    int playMusic(const char* soundName, float db = 0.0);
     //void stopMusic(const char* soundName);
-    void triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
+    int triggerFx(const char* fxName, const vec3& position = { 0,0,0 }, float dB = 0.0);
 
     vec3 computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
 
+    float fadeEngine(int channelId, float targetDB);
+
+    void startCarEngines(int clientId, vec3& cameraPos);
+    void stopCarEngines();
+    void updateCarEngines(int clientId, vec3& cameraPos);
+
+    // TESTING ONLY
+    int audioChannelsSize()
+    {
+        return audioEngine.getChannelsSize();
+    }
+    
+    int soundCount()
+    {
+        return audioEngine.getSoundCount();
+    }
 };
 
 

@@ -18,10 +18,11 @@ void Game::updateDrips(int time, RealNumber makeupLevel) {
 
 void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
 
-    // Scale makeup status bar based on the makeup level
-    glm::mat4 scale = glm::scale(glm::vec3(((float)makeupLevel / 100.0f), 1.0f, 1.0f));
+	// Scale makeup status bar based on the makeup level
+	float max_offset = -1.66f; 
+	glm::mat4 translate = glm::translate(glm::vec3(max_offset * (1 - (float)makeupLevel / 100.0f), 0.0f, 0.0f));
+	makeup_status_bar->modeltransforms[0] = translate * initial_drip_transform;
 
-    makeup_status_bar->modeltransforms[0] = scale * initial_drip_transform;
 }
 
 void Game::updateBlowdryerIcon(bool visible) {
@@ -48,22 +49,34 @@ void Game::bobPowerup(int time) {
 
 void Game::parseGateAnimation() {
 
-    const char* path = "animations/makeup_gate.txt";
+	const char* path = "animations/makeup_gate.txt";
+	const char* lipstick_path = "animations/lipstick.txt";
+	const char* mascara_path = "animations/mascara.txt";
+	const char* powder_path = "animations/powder_brush.txt";
 
-    for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
-        animations["gate_anim" + std::to_string(i)] = new Animation();
+	for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
+		animations["gate_anim" + std::to_string(i)] = new Animation();
+		animations["gate_anim" + std::to_string(i)]->readAnimation(path);
 
-        animations["gate_anim" + std::to_string(i)]->readAnimation(path);
-    }
-    
-    std::cout << "Successfully read in gate animation" << std::endl;
+		animations["lipstick_anim" + std::to_string(i)] = new Animation(); 
+		animations["lipstick_anim" + std::to_string(i)]->readAnimation(lipstick_path);
+
+		animations["mascara_anim" + std::to_string(i)] = new Animation(); 
+		animations["mascara_anim" + std::to_string(i)]->readAnimation(mascara_path);
+
+		animations["powder_anim" + std::to_string(i)] = new Animation(); 
+		animations["powder_anim" + std::to_string(i)]->readAnimation(powder_path);
+	}
 }
 
 /* 
  * Function to trigger gate animation. 
  */
 void Game::triggerGateAnimation(int gateNum) {
-    animations["gate_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["gate_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["lipstick_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["mascara_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["powder_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 }
 
 // *******************************************
@@ -109,9 +122,18 @@ void Game::applyAnimations() {
     for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
         glm::mat4 new_transformation = animations["gate_anim" + std::to_string(i)]->getCurrentTransform();
 
-        // Apply the transformations to the gate's arm
-        makeup_gate_arms[i]->modeltransforms[0] = initial_arm_transforms[i] * new_transformation;
-    }
+		// Apply the transformations to the gate's arm
+		makeup_gate_arms[i]->modeltransforms[0] = initial_arm_transforms[i] * new_transformation;
+
+		new_transformation = animations["lipstick_anim" + std::to_string(i)]->getCurrentTransform(); 
+		lipsticks[i]->modeltransforms[0] = initial_lipstick_transforms[i] * new_transformation;
+
+		new_transformation = animations["mascara_anim" + std::to_string(i)]->getCurrentTransform(); 
+		mascaras[i]->modeltransforms[0] = initial_mascaras_transforms[i] * new_transformation;
+
+		new_transformation = animations["powder_anim" + std::to_string(i)]->getCurrentTransform(); 
+		powder_brushes[i]->modeltransforms[0] = initial_powder_transforms[i] * new_transformation;
+	}
 
     // Car collision animations 
     for (int i = 0; i < 4; i++) {
@@ -127,20 +149,28 @@ void Game::applyAnimations() {
 // *********************************
 // AUDIO TRIGGERS
 // *********************************
+void Game::updateAudio()
+{
+    // Update Audio Engine
+    audioEngine.update();
+}
+
 void Game::stopAllSounds()
 {
     audioEngine.stopAllChannels();
 }
 
-void Game::playMusic(const char* musicName, float db)
+int Game::playMusic(const char* musicName, float db)
 {
     audioEngine.stopAllChannels();
-    audioEngine.playSound(musicName, { 0,0,0 }, db);
+    int channel = audioEngine.playSound(musicName, { 0,0,0 }, db);
+    return channel;
 }
 
-void Game::triggerFx(const char* fxName, const vec3& position, float dB)
+int Game::triggerFx(const char* fxName, const vec3& position, float dB)
 {
-    audioEngine.playSound(fxName, position);
+    int channel = audioEngine.playSound(fxName, position, dB);
+    return channel;
 }
 
 vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos)
@@ -163,4 +193,79 @@ vec3 Game::computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playe
     eventRelativeToCameraPos.z = glm::sin(theta) * distance.x + glm::cos(theta) * distance.z;
 
     return eventRelativeToCameraPos;
+}
+
+void Game::startCarEngines(int clientId, vec3& cameraPos)
+{
+    vec3 playerPos = players[clientId]->getPosition();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) 
+    {
+        float db = OTHER_PLAYER_ENGINE_DB;
+        vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+        if (i == clientId) 
+        {
+            db = CLIENT_ENGINE_DB; // turn down player engine volume
+        }
+        // Start Car Engine
+        int idle = Game::triggerFx("EngineIdle.wav", enginePosition, db);
+        int accelerate = Game::triggerFx("EngineAccelerate.wav", enginePosition, VOLUME_OFF);
+        // Add channel number to carEngineChannels
+        carEngineChannels[i] = CarEngine{ idle, accelerate };
+        printf("player: %d | idle: %d accelerate: %d\n", i, idle, accelerate);
+
+        // Update so we can have multiple instances of the same sound
+        audioEngine.update();
+    }
+    carEngineState = true;
+}
+
+void Game::stopCarEngines()
+{
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        CarEngine carEngine = carEngineChannels[i];
+        audioEngine.stopChannel(carEngine.idle);
+        audioEngine.stopChannel(carEngine.accelerate);
+    }
+    carEngineState = false;
+}
+
+float Game::fadeEngine(int channelId, float targetDb)
+{
+    float currVolume = audioEngine.getChannelVolume(channelId);
+    float currDb = audioEngine.volumeToDb(currVolume);
+    currDb += (targetDb - currDb) * 0.5f;
+    return currDb;
+}
+
+void Game::updateCarEngines(int clientId, vec3& cameraPos)
+{
+    // If Car Engines aren't on
+    if (carEngineState)
+    {
+        vec3 playerPos = players[clientId]->getPosition();
+        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+        {
+            // Interpolate carEngine sound to play
+            RealNumber speed = players[i]->getSpeed();
+            if (speed >= 0.5f) speed = 0.5f; // Clamp values above 0.5
+            CarEngine carEngine = carEngineChannels[i];
+            RealNumber c = speed / 0.5; // audio fade coefficient based on speed
+            float idleDb = i == clientId ? CLIENT_ENGINE_DB : OTHER_PLAYER_ENGINE_DB;
+            if (speed == 0.5)
+            {
+                audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, VOLUME_OFF));
+                audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, idleDb));
+            }
+            else {
+                audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, idleDb));
+                audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, VOLUME_OFF));
+            }
+
+            // Update Player car engine location
+            vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+            audioEngine.setChannel3dPosition(carEngine.idle, enginePosition);
+            audioEngine.setChannel3dPosition(carEngine.accelerate, enginePosition);
+        }
+    }
 }
