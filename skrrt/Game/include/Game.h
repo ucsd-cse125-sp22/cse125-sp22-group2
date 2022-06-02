@@ -41,6 +41,12 @@ private:
 	std::vector<Node*> lipsticks;
 	std::vector<glm::mat4> initial_lipstick_transforms;
 
+	std::vector<Node*> mascaras;
+	std::vector<glm::mat4> initial_mascaras_transforms;
+
+	std::vector<Node*> powder_brushes;
+	std::vector<glm::mat4> initial_powder_transforms;
+
 	//Animation gateAnimation;
 	std::map <std::string, Animation*> animations; 
 	void applyAnimations(); 
@@ -93,6 +99,13 @@ public:
 				lipsticks.push_back(child->childnodes[1]); 
 				initial_lipstick_transforms.push_back(child->childnodes[1]->modeltransforms[0]);
 
+				// mascaras
+				mascaras.push_back(child->childnodes[2]);
+				initial_mascaras_transforms.push_back(child->childnodes[2]->modeltransforms[0]);
+
+				// powder brush 
+				powder_brushes.push_back(child->childnodes[3]);
+				initial_powder_transforms.push_back(child->childnodes[3]->modeltransforms[0]);
 			}
 		}
 

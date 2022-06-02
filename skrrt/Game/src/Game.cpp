@@ -36,6 +36,8 @@ void Game::parseGateAnimation() {
 
 	const char* path = "animations/makeup_gate.txt";
 	const char* lipstick_path = "animations/lipstick.txt";
+	const char* mascara_path = "animations/mascara.txt";
+	const char* powder_path = "animations/powder_brush.txt";
 
 	for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
 		animations["gate_anim" + std::to_string(i)] = new Animation();
@@ -43,6 +45,12 @@ void Game::parseGateAnimation() {
 
 		animations["lipstick_anim" + std::to_string(i)] = new Animation(); 
 		animations["lipstick_anim" + std::to_string(i)]->readAnimation(lipstick_path);
+
+		animations["mascara_anim" + std::to_string(i)] = new Animation(); 
+		animations["mascara_anim" + std::to_string(i)]->readAnimation(mascara_path);
+
+		animations["powder_anim" + std::to_string(i)] = new Animation(); 
+		animations["powder_anim" + std::to_string(i)]->readAnimation(powder_path);
 	}
 	
 	std::cout << "Successfully read in gate animation" << std::endl;
@@ -54,6 +62,8 @@ void Game::parseGateAnimation() {
 void Game::triggerGateAnimation(int gateNum) {
 	animations["gate_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 	animations["lipstick_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["mascara_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+	animations["powder_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 }
 
 // *******************************************
@@ -104,6 +114,12 @@ void Game::applyAnimations() {
 
 		new_transformation = animations["lipstick_anim" + std::to_string(i)]->getCurrentTransform(); 
 		lipsticks[i]->modeltransforms[0] = initial_lipstick_transforms[i] * new_transformation;
+
+		new_transformation = animations["mascara_anim" + std::to_string(i)]->getCurrentTransform(); 
+		mascaras[i]->modeltransforms[0] = initial_mascaras_transforms[i] * new_transformation;
+
+		new_transformation = animations["powder_anim" + std::to_string(i)]->getCurrentTransform(); 
+		powder_brushes[i]->modeltransforms[0] = initial_powder_transforms[i] * new_transformation;
 	}
 
 	// Car collision animations 
