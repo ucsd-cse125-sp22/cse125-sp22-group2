@@ -769,7 +769,7 @@ void Scene::init(int width, int height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	// attach texture to framebuffer
 	glFramebufferTexture2D(
-		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, uiBuffer, 0
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, uiBuffer, 0
 	);
     /*
     unsigned int rboDepth;
@@ -778,7 +778,7 @@ void Scene::init(int width, int height) {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
     */
-    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT0};
+    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT2};
     glDrawBuffers(1, attachmentsUI);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "UI Framebuffer not complete!" << std::endl;

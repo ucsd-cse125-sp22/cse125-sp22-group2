@@ -33,7 +33,7 @@
 const static int width = cse125constants::WINDOW_WIDTH;
 const static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
-static const glm::vec4 background(0.0f, 0.0f, 0.0f, 1.0f);
+static const glm::vec4 background(0.0f, 0.0f, 0.0f, 0.0f);
 static Scene scene;
 //static ParticleCube* testcube;
 //static Player p0, p1, p2, p3;
@@ -294,7 +294,6 @@ void display(void) {
     /// <summary>
     /// RENDER NORMAL
     /// </summary>
-
     glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
     unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers(2, attachmentsWorld);
@@ -330,6 +329,11 @@ void display(void) {
     scene.camera->nearPlane = scene.camera->ui_near_default;
 
     scene.drawDrips();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.uiFBO);
+    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(1, attachmentsUI);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     scene.drawUI();
 
@@ -381,10 +385,10 @@ void display(void) {
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
 	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[2]);
-	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[2]);
+	glBindTexture(GL_TEXTURE_2D, scene.uiBuffer);
 	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsets[!horizontal]);
 	glBindTexture(GL_TEXTURE_2D, scene.pingpongBuffer[!horizontal]);
-    renderQuad(scene.bloomTexOffsets[0], scene.bloomTexOffsets[0], scene.pingpongOffsets[!horizontal]);
+    renderQuad(scene.bloomTexOffsets[0], scene.bloomTexOffsets[2], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
 }
