@@ -13,7 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS true
+#define ENABLE_DRIPS false
 
 using namespace glm;
 void Scene::init(int width, int height) {
@@ -57,7 +57,7 @@ void Scene::init(int width, int height) {
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["cones"] = new Obj;
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["flowers"] = new Obj; 
     geometry["flowers"]->init("models/FlowersPillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
@@ -81,7 +81,7 @@ void Scene::init(int width, int height) {
     geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
 
     geometry["blowdryer_world"] = new Obj;
-    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
 
     //*****************************
     //********** UI obj ***********
@@ -768,7 +768,8 @@ void Scene::init(int width, int height) {
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
     const float clock_ratio = 407.0f / 514.0f; 
     node["screen"]->childnodes.push_back(node["clock"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f+1.5f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    //["screen"]->childtransforms.push_back(translate(vec3(-3.0f + 1.5f, 21.5f + 2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
     const float tire_icon_ratio = 65.0f / 64.0f;
     node["screen"]->childnodes.push_back(node["pink_tire"]);
@@ -943,7 +944,7 @@ void Scene::init(int width, int height) {
     game_time->updateText("100");
 
     countdown_instructions_text = new Text(text_shader->program);
-    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready ... ");
+    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready  ");
 
     countdown_go_text = new Text(text_shader->program);
     countdown_go_text->updateText("Default countdown text");

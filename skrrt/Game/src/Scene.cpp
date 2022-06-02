@@ -222,15 +222,15 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
     // Draw game time
 	text_shader->textColor = game_time->getColor(); 
     text_shader->setUniforms();
-	game_time->setPosition(currentWidth / 2.0f, currentHeight - 75.0f);
-    game_time->RenderText();
+	game_time->setPosition(currentWidth / 2.0f + 2.0f, currentHeight - 75.0f);
+    game_time->RenderTextCenter();
 
     // Draw countdown timer text
     if (countdownTimeRemaining > 0) {
         text_shader->textColor = countdown_instructions_text->getColor();
         text_shader->setUniforms();
-        countdown_instructions_text->setPosition(currentWidth / 4.0f, currentHeight - 200.0f);
-        countdown_instructions_text->RenderText();
+        countdown_instructions_text->setPosition(currentWidth / 2.0f, currentHeight - 200.0f);
+        countdown_instructions_text->RenderTextCenter();
 
         const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
 
@@ -239,7 +239,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         float secondsInteger = 0.0f;
         float secondsFraction = 1.0f - modf(countdownTimeRemaining / cse125config::TICK_RATE, &secondsInteger);
         std::string ellipses = "";
-        if (secondsFraction >= 0.0f) {
+        if (secondsFraction >= 0.01f) {
             ellipses += ".";
         }
         if (secondsFraction >= 0.33f) {
@@ -253,22 +253,22 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         case 2:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("READY " + ellipses);
+            countdown_go_text->updateText("READY" + ellipses);
             countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
-            countdown_go_text->RenderText();
+            countdown_go_text->RenderTextCenter();
         case 1:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
-            countdown_go_text->updateText("SET " + ellipses);
+            countdown_go_text->updateText("SET" + ellipses);
             countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
-            countdown_go_text->RenderText();
+            countdown_go_text->RenderTextCenter();
             break;
         case 0:
             text_shader->textColor = countdown_go_text->getColor();
             text_shader->setUniforms();
             countdown_go_text->updateText("GO!");
             countdown_go_text->setPosition(currentWidth / 2.0f, currentHeight - 400.0f);
-            countdown_go_text->RenderText();
+            countdown_go_text->RenderTextCenter();
             break;
         default:
             break;
@@ -281,8 +281,8 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         text_shader->textColor = match_end_text->getColor();
         text_shader->setUniforms();
         match_end_text->updateText(matchEndText);
-        match_end_text->setPosition(currentWidth / 4.0f, currentHeight - 200.0f);
-        match_end_text->RenderText();
+        match_end_text->setPosition(currentWidth / 2.0f, currentHeight - 200.0f);
+        match_end_text->RenderTextCenter();
     }
 }
 
