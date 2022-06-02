@@ -170,7 +170,13 @@ void ObjPlayer::step(float gameTime) {
 	if (powerupTime) {
 		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
 		speed = max(speed, POWERUP_SPEED);
-		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * TICK_FACTOR * this->speed / 2.0f, this->direction, this->up));
+		ObjTrail* t = new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * TICK_FACTOR * this->speed / 2.0f, this->direction, this->up);
+		if (createTrailCheck(t)) {
+			objects->push_back(t);
+		}
+		else {
+			delete t;
+		}
 	}
 
 	// Gravity
@@ -450,13 +456,23 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 		if (i == this->id) {
 			continue;
 		}
-		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
-			if (type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+		if (this->objects->at(i)->type == type && type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+			if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+bool ObjPlayer::createTrailCheck(ObjTrail* newTrail) {
+	int objCount = this->objects->size();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (this->objects->at(i)->type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID == this->id && bounding::checkCollision(newTrail->boundingBox, this->objects->at(i)->boundingBox)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
