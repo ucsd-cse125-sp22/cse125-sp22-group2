@@ -106,8 +106,8 @@ void ObjPlayer::step(float gameTime) {
 	// Makeup station
 	if (booth != -1 && boothTime) {
 		makeupLevel = MAKEUP_MAX;
-		glm::vec3 destination = (position + objects->at(booth)->position) / 2.0f;
-		glm::vec3 dir = (direction + objects->at(booth)->direction) / 2.0f;
+		glm::vec3 destination = (1.5f * position + objects->at(booth)->position) / 2.5f;
+		glm::vec3 dir = (1.5f * direction + objects->at(booth)->direction) / 2.5f;
 		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 		if (checkPlaceFree(bb)) {
 			this->position = destination;
@@ -147,7 +147,7 @@ void ObjPlayer::step(float gameTime) {
 	// Adjust speed above threshold
 	if (speed > SPEED_THRESHOLD) {
 		if (glm::dot(direction, boostTargetDirection) < 0.95f) {
-			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.35f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
+			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.25f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
 			BoundingBox bb = generateBoundingBox(position, targetDir, this->up);
 			if (checkPlaceFree(bb)) {
 				this->direction = targetDir;
@@ -155,14 +155,14 @@ void ObjPlayer::step(float gameTime) {
 			}
 		}
 		speed -= thresholdDecay;
-		thresholdDecay += 0.01f;
+		thresholdDecay += 0.01f * TICK_FACTOR;
 	}
 	else {
 		boostTargetDirection = direction;
 		thresholdDecay = 0.0f;
 		// Lower speed if above maxSpeed
 		if (speed > maxSpeed) {
-			speed = max(maxSpeed, speed - SPEED_DECAY);
+			speed = max(maxSpeed, speed - (SPEED_DECAY * TICK_FACTOR));
 		}
 	}
 
@@ -211,11 +211,11 @@ void ObjPlayer::action(glm::vec3 dir) {
 
 		// Increase speed (Note: if we are above the max speed we need to ignore this)
 		if (speed < maxSpeed) {
-			speed = min(maxSpeed, speed + SPEED_FORCE);
+			speed = min(maxSpeed, speed + (SPEED_FORCE * TICK_FACTOR));
 		}
 
 		// Set direction
-		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, pow(speed / SPEED_THRESHOLD, TICK_FACTOR))));
 		if (glm::dot(newDir, dir) > 0.9999f) {
 			newDir = dir;
 		}
@@ -224,7 +224,7 @@ void ObjPlayer::action(glm::vec3 dir) {
 		if (powerupTime && momentum == 0.0f) {
 			speed = 0.0f;
 			momentum = 0.01f;
-			newDir = glm::normalize(lerp(this->direction, dir, 0.2f));
+			newDir = glm::normalize(lerp(this->direction, dir, 0.15f));
 		}
 
 		// Move
@@ -246,8 +246,8 @@ void ObjPlayer::idle() {
 	}
 
 	if (speed < SPEED_THRESHOLD) {
-		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
-		speed = max(0.0f, speed - SPEED_DECAY);
+		momentum = max(0.0f, momentum - (MOMENTUM_DECAY * TICK_FACTOR));
+		speed = max(0.0f, speed - (SPEED_DECAY * TICK_FACTOR));
 	}
 	if (speed > 0.0f && !boothTime) {
 		move(direction);
@@ -258,7 +258,7 @@ void ObjPlayer::idle() {
 
 void ObjPlayer::move(glm::vec3 dir) {
 	// Where we are trying to move (might change during collision loop)
-	glm::vec3 destination = this->position + this->speed * dir;
+	glm::vec3 destination = this->position + (this->speed * TICK_FACTOR) * dir;
 
 	// Generate a bounding box at our destination and check what we would collide with
 	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
@@ -300,7 +300,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 		if (obj->type == oPlayer) {
 			glm::vec3 d = glm::normalize(obj->position - this->position);
 			if (glm::dot(d, dir) > 0.0f) {
-				pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+				pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed * TICK_FACTOR));
 			}
 			
 			// Don't waste adjustment if player was pushed entirely out of the way
@@ -529,8 +529,8 @@ void ObjPlayer::applyGravity() {
 		// Check whether something is below us
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
-			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
-			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			this->gravity = min(this->gravity + (GRAVITY_FORCE * TICK_FACTOR), GRAVITY_MAX);
+			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity * TICK_FACTOR, 0.0f);
 			// Make sure we don't fall through the floor
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
@@ -645,8 +645,8 @@ void ObjPlayer::applyGravity() {
 	//	this->bounced = true;
 	//}
 	// Trampoline
-	if (this->position.y < -5.0f) {
-		this->gravity = -0.75f;
+	if (this->position.y < -4.725f) {
+		this->gravity = -0.732f;
 		this->bounced = true;
 	}
 

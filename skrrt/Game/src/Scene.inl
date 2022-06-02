@@ -60,7 +60,7 @@ void Scene::init(int width, int height) {
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["blowdryer_world"] = new Obj;
-    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
+    geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
 
     //*****************************
     //********** UI obj ***********
