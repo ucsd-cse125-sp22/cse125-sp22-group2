@@ -74,7 +74,8 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 		if (particleRad > 0.1f) {
 			rad += distribution(gen) * 0.02f;
 		}
-		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad, color);
+
+		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad, particleModel, color);
 
 		float random = ((float)rand() / INT_MAX);
 

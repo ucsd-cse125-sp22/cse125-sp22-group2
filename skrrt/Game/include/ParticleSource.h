@@ -10,6 +10,8 @@
 #include <queue>
 #include <random>
 #include <GL/glew.h>
+#include "Obj.h"
+#include "Model.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +49,10 @@ private:
 	Particle* particles[MAX_PARTICLES] = { nullptr };
 	int numParticles;
 
+	Obj* particleObj; 
+	Material* particleMaterial;
+	Model* particleModel;
+
 	std::default_random_engine gen;
 
 public:
@@ -74,6 +80,17 @@ public:
 		particleRadius = particleRad; 
 		collisionElasticity = colElast; 
 		collisionFriction = colFrict;
+
+		particleObj = new Obj;
+		particleObj->init("models/Crown.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 2);
+
+		particleMaterial = new Material; 
+		particleMaterial->shininess = 50.0f;
+
+		particleModel = new Model; 
+		particleModel->geometry = particleObj;
+		particleModel->material = particleMaterial;
+
 
 		std::cout << "Initialized Particle Source" << std::endl;
 	}

@@ -10,6 +10,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <cstdlib>
 #include <GL/glew.h>
+#include "Model.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -26,10 +27,12 @@ private:
 	float radius;
 	glm::vec3 color;
 
+	Model* model;
+
 public:
 	bool fixed;
 
-	Particle(glm::vec3& p, glm::vec3& v, glm::vec3& f, float m, bool fix, float lifesp = 10000000000000000, float rad = 0.01, glm::vec3 c = glm::vec3(1.0f));
+	Particle(glm::vec3& p, glm::vec3& v, glm::vec3& f, float m, bool fix, float lifesp = 10000000000000000, float rad = 0.01, Model* particleModel = nullptr, glm::vec3 c = glm::vec3(1.0f));
 
 	glm::vec3 getPosition() { return Position; }
 	glm::vec3 getVelocity() { return Velocity; }
