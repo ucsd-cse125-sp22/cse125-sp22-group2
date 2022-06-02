@@ -90,6 +90,47 @@ std::string makeMatchEndText(int playerId, int winnerId) {
     return matchEndText;
 }
 
+
+// TODO: Make this function tell you which ready/set/go sound to play
+std::string makeCountdownText(const float& countdownTimeRemaining) {
+    if (countdownTimeRemaining <= 0.0f) {
+        return "";
+    }
+    std::string countdownText = "";
+
+    // Determine the number of ellipses to display to simulate animation
+    // Each 1/3 of a whole number corresponds to one ellipsis
+    const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
+    float secondsInteger = 0.0f;
+    float secondsFraction = 1.0f - modf(countdownTimeRemaining / cse125config::TICK_RATE, &secondsInteger);
+    std::string ellipses = "";
+    if (secondsFraction >= 0.01f) {
+        ellipses += ".";
+    }
+    if (secondsFraction >= 0.33f) {
+        ellipses += ".";
+    }
+    if (secondsFraction >= 0.67f) {
+        ellipses += ".";
+    }
+
+    switch (secondsLeft) {
+    case 2:
+        countdownText = "READY " + ellipses;
+        break;
+    case 1:
+        countdownText = "SET " + ellipses;
+        break;
+    case 0:
+        countdownText = "GO!";
+        break;
+    default:
+        break;
+    }
+    return countdownText;
+}
+
+
 void printHelp(){
 
         /*
@@ -328,13 +369,20 @@ void display(void) {
     scene.camera->nearPlane = scene.camera->near_default;
 
 
-    // Create the end of match text
-    const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
-    if (showMatchEndText) {
-        scene.drawText(countdownTimeRemaining, true, makeMatchEndText(clientId, winnerId));
-    } else {
-        scene.drawText(countdownTimeRemaining, false);
+    // Create text elements
+    // The countdown, match end, and normal gameplay events should never overlap.
+    // Therefore, only text for the current ongoing event will be drawn
+    const bool renderCountdownText = cse125config::ENABLE_COUNTDOWN && waitingToStartMatch;
+    const bool renderMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
+    std::string matchEndText = "";
+    std::string countdownText = "";
+    if (renderCountdownText) {
+        countdownText = makeCountdownText(countdownTimeRemaining);
     }
+    if (renderMatchEndText) {
+        matchEndText = makeMatchEndText(clientId, winnerId);
+    }
+    scene.drawText(renderCountdownText, renderMatchEndText, countdownText, matchEndText);
 
     glDisable(GL_BLEND);
     

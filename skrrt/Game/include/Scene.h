@@ -141,14 +141,8 @@ public:
                                 glm::vec3(0.91f, 0.90f, 0.32f),  // yellow
                                 glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
-    /**
-     * @brief Draws the text-based UI elements on the screen
-     *
-     * @param countdownTimeRemaining the amount of time left in the countdown
-     * @param renderMatchEndText whether to render the end of match text
-     * @param matchEndText       the end of match text to render
-     */
-    void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
+
+    void drawText(const bool& renderCountdownText, const bool& renderMatchEndText, const std::string& countdownText = "", const std::string& matchEndText = "");
     void drawUI(void); 
 
     void updateScreen(void);
