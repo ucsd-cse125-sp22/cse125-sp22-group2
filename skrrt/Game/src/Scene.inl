@@ -40,7 +40,7 @@ void Scene::init(int width, int height) {
     geometry["spotlight"]->init("models/Spotlight.obj", "textures/crown_spotlight_light.png", "textures/crown_spotlight_light_specular.png", "textures/crown_spotlight_emission.png", 2);
 
     geometry["map"] = new Obj;
-    geometry["map"]->init("models/Map_Complete.obj", "textures/MapTexture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
+    geometry["map"]->init("models/Map.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
     geometry["plane"] = new Obj;
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 4);
@@ -99,10 +99,12 @@ void Scene::init(int width, int height) {
     //          SET THIS VALUE            //
     //      WHEN YOU ADD A NEW OBJECT     //
     ////////////////////////////////////////
-    int maxObjectNumber = 19; // THIS VALUE RIGHT HERE :)
+    int maxObjectNumber = 20; // THIS VALUE RIGHT HERE :)
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
     bloomTexOffsets[0] = shadowMapOffset + 1;
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
+    pingpongOffsets[0] = bloomTexOffsets[1] + 1;
+    pingpongOffsets[1] = pingpongOffsets[0] + 1;
 
     // Create a material palette
     material["wood"] = new Material;
@@ -751,6 +753,26 @@ void Scene::init(int width, int height) {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    //framebuffer for gaussian ping pong
+    glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongBuffer);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+        glActiveTexture(GL_TEXTURE0 + pingpongOffsets[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[i]);
+		glTexImage2D(
+			GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+		);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBuffer[i], 0
+		);
+	}
+
     // Initialize shader
     if (ENABLE_SHADOW_MAP) {
         shader = new SurfaceShader;
@@ -770,6 +792,12 @@ void Scene::init(int width, int height) {
         quad_shader->compile();
         glUseProgram(quad_shader->program);
         quad_shader->initUniforms();
+
+        gaussian_shader = new GaussianShader;
+        gaussian_shader->read_source("shaders/gaussian.vert", "shaders/gaussian.frag");
+        gaussian_shader->compile();
+        glUseProgram(gaussian_shader->program);
+        gaussian_shader->initUniforms();
     } else {
         shader = new SurfaceShader;
         shader->read_source("shaders/projectiveShadowsDisabled.vert", "shaders/lightingShadowsDisabled.frag");

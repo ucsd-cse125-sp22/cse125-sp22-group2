@@ -33,7 +33,7 @@
 const static int width = cse125constants::WINDOW_WIDTH;
 const static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
-static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
+static const glm::vec4 background(0.0f, 0.0f, 0.0f, 1.0f);
 static Scene scene;
 //static ParticleCube* testcube;
 //static Player p0, p1, p2, p3;
@@ -73,6 +73,7 @@ static float brightnessDir = 1.0f;
 static bool sunOn = true;
 static float brightnessHeadlight = 1.0f;
 static float brightnessOther = 1.0f;
+static float exposure = 1.0f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
@@ -162,9 +163,11 @@ void initialize(void)
 
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-void renderQuad(GLuint texId) {
+void renderQuad(GLuint texId, GLuint bloomId) {
     glUseProgram(scene.quad_shader->program);
     scene.quad_shader->texture_id = texId;
+    scene.quad_shader->bloom_id = bloomId;
+    scene.quad_shader->exposure = exposure;
     scene.quad_shader->setUniforms();
     if (quadVAO == 0)
     {
@@ -242,7 +245,39 @@ glm::mat4 makeLightSpaceMatrix() {
     return lightSpace;
 }
 
+unsigned int quadVAO2 = 0;
+unsigned int quadVBO2;
+void renderQuad()
+{
+    if (quadVAO2 == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO2);
+        glGenBuffers(1, &quadVBO2);
+        glBindVertexArray(quadVAO2);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO2);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO2);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
 void display(void) {
+    /// <summary>
+    /// SHADOW MAPS
+    /// </summary>
     if (ENABLE_SHADOW_MAP) {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, scene.directionalDepthMapFBO);
@@ -253,7 +288,14 @@ void display(void) {
         scene.shader->lightSpace = lightSpace;
         scene.drawDepthMap(scene.node["world"], lightSpace);
     }
+
+    /// <summary>
+    /// RENDER NORMAL
+    /// </summary>
+
     glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
     glViewport(0, 0, width, height);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -267,6 +309,13 @@ void display(void) {
     scene.draw(scene.node["world"]);
     scene.updateScreen();
 
+    /// <summary>
+    /// UI ELEMENTS
+    /// </summary>
+
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    unsigned int attachments2[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, attachments2);
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -281,30 +330,47 @@ void display(void) {
     const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
     if (showMatchEndText) {
         scene.drawText(countdownTimeRemaining, true, makeMatchEndText(clientId, winnerId));
-    }
-    else {
+    } else {
         scene.drawText(countdownTimeRemaining, false);
     }
 
-    /*
-	std::cout << "car transformation : " << std::endl; 
-	glm::mat4 car_transform = scene.node["player0"]->childtransforms[0];
-	std::cout << car_transform[0][0] << " " << car_transform[0][1] << " " << car_transform[0][2] << " " << car_transform[0][3] << std::endl;
-	std::cout << car_transform[1][0] << " " << car_transform[1][1] << " " << car_transform[1][2] << " " << car_transform[1][3] << std::endl;
-	std::cout << car_transform[2][0] << " " << car_transform[2][1] << " " << car_transform[2][2] << " " << car_transform[2][3] << std::endl;
-	std::cout << car_transform[3][0] << " " << car_transform[3][1] << " " << car_transform[3][2] << " " << car_transform[3][3] << std::endl;
-    */
-
     glDisable(GL_BLEND);
+    
+    /// <summary>
+    /// BLUR
+    /// </summary>
 
-    //testcube->draw(glm::mat4(1.0f), scene.shader->program);
-    //renderQuad(near_plane, far_plane, scene.shadowMapOffset);
+
+    bool horizontal = true, first_iteration = true;
+    int amount = 10;
+    glUseProgram(scene.gaussian_shader->program);
+    for (unsigned int i = 0; i < amount; i++) {
+        glBindFramebuffer(GL_FRAMEBUFFER, scene.pingpongFBO[horizontal]); 
+        scene.gaussian_shader->horizontal = horizontal;
+        GLuint activeTex =  first_iteration ? scene.colorBuffers[1] : scene.pingpongBuffer[!horizontal]; 
+        GLuint activeTexOffset =  first_iteration ? scene.bloomTexOffsets[1] : scene.pingpongOffsets[!horizontal]; 
+	    glActiveTexture(GL_TEXTURE0 + activeTexOffset);
+        glBindTexture(GL_TEXTURE_2D, activeTex); 
+        scene.gaussian_shader->image = activeTexOffset;
+        scene.gaussian_shader->setUniforms();
+        renderQuad();
+        horizontal = !horizontal;
+        if (first_iteration)
+            first_iteration = false;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+
+    /// <summary>
+    /// DRAW TO QUAD
+    /// </summary>
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
 	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
-    renderQuad(scene.bloomTexOffsets[0]);
+	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsets[!horizontal]);
+	glBindTexture(GL_TEXTURE_2D, scene.pingpongBuffer[!horizontal]);
+    renderQuad(scene.bloomTexOffsets[0], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
 }

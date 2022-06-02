@@ -12,8 +12,6 @@ Scene.cpp contains the implementation of the draw command
 // The scene init definition 
 #include "Scene.inl"
 
-
-
 using namespace glm;
 void Scene::draw(Node* current_node){
 
