@@ -381,6 +381,7 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
+        game.playMusic("MenuTheme.wav", -6.0f);
     }
 }
 
@@ -502,26 +503,27 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
     {
         AudioTrigger audio = triggers[i];
-        vec3 position;
+        vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
         switch (audio.id)
         {
         case AudioId::COLLISION:
-            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
             game.triggerFx("Collision.wav", position);
             break;
         case AudioId::MAKEUP:
-            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
             game.triggerFx("Makeup.wav", position);
             break;
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
             break;
-        case AudioId::HONK:
-            game.triggerFx("Horn.wav", position);
+        case AudioId::BOUNCE:
+            game.triggerFx("Pillow.wav", position);
             break;
-        //case AudioId::BOUNCE:
-        //    scene.camera->reset();
-        //    break;
+        case AudioId::POWERUP_PICKUP:
+            game.triggerFx("BlowDryerPowerup.wav", position);
+            break;
+        case AudioId::POWERUP_USE:
+            //game.triggerFx("BlowDryerUse.wav", position);
+            break;
         case AudioId::NO_AUDIO:
         default:
             break;
@@ -654,14 +656,20 @@ void keyboard(unsigned char key, int x, int y){
             game.stopAllSounds();
             break;
         case 'm':
-            // Audio Engine
+            // Audio Engine restart (in case something fails)
+            game.stopCarEngines();
+            game.stopAllSounds();
             game.playMusic("BattleTheme.wav", -10.0);
+            game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
             break;
         case 'n':
         {
             // Audio Engine
-            vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
-            std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            //vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), vec3{ 0,0,0 });
+            //std::cout << "Camera position relative to the map center: " << position.x << " " << position.y << " " << position.z << std::endl;
+            //game.triggerFx("Collision.wav", position);
+            std::cerr << "Sound Chanels Playing: " << game.audioChannelsSize() << std::endl;
+            std::cerr << "Total sounds played: " << game.soundCount() << std::endl;
             break;
         }
 
@@ -852,9 +860,15 @@ void idle() {
         // Update time 
         scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
 
+        // Update Engine Audio Positions
+        game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
+        // Update Audio Engine
+        game.updateAudio();
+
 		lastRenderTime = time;
         render = true;
     }
+
 
 
     // Handle direction triggers 
@@ -921,7 +935,9 @@ void idle() {
                         matchInProgress = true;
                         waitingToStartMatch = false;
                         // Play Game Music
-                        game.playMusic("BattleTheme.wav", -10.0);
+                        game.stopAllSounds();
+                        game.playMusic("BattleTheme.wav", -8.0f);
+                        game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
                     }
                 }
                 else {
@@ -930,6 +946,7 @@ void idle() {
                     waitingToStartMatch = false;
                     // Play Game Music
                     game.playMusic("BattleTheme.wav", -10.0);
+                    game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
                 }                
                 
                 // Delete the frame
