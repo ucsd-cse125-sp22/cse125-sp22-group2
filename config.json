@@ -1,5 +1,5 @@
 {
-  "host": "128.54.70.39",
+  "host": "localhost",
   "port": "2350",
   "tickRate": 30,
   "gameTime": 120,

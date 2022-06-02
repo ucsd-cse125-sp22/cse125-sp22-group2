@@ -63,9 +63,7 @@ private:
     std::vector<glm::mat4> initial_arm_transforms;
 
     //Animation gateAnimation;
-    AudioEngine audioEngine;
-    std::map<int, int> carEngineChannels;
-
+  
     // Audio Engine
     typedef struct {
         int idle;

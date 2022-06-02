@@ -1,7 +1,7 @@
 #pragma once
 // Contains constant values
 namespace cse125constants {
-	const int NUM_PLAYERS = 2;
+	const int NUM_PLAYERS = 1;
 
 	const int DEFAULT_CLIENT_ID = -1;
 	const int DEFAULT_WINNER_ID = -1;
