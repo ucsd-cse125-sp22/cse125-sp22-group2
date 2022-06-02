@@ -238,7 +238,7 @@ void main (void){
 	fragColor += iFrames * vec4(0.5f,0.5f,0.5f,0.0f);
 
 	fragColor.w = texColor.w;
-	float brightness = dot(fragColor.xyz, vec3(0.2126f, 0.7152f, 0.0722f)); // convert to greyscale
+	float brightness = dot(fragColor.xyz + 5.0f * emisColor.xyz, vec3(0.2126f, 0.7152f, 0.0722f)); // convert to greyscale
 	if(brightness > 1.0f) {
 		brightColor = vec4(fragColor.xyz, 1.0f);
 	} else {

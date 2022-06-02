@@ -138,6 +138,8 @@
     <None Include="run4.sh" />
     <None Include="shaders\depthShader.frag" />
     <None Include="shaders\depthShader.vert" />
+    <None Include="shaders\gaussian.frag" />
+    <None Include="shaders\gaussian.vert" />
     <None Include="shaders\lightingShadowsDisabled.frag" />
     <None Include="shaders\lightingShadowsEnabled.frag" />
     <None Include="shaders\projectiveShadowsDisabled.vert" />
@@ -182,6 +184,7 @@
     <ClInclude Include="include\Cube.h" />
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\DepthShader.h" />
+    <ClInclude Include="include\GaussianShader.h" />
     <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\FreeImage.h" />

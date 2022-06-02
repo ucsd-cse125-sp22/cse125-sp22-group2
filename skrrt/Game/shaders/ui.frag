@@ -7,11 +7,10 @@ in vec2 TexCoord; // texture coordinates
 uniform sampler2D texture_id;
 
 // Output the frag color
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
 
 void main()
 {    
-
 	// UI elements 
 	fragColor = texture(texture_id, TexCoord);
 }  
