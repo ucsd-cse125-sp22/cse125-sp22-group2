@@ -170,7 +170,7 @@ void ObjPlayer::step(float gameTime) {
 	if (powerupTime) {
 		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
 		speed = max(speed, POWERUP_SPEED);
-		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * this->speed / 2.0f, this->direction, this->up));
+		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * TICK_FACTOR * this->speed / 2.0f, this->direction, this->up));
 	}
 
 	// Gravity
