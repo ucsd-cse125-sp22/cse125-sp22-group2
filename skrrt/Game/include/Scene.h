@@ -26,6 +26,7 @@
 #include "GaussianShader.h"
 #include "Text.h"
 #include "UIShader.h"
+#include "PartShader.h"
 
 #include "../../../Constants.hpp"
 
@@ -77,6 +78,7 @@ public:
     QuadShader* quad_shader;
     UIShader* ui_shader;
     GaussianShader* gaussian_shader;
+    PartShader* part_shader;
 
     Text* scores[4];
     Text* game_time;
@@ -91,6 +93,13 @@ public:
     GLuint uiFBO;
 	GLuint uiBuffer;
 
+    GLuint dripFBO;
+	GLuint dripBuffer;
+    int dripOffset;
+
+    GLuint partFBO;
+	GLuint partBuffer;
+
     GLuint noPartFBO;
 	GLuint noPartBuffers[2];
     int noPartOffsets[2];
@@ -98,10 +107,14 @@ public:
     int shadowMapOffset;
     int bloomTexOffsets[3];
     int pingpongOffsets[2];
+    int pingpongOffsetsP[2];
+    int partOffset;
     
     unsigned int pingpongFBO[2];
     unsigned int pingpongBuffer[2];
 
+    unsigned int pingpongFBOP[2];
+    unsigned int pingpongBufferP[2];
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
     std::map< std::string, Geometry* > geometry;
@@ -145,6 +158,7 @@ public:
     
     void init(int width, int height);
     void draw(Node* current_node);
+    void drawPart(Node* current_node);
     void drawNoPart(Node* current_node);
 
     glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f),  // pink

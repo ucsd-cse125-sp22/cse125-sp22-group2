@@ -189,6 +189,15 @@ void ParticleSource::Draw(const glm::mat4& viewProjMtx, SurfaceShader* shader, G
 	}
 }
 
+void ParticleSource::Draw(const glm::mat4& viewProjMtx, PartShader* shader, GLuint program) {
+	// Draw all particles 
+	for (int i = 0; i < numParticles; i++) {
+		shader->particleColor = glm::vec4(particles[i]->getColor(), 1.0f);
+		shader->setUniforms();
+		particles[i]->draw(viewProjMtx, program);
+	}
+}
+
 void ParticleSource::CleanUp() {
 
 	// Iterate through particles and remove expired particles
