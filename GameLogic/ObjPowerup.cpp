@@ -23,10 +23,11 @@ ObjPowerup::ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector
 	this->objects = objects;
 	this->id = id;
 
+	this->distribution = uniform_int_distribution<int>(0, locations.size() - 1);
 	this->position = locations.at(distribution(generator));
-	this->length = 1.0f;
-	this->width = 1.0f;
-	this->height = 1.0f;
+	this->length = POWERUP_DIMENSIONS;
+	this->width = POWERUP_DIMENSIONS;
+	this->height = POWERUP_DIMENSIONS;
 
 	this->speed = 0.0f;
 
@@ -48,7 +49,7 @@ ObjPowerup::~ObjPowerup() {
 void ObjPowerup::step() {
 	// Update respawn time
 	if (respawnTime) {
-		respawnTime = max(0.0f, respawnTime - 1.0f / +cse125config::TICK_RATE);
+		respawnTime = max(0.0f, respawnTime - 1.0f / cse125config::TICK_RATE);
 	}
 
 	if (respawnTime == 0.0f && !spawned) {

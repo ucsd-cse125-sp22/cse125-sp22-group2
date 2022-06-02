@@ -20,7 +20,7 @@ int cse125networkclient::NetworkClient::getId()
     // Prepare a frame to send to the server
     cse125framing::ClientFrame frame;
     frame.id = cse125constants::DEFAULT_CLIENT_ID;
-    frame.replayMatch = false;
+    frame.readyToPlay = false;
 
     // Until the id request is successful, 
     // attempt to get this client's id from the server
@@ -62,6 +62,7 @@ int cse125networkclient::NetworkClient::getId()
         // TODO: Handle fatal error from server
         else if (readError)
         {
+            cse125debug::log(LOG_LEVEL_ERROR, "Error reading client id from server...\n:");
             throw boost::system::system_error(readError); 
         }
         // Successful read
@@ -88,7 +89,7 @@ size_t cse125networkclient::NetworkClient::send(MovementKey movementKey, vec3 ca
     frame.ctr = this->clientFrameCtr++;
     frame.movementKey = movementKey;
     frame.cameraDirection = glm::vec3(cameraDirection);
-    frame.replayMatch = false;
+    frame.readyToPlay = false;
 
     // Serialize frame
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;
@@ -143,12 +144,12 @@ size_t cse125networkclient::NetworkClient::receive(cse125framing::ServerFrame* f
     return size_t();
 }
 
-size_t cse125networkclient::NetworkClient::replay(boost::system::error_code* errorCode)
+size_t cse125networkclient::NetworkClient::play(boost::system::error_code* errorCode)
 {
     // Prepare frame
     cse125framing::ClientFrame frame;
     frame.id = this->clientId;
-    frame.replayMatch = true;
+    frame.readyToPlay = true;
 
     // Serialize frame
     boost::array<char, cse125framing::CLIENT_FRAME_BUFFER_SIZE> clientBuffer;

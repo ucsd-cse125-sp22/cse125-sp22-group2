@@ -24,11 +24,12 @@ private:
 	float Mass;
 	float lifespan;
 	float radius;
+	glm::vec3 color;
 
 public:
 	bool fixed;
 
-	Particle(glm::vec3& p, glm::vec3& v, glm::vec3& f, float m, bool fix, float lifesp = 10000000000000000, float rad = 0.01);
+	Particle(glm::vec3& p, glm::vec3& v, glm::vec3& f, float m, bool fix, float lifesp = 10000000000000000, float rad = 0.01, glm::vec3 c = glm::vec3(1.0f));
 
 	glm::vec3 getPosition() { return Position; }
 	glm::vec3 getVelocity() { return Velocity; }
@@ -37,11 +38,13 @@ public:
 	glm::vec3 getNormal() { return normal; }
 	float getLifespan() { return lifespan; }
 	float getRadius() { return radius; }
+	glm::vec3 getColor() { return color; }
 
 	void setPosition(glm::vec3 p) { Position.x = p.x; Position.y = p.y; Position.z = p.z; }
 	void setForce(glm::vec3 f) { Force.x = f.x; Force.y = f.y; Force.z = f.z; }
 	void setMass(float m) { Mass = m; }
 	void setVelocity(glm::vec3 v) { Velocity = v; }
+	void setColor(glm::vec3 c) { color = c; }
 
 	void setNormal(glm::vec3 n);
 	void addNormal(glm::vec3 n);
@@ -52,7 +55,7 @@ public:
 
 	void Integrate(float deltaTime) {
 
-		lifespan -= 1;
+		lifespan -= deltaTime;
 
 		if (!fixed) {
 			glm::vec3 accel = (1 / Mass) * Force; 

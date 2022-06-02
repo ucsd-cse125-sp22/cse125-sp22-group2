@@ -5,7 +5,7 @@
 cse125gameaction::GameActionTracker::GameActionTracker(unsigned int numPlayers)
 {
 	for (unsigned int i = 0; i < numPlayers; i++) {
-		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer{ 0, 0, 0, 0 };
+		cse125gameaction::GameActionContainer* container = new cse125gameaction::GameActionContainer{ 0, 0, 0, 0, 0 };
 		this->tracker.push_back(container);
 	}
 }
@@ -35,6 +35,9 @@ void cse125gameaction::GameActionTracker::setAction(int playerId, MovementKey mo
 		break;
 	case MovementKey::BACKWARD:
 		this->moveBackward(playerId);
+		break;
+	case MovementKey::SPACE:
+		this->moveAction(playerId);
 		break;
 	default:
 		break;		
@@ -67,6 +70,12 @@ void cse125gameaction::GameActionTracker::moveBackward(int playerId)
 	GameActionContainer* container = this->tracker.at(playerId);
 	container->backward = 1 ^ container->forward;
 	container->forward = 0;
+}
+
+void cse125gameaction::GameActionTracker::moveAction(int playerId)
+{
+	GameActionContainer* container = this->tracker.at(playerId);
+	container->action = 1;
 }
 
 const cse125gameaction::GameActionContainer* cse125gameaction::GameActionTracker::getGameActionContainer(int playerId)

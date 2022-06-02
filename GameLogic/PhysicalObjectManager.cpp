@@ -9,6 +9,8 @@ PhysicalObjectManager::PhysicalObjectManager()
 	// uniformGrid = createGrid(gridMin, gridMax, gridSizes);
 
 	gameTime = cse125config::MATCH_LENGTH;
+
+	this->powerupIDOffset = 9999;
 }
 
 PhysicalObjectManager::~PhysicalObjectManager()
@@ -28,6 +30,10 @@ void PhysicalObjectManager::startGame() {
 	// Create walls and floors
 
 	// Very basic map
+	//createObject(oPlayer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	//createObject(oPlayer, glm::vec3(6.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	createObject(oPlayer, glm::vec3(21.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 	createObject(oPlayer, glm::vec3(-21.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	createObject(oPlayer, glm::vec3(0.0f, 0.0f, 21.0f), glm::vec3(0.0f, 0.0f, -1.0f));
@@ -44,6 +50,17 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(-20.8f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(-29.6f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(20.8f, 0.0f, 4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
+
+	createObject(oWall, glm::vec3(-6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(-6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+
+	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
+	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(-8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -58,7 +75,7 @@ void PhysicalObjectManager::startGame() {
 	//createObject(oWall, glm::vec3(0.0f, 0.0f, -4.0f), glm::vec3(0.0f));
 }
 
-void PhysicalObjectManager::endGame() {
+void PhysicalObjectManager::endGame(int* winnerId) {
 	unsigned int winner = 0;
 	float winner_score = 0.0f;
 	for (unsigned int i = 0; i < objects->size(); i++) {
@@ -69,6 +86,8 @@ void PhysicalObjectManager::endGame() {
 			}
 		}
 	}
+	// Set the winner id (note that it is 0-indexed, not 1-indexed)
+	*winnerId = winner;
 	cout << "The game has ended!  Player " << winner + 1 << " has won!\n";
 }
 
@@ -82,10 +101,15 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	case (oWall):
 		switch (modifier) {
 		case(oTireRack):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, TIRERACK_LENGTH, TIRERACK_WIDTH, TIRERACK_HEIGHT, dir, up));
+			//this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.0f, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.36f, 6.51f, 2.5f, dir, up));
 			break;
 		case(oCones):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, CONES_LENGTH, CONES_WIDTH, CONES_HEIGHT, dir, up));
+			//this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 2.0f, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 1.0f, dir, up));
+			break;
+		case(oPillar):
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.3f, 1.3f, 30.0f, dir, up));
 			break;
 		default:
 			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.0f, 1.0f, 1.0f, dir, up));
@@ -114,27 +138,48 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 	case (oTrail):
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
+	case (oPowerup):
+		if (powerupIDOffset > next_id) {
+			powerupIDOffset = next_id;
+		}
+		this->objects->push_back(new ObjPowerup(objects, next_id, vector<glm::vec3>{pos}, dir, up));
+		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
+		break;
 	default:
 		break;
 	}
 	// this->objects->push_back(new PhysicalObject(objects, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), next_id, true));
 }
 
-void PhysicalObjectManager::step(bool* matchInProgress) {
+
+void PhysicalObjectManager::step(bool* matchInProgress, int* winnerId) {
 	if (gameTime > 0.0f) {
 		gameTime -= 1.0f / cse125config::TICK_RATE;
+
 		if (gameTime <= 0.0f) {
 			gameTime = 0.0f;
-			endGame();
+			endGame(winnerId);
 			*matchInProgress = false;
+			
 		}
 	}
+
 	for (unsigned int i = 0; i < objects->size(); i++) {
 		if (objects->at(i)->type == oPlayer) {
-			((ObjPlayer*)objects->at(i))->step();
+			((ObjPlayer*)objects->at(i))->step(gameTime);
 		}
 		else if (objects->at(i)->type == oMakeup) {
 			((ObjMakeup*)objects->at(i))->step();
+		}
+		else if (objects->at(i)->type == oTrail) {
+			((ObjTrail*)objects->at(i))->step();
+			if (((ObjTrail*)(objects->at(i)))->life <= 0.0f) {
+				delete objects->at(i);
+				objects->at(i) = objects->at(objects->size() - 1);
+				objects->pop_back();
+				i--;
+			}
+			
 		}
 		else if (objects->at(i)->type == oPowerup) {
 			((ObjPowerup*)objects->at(i))->step();

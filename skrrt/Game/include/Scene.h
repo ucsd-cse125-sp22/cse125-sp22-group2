@@ -21,6 +21,9 @@
 #include "Model.h"
 #include "ParticleSource.h"
 #include "TextShader.h"
+#include "DepthShader.h"
+#include "QuadShader.h"
+#include "GaussianShader.h"
 #include "Text.h"
 #include "UIShader.h"
 
@@ -38,11 +41,14 @@ public:
         visible = v; 
         isParticleSource = p;
         if (p) {
-			particles = new ParticleSource(); 
+			particles = new ParticleSource();
+            //particlesPowerup = new ParticleSource(8, 20 * 4 + 6, 2, 0, 6);
+            particlesPowerup = new ParticleSource();
             std::cout << "Call Particle Source ctor" << std::endl;
         }
         else {
             particles = NULL;
+            particlesPowerup = NULL;
         }
     };
 
@@ -51,6 +57,7 @@ public:
     bool isParticleSource; 
 
     ParticleSource* particles;
+    ParticleSource* particlesPowerup;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;
@@ -64,10 +71,23 @@ public:
     Camera* camera;
     SurfaceShader* shader;
     TextShader* text_shader;
+    DepthShader* depth_shader;
+    QuadShader* quad_shader;
     UIShader* ui_shader;
+    GaussianShader* gaussian_shader;
 
     Text* scores[4];
     Text* game_time;
+    Text* countdown_instructions_text;
+    Text* countdown_go_text;
+    Text* match_end_text;
+
+    int shadowMapOffset;
+    int bloomTexOffsets[2];
+    int pingpongOffsets[2];
+    
+    unsigned int pingpongFBO[2];
+    unsigned int pingpongBuffer[2];
 
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
@@ -77,7 +97,33 @@ public:
     std::map< std::string, PointLight* > pointLights;
     std::map< std::string, SpotLight* > spotLights;
     DirectionalLight* sun;
+
+    std::map< std::string, PointLight* > pointLights_init;
+    std::map< std::string, SpotLight* > spotLights_init;
+    DirectionalLight* sun_day;
+    DirectionalLight* sun_night;
+
+    //DONT USE
+    void scaleUi(int width, int height);
+
+    void setSun(float brightness, bool sunOn);
+    void setPointLights(float brightness);
+    void setSpotLights(float brightness);
+    // Where the depth map textures live 
+	GLuint directionalDepthMap;
+	std::vector<GLuint> pointDepthMaps;
+	std::vector<GLuint> spotDepthMaps;
+
+    // Where the depth map frame buffers live 
+	GLuint directionalDepthMapFBO;
+	std::vector<GLuint> pointDepthMapsFBO;
+	std::vector<GLuint> spotDepthMapsFBO;
+
+    //Bloom
+    GLuint hdrFBO;
+	GLuint colorBuffers[2];
     
+
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
     std::map< std::string, Node* > node;
     
@@ -87,7 +133,7 @@ public:
         node["UI_root"] = new Node("UI_root");
     }
     
-    void init( void );
+    void init(int width, int height);
     void draw(Node* current_node);
 
     glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f),  // pink
@@ -95,11 +141,20 @@ public:
                                 glm::vec3(0.91f, 0.90f, 0.32f),  // yellow
                                 glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
-    void drawText(void);
+    /**
+     * @brief Draws the text-based UI elements on the screen
+     *
+     * @param countdownTimeRemaining the amount of time left in the countdown
+     * @param renderMatchEndText whether to render the end of match text
+     * @param matchEndText       the end of match text to render
+     */
+    void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
 
     void updateScreen(void);
-    
+
+    void calculateShadowMaps();
+    void drawDepthMap(Node* current_node, glm::mat4 lightSpace);
     // destructor
     ~Scene(){
         // The containers of pointers own the object pointed to by the pointers.
