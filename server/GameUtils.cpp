@@ -47,7 +47,7 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         frame->players[id].score = player->score;
         frame->players[id].hasPowerup = player->hasPowerup;
         frame->players[id].powerupActive = player->powerupTime;
-        frame->players[id].invincible = player->iframes > 0;
+        frame->players[id].iframes = player->iframes / cse125config::TICK_RATE;
 
         // makeup booth animation + audio
         if (player->booth != -1 && player->boothTime == MAKEUP_BOOTH_TIME)
@@ -92,6 +92,13 @@ void initializeServerFrame(PhysicalObjectManager* manager,
         if (player->bounced)
         {
             frame->audio[audioIndex].id = cse125framing::AudioId::BOUNCE;
+            frame->audio[audioIndex].position = player->position;
+            audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
+        }
+        // honk audio
+        if (player->honked)
+        {
+            frame->audio[audioIndex].id = cse125framing::AudioId::HONK;
             frame->audio[audioIndex].position = player->position;
             audioIndex = (audioIndex + 1) % cse125constants::MAX_NUM_SOUNDS;
         }
@@ -163,8 +170,6 @@ void gameLoop(PhysicalObjectManager* manager,
         break;
 
     // Other game actions
-    case GameAction::ACTION:
-        player->action(glm::normalize(cameraDirection), true);
     case GameAction::IDLE:
         // Idle behavior
         player->idle();

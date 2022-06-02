@@ -19,8 +19,10 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
-    <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="..\..\Definitions.cpp" />
+    <ClCompile Include="src\AudioEngine.cpp" />
+    <ClCompile Include="src\Text.cpp" />
+    <ClCompile Include="include\Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Config.hpp" />
@@ -51,12 +53,23 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\SurfaceShader.h" />
+    <ClInclude Include="include\AudioEngine.h" />
+    <ClInclude Include="include\Animation.h" />
+    <ClInclude Include="include\TextureConstants.h" />
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="include\TextShader.h" />
-    <ClInclude Include="include\TextureConstants.h" />
+    <ClInclude Include="include\ShadowMapConstants.h" />
+    <ClInclude Include="include\DepthShader.h" />
+    <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\UIShader.h" />
+    <ClInclude Include="include\GaussianShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="shaders\lightingShadowsEnabled.frag" />
+    <None Include="src\Scene.inl" />
+    <None Include="shaders\ui.frag" />
+    <None Include="shaders\ui.vert" />
     <None Include="FreeImage.dll" />
     <None Include="freetype.dll" />
     <None Include="glew32.dll" />
@@ -64,12 +77,16 @@
     <None Include="packages.config" />
     <None Include="run2.sh" />
     <None Include="run4.sh" />
-    <None Include="shaders\lighting.frag" />
-    <None Include="shaders\projective.vert" />
-    <None Include="shaders\text.frag" />
+    <None Include="shaders\lightingShadowsDisabled.frag" />
+    <None Include="shaders\depthShader.frag" />
+    <None Include="shaders\depthShader.vert" />
+    <None Include="shaders\projectiveShadowsDisabled.vert" />
+    <None Include="shaders\projectiveShadowsEnabled.vert" />
+    <None Include="shaders\quad.frag" />
+    <None Include="shaders\quad.vert" />
     <None Include="shaders\text.vert" />
-    <None Include="shaders\ui.frag" />
-    <None Include="shaders\ui.vert" />
-    <None Include="src\Scene.inl" />
+    <None Include="shaders\text.frag" />
+    <None Include="shaders\gaussian.frag" />
+    <None Include="shaders\gaussian.vert" />
   </ItemGroup>
 </Project>

@@ -2,37 +2,6 @@
 #include <string>
 #include "Frame.hpp"
 
-std::ostream& cse125framing::operator<<(std::ostream& os, const Action& action)
-{
-	std::string str;
-	switch (action) {
-	case Action::JUMP:
-		str = "JUMP";
-		break;
-	case Action::LEAVE_TRAIL:
-		str = "LEAVE_TRAIL";
-		break;
-	case Action::LOSE_CROWN:
-		str = "LOSE_CROWN";
-		break;
-	case Action::MOVE:
-		str = "MOVE";
-		break;
-	case Action::NO_ACTION:
-		str = "NO_ACTION";
-		break;
-	case Action::REDO_MAKEUP:
-		str = "REDO_MAKEUP";
-		break;
-	case Action::TAKE_CROWN:
-		str = "TAKE_CROWN";
-		break;
-	}
-
-	os << str;
-	return os;
-}
-
 std::ostream& cse125framing::operator<<(std::ostream& os, const ClientFrame* frame)
 {
 	const vec3& camera = frame->cameraDirection;

@@ -8,16 +8,6 @@
 
 namespace cse125framing {
 
-	enum class Action {
-		NO_ACTION = -1,
-		MOVE,
-		JUMP,
-		LEAVE_TRAIL,
-		REDO_MAKEUP,
-		LOSE_CROWN,
-		TAKE_CROWN
-	};
-
 	typedef struct ClientFrame {
 		int id;
 		int ctr;
@@ -32,6 +22,7 @@ namespace cse125framing {
 		CROWN_CHANGE,
 		POWERUP_PICKUP,
 		POWERUP_USE,
+		HONK,
 		BOUNCE,
 		NUM_AUDIO,
 		NO_AUDIO = -1
@@ -58,7 +49,7 @@ namespace cse125framing {
 		bool hasCrown;
 		bool hasPowerup;
 		bool powerupActive;
-		bool invincible;
+		float iframes;
 	} PlayerData;
 
 	// Data for loose crown
@@ -90,7 +81,6 @@ namespace cse125framing {
 	const size_t CLIENT_FRAME_BUFFER_SIZE = sizeof(ClientFrame);
 	const size_t SERVER_FRAME_BUFFER_SIZE = sizeof(ServerFrame);
 
-	std::ostream& operator<<(std::ostream& os, const Action& action);
 	std::ostream& operator<<(std::ostream& os, const ClientFrame* frame);
 	std::ostream& operator<<(std::ostream& os, const ServerFrame* frame);
 
