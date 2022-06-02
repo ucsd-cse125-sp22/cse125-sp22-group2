@@ -313,13 +313,25 @@ void display(void) {
     }
 
     scene.draw(scene.node["world"]);
+
+
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.noPartFBO);
+    unsigned int attachmentsNoPart[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsNoPart);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK); 
+    scene.drawNoPart(scene.node["world"]);
+
     scene.updateScreen();
 
     /// <summary>
     /// UI ELEMENTS
     /// </summary>
 
-    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.noPartFBO);
     unsigned int attachmentsDrips[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, attachmentsDrips);
 
@@ -386,9 +398,13 @@ void display(void) {
 	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[2]);
 	glBindTexture(GL_TEXTURE_2D, scene.uiBuffer);
+	glActiveTexture(GL_TEXTURE0 + scene.noPartOffsets[0]);
+	glBindTexture(GL_TEXTURE_2D, scene.noPartBuffers[0]);
+	glActiveTexture(GL_TEXTURE0 + scene.noPartOffsets[1]);
+	glBindTexture(GL_TEXTURE_2D, scene.noPartBuffers[1]);
 	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsets[!horizontal]);
 	glBindTexture(GL_TEXTURE_2D, scene.pingpongBuffer[!horizontal]);
-    renderQuad(scene.bloomTexOffsets[0], scene.bloomTexOffsets[2], scene.pingpongOffsets[!horizontal]);
+    renderQuad(scene.noPartOffsets[0], scene.bloomTexOffsets[2], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
 }

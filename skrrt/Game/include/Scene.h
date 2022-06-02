@@ -56,6 +56,8 @@ public:
     bool visible;
     bool isParticleSource; 
 
+    float iframes = 0.0f;
+
     ParticleSource* particles;
     ParticleSource* particlesPowerup;
 
@@ -88,6 +90,10 @@ public:
 
     GLuint uiFBO;
 	GLuint uiBuffer;
+
+    GLuint noPartFBO;
+	GLuint noPartBuffers[2];
+    int noPartOffsets[2];
 
     int shadowMapOffset;
     int bloomTexOffsets[3];
@@ -139,6 +145,7 @@ public:
     
     void init(int width, int height);
     void draw(Node* current_node);
+    void drawNoPart(Node* current_node);
 
     glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f),  // pink
                                 glm::vec3(0.31f, 0.68f, 0.89f),  // blue

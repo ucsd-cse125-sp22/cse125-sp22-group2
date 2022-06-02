@@ -106,6 +106,8 @@ void Scene::init(int width, int height) {
     bloomTexOffsets[2] = bloomTexOffsets[1] + 1;
     pingpongOffsets[0] = bloomTexOffsets[2] + 1;
     pingpongOffsets[1] = pingpongOffsets[0] + 1;
+    noPartOffsets[0] = pingpongOffsets[1] + 1;
+    noPartOffsets[1] = noPartOffsets[0] + 1;
 
     // Create a material palette
     material["wood"] = new Material;
@@ -754,6 +756,34 @@ void Scene::init(int width, int height) {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // Framebuffers for noPart
+    glGenFramebuffers(1, &noPartFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, noPartFBO);
+    glGenTextures(2, noPartBuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + noPartOffsets[i]);
+        glBindTexture(GL_TEXTURE_2D, noPartBuffers[i]);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // attach texture to framebuffer
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, noPartBuffers[i], 0
+        );
+    }
+    unsigned int attachmentsNoPart[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsNoPart);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Bloom Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     // Framebuffers for ui
     glGenFramebuffers(1, &uiFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, uiFBO);
@@ -771,13 +801,6 @@ void Scene::init(int width, int height) {
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, uiBuffer, 0
 	);
-    /*
-    unsigned int rboDepth;
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    */
     unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT2};
     glDrawBuffers(1, attachmentsUI);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
