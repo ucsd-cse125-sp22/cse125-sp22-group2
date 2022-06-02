@@ -116,7 +116,7 @@ public:
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, glm::vec3 color, bool createNew);
 
 	void Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, float windSp,
-		glm::vec3 windDir, float floor = -1, float createRate = 1, float lifeSp = 50.0f,
+		glm::vec3 windDir, float floor = -1, float createRate = 4, float lifeSp = 50.0f,
 		float posVar = 0.05f, float velVar = 0.008f, float lifespVar = 0, float g = 0,
 		float airDen = 5.225, float d = 0.1, float particleRad = 0.05,
 		float colElast = -1, float colFrict = 0, glm::vec3 color = glm::vec3(1.0f));
