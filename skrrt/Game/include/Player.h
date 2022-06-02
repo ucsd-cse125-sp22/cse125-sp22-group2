@@ -27,7 +27,7 @@ private:
 	bool has_crown;
 
 	// Player's makeup level 
-	RealNumber makeupLevel; 
+	RealNumber makeupLevel = 0.0f; 
 	
 	// Player's score 
 	RealNumber score = 0;
@@ -57,8 +57,8 @@ private:
 
 public: 
 
-	Player() { player_node = NULL; has_crown = false; makeupLevel = 0; };
-	Player(Node* car) { player_node = car; has_crown = false; makeupLevel = 0; };
+	Player() { player_node = NULL; has_crown = false; makeupLevel = 100.0f; };
+	Player(Node* car) { player_node = car; has_crown = false; makeupLevel = 100.0f; };
 
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
@@ -101,7 +101,7 @@ public:
 
 	void setUsingPowerup(bool status) {
 		using_powerup = status;
-		blowdryer_node->visible = status;
+		blowdryer_node->visible = status | has_powerup;
 	};
 
 	bool getCrownStatus() {

@@ -768,7 +768,8 @@ void Scene::init(int width, int height) {
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
     const float clock_ratio = 407.0f / 514.0f; 
     node["screen"]->childnodes.push_back(node["clock"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f+1.5f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    //["screen"]->childtransforms.push_back(translate(vec3(-3.0f + 1.5f, 21.5f + 2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
     const float tire_icon_ratio = 65.0f / 64.0f;
     node["screen"]->childnodes.push_back(node["pink_tire"]);

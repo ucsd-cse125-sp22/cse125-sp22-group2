@@ -222,7 +222,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
     // Draw game time
 	text_shader->textColor = game_time->getColor(); 
     text_shader->setUniforms();
-	game_time->setPosition(currentWidth / 2.0f, currentHeight - 75.0f);
+	game_time->setPosition(currentWidth / 2.0f + 2.0f, currentHeight - 75.0f);
     game_time->RenderTextCenter();
 
     // Draw countdown timer text

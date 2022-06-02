@@ -75,6 +75,7 @@ static float brightnessHeadlight = 1.0f;
 static float brightnessOther = 1.0f;
 static float exposure = 1.0f;
 static bool mouseLocked = true;
+static bool honked = false;
 
 #include "hw3AutoScreenshots.h"
 
@@ -129,7 +130,7 @@ void initialize(void)
     triggers["up"] = false; 
     triggers["left"] = false; 
     triggers["down"] = false; 
-    triggers["right"] = false; 
+    triggers["right"] = false;
 
     // Set up players
     //for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
@@ -555,7 +556,10 @@ void handleSpace() {
 }
 
 void handleHonk() {
-    sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
+    if (!honked) {
+        honked = true;
+        sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
+    }
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -743,6 +747,10 @@ void keyboard(unsigned char key, int x, int y) {
 
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
+        case 'H':
+        case 'h':
+            honked = false;
+            break;
         case 'A':
         case 'a':
             triggers["left"] = false;
