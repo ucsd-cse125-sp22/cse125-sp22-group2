@@ -1,9 +1,11 @@
 #pragma once
 
-#include <chrono>
+#include <boost/chrono.hpp>
+#include <boost/thread/thread.hpp>
 #include <cstdlib>
 
-namespace cse125clocktick {
+namespace cse125clocktick
+{
 
 class ClockTick
 {
@@ -14,6 +16,7 @@ class ClockTick
      * @param tickrate tick rate in Ticks per Second. range: [1,1000000]
      */
     ClockTick(uint16_t tickrate = 30);
+    ~ClockTick();
 
     /**
      * @brief Beginning of tick loop. Initializes timer for iteration.
@@ -28,8 +31,8 @@ class ClockTick
 
   private:
     uint16_t tickrate;
-    std::chrono::microseconds period;
-    std::chrono::microseconds starttick;
+    boost::chrono::microseconds period;
+    boost::chrono::time_point<boost::chrono::high_resolution_clock, boost::chrono::microseconds> start;
 };
 
 }
