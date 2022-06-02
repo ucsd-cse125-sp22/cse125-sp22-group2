@@ -156,6 +156,7 @@
     <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Definitions.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="Countdown.cpp" />
     <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\AudioEngine.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
+    <ClInclude Include="Countdown.hpp" />
     <ClInclude Include="include\AudioEngine.h" />
     <ClInclude Include="include\Animation.h" />
     <ClInclude Include="include\Camera.h" />

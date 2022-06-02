@@ -29,6 +29,7 @@
 #include "../../../Frame.hpp"
 #include "../../../Definitions.hpp"
 #include "Debug.h"
+#include "Countdown.hpp"
 
 const static int width = cse125constants::WINDOW_WIDTH;
 const static int height = cse125constants::WINDOW_HEIGHT;
@@ -64,6 +65,7 @@ bool enableSendPlay = true;
 float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 bool playMenuTheme = true;
+countdown::CountdownStateMachine countdownSM;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -76,6 +78,8 @@ static float brightnessHeadlight = 1.0f;
 static float brightnessOther = 1.0f;
 static float exposure = 1.0f;
 static bool mouseLocked = true;
+
+
 
 #include "hw3AutoScreenshots.h"
 
@@ -90,44 +94,28 @@ std::string makeMatchEndText(int playerId, int winnerId) {
     return matchEndText;
 }
 
-
-// TODO: Make this function tell you which ready/set/go sound to play
-std::string makeCountdownText(const float& countdownTimeRemaining) {
-    if (countdownTimeRemaining <= 0.0f) {
-        return "";
-    }
-    std::string countdownText = "";
-
-    // Determine the number of ellipses to display to simulate animation
-    // Each 1/3 of a whole number corresponds to one ellipsis
-    const int secondsLeft = (int)(countdownTimeRemaining / cse125config::TICK_RATE);
-    float secondsInteger = 0.0f;
-    float secondsFraction = 1.0f - modf(countdownTimeRemaining / cse125config::TICK_RATE, &secondsInteger);
-    std::string ellipses = "";
-    if (secondsFraction >= 0.01f) {
-        ellipses += ".";
-    }
-    if (secondsFraction >= 0.33f) {
-        ellipses += ".";
-    }
-    if (secondsFraction >= 0.67f) {
-        ellipses += ".";
-    }
-
-    switch (secondsLeft) {
-    case 2:
-        countdownText = "READY " + ellipses;
+void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
+    switch (csm.getState()) {
+    case countdown::CountdownState::PLAY_READY_SOUND:
+        game.playMusic("Collision.wav", -6.0f);
+        // game.playMusic("ReadySound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing ready sound\n");
         break;
-    case 1:
-        countdownText = "SET " + ellipses;
+    case countdown::CountdownState::PLAY_SET_SOUND:
+        game.playMusic("GetCrown.wav", -6.0f);
+        // game.playMusic("SetSound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing set sound\n");
         break;
-    case 0:
-        countdownText = "GO!";
+    case countdown::CountdownState::PLAY_GO_SOUND:
+        game.playMusic("Pillow.wav", -6.0f);
+        // game.playMusic("GoSound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing go sound\n");
+        break;
+    case countdown::CountdownState::PLAY_NO_SOUND:
         break;
     default:
         break;
     }
-    return countdownText;
 }
 
 
@@ -369,7 +357,6 @@ void display(void) {
     scene.camera->nearPlane = scene.camera->near_default;
 
 
-    // Create text elements
     // The countdown, match end, and normal gameplay events should never overlap.
     // Therefore, only text for the current ongoing event will be drawn
     const bool renderCountdownText = cse125config::ENABLE_COUNTDOWN && waitingToStartMatch;
@@ -377,12 +364,17 @@ void display(void) {
     std::string matchEndText = "";
     std::string countdownText = "";
     if (renderCountdownText) {
-        countdownText = makeCountdownText(countdownTimeRemaining);
+        countdownText = makeCountdownText(countdownTimeRemaining, countdownSM);
     }
     if (renderMatchEndText) {
         matchEndText = makeMatchEndText(clientId, winnerId);
     }
+
+    // Render text elements
     scene.drawText(renderCountdownText, renderMatchEndText, countdownText, matchEndText);
+
+    // Play countdown sound
+    handleCountdownSound(countdownSM);
 
     glDisable(GL_BLEND);
     
