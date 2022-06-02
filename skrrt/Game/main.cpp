@@ -74,6 +74,7 @@ static bool sunOn = true;
 static float brightnessHeadlight = 1.0f;
 static float brightnessOther = 1.0f;
 static float exposure = 1.0f;
+static float sensitivity = 0.25f;
 static bool mouseLocked = true;
 
 #include "hw3AutoScreenshots.h"
@@ -163,10 +164,11 @@ void initialize(void)
 
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-void renderQuad(GLuint texId, GLuint bloomId) {
+void renderQuad(GLuint texId, GLuint ui, GLuint bloomId) {
     glUseProgram(scene.quad_shader->program);
     scene.quad_shader->texture_id = texId;
     scene.quad_shader->bloom_id = bloomId;
+    scene.quad_shader->ui_id = ui;
     scene.quad_shader->exposure = exposure;
     scene.quad_shader->setUniforms();
     if (quadVAO == 0)
@@ -294,12 +296,17 @@ void display(void) {
     /// </summary>
 
     glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
+    unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsWorld);
     glViewport(0, 0, width, height);
 
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    /*
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsWorld);
+    */
     //Update shadowmaps?
     if (ENABLE_SHADOW_MAP) {
         glActiveTexture(GL_TEXTURE0 + scene.shadowMapOffset);
@@ -314,15 +321,18 @@ void display(void) {
     /// </summary>
 
     glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
-    unsigned int attachments2[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1, attachments2);
+    unsigned int attachmentsDrips[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, attachmentsDrips);
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //scene.draw(scene.node["UI_root"]);
     scene.camera->nearPlane = scene.camera->ui_near_default;
+
+    scene.drawDrips();
+
     scene.drawUI();
+
     scene.camera->nearPlane = scene.camera->near_default;
 
 
@@ -340,6 +350,8 @@ void display(void) {
     /// BLUR
     /// </summary>
 
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    glDrawBuffers(2, attachmentsWorld);
 
     bool horizontal = true, first_iteration = true;
     int amount = 10;
@@ -368,9 +380,11 @@ void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
 	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
+	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[2]);
+	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[2]);
 	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsets[!horizontal]);
 	glBindTexture(GL_TEXTURE_2D, scene.pingpongBuffer[!horizontal]);
-    renderQuad(scene.bloomTexOffsets[0], scene.pingpongOffsets[!horizontal]);
+    renderQuad(scene.bloomTexOffsets[0], scene.bloomTexOffsets[0], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
 }
@@ -708,32 +722,28 @@ void keyboard(unsigned char key, int x, int y){
             scene.setPointLights(brightnessOther);
             std::cout << "Brightness Other: " << brightnessOther << "\n";
             break;
+        */
         case '7':
-            brightnessHeadlight += 0.05;
-            scene.setSpotLights(brightnessHeadlight);
-            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            sensitivity -= 0.05;
+            std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '8':
-            brightnessHeadlight -= 0.05;
-            scene.setSpotLights(brightnessHeadlight);
-            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            sensitivity += 0.05;
+            std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '9':
-            brightnessDir += 0.05;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            exposure -= 0.05;
+            std::cout << "Exposure: " << exposure << "\n";
             break;
         case '0':
-            brightnessDir -= 0.05;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            exposure += 0.05;
+            std::cout << "Exposure: " << exposure << "\n";
             break;
         case '-':
             sunOn = !sunOn;
             scene.setSun(brightnessDir, sunOn);
             std::cout << "Sun on: " << sunOn << "\n";
             break;
-            */
         default:
             //glutPostRedisplay();
             break;
@@ -961,8 +971,8 @@ void mouseMovement(int x, int y) {
 
     if (dx != 0 || dy != 0) {
         if (!TOP_DOWN_VIEW) {
-			scene.camera->rotateRight(dx);
-			scene.camera->rotateUp(dy);
+			scene.camera->rotateRight(glm::floor(dx * sensitivity));
+			scene.camera->rotateUp(glm::floor(dy * sensitivity));
         }
         glutPostRedisplay();
     }

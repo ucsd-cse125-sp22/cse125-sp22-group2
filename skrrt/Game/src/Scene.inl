@@ -13,7 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS false
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(int width, int height) {
@@ -103,7 +103,8 @@ void Scene::init(int width, int height) {
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
     bloomTexOffsets[0] = shadowMapOffset + 1;
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
-    pingpongOffsets[0] = bloomTexOffsets[1] + 1;
+    bloomTexOffsets[2] = bloomTexOffsets[1] + 1;
+    pingpongOffsets[0] = bloomTexOffsets[2] + 1;
     pingpongOffsets[1] = pingpongOffsets[0] + 1;
 
     // Create a material palette
@@ -749,6 +750,38 @@ void Scene::init(int width, int height) {
     glDrawBuffers(2, attachments);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Bloom Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Framebuffers for ui
+    glGenFramebuffers(1, &uiFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, uiFBO);
+    glGenTextures(1, &uiBuffer);
+	glActiveTexture(GL_TEXTURE0 + bloomTexOffsets[2]);
+	glBindTexture(GL_TEXTURE_2D, uiBuffer);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+	);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// attach texture to framebuffer
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, uiBuffer, 0
+	);
+    /*
+    unsigned int rboDepth;
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+    */
+    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, attachmentsUI);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "UI Framebuffer not complete!" << std::endl;
         exit(-1);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

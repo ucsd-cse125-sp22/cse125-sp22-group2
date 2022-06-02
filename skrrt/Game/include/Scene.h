@@ -82,8 +82,15 @@ public:
     Text* countdown_go_text;
     Text* match_end_text;
 
+    //Bloom
+    GLuint hdrFBO;
+	GLuint colorBuffers[2];
+
+    GLuint uiFBO;
+	GLuint uiBuffer;
+
     int shadowMapOffset;
-    int bloomTexOffsets[2];
+    int bloomTexOffsets[3];
     int pingpongOffsets[2];
     
     unsigned int pingpongFBO[2];
@@ -119,9 +126,6 @@ public:
 	std::vector<GLuint> pointDepthMapsFBO;
 	std::vector<GLuint> spotDepthMapsFBO;
 
-    //Bloom
-    GLuint hdrFBO;
-	GLuint colorBuffers[2];
     
 
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
@@ -150,6 +154,7 @@ public:
      */
     void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
+    void drawDrips(void); 
 
     void updateScreen(void);
 
