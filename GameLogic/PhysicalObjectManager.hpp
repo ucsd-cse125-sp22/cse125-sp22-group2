@@ -11,7 +11,7 @@
 #include "ObjTrail.hpp"
 #include "ObjPowerup.hpp"
 
-enum Obstacles { oTireRack, oCones, oPillar };
+enum Obstacles { oTireRack, oCones, oPillar, oCake, oFlowers };
 
 class PhysicalObjectManager
 {
