@@ -168,19 +168,19 @@ void Camera::reset(int playerId)
 
     switch (playerId) {
     case 0:
-        rotateUp(10);
+        rotateUp(5);
         rotateRight(-90);
         break;
     case 1:
-        rotateUp(10);
+        rotateUp(5);
         rotateRight(90);
         break;
     case 2:
-        rotateUp(10);
+        rotateUp(5);
         rotateRight(0);
         break;
     case 3:
-        rotateUp(10);
+        rotateUp(5);
         rotateRight(180);
         break;
     default:
