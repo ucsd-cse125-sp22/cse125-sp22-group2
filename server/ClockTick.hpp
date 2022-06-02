@@ -1,9 +1,12 @@
 #pragma once
 
+#include <boost/chrono.hpp>
+#include <boost/thread/thread.hpp>
 #include <chrono>
 #include <cstdlib>
 
-namespace cse125clocktick {
+namespace cse125clocktick
+{
 
 class ClockTick
 {
@@ -28,8 +31,8 @@ class ClockTick
 
   private:
     uint16_t tickrate;
-    std::chrono::microseconds period;
-    std::chrono::microseconds starttick;
+    boost::chrono::microseconds period;
+    boost::chrono::microseconds starttick;
 };
 
 }
