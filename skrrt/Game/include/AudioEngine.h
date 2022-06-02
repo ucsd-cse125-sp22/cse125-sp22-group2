@@ -43,6 +43,9 @@ public:
         { "EngineIdle.wav",{true,    true,    false}},
         { "EngineAccelerate.wav", {true,true, false}},
         { "Collision.wav", {true,    false,   false}},
+        { "Pillow.wav",    {true,    false,   false}},
+        { "BlowDryerPowerup.wav",{true,false, false}},
+        { "BlowDryerUse.wav", {true,  false,   false}},
     };
 
     AudioEngine();

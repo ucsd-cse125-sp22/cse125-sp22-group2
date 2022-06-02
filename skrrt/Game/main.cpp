@@ -316,19 +316,26 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
     {
         AudioTrigger audio = triggers[i];
-        vec3 position;
+        vec3 position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
         switch (audio.id)
         {
         case AudioId::COLLISION:
-            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
             game.triggerFx("Collision.wav", position);
             break;
         case AudioId::MAKEUP:
-            position = game.computeCamRelative3dPosition(scene.camera->forwardVectorXZ(), game.players[clientId]->getPosition(), audio.position);
             game.triggerFx("Makeup.wav", position);
             break;
         case AudioId::CROWN_CHANGE:
             game.triggerFx("GetCrown.wav", { 0,0,0 }, -3.0);
+            break;
+        case AudioId::BOUNCE:
+            game.triggerFx("Pillow.wav", position);
+            break;
+        case AudioId::POWERUP_PICKUP:
+            game.triggerFx("BlowDryerPowerup.wav", position);
+            break;
+        case AudioId::POWERUP_USE:
+            //game.triggerFx("BlowDryerUse.wav", position);
             break;
         case AudioId::NO_AUDIO:
         default:
@@ -609,8 +616,7 @@ void idle() {
 
     int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 	float speed = 50.0f;
-    //if (time - lastRenderTime > 50) {
-    if (time - lastRenderTime > 1) { // INCREASE RENDER SPEED, Need to check particle logic
+    if (time - lastRenderTime > 50) {
         //std::cout << time - lastRenderTime << "\n";
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
