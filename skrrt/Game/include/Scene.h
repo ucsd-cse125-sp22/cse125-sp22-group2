@@ -23,6 +23,7 @@
 #include "TextShader.h"
 #include "DepthShader.h"
 #include "QuadShader.h"
+#include "GaussianShader.h"
 #include "Text.h"
 #include "UIShader.h"
 
@@ -73,6 +74,7 @@ public:
     DepthShader* depth_shader;
     QuadShader* quad_shader;
     UIShader* ui_shader;
+    GaussianShader* gaussian_shader;
 
     Text* scores[4];
     Text* game_time;
@@ -82,6 +84,10 @@ public:
 
     int shadowMapOffset;
     int bloomTexOffsets[2];
+    int pingpongOffsets[2];
+    
+    unsigned int pingpongFBO[2];
+    unsigned int pingpongBuffer[2];
 
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.

@@ -58,6 +58,7 @@
     <ClInclude Include="include\DepthShader.h" />
     <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\UIShader.h" />
+    <ClInclude Include="include\GaussianShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -80,5 +81,7 @@
     <None Include="shaders\quad.vert" />
     <None Include="shaders\text.vert" />
     <None Include="shaders\text.frag" />
+    <None Include="shaders\gaussian.frag" />
+    <None Include="shaders\gaussian.vert" />
   </ItemGroup>
 </Project>
