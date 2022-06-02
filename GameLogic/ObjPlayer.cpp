@@ -640,9 +640,13 @@ void ObjPlayer::applyGravity() {
 	//	gravity = 0.0f;
 	//}
 
+	//if (this->position.y < -6.0f) {
+	//	this->gravity = -0.8f;
+	//	this->bounced = true;
+	//}
 	// Trampoline
-	if (this->position.y < -6.0f) {
-		this->gravity = -0.8f;
+	if (this->position.y < -5.0f) {
+		this->gravity = -0.75f;
 		this->bounced = true;
 	}
 

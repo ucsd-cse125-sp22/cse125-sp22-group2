@@ -57,7 +57,7 @@ void Scene::init(int width, int height) {
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["cones"] = new Obj;
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
+    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["blowdryer_world"] = new Obj;
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
