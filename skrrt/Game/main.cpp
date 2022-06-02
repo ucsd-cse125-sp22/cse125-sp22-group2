@@ -151,6 +151,7 @@ void initialize(void)
     glEnable(GL_DEPTH_TEST);
     glLineWidth(3.0f);
     glEnable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
 
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);

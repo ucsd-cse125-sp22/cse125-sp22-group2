@@ -76,7 +76,8 @@ void Player::updateParticles(float time) {
 	//vec3 position = vec3(0.6f, -0.4f, 0.0f) + current_position;
 	vec3 particle_direction = normalize(-current_direction);
 	vec3 position = particle_direction - vec3(0.0f, 0.4f, 0.0f) + current_position;
-	vec3 velocity = 0.06f * particle_direction; 
+	//vec3 velocity = 0.06f * particle_direction; 
+	vec3 velocity = vec3(0.0f); 
 
 	vec3 positionPowerup = particle_direction * 1.2f - vec3(0.0f, 0.1f, 0.0f) + current_position;
 	vec3 velocityPowerup = vec3(0.0f, -0.002f, 0.0f);

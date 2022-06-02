@@ -13,7 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS false
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(int width, int height) {
@@ -59,6 +59,27 @@ void Scene::init(int width, int height) {
     geometry["cones"] = new Obj;
     geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emision.png", "textures/no_emision.png", 7);
 
+    geometry["flowers"] = new Obj; 
+    geometry["flowers"]->init("models/FlowersPillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["dress"] = new Obj; 
+    geometry["dress"]->init("models/Dress.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["cake"] = new Obj; 
+    geometry["cake"]->init("models/CakePillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["curtains"] = new Obj; 
+    geometry["curtains"]->init("models/Curtains.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+
+    geometry["lipstick"] = new Obj; 
+    geometry["lipstick"]->init("models/Lipstick.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+
+    geometry["mascara_brush"] = new Obj; 
+    geometry["mascara_brush"]->init("models/MascaraBrush.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+
+    geometry["powder_thing"] = new Obj; 
+    geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+
     geometry["blowdryer_world"] = new Obj;
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/no_emission.png", "textures/no_emission.png", 19);
 
@@ -82,12 +103,14 @@ void Scene::init(int width, int height) {
     geometry["crown_icon"]->init("models/Plane.obj", "textures/Crown_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 13);
 
     geometry["mascara_icon"] = new Obj;
-    geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 14);
+    //geometry["mascara_icon"]->init("models/Plane.obj", "textures/Mascara_Icon.png", "textures/map_specular.png", "textures/map_emission.png", 14);
+    geometry["mascara_icon"]->init("models/Plane.obj", "textures/LipstickBase.png", "textures/map_specular.png", "textures/map_emission.png", 14);
     geometry["mascara_bar"] = new Obj;
-    geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
+    //geometry["mascara_bar"]->init("models/Plane.obj", "textures/Mascara_Bar.png", "textures/map_specular.png", "textures/map_emission.png", 15);
+    geometry["mascara_bar"]->init("models/Plane.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 15);
 
     geometry["white_bar"] = new Obj;
-    geometry["white_bar"]->init("models/StatusBar.obj", "textures/white.png", "textures/map_specular.png", "textures/map_emission.png", 16);
+    geometry["white_bar"]->init("models/StatusBar.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 16);
 
     geometry["start_menu"] = new Obj;
     geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
@@ -105,6 +128,7 @@ void Scene::init(int width, int height) {
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
     pingpongOffsets[0] = bloomTexOffsets[1] + 1;
     pingpongOffsets[1] = pingpongOffsets[0] + 1;
+
 
     // Create a material palette
     material["wood"] = new Material;
@@ -171,6 +195,32 @@ void Scene::init(int width, int height) {
     model["cones"] = new Model;
     model["cones"]->geometry = geometry["cones"];
     model["cones"]->material = material["ceramic"];
+
+    model["flowers"] = new Model; 
+    model["flowers"]->geometry = geometry["flowers"]; 
+    model["flowers"]->material = material["ceramic"];
+
+    model["dress"] = new Model; 
+    model["dress"]->geometry = geometry["dress"]; 
+    model["dress"]->material = material["ceramic"];
+
+    model["cake"] = new Model; 
+    model["cake"]->geometry = geometry["cake"]; 
+    model["cake"]->material = material["ceramic"];
+
+    model["curtains"] = new Model; 
+    model["curtains"]->geometry = geometry["curtains"]; 
+    model["curtains"]->material = material["ceramic"];
+
+    model["lipstick"] = new Model; 
+    model["lipstick"]->geometry = geometry["lipstick"]; 
+    model["lipstick"]->material = material["ceramic"];
+    model["mascara_brush"] = new Model; 
+    model["mascara_brush"]->geometry = geometry["mascara_brush"]; 
+    model["mascara_brush"]->material = material["ceramic"];
+    model["powder_thing"] = new Model; 
+    model["powder_thing"]->geometry = geometry["powder_thing"]; 
+    model["powder_thing"]->material = material["ceramic"];
 
     model["blowdryer_world"] = new Model;
     model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
@@ -439,9 +489,19 @@ void Scene::init(int width, int height) {
         node["makeup_station" + std::to_string(i)]->models.push_back(model["makeup_station"]);
         node["makeup_station" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
 
-        node["makeup_station_bar" + std::to_string(i)] = new Node("makeup_station_bar" + std::to_string(i));
-        node["makeup_station_bar" + std::to_string(i)]->models.push_back(model["makeup_station_bar"]);
-        node["makeup_station_bar" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+		node["makeup_station_bar" + std::to_string(i)] = new Node("makeup_station_bar" + std::to_string(i));
+		node["makeup_station_bar" + std::to_string(i)]->models.push_back(model["makeup_station_bar"]);
+		node["makeup_station_bar" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+
+		node["lipstick" + std::to_string(i)] = new Node("lipstick" + std::to_string(i));
+		node["lipstick" + std::to_string(i)]->models.push_back(model["lipstick"]);
+		node["lipstick" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+		node["mascara_brush" + std::to_string(i)] = new Node("mascara_brush" + std::to_string(i));
+		node["mascara_brush" + std::to_string(i)]->models.push_back(model["mascara_brush"]);
+		node["mascara_brush" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+		node["powder_thing" + std::to_string(i)] = new Node("powder_thing" + std::to_string(i));
+		node["powder_thing" + std::to_string(i)]->models.push_back(model["powder_thing"]);
+		node["powder_thing" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
 
     // Obstacles 
@@ -457,6 +517,26 @@ void Scene::init(int width, int height) {
         node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
     }
 
+    for (int i = 0; i < 4; i++) {
+        node["flowers" + std::to_string(i)] = new Node("flowers" + std::to_string(i));
+        node["flowers" + std::to_string(i)]->models.push_back(model["flowers"]);
+        node["flowers" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    for (int i = 0; i < 2; i++) {
+        node["cake" + std::to_string(i)] = new Node("cake" + std::to_string(i));
+        node["cake" + std::to_string(i)]->models.push_back(model["cake"]);
+        node["cake" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+    }
+
+    node["dress"] = new Node("dress"); 
+    node["dress"]->models.push_back(model["dress"]); 
+    node["dress"]->modeltransforms.push_back(mat4(1.0f));
+    
+    node["curtains"] = new Node("curtains"); 
+    node["curtains"]->models.push_back(model["curtains"]); 
+    node["curtains"]->modeltransforms.push_back(mat4(1.0f));
+
     vec3 front_tire_translate = vec3(-1.25f, -0.65f, 0.0f);
     vec3 back_tire_translate = vec3(1.25f, -0.65f, 0.0f);
     mat4 front_tire_transform = translate(front_tire_translate);
@@ -464,9 +544,10 @@ void Scene::init(int width, int height) {
     mat4 crown_transform = translate(vec3(0.0f, 0.8f, 0.0f)) * scale(vec3(1.2f, 1.2f, 1.2f));
     mat4 blowdryer_transform = translate(vec3(0.0f, -1.8f, 0.0f)) * rotate(-1.0f * radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mat4 particle_transform = translate(vec3(1.25f, -0.4f, 0.0f));
+    float car_scale = 1.0f;
 
     node["world"]->childnodes.push_back(node["player0"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player0"]->childnodes.push_back(node["pink_car"]);
     node["player0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["pink_car"]->childnodes.push_back(node["p_tire_f"]);
@@ -481,7 +562,7 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player1"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
     node["player1"]->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
@@ -496,7 +577,7 @@ void Scene::init(int width, int height) {
     node["blue_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player2"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player2"]->childnodes.push_back(node["yellow_car"]);
     node["player2"]->childtransforms.push_back(translate(vec3(4.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["yellow_car"]->childnodes.push_back(node["y_tire_f"]);
@@ -511,7 +592,7 @@ void Scene::init(int width, int height) {
     node["yellow_car"]->childtransforms.push_back(particle_transform);
 
     node["world"]->childnodes.push_back(node["player3"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player3"]->childnodes.push_back(node["green_car"]);
     node["player3"]->childtransforms.push_back(translate(vec3(6.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["green_car"]->childnodes.push_back(node["g_tire_f"]);
@@ -538,14 +619,26 @@ void Scene::init(int width, int height) {
     node["world"]->childnodes.push_back(node["makeup_station0"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f)) * scale(0.5f * vec3(1.0f)) * rotate(-135.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     //node["world"]->childtransforms.push_back(translate(vec3(20.0f, -0.5, -20.0f)) * scale(0.5f * vec3(1.0f)));
-    node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
-    node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
-
+	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["lipstick0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["mascara_brush0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["powder_thing0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+    
     // makeup_station1 is the one in the lower right 
-    node["world"]->childnodes.push_back(node["makeup_station1"]);
-    node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f)) * scale(0.5f * vec3(1.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
-    node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
-    node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.0f, 0.0f)));
+	node["world"]->childnodes.push_back(node["makeup_station1"]); 
+	node["world"]->childtransforms.push_back(translate(vec3(-20.0f, -0.5, 20.0f))*scale(0.5f * vec3(1.0f)) * rotate(45.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["lipstick1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["mascara_brush1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["powder_thing1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);
@@ -561,6 +654,26 @@ void Scene::init(int width, int height) {
     node["world"]->childtransforms.push_back(translate(vec3(-29.6f, -0.5f, -4.4f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["cones2"]);
     node["world"]->childtransforms.push_back(translate(vec3(20.8f, -0.5f, 4.4f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["flowers0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(5.0f, -0.5f, 5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(5.0f, -0.5f, -5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-5.0f, -0.5f, 5.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["flowers3"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-5.0f, -0.5f, -5.0f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["cake0"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-19.0f, -0.5f, -19.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["cake1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(-17.0f, -0.5f, -21.0f)) * scale(0.5f * vec3(1.0f)));
+
+    //node["world"]->childnodes.push_back(node["dress"]);
+    //node["world"]->childtransforms.push_back(translate(vec3(-17.0f, -0.5f, -21.0f)) * scale(0.5f * vec3(1.0f)));
+
+    node["world"]->childnodes.push_back(node["curtains"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(1.0f * vec3(1.0f)));
 
     // Powerups
     for (int i = 0; i < cse125constants::NUM_POWERUPS; i++) {
@@ -653,7 +766,7 @@ void Scene::init(int width, int height) {
 
     //node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    const float clock_ratio = 85.0f / 101.0f;
+    const float clock_ratio = 407.0f / 514.0f; 
     node["screen"]->childnodes.push_back(node["clock"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-3.0f+1.5f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
@@ -667,18 +780,20 @@ void Scene::init(int width, int height) {
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 10.5f + 0.92f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
 
+    const float mascara_icon_ratio = 1782.0f / 751.0f; 
+    const float mascara_bar_ratio = 1133.0f / 353.0f;
+    node["screen"]->childnodes.push_back(node["mascara_icon"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-7.0f, -20.0f, 0.0f)) * scale(2.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    //node["screen"]->childtransforms.push_back(translate(vec3(-8.0f, -15.0f, 0.0f)) * scale(2.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
+    //node["screen"]->childnodes.push_back(node["mascara_bar"]);
+    //node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
+
     const float blowdryer_icon_ratio = 3227.0f / 3076.0f;
     node["screen"]->childnodes.push_back(node["blowdryer_icon"]);
     node["screen"]->childtransforms.push_back(translate(vec3(36.0f + 5.0f, -16.0f - 5.0f, 0.0f)) * scale(2.5f * vec3(blowdryer_icon_ratio, 1.0f, 0.0f)));
 
-    const float mascara_icon_ratio = 179.0f / 177.0f;
-    const float mascara_bar_ratio = 557.0f / 70.0f;
-    node["screen"]->childnodes.push_back(node["mascara_icon"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-10.0f+2.0f, -20.0f+0.20f, 0.0f)) * scale(1.0f * vec3(mascara_icon_ratio, 1.0f, 0.0f)));
-    node["screen"]->childnodes.push_back(node["mascara_bar"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(1.0f, -20.0f, 0.0f)) * scale(1.0f * vec3(mascara_bar_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["white_bar"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-6.8f, -20.0f, -0.1f)) * scale(0.98f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.8f, -20.0f, -0.1f)) * scale(1.4f * vec3(mascara_bar_ratio, 0.82f, 0.0f)));
 
     node["screen"]->childnodes.push_back(node["drips"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
