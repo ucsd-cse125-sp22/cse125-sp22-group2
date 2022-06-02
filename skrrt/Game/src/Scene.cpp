@@ -266,7 +266,7 @@ void Scene::drawNoPart(Node* current_node){
 			// draw all the models at the current node
 			for (unsigned int i = 0; i < cur->models.size(); i++) {
 				// Prepare to draw the geometry. Assign the modelview and the material.
-                shader->iFrames = cur->iframes;
+                shader->iFrames = cur->iframes == 0.0f? 0.0f : 1.0 - (glm::mod(cur->iframes, 10.0f) / 10.0f);
                 //shader->iFrames = cur->iframes;
 
 				shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
@@ -581,6 +581,19 @@ void Scene::drawUI(void) {
     } // End of DFS while loop.
 }
 
+// clamps time to [0.0f, 1.0f]. 0.0f is day, 1.0f is night
+void Scene::setDayNight(float timeDayNight) {
+    float time_c = glm::clamp(timeDayNight, 0.0f, 1.0f);
+    setPointLights(glm::mix(nightPointBrightness, dayPointBrightness, 1.0f - time_c));
+    setSpotLights(glm::mix(nightSpotBrightness, daySpotBrightness, 1.0f - time_c));
+    setSun(glm::mix(nightSunBrightness, daySunBrightness, 1.0f - time_c));
+
+    sun->ambient = glm::mix(sun_night->ambient, sun_day->ambient, time_c);
+    sun->diffuse = glm::mix(sun_night->diffuse, sun_day->diffuse, time_c);
+    sun->specular = glm::mix(sun_night->specular, sun_day->specular, time_c);
+    sun->direction = glm::mix(sun_night->direction, sun_day->direction, time_c);
+}
+
 void Scene::setSpotLights(float brightness) {
 	for (std::pair<std::string, SpotLight*> entry : spotLights_init) {
 		spotLights[entry.first]->ambient = brightness * entry.second->ambient;
@@ -597,18 +610,10 @@ void Scene::setPointLights(float brightness) {
 	}
 }
 
-void Scene::setSun(float brightness, bool sunOn) {
-	if (sunOn) { 
-		sun->direction = sun_day->direction;
-		sun->ambient = brightness*sun_day->ambient;
-		sun->diffuse = brightness*sun_day->diffuse;
-		sun->specular = brightness*sun_day->specular;
-	} else {
-		sun->direction = sun_night->direction;
-		sun->ambient = brightness*sun_night->ambient;
-		sun->diffuse = brightness*sun_night->diffuse;
-		sun->specular = brightness*sun_night->specular;
-	}
+void Scene::setSun(float brightness) {
+	sun->ambient = brightness*sun->ambient;
+	sun->diffuse = brightness*sun->diffuse;
+	sun->specular = brightness*sun->specular;
 }
 
 void Scene::scaleUi(int width, int height) {

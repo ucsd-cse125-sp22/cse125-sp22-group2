@@ -77,6 +77,8 @@ static float exposure = 1.0f;
 static float sensitivity = 0.25f;
 static bool mouseLocked = true;
 
+static float timeOfDay = 1.0f;
+
 #include "hw3AutoScreenshots.h"
 
 std::string makeMatchEndText(int playerId, int winnerId) {
@@ -106,7 +108,11 @@ void printHelp(){
       press the arrow keys to rotate camera.
       press 'Z' to zoom.
       press 'C' to reset camera.
-      press 'L' to turn on/off the lighting.
+
+      press '7'/'8' to lower/raise mouse sensitivity.
+      press '9'/'0' to lower/raise exposure(brightness).
+      press '-'/'=' to make it day/night.
+
     
       press 'W' 'A' 'S' 'D' to move. 
 
@@ -158,9 +164,7 @@ void initialize(void)
     glutSetCursor(GLUT_CURSOR_NONE);
 
     scene.camera->setAspect(width, height);
-    scene.setPointLights(0.7f);
-    scene.setSpotLights(1.0f);
-    scene.setSun(0.75, true);
+    scene.setDayNight(timeOfDay);
 }
 
 unsigned int quadVAO = 0;
@@ -782,11 +786,13 @@ void keyboard(unsigned char key, int x, int y){
             break;
         */
         case '7':
-            sensitivity -= 0.05;
+            sensitivity -= 0.01;
+            glm::clamp(sensitivity, 0.0f, 2.0f);
             std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '8':
-            sensitivity += 0.05;
+            sensitivity += 0.01;
+            glm::clamp(sensitivity, 0.0f, 2.0f);
             std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '9':
@@ -798,10 +804,18 @@ void keyboard(unsigned char key, int x, int y){
             std::cout << "Exposure: " << exposure << "\n";
             break;
         case '-':
-            sunOn = !sunOn;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Sun on: " << sunOn << "\n";
+            timeOfDay -= 0.05f;
+            glm::clamp(timeOfDay, 0.0f, 1.0f);
+            scene.setDayNight(timeOfDay);
+            std::cout << "Time of Day: " << timeOfDay << "\n";
             break;
+        case '=':
+            timeOfDay += 0.05f;
+            glm::clamp(timeOfDay, 0.0f, 1.0f);
+            scene.setDayNight(timeOfDay);
+            std::cout << "Time of Day: " << timeOfDay << "\n";
+            break;
+
         default:
             //glutPostRedisplay();
             break;

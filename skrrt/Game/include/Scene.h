@@ -70,6 +70,17 @@ public:
 };
 
 class Scene {
+private:
+    void setSun(float brightness);
+    void setPointLights(float brightness);
+    void setSpotLights(float brightness);
+
+    const float dayPointBrightness = 0.1f;
+    const float daySpotBrightness = 0.1f;
+    const float daySunBrightness = 0.75;
+    const float nightPointBrightness = 0.7f;
+    const float nightSpotBrightness = 1.0f;
+    const float nightSunBrightness = 0.75;
 public:
     Camera* camera;
     SurfaceShader* shader;
@@ -132,9 +143,6 @@ public:
     //DONT USE
     void scaleUi(int width, int height);
 
-    void setSun(float brightness, bool sunOn);
-    void setPointLights(float brightness);
-    void setSpotLights(float brightness);
     // Where the depth map textures live 
 	GLuint directionalDepthMap;
 	std::vector<GLuint> pointDepthMaps;
@@ -178,6 +186,7 @@ public:
     void drawDrips(void); 
 
     void updateScreen(void);
+    void setDayNight(float timeDayNight);
 
     void calculateShadowMaps();
     void drawDepthMap(Node* current_node, glm::mat4 lightSpace);

@@ -18,7 +18,7 @@ void main()
     vec4 part = texture(partTex, TexCoords);
     result += part.rgb * (part.w);
     vec4 drip = texture(dripTex, TexCoords);
-    result = mix(result, drip.rgb, drip.w); 
+    result = mix(result, drip.rgb, clamp(drip.w, 0.0f, 0.80f)); 
     result += texture(bloom, TexCoords).rgb;
     result = vec3(1.0) - exp(-result * exposure);
     
