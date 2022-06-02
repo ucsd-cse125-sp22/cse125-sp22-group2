@@ -131,7 +131,7 @@ void Scene::drawPart(Node* current_node){
     glUseProgram(part_shader->program);
 
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
-    camera -> computeMatrices();
+    //camera -> computeMatrices();
     part_shader -> projection = camera -> proj;
 
     // Define stacks for depth-first search (DFS)
@@ -164,10 +164,6 @@ void Scene::drawPart(Node* current_node){
 
             //part_shader->modelview = cur_VM;
             part_shader->modelview = camera->view;
-
-			//part_shader->is_particle = 1;
-
-			// The draw command
 			part_shader->setUniforms();
 
 			// Draw particles
@@ -178,10 +174,7 @@ void Scene::drawPart(Node* current_node){
 			// draw all the models at the current node
 			for (unsigned int i = 0; i < cur->models.size(); i++) {
 				// Prepare to draw the geometry. Assign the modelview and the material.
-                //part_shader->iFrames = cur->iframes;
-
 				part_shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
-				//part_shader->is_particle = 0;
 
 				if (DEBUG_LEVEL >= LOG_LEVEL_FINER) {
 					std::cout <<"Object number: " << (cur->models[i])->geometry->object_number << "\n";

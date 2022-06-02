@@ -300,14 +300,8 @@ void display(void) {
     unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers(2, attachmentsWorld);
     glViewport(0, 0, width, height);
-
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*
-    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
-    unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachmentsWorld);
-    */
+
     //Update shadowmaps?
     if (ENABLE_SHADOW_MAP) {
         glActiveTexture(GL_TEXTURE0 + scene.shadowMapOffset);
@@ -320,13 +314,11 @@ void display(void) {
     /// RENDER PARTICLES
     /// </summary>
     glBindFramebuffer(GL_FRAMEBUFFER, scene.partFBO);
-    unsigned int attachmentsPart[1] = { GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(2, attachmentsPart);
+    //unsigned int attachmentsPart[1] = { GL_COLOR_ATTACHMENT0};
+    //glDrawBuffers(2, attachmentsPart);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     scene.drawPart(scene.node["world"]);
-
-
 
     scene.updateScreen();
     /// <summary>
@@ -334,7 +326,7 @@ void display(void) {
     /// </summary>
 
     glBindFramebuffer(GL_FRAMEBUFFER, scene.partFBO);
-    glDrawBuffers(2, attachmentsPart);
+    //glDrawBuffers(2, attachmentsPart);
 
     bool horizontalP = true; 
     bool first_iterationP = true;
