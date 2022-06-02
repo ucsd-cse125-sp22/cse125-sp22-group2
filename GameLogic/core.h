@@ -33,7 +33,7 @@ const float MAP_PIT_ROAD_HALF_WIDTH = 3.5f;
 // Makeup
 const float MAKEUP_MAX = 100.0f;
 const float MAKEUP_DECREASE_RATE = 3.0f;
-const float MAKEUP_BOOTH_TIME = 2.0f;
+const float MAKEUP_BOOTH_TIME = 2.5f;
 
 // Max Speeds
 const float DEFAULT_MAX_SPEED = 0.5f;
