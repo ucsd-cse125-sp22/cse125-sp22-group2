@@ -31,7 +31,7 @@ int main()
     boost::thread serverThread(launchServer);
 
     // Initialize ticker
-    cse125clocktick::ClockTick ticker(cse125config::TICK_RATE);
+    cse125clocktick::ClockTick* ticker = new cse125clocktick::ClockTick(cse125config::TICK_RATE);
 
     // Block until all clients connected
     std::cout << "Waiting for " << cse125constants::NUM_PLAYERS
@@ -56,14 +56,14 @@ int main()
     {
         if (cse125config::ENABLE_COUNTDOWN) {
             // Pre-match countdown loop
+            ticker->tickStart();
             for (int i = 0; i <= numCountdownTicks; i++) {
-                ticker.tickStart();
                 cse125framing::ServerFrame countdownFrame;
                 initializeServerFrame(manager, &countdownFrame);
                 countdownFrame.countdownTimeRemaining = numCountdownTicks - i;
                 countdownFrame.matchInProgress = false;
                 server->writePackets(&countdownFrame);
-                ticker.tickEnd();
+                ticker->tickEnd();
             }
         }      
 
@@ -71,10 +71,10 @@ int main()
         bool matchInProgress = true;
         int winnerId = cse125constants::DEFAULT_WINNER_ID;
         std::cerr << "Starting Skrrt Skirt!" << std::endl;
+        // Start the clock tick
+        ticker->tickStart();
         while (matchInProgress)
         {
-            // Start the clock tick
-            ticker.tickStart();
 
             // Update basic game state (score, makeup levels; not dependent on input)
             manager->step(&matchInProgress, &winnerId);
@@ -160,7 +160,7 @@ int main()
             initializeServerFrame(manager, &serverFrame);
             server->writePackets(&serverFrame);
             // Sleep until the end of the clock tick
-            ticker.tickEnd();
+            ticker->tickEnd();
         } 
 
         std::cerr << "Match has ended!" << std::endl;
