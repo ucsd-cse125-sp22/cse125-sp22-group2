@@ -443,7 +443,7 @@ void updatePlayerState(cse125framing::ServerFrame* frame) {
         const glm::vec3 dir = glm::vec3(frame->players[i].playerDirection);
         const glm::vec3 up = glm::vec3(frame->players[i].playerUp);
         game.players[i]->moveCar(dir, up, pos);
-        game.players[i]->setCrownStatus(frame->players[i].hasCrown);
+        game.updateCrownStatus(i, frame->players[i].hasCrown);
         game.players[i]->setMakeupLevel(frame->players[i].makeupLevel);
         game.players[i]->setPlayerScore(frame->players[i].score);
         game.players[i]->setHasPowerup(frame->players[i].hasPowerup);

@@ -25,6 +25,11 @@ void Game::updateMakeupStatusBar(int time, RealNumber makeupLevel) {
 
 }
 
+void Game::updateCrownStatus(int playerNum, bool hasCrown) {
+    players[playerNum]->setCrownStatus(hasCrown); 
+    crown_icons[playerNum]->visible = hasCrown; 
+}
+
 void Game::updateBlowdryerIcon(bool visible) {
     blowdryer_status_icon->visible = visible;
 }

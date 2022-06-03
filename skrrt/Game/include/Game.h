@@ -59,6 +59,8 @@ private:
     std::vector<glm::mat4> blowdryer_translation;
     glm::mat4 initial_blowdryer_transform;
 
+    std::vector<Node*> crown_icons; 
+
     std::vector<Node*> makeup_gate_arms;
     std::vector<glm::mat4> initial_arm_transforms;
 
@@ -107,6 +109,10 @@ public:
 
             if (child->name == "blowdryer_icon") {
                 blowdryer_status_icon = child;
+            }
+
+            if (child->name.find("crown_icon") != std::string::npos) {
+                crown_icons.push_back(child);
             }
 		}
         initial_drip_transform = drips->modeltransforms[0];
@@ -159,6 +165,7 @@ public:
     void updateDrips(int time, RealNumber makeupLevel); 
     void updateMakeupStatusBar(int time, RealNumber makeupLevel);
     void updateBlowdryerIcon(bool visible);
+    void updateCrownStatus(int playerNum, bool hasCrown);
     void setCrownTransform(glm::mat4 t, bool v) { loose_crown_translation = t; loose_crown->visible = v; }
     void setBlowdryerTransform(int i, glm::mat4 t, bool v) { blowdryer_translation[i] = t; blowdryer_pickup_node[i]->visible = v; }
     void bobCrown(int time);
