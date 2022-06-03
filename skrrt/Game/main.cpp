@@ -916,6 +916,7 @@ void idle() {
                winnerId = frame->winnerId;
                matchInProgress = false;
                enableSendPlay = true;
+               game.endGame();
             }
             // Delete the frame
             delete frame;

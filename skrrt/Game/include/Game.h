@@ -75,7 +75,8 @@ private:
 
 public: 
     std::vector<int> scores; 
-    std::vector<Player*> players; 
+    std::vector<Player*> players;
+    std::vector<int> ranks;
     bool carEngineState;
 
     Game(int numPlayers) {
@@ -155,6 +156,38 @@ public:
 
     void updateTime(RealNumber t) { game_time = t; }
     float getTime() { return game_time; };
+    void setRanks() {
+        std::vector<int> temp;
+        RealNumber max_score = 0;
+
+        for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
+            RealNumber max_score = -1;
+            int tracker = 0;
+            for (int j = i; j < cse125constants::NUM_PLAYERS; j++) {
+                if (players[j]->getScore() > max_score) {
+                    tracker = j;
+                    max_score = players[j]->getScore();
+                }
+            }
+            int temp = ranks[i];
+            ranks[i] = ranks[tracker];
+        }
+
+        //auto cmp = [](std::pair<int, int> p1, std::pair<int, int> p2) { return p1.second > p2.second; };
+        //std::map<int, int> ranked;
+        //int i;
+        //for (i = 0; i < cse125constants::NUM_PLAYERS; i++)
+        //{
+        //    ranked[players[i]->getScore()] = i;
+        //}
+
+        //i = 0;
+        //for (std::pair<int, int> p : ranked)
+        //{
+        //    ranks[i] = p.second;
+        //    i++;
+        //}
+    }
 
     void updateDrips(int time, RealNumber makeupLevel); 
     void updateMakeupStatusBar(int time, RealNumber makeupLevel);
@@ -195,6 +228,11 @@ public:
     int soundCount()
     {
         return audioEngine.getSoundCount();
+    }
+
+    void endGame() {
+        return;
+        setRanks();
     }
 };
 

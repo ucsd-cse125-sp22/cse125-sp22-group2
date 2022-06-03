@@ -215,7 +215,7 @@ void Scene::drawText(const float& countdownTimeRemaining, const bool& renderMatc
         text_shader->textColor = scores[i]->getColor(); 
 		text_shader->setUniforms();
         //scores[i]->setPosition(currentWidth - 120.0f, currentHeight - 50.0f * i - 75.0f);
-        scores[i]->setPosition(120.0f, currentHeight - 75.0f * i - 100.0f);
+        scores[i]->setPosition(124.0f, currentHeight - 75.0f * i - 100.0f);
         scores[i]->RenderText();
     }
 
