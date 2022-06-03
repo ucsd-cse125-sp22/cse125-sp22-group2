@@ -14,8 +14,8 @@ namespace this_sucks {
 void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, bool createNew) {
 	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -6, (createNew ? 4 : 0));
 }
-void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, glm::vec3 color, bool createNew) {
-	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -6, (createNew ? createRate : 0), lifeSpan, posVar, velVar, lifespVar, 0.0f, 5.225f, 0.1f, particleRad, -1, 0, color);
+void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, std::vector<glm::vec3> colors, bool createNew) {
+	Update(deltaTime, p, v, 0.01, 0, glm::vec3(0.0f), -6, (createNew ? createRate : 0), lifeSpan, posVar, velVar, lifespVar, 0.0f, 5.225f, 0.1f, particleRad, -1, 0, colors);
 }
 
 /*
@@ -29,7 +29,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 							glm::vec3 windDir, float floor, float createRate, float lifeSp,
 							float posVar, float velVar, float lifespVar, float g,
 							float airDen, float d, float particleRad,
-							float colElast, float colFrict, glm::vec3 color) {
+							float colElast, float colFrict, std::vector<glm::vec3> colorsInit) {
 
 	//std::cout << "Called Particle Source Update" << std::endl;
 
@@ -50,6 +50,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	particleRadius = particleRad; 
 	collisionElasticity = colElast; 
 	collisionFriction = colFrict;
+	colors = colorsInit;
 	glm::vec3 n = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	std::normal_distribution<float> distribution{ 0.0, 1.0 };
@@ -74,7 +75,7 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 		if (particleRad > 0.1f) {
 			rad += distribution(gen) * 0.02f;
 		}
-		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad, color);
+		particles[numParticles] = new Particle(deltaPos, deltaVel, glm::vec3(0.0f), mass, false, deltaLifeSpan, rad, colors[i % colors.size()]);
 
 		float random = ((float)rand() / INT_MAX);
 
@@ -176,13 +177,25 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	}
 }
 
-void ParticleSource::Draw(const glm::mat4& viewProjMtx, GLuint shader) {
+void ParticleSource::Draw(const glm::mat4& viewProjMtx, SurfaceShader* shader, GLuint program) {
 
 	//std::cout << "Print Particle Source" << std::endl;
 
+	
 	// Draw all particles 
 	for (int i = 0; i < numParticles; i++) {
-		particles[i]->draw(viewProjMtx, shader);
+		shader->particleColor = particles[i]->getColor();
+		shader->setUniforms();
+		particles[i]->draw(viewProjMtx, program);
+	}
+}
+
+void ParticleSource::Draw(const glm::mat4& viewProjMtx, PartShader* shader, GLuint program) {
+	// Draw all particles 
+	for (int i = 0; i < numParticles; i++) {
+		shader->particleColor = glm::vec4(particles[i]->getColor(), 1.0f);
+		shader->setUniforms();
+		particles[i]->draw(viewProjMtx, program);
 	}
 }
 

@@ -129,8 +129,15 @@ void Scene::init(int width, int height) {
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
     bloomTexOffsets[0] = shadowMapOffset + 1;
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
-    pingpongOffsets[0] = bloomTexOffsets[1] + 1;
+    bloomTexOffsets[2] = bloomTexOffsets[1] + 1;
+    pingpongOffsets[0] = bloomTexOffsets[2] + 1;
     pingpongOffsets[1] = pingpongOffsets[0] + 1;
+    noPartOffsets[0] = pingpongOffsets[1] + 1;
+    noPartOffsets[1] = noPartOffsets[0] + 1;
+    partOffset = noPartOffsets[1] + 1;
+    pingpongOffsetsP[0] = partOffset + 1;
+    pingpongOffsetsP[1] = pingpongOffsetsP[0] + 1;
+    dripOffset = pingpongOffsetsP[1] + 1;
 
 
     // Create a material palette
@@ -576,6 +583,7 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
+
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
@@ -772,9 +780,11 @@ void Scene::init(int width, int height) {
     node["green_tire"]->models.push_back(model["green_tire"]);
     node["green_tire"]->modeltransforms.push_back(UI_rotation);
 
-    node["crown_icon"] = new Node("crown_icon");
-    node["crown_icon"]->models.push_back(model["crown_icon"]);
-    node["crown_icon"]->modeltransforms.push_back(UI_rotation);
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+		node["crown_icon" + std::to_string(i)] = new Node("crown_icon" + std::to_string(i), false);
+		node["crown_icon" + std::to_string(i)]->models.push_back(model["crown_icon"]);
+		node["crown_icon" + std::to_string(i)]->modeltransforms.push_back(UI_rotation);
+    }
 
     node["blowdryer_icon"] = new Node("blowdryer_icon");
     node["blowdryer_icon"]->models.push_back(model["blowdryer_icon"]);
@@ -819,6 +829,16 @@ void Scene::init(int width, int height) {
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 13.8f + 1.28f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 10.5f + 0.92f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+    const float crown_ratio = 108.0f / 82.0f; 
+    node["screen"]->childnodes.push_back(node["crown_icon0"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 20.4f + 2.05f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f))* scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
+    node["screen"]->childnodes.push_back(node["crown_icon1"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 17.1f + 1.68f + 1.1f, 0.0f))  * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["crown_icon2"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 13.8f + 1.28f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
+    node["screen"]->childnodes.push_back(node["crown_icon3"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 10.5f + 0.92f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
 
     const float mascara_icon_ratio = 1782.0f / 751.0f; 
     const float mascara_bar_ratio = 1133.0f / 353.0f;
@@ -907,6 +927,134 @@ void Scene::init(int width, int height) {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // Framebuffers for noPart
+    glGenFramebuffers(1, &noPartFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, noPartFBO);
+    glGenTextures(2, noPartBuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + noPartOffsets[i]);
+        glBindTexture(GL_TEXTURE_2D, noPartBuffers[i]);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // attach texture to framebuffer
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, noPartBuffers[i], 0
+        );
+    }
+    unsigned int attachmentsNoPart[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsNoPart);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Bloom Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Framebuffers for drips
+    glGenFramebuffers(1, &dripFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, dripFBO);
+    glGenTextures(1, &dripBuffer);
+	glActiveTexture(GL_TEXTURE0 + dripOffset);
+	glBindTexture(GL_TEXTURE_2D, dripBuffer);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+	);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// attach texture to framebuffer
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, dripBuffer, 0
+	);
+    unsigned int attachmentsDrip[1] = { GL_COLOR_ATTACHMENT3};
+    glDrawBuffers(1, attachmentsDrip);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Drip Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Framebuffers for ui
+    glGenFramebuffers(1, &uiFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, uiFBO);
+    glGenTextures(1, &uiBuffer);
+	glActiveTexture(GL_TEXTURE0 + bloomTexOffsets[2]);
+	glBindTexture(GL_TEXTURE_2D, uiBuffer);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+	);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// attach texture to framebuffer
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, uiBuffer, 0
+	);
+    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT2};
+    glDrawBuffers(1, attachmentsUI);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "UI Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Framebuffers for PART
+    glGenFramebuffers(1, &partFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, partFBO);
+    glGenTextures(1, &partBuffer);
+	glActiveTexture(GL_TEXTURE0 + partOffset);
+	glBindTexture(GL_TEXTURE_2D, partBuffer);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+	);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// attach texture to framebuffer
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, partBuffer, 0
+	);
+    unsigned int rboDepthP;
+    glGenRenderbuffers(1, &rboDepthP);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepthP);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepthP);
+    unsigned int attachmentsPart[1] = { GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, attachmentsPart);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Part Framebuffer not complete!" << std::endl;
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    //framebuffer for gaussian Partical ping pong
+    glGenFramebuffers(2, pingpongFBOP);
+	glGenTextures(2, pingpongBufferP);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBOP[i]);
+        glActiveTexture(GL_TEXTURE0 + pingpongOffsetsP[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongBufferP[i]);
+		glTexImage2D(
+			GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL
+		);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBufferP[i], 0
+		);
+	}
+
     //framebuffer for gaussian ping pong
     glGenFramebuffers(2, pingpongFBO);
 	glGenTextures(2, pingpongBuffer);
@@ -947,6 +1095,12 @@ void Scene::init(int width, int height) {
         glUseProgram(quad_shader->program);
         quad_shader->initUniforms();
 
+        part_shader = new PartShader;
+        part_shader->read_source("shaders/part.vert", "shaders/part.frag");
+        part_shader->compile();
+        glUseProgram(part_shader->program);
+        part_shader->initUniforms();
+
         gaussian_shader = new GaussianShader;
         gaussian_shader->read_source("shaders/gaussian.vert", "shaders/gaussian.frag");
         gaussian_shader->compile();
@@ -982,7 +1136,7 @@ void Scene::init(int width, int height) {
     game_time->updateText("100");
 
     countdown_instructions_text = new Text(text_shader->program);
-    countdown_instructions_text->updateText("Keep the crown for as long as possible! Get ready  ");
+    countdown_instructions_text->updateText("Claim the crown and win the pageant!");
 
     countdown_go_text = new Text(text_shader->program);
     countdown_go_text->updateText("Default countdown text");

@@ -59,6 +59,8 @@ private:
     std::vector<glm::mat4> blowdryer_translation;
     glm::mat4 initial_blowdryer_transform;
 
+    std::vector<Node*> crown_icons; 
+
     std::vector<Node*> makeup_gate_arms;
     std::vector<glm::mat4> initial_arm_transforms;
 
@@ -72,6 +74,8 @@ private:
 
     AudioEngine audioEngine;
     std::map<int, CarEngine> carEngineChannels;
+
+    std::map<int, int> powerupChannels;
 
 public: 
     std::vector<int> scores; 
@@ -108,6 +112,10 @@ public:
 
             if (child->name == "blowdryer_icon") {
                 blowdryer_status_icon = child;
+            }
+
+            if (child->name.find("crown_icon") != std::string::npos) {
+                crown_icons.push_back(child);
             }
 		}
         initial_drip_transform = drips->modeltransforms[0];
@@ -192,6 +200,7 @@ public:
     void updateDrips(int time, RealNumber makeupLevel); 
     void updateMakeupStatusBar(int time, RealNumber makeupLevel);
     void updateBlowdryerIcon(bool visible);
+    void updateCrownStatus(int playerNum, bool hasCrown);
     void setCrownTransform(glm::mat4 t, bool v) { loose_crown_translation = t; loose_crown->visible = v; }
     void setBlowdryerTransform(int i, glm::mat4 t, bool v) { blowdryer_translation[i] = t; blowdryer_pickup_node[i]->visible = v; }
     void bobCrown(int time);
@@ -214,10 +223,13 @@ public:
     vec3 computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
 
     float fadeEngine(int channelId, float targetDB);
-
     void startCarEngines(int clientId, vec3& cameraPos);
     void stopCarEngines();
     void updateCarEngines(int clientId, vec3& cameraPos);
+
+    void startUsePowerup(int clientId, vec3& cameraPos);
+    void updateUsePowerup(int clientId, vec3& cameraPos);
+
 
     // TESTING ONLY
     int audioChannelsSize()

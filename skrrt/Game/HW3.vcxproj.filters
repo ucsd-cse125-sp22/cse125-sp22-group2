@@ -23,6 +23,7 @@
     <ClCompile Include="src\AudioEngine.cpp" />
     <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="include\Debug.cpp" />
+    <ClCompile Include="Countdown.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Config.hpp" />
@@ -63,6 +64,8 @@
     <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\UIShader.h" />
     <ClInclude Include="include\GaussianShader.h" />
+    <ClInclude Include="Countdown.hpp" />
+    <ClInclude Include="include\PartShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -88,5 +91,7 @@
     <None Include="shaders\text.frag" />
     <None Include="shaders\gaussian.frag" />
     <None Include="shaders\gaussian.vert" />
+    <None Include="shaders\part.frag" />
+    <None Include="shaders\part.vert" />
   </ItemGroup>
 </Project>
