@@ -10,6 +10,7 @@
 #include <queue>
 #include <random>
 #include <GL/glew.h>
+#include "PartShader.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +121,8 @@ public:
 		float posVar = 0.05f, float velVar = 0.008f, float lifespVar = 0, float g = 0,
 		float airDen = 5.225, float d = 0.1, float particleRad = 0.05,
 		float colElast = -1, float colFrict = 0, glm::vec3 color = glm::vec3(1.0f));
-	void Draw(const glm::mat4& viewProjMtx, GLuint shader);
+	void Draw(const glm::mat4& viewProjMtx, SurfaceShader* shader, GLuint program);
+	void Draw(const glm::mat4& viewProjMtx, PartShader* shader, GLuint program);
 
 	void CleanUp();
 };

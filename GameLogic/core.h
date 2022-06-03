@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <chrono>
 #include <ctype.h>
 #include "../Constants.hpp"
 #include "../Config.hpp"
@@ -20,6 +21,7 @@ using namespace cse125config;
 // const float MATCH_LENGTH = 120.0f;
 const float SCORE_INCREASE = 3.0f;
 const float SCORE_WEIGHT = 1.0f;
+const float TICK_FACTOR = 0.5f;
 
 // Map
 const glm::vec3 MAP_CENTER = glm::vec3(0.0f);
@@ -31,7 +33,7 @@ const float MAP_PIT_ROAD_HALF_WIDTH = 3.5f;
 // Makeup
 const float MAKEUP_MAX = 100.0f;
 const float MAKEUP_DECREASE_RATE = 3.0f;
-const float MAKEUP_BOOTH_TIME = 2.0f;
+const float MAKEUP_BOOTH_TIME = 2.5f;
 
 // Max Speeds
 const float DEFAULT_MAX_SPEED = 0.5f;
@@ -63,7 +65,7 @@ const float TRAIL_DIMENSIONS = 1.0f;
 
 // Gravity
 const float GRAVITY_MAX = 0.5f;
-const float GRAVITY_FORCE = 0.028f;
+const float GRAVITY_FORCE = 0.0298f;
 
 // Invincibility Frames
 const float CROWN_IFRAMES = 1.5f;

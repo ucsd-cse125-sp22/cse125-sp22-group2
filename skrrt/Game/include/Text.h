@@ -76,6 +76,7 @@ public:
 	glm::vec3 getColor() { return color;  }
 
 	void RenderText(void);
+	void RenderTextCenter(void);
 };
 
 #endif

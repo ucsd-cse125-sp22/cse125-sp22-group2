@@ -142,6 +142,8 @@
     <None Include="shaders\gaussian.vert" />
     <None Include="shaders\lightingShadowsDisabled.frag" />
     <None Include="shaders\lightingShadowsEnabled.frag" />
+    <None Include="shaders\part.frag" />
+    <None Include="shaders\part.vert" />
     <None Include="shaders\projectiveShadowsDisabled.vert" />
     <None Include="shaders\projectiveShadowsEnabled.vert" />
     <None Include="shaders\quad.frag" />
@@ -156,6 +158,7 @@
     <ClCompile Include="..\..\Config.cpp" />
     <ClCompile Include="..\..\Definitions.cpp" />
     <ClCompile Include="..\..\Frame.cpp" />
+    <ClCompile Include="Countdown.cpp" />
     <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\AudioEngine.cpp" />
@@ -179,6 +182,7 @@
     <ClInclude Include="..\..\Constants.hpp" />
     <ClInclude Include="..\..\Definitions.hpp" />
     <ClInclude Include="..\..\Frame.hpp" />
+    <ClInclude Include="Countdown.hpp" />
     <ClInclude Include="include\AudioEngine.h" />
     <ClInclude Include="include\Animation.h" />
     <ClInclude Include="include\Camera.h" />
@@ -186,6 +190,7 @@
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\DepthShader.h" />
     <ClInclude Include="include\GaussianShader.h" />
+    <ClInclude Include="include\PartShader.h" />
     <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\FreeImage.h" />

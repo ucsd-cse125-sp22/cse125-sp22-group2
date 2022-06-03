@@ -51,16 +51,22 @@ void PhysicalObjectManager::startGame() {
 	createObject(oWall, glm::vec3(-29.6f, 0.0f, -4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 	createObject(oWall, glm::vec3(20.8f, 0.0f, 4.4f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCones);
 
-	createObject(oWall, glm::vec3(-6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
-	createObject(oWall, glm::vec3(-6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
-	createObject(oWall, glm::vec3(6.9f, 0.0f, -6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
-	createObject(oWall, glm::vec3(6.9f, 0.0f, 6.9f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(-7.1f, 0.0f, -7.1f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(-7.1f, 0.0f, 7.1f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(7.1f, 0.0f, -7.1f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+	createObject(oWall, glm::vec3(7.1f, 0.0f, 7.1f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oPillar);
+
+	createObject(oWall, glm::vec3(-19.0f, 0.0f, -19.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCake);
+	createObject(oWall, glm::vec3(-17.0f, 0.0f, -21.0f), glm::vec3(cos(45.0f * float(M_PI) / 180.0f), 0.0f, sin(45.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oCake);
+
+	createObject(oWall, glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oFlowers);
+	createObject(oWall, glm::vec3(5.0f, 0.0f, -5.0f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oFlowers);
+	createObject(oWall, glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oFlowers);
+	createObject(oWall, glm::vec3(5.0f, 0.0f, 5.0f), glm::vec3(cos(180.0f * float(M_PI) / 180.0f), 0.0f, sin(180.0f * float(M_PI) / 180.0f)), glm::vec3(0.0f, 1.0f, 0.0f), oFlowers);
 
 	// Powerups NOTE: ALL POWERUPS MUST BE IN A ROW!!!
-	createObject(oPowerup, glm::vec3(8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	createObject(oPowerup, glm::vec3(-8.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	createObject(oPowerup, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	//createObject(oFloor, glm::vec3(3.0f, 0.0f, 6.0f), glm::vec3(0.0f, 0.0f, -1.0f)); // UNCOMMENT TO TEST SLOPES!!!
 	//createObject(oMakeup, glm::vec3(20.0f, 0.0, -20.0f), glm::vec3(0.0f, 0.0, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -109,7 +115,13 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 			this->objects->push_back(new ObjWall(objects, next_id, pos, 3.71f, 0.83f, 1.0f, dir, up));
 			break;
 		case(oPillar):
-			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.3f, 1.3f, 30.0f, dir, up));
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 2.0f, 2.0f, 30.0f, dir, up));
+			break;
+		case(oCake):
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.05f, 1.05f, 2.0f, dir, up));
+			break;
+		case(oFlowers):
+			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.05f, 1.05f, 2.0f, dir, up));
 			break;
 		default:
 			this->objects->push_back(new ObjWall(objects, next_id, pos, 1.0f, 1.0f, 1.0f, dir, up));
@@ -142,7 +154,11 @@ void PhysicalObjectManager::createObject(int objType, glm::vec3 pos, glm::vec3 d
 		if (powerupIDOffset > next_id) {
 			powerupIDOffset = next_id;
 		}
-		this->objects->push_back(new ObjPowerup(objects, next_id, vector<glm::vec3>{pos}, dir, up));
+		this->objects->push_back(new ObjPowerup(objects, next_id,
+			vector<glm::vec3>{ glm::vec3(9.5f, 2.0f, 9.5f), glm::vec3(-9.5f, 2.25f, 9.5f), glm::vec3(9.5f, 2.25f, -9.5f), glm::vec3(-9.5f, 2.25f, -9.5f),
+			glm::vec3(11.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 11.5f), glm::vec3(0.0f, 0.0f, -11.5f), glm::vec3(-11.5f, 0.0f, 0.0f),
+			glm::vec3(18.0f, 0.0f, 18.0f), glm::vec3(-18.0f, 0.0f, -18.0f), glm::vec3(18.0f, 0.0f, 18.0f), glm::vec3(-18.0f, 0.0f, -18.0f),
+			glm::vec3(0.0f, 2.75f, 0.0f), glm::vec3(0.0f, 2.75f, 0.0f), glm::vec3(0.0f, 2.75f, 0.0f), glm::vec3(0.0f, 2.75f, 0.0f) }, dir, up));
 		//this->objects->push_back(new ObjMakeup(objects, next_id, glm::vec3(0.0f), 1.0f, 1.0f, 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), false));
 		break;
 	default:

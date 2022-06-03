@@ -64,7 +64,7 @@ void Player::bobCrown(float time) {
 
 }
 
-void Player::updateParticles(float time) {
+void Player::updateParticles(float time, glm::vec3 c) {
 	Node* car_node = player_node->childnodes[0]; 
 
 	// Take car's transform and transform the offset of the particles 
@@ -87,7 +87,7 @@ void Player::updateParticles(float time) {
 		if (child->isParticleSource) {
 			child->particles->Update(time, position, velocity, (this->current_speed > 0.0f) & !using_powerup);
 			// NOTE: the 4 is for lifespan, sorry it is hardcoded for now
-			child->particlesPowerup->Update(time, positionPowerup, velocityPowerup, 6, 20 * 4 + 2, 0.4f, 0, 2, 0.11f, glm::vec3(1.0f), using_powerup);
+			child->particlesPowerup->Update(time, positionPowerup, velocityPowerup, 6, 20 * 4 - 2, 0.4f, 0, 2, 0.11f, c, using_powerup);
 			// Update(float deltaTime, glm::vec3 p, glm::vec3 v, float createRate, float lifeSp, float posVar, float velVar, float lifespVar, float particleRad, bool createNew)
 		}
 	}
