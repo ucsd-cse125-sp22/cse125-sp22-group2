@@ -73,6 +73,8 @@ private:
     AudioEngine audioEngine;
     std::map<int, CarEngine> carEngineChannels;
 
+    std::map<int, int> powerupChannels;
+
 public: 
     std::vector<int> scores; 
     std::vector<Player*> players; 
@@ -181,10 +183,13 @@ public:
     vec3 computeCamRelative3dPosition(const vec3& cameraPos, const vec3& playerPos, const vec3& eventPos);
 
     float fadeEngine(int channelId, float targetDB);
-
     void startCarEngines(int clientId, vec3& cameraPos);
     void stopCarEngines();
     void updateCarEngines(int clientId, vec3& cameraPos);
+
+    void startUsePowerup(int clientId, vec3& cameraPos);
+    void updateUsePowerup(int clientId, vec3& cameraPos);
+
 
     // TESTING ONLY
     int audioChannelsSize()
