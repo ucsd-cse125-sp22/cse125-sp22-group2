@@ -87,7 +87,7 @@ void Scene::init(int width, int height) {
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
 
     geometry["pedestal"] = new Obj;
-    geometry["pedestal"]->init("models/Pedestal.obj", "textures/trophies.png", "textures/white.png", "textures/no_emission.png", 20);
+    geometry["pedestal"]->init("models/Pedestal.obj", "textures/map_texture.png", "textures/white.png", "textures/no_emission.png", 20);
 
     //*****************************
     //********** UI obj ***********
