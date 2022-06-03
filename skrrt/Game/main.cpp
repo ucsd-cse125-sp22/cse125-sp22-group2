@@ -29,6 +29,7 @@
 #include "../../../Frame.hpp"
 #include "../../../Definitions.hpp"
 #include "Debug.h"
+#include "Countdown.hpp"
 
 const static int width = cse125constants::WINDOW_WIDTH;
 const static int height = cse125constants::WINDOW_HEIGHT;
@@ -54,7 +55,6 @@ std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 // Optimization to prevent accessing the scene graph to toggle menu visibility
 // if the current visibility is the same as the toggled visibility
 bool startScreenVisibility = false;
-bool winScreenVisibility = false;
 
 // Game / match flow variables
 bool showStartMenu = true;
@@ -63,6 +63,8 @@ bool waitingToStartMatch = false;
 bool enableSendPlay = true;
 float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
+bool playMenuTheme = true;
+countdown::CountdownStateMachine countdownSM;
 
 // Time
 static std::chrono::time_point<std::chrono::system_clock> startTime;
@@ -80,6 +82,8 @@ static bool honked = false;
 
 static float timeOfDay = 1.0f;
 
+
+
 #include "hw3AutoScreenshots.h"
 
 std::string makeMatchEndText(int playerId, int winnerId) {
@@ -92,6 +96,31 @@ std::string makeMatchEndText(int playerId, int winnerId) {
     }
     return matchEndText;
 }
+
+void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
+    switch (csm.getState()) {
+    case countdown::CountdownState::PLAY_READY_SOUND:
+        game.playMusic("Collision.wav", -6.0f);
+        // game.playMusic("ReadySound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing ready sound\n");
+        break;
+    case countdown::CountdownState::PLAY_SET_SOUND:
+        game.playMusic("GetCrown.wav", -6.0f);
+        // game.playMusic("SetSound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing set sound\n");
+        break;
+    case countdown::CountdownState::PLAY_GO_SOUND:
+        game.playMusic("Pillow.wav", -6.0f);
+        // game.playMusic("GoSound.wav", -6.0f);
+        cse125debug::log(LOG_LEVEL_INFO, "Playing go sound\n");
+        break;
+    case countdown::CountdownState::PLAY_NO_SOUND:
+        break;
+    default:
+        break;
+    }
+}
+
 
 void printHelp(){
 
@@ -384,13 +413,24 @@ void display(void) {
     scene.camera->nearPlane = scene.camera->near_default;
 
 
-    // Create the end of match text
-    const bool showMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
-    if (showMatchEndText) {
-        scene.drawText(countdownTimeRemaining, true, makeMatchEndText(clientId, winnerId));
-    } else {
-        scene.drawText(countdownTimeRemaining, false);
+    // The countdown, match end, and normal gameplay events should never overlap.
+    // Therefore, only text for the current ongoing event will be drawn
+    const bool renderCountdownText = cse125config::ENABLE_COUNTDOWN && waitingToStartMatch;
+    const bool renderMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
+    std::string matchEndText = "";
+    std::string countdownText = "";
+    if (renderCountdownText) {
+        countdownText = makeCountdownText(countdownTimeRemaining, countdownSM);
     }
+    if (renderMatchEndText) {
+        matchEndText = makeMatchEndText(clientId, winnerId);
+    }
+
+    // Render text elements
+    scene.drawText(renderCountdownText, renderMatchEndText, countdownText, matchEndText);
+
+    // Play countdown sound
+    handleCountdownSound(countdownSM);
 
     glDisable(GL_BLEND);
     
@@ -449,7 +489,6 @@ void toggleStartMenuVisibility(const bool& visibility) {
     if (visibility != startScreenVisibility) {
         startScreenVisibility = visibility;
         scene.node["start_menu"]->visible = visibility;
-        game.playMusic("MenuTheme.wav", -6.0f);
     }
 }
 
@@ -968,6 +1007,13 @@ void idle() {
 
     toggleStartMenuVisibility(showStartMenu);
 
+    // Only play the start menu theme once
+    if (playMenuTheme) {
+       game.playMusic("MenuTheme.wav", -6.0f);
+       playMenuTheme = false;
+    }
+
+
     // Handle server communication
     const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
     if (connectedToServer) {
@@ -1004,6 +1050,7 @@ void idle() {
 
                 cse125framing::ServerFrame* frame = receiveDataFromServer();    
 
+                // Ready / Set / Go part
                 if (cse125config::ENABLE_COUNTDOWN) {
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);

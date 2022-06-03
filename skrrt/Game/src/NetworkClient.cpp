@@ -141,7 +141,7 @@ size_t cse125networkclient::NetworkClient::receive(cse125framing::ServerFrame* f
     }
     // Set error code
     *errorCode = error;
-    return size_t();
+    return numRead;
 }
 
 size_t cse125networkclient::NetworkClient::play(boost::system::error_code* errorCode)
