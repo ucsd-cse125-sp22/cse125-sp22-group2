@@ -120,6 +120,19 @@ void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
     }
 }
 
+// Reset state for camera arcing
+void goBackToStartView() {
+    showStartLogo = true;
+    arcCamera = true;
+    renderStartText = true;
+    playMenuTheme = true;
+    scene.camera->target = glm::vec3(0.0f, 0.0f, 0.0f);
+    scene.camera->eye = glm::vec3(0.0f, 4.0f, 15.0f);
+    scene.camera->zoom(CAMERA_ZOOM_FACTOR);
+    game.stopCarEngines();
+    game.stopAllSounds();
+}
+
 
 void printHelp(){
 
@@ -1036,6 +1049,7 @@ void idle() {
                winnerId = frame->winnerId;
                matchInProgress = false;
                enableSendPlay = true;
+               goBackToStartView(); // TODO: Move this after the end screen
             }
             triggerAudio(frame->audio);
             // Delete the frame

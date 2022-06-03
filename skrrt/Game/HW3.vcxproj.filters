@@ -24,6 +24,7 @@
     <ClCompile Include="src\Text.cpp" />
     <ClCompile Include="include\Debug.cpp" />
     <ClCompile Include="Countdown.cpp" />
+    <ClCompile Include="Gameflow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Config.hpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="include\GaussianShader.h" />
     <ClInclude Include="Countdown.hpp" />
     <ClInclude Include="include\PartShader.h" />
+    <ClInclude Include="GameFlow.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
