@@ -105,7 +105,7 @@ std::string makeMatchEndText(int playerId, int winnerId) {
 void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
     switch (csm.getState()) {
     case countdown::CountdownState::PLAY_READY_SOUND:
-        game.triggerFx("Ready.wav");
+        game.playMusic("Ready.wav");
         break;
     case countdown::CountdownState::PLAY_SET_SOUND:
         game.triggerFx("Set.wav");
