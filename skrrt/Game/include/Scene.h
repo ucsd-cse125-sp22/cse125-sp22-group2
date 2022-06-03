@@ -26,6 +26,7 @@
 #include "GaussianShader.h"
 #include "Text.h"
 #include "UIShader.h"
+#include "PartShader.h"
 
 #include "../../../Constants.hpp"
 
@@ -56,6 +57,8 @@ public:
     bool visible;
     bool isParticleSource; 
 
+    float iframes = 0.0f;
+
     ParticleSource* particles;
     ParticleSource* particlesPowerup;
 
@@ -67,6 +70,17 @@ public:
 };
 
 class Scene {
+private:
+    void setSun(float brightness);
+    void setPointLights(float brightness);
+    void setSpotLights(float brightness);
+
+    const float dayPointBrightness = 0.1f;
+    const float daySpotBrightness = 0.1f;
+    const float daySunBrightness = 0.75;
+    const float nightPointBrightness = 0.7f;
+    const float nightSpotBrightness = 1.0f;
+    const float nightSunBrightness = 0.75;
 public:
     Camera* camera;
     SurfaceShader* shader;
@@ -75,6 +89,7 @@ public:
     QuadShader* quad_shader;
     UIShader* ui_shader;
     GaussianShader* gaussian_shader;
+    PartShader* part_shader;
 
     Text* scores[4];
     Text* game_time;
@@ -82,13 +97,35 @@ public:
     Text* countdown_go_text;
     Text* match_end_text;
 
+    //Bloom
+    GLuint hdrFBO;
+	GLuint colorBuffers[2];
+
+    GLuint uiFBO;
+	GLuint uiBuffer;
+
+    GLuint dripFBO;
+	GLuint dripBuffer;
+    int dripOffset;
+
+    GLuint partFBO;
+	GLuint partBuffer;
+
+    GLuint noPartFBO;
+	GLuint noPartBuffers[2];
+    int noPartOffsets[2];
+
     int shadowMapOffset;
-    int bloomTexOffsets[2];
+    int bloomTexOffsets[3];
     int pingpongOffsets[2];
+    int pingpongOffsetsP[2];
+    int partOffset;
     
     unsigned int pingpongFBO[2];
     unsigned int pingpongBuffer[2];
 
+    unsigned int pingpongFBOP[2];
+    unsigned int pingpongBufferP[2];
     // The following are containers of objects serving as the object palettes.
     // The containers store pointers so that they can also store derived class objects.
     std::map< std::string, Geometry* > geometry;
@@ -106,9 +143,6 @@ public:
     //DONT USE
     void scaleUi(int width, int height);
 
-    void setSun(float brightness, bool sunOn);
-    void setPointLights(float brightness);
-    void setSpotLights(float brightness);
     // Where the depth map textures live 
 	GLuint directionalDepthMap;
 	std::vector<GLuint> pointDepthMaps;
@@ -119,9 +153,6 @@ public:
 	std::vector<GLuint> pointDepthMapsFBO;
 	std::vector<GLuint> spotDepthMapsFBO;
 
-    //Bloom
-    GLuint hdrFBO;
-	GLuint colorBuffers[2];
     
 
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
@@ -135,6 +166,8 @@ public:
     
     void init(int width, int height);
     void draw(Node* current_node);
+    void drawPart(Node* current_node);
+    void drawNoPart(Node* current_node);
 
     glm::vec3 text_colors[4] = {glm::vec3(0.84f, 0.24f, 0.74f),  // pink
                                 glm::vec3(0.31f, 0.68f, 0.89f),  // blue
@@ -150,8 +183,10 @@ public:
      */
     void drawText(const float& countdownTimeRemaining, const bool& renderMatchEndText, const std::string& matchEndText = "");
     void drawUI(void); 
+    void drawDrips(void); 
 
     void updateScreen(void);
+    void setDayNight(float timeDayNight);
 
     void calculateShadowMaps();
     void drawDepthMap(Node* current_node, glm::mat4 lightSpace);

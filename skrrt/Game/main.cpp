@@ -33,7 +33,7 @@
 const static int width = cse125constants::WINDOW_WIDTH;
 const static int height = cse125constants::WINDOW_HEIGHT;
 static const char* title = "Scene viewer";
-static const glm::vec4 background(0.0f, 0.0f, 0.0f, 1.0f);
+static const glm::vec4 background(0.0f, 0.0f, 0.0f, 0.0f);
 static Scene scene;
 //static ParticleCube* testcube;
 //static Player p0, p1, p2, p3;
@@ -74,7 +74,11 @@ static bool sunOn = true;
 static float brightnessHeadlight = 1.0f;
 static float brightnessOther = 1.0f;
 static float exposure = 1.0f;
+static float sensitivity = 0.25f;
 static bool mouseLocked = true;
+static bool honked = false;
+
+static float timeOfDay = 1.0f;
 
 #include "hw3AutoScreenshots.h"
 
@@ -105,7 +109,11 @@ void printHelp(){
       press the arrow keys to rotate camera.
       press 'Z' to zoom.
       press 'C' to reset camera.
-      press 'L' to turn on/off the lighting.
+
+      press '7'/'8' to lower/raise mouse sensitivity.
+      press '9'/'0' to lower/raise exposure(brightness).
+      press '-'/'=' to make it day/night.
+
     
       press 'W' 'A' 'S' 'D' to move. 
 
@@ -129,7 +137,7 @@ void initialize(void)
     triggers["up"] = false; 
     triggers["left"] = false; 
     triggers["down"] = false; 
-    triggers["right"] = false; 
+    triggers["right"] = false;
 
     // Set up players
     //for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
@@ -157,17 +165,18 @@ void initialize(void)
     glutSetCursor(GLUT_CURSOR_NONE);
 
     scene.camera->setAspect(width, height);
-    scene.setPointLights(0.7f);
-    scene.setSpotLights(1.0f);
-    scene.setSun(0.75, true);
+    scene.setDayNight(timeOfDay);
 }
 
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-void renderQuad(GLuint texId, GLuint bloomId) {
+void renderQuad(GLuint texId, GLuint part, GLuint drip, GLuint ui, GLuint bloomId) {
     glUseProgram(scene.quad_shader->program);
     scene.quad_shader->texture_id = texId;
     scene.quad_shader->bloom_id = bloomId;
+    scene.quad_shader->ui_id = ui;
+    scene.quad_shader->drip_id = drip;
+    scene.quad_shader->part_id = part;
     scene.quad_shader->exposure = exposure;
     scene.quad_shader->setUniforms();
     if (quadVAO == 0)
@@ -291,14 +300,12 @@ void display(void) {
     }
 
     /// <summary>
-    /// RENDER NORMAL
+    /// RENDER SCENE (no particles)
     /// </summary>
-
     glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
+    unsigned int attachmentsWorld[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachmentsWorld);
     glViewport(0, 0, width, height);
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Update shadowmaps?
@@ -307,23 +314,73 @@ void display(void) {
         glBindTexture(GL_TEXTURE_2D, scene.directionalDepthMap);
     }
 
-    scene.draw(scene.node["world"]);
+    scene.drawNoPart(scene.node["world"]);
+
+    /// <summary>
+    /// RENDER PARTICLES
+    /// </summary>
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.partFBO);
+    //unsigned int attachmentsPart[1] = { GL_COLOR_ATTACHMENT0};
+    //glDrawBuffers(2, attachmentsPart);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    scene.drawPart(scene.node["world"]);
+
     scene.updateScreen();
+    /// <summary>
+    /// BLUR PART
+    /// </summary>
+
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.partFBO);
+    //glDrawBuffers(2, attachmentsPart);
+
+    bool horizontalP = true; 
+    bool first_iterationP = true;
+    int amountP = 10;
+    glUseProgram(scene.gaussian_shader->program);
+    for (unsigned int i = 0; i < amountP; i++) {
+        glBindFramebuffer(GL_FRAMEBUFFER, scene.pingpongFBOP[horizontalP]); 
+        scene.gaussian_shader->horizontal = horizontalP;
+        GLuint activeTex =  first_iterationP ? scene.partBuffer : scene.pingpongBufferP[!horizontalP]; 
+        GLuint activeTexOffset =  first_iterationP ? scene.partOffset : scene.pingpongOffsetsP[!horizontalP]; 
+	    glActiveTexture(GL_TEXTURE0 + activeTexOffset);
+        glBindTexture(GL_TEXTURE_2D, activeTex); 
+        scene.gaussian_shader->image = activeTexOffset;
+        scene.gaussian_shader->setUniforms();
+        renderQuad();
+        horizontalP = !horizontalP;
+        if (first_iterationP)
+            first_iterationP = false;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+
+    /// <summary>
+    /// DRIPS
+    /// </summary>
+
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.dripFBO);
+    unsigned int attachmentsDrip[1] = { GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(1, attachmentsDrip);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    scene.camera->nearPlane = scene.camera->ui_near_default;
+
+    scene.drawDrips();
 
     /// <summary>
     /// UI ELEMENTS
     /// </summary>
 
-    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
-    unsigned int attachments2[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1, attachments2);
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.uiFBO);
+    unsigned int attachmentsUI[1] = { GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(1, attachmentsUI);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    //scene.draw(scene.node["UI_root"]);
-    scene.camera->nearPlane = scene.camera->ui_near_default;
     scene.drawUI();
+
     scene.camera->nearPlane = scene.camera->near_default;
 
 
@@ -341,8 +398,11 @@ void display(void) {
     /// BLUR
     /// </summary>
 
+    glBindFramebuffer(GL_FRAMEBUFFER, scene.hdrFBO);
+    glDrawBuffers(2, attachmentsWorld);
 
-    bool horizontal = true, first_iteration = true;
+    bool horizontal = true; 
+    bool first_iteration = true;
     int amount = 10;
     glUseProgram(scene.gaussian_shader->program);
     for (unsigned int i = 0; i < amount; i++) {
@@ -369,9 +429,17 @@ void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[0]);
 	glBindTexture(GL_TEXTURE_2D, scene.colorBuffers[0]);
+	glActiveTexture(GL_TEXTURE0 + scene.bloomTexOffsets[2]);
+	glBindTexture(GL_TEXTURE_2D, scene.uiBuffer);
 	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsets[!horizontal]);
 	glBindTexture(GL_TEXTURE_2D, scene.pingpongBuffer[!horizontal]);
-    renderQuad(scene.bloomTexOffsets[0], scene.pingpongOffsets[!horizontal]);
+	glActiveTexture(GL_TEXTURE0 + scene.partOffset);
+	glBindTexture(GL_TEXTURE_2D, scene.partBuffer);
+	glActiveTexture(GL_TEXTURE0 + scene.dripOffset);
+	glBindTexture(GL_TEXTURE_2D, scene.dripBuffer);
+	glActiveTexture(GL_TEXTURE0 + scene.pingpongOffsetsP[!horizontalP]);
+	glBindTexture(GL_TEXTURE_2D, scene.pingpongBufferP[!horizontalP]);
+    renderQuad(scene.bloomTexOffsets[0], scene.pingpongOffsetsP[!horizontalP], scene.dripOffset, scene.bloomTexOffsets[2], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
 }
@@ -557,10 +625,13 @@ void handleSpace() {
 }
 
 void handleHonk() {
-    sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
+    if (!honked) {
+        honked = true;
+        sendDataToServer(MovementKey::HONK, scene.camera->forwardVectorXZ());
+    }
 }
 
-void keyboard(unsigned char key, int x, int y){
+void keyboard(unsigned char key, int x, int y) {
     switch(key){
         case 27: // Escape to quit
             networkClient->closeConnection();
@@ -717,32 +788,38 @@ void keyboard(unsigned char key, int x, int y){
             scene.setPointLights(brightnessOther);
             std::cout << "Brightness Other: " << brightnessOther << "\n";
             break;
+        */
         case '7':
-            brightnessHeadlight += 0.05;
-            scene.setSpotLights(brightnessHeadlight);
-            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            sensitivity -= 0.01;
+            glm::clamp(sensitivity, 0.0f, 2.0f);
+            std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '8':
-            brightnessHeadlight -= 0.05;
-            scene.setSpotLights(brightnessHeadlight);
-            std::cout << "Brightness Headlight: " << brightnessHeadlight << "\n";
+            sensitivity += 0.01;
+            glm::clamp(sensitivity, 0.0f, 2.0f);
+            std::cout << "Mouse sensitivity: " << sensitivity << "\n";
             break;
         case '9':
-            brightnessDir += 0.05;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            exposure -= 0.05;
+            std::cout << "Exposure: " << exposure << "\n";
             break;
         case '0':
-            brightnessDir -= 0.05;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Brightness Dir: " << brightnessDir << "\n";
+            exposure += 0.05;
+            std::cout << "Exposure: " << exposure << "\n";
             break;
         case '-':
-            sunOn = !sunOn;
-            scene.setSun(brightnessDir, sunOn);
-            std::cout << "Sun on: " << sunOn << "\n";
+            timeOfDay -= 0.05f;
+            glm::clamp(timeOfDay, 0.0f, 1.0f);
+            scene.setDayNight(timeOfDay);
+            std::cout << "Time of Day: " << timeOfDay << "\n";
             break;
-            */
+        case '=':
+            timeOfDay += 0.05f;
+            glm::clamp(timeOfDay, 0.0f, 1.0f);
+            scene.setDayNight(timeOfDay);
+            std::cout << "Time of Day: " << timeOfDay << "\n";
+            break;
+
         default:
             //glutPostRedisplay();
             break;
@@ -751,6 +828,10 @@ void keyboard(unsigned char key, int x, int y){
 
 void keyboardUp(unsigned char key, int x, int y){
     switch(key){
+        case 'H':
+        case 'h':
+            honked = false;
+            break;
         case 'A':
         case 'a':
             triggers["left"] = false;
@@ -838,7 +919,7 @@ void idle() {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, scene.text_colors[i]);
             //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
@@ -929,6 +1010,8 @@ void idle() {
                 if (cse125config::ENABLE_COUNTDOWN) {
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);
+                    updateCrownState(frame);
+                    updatePowerupState(frame);
                     triggerAnimations(frame->animations);
                     triggerAudio(frame->audio);
                     // Update countdown time
@@ -982,8 +1065,8 @@ void mouseMovement(int x, int y) {
 
     if (dx != 0 || dy != 0) {
         if (!TOP_DOWN_VIEW) {
-			scene.camera->rotateRight(dx);
-			scene.camera->rotateUp(dy);
+			scene.camera->rotateRight(glm::floor(dx * sensitivity));
+			scene.camera->rotateUp(glm::floor(dy * sensitivity));
         }
         glutPostRedisplay();
     }

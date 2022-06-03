@@ -106,8 +106,8 @@ void ObjPlayer::step(float gameTime) {
 	// Makeup station
 	if (booth != -1 && boothTime) {
 		makeupLevel = MAKEUP_MAX;
-		glm::vec3 destination = (position + objects->at(booth)->position) / 2.0f;
-		glm::vec3 dir = (direction + objects->at(booth)->direction) / 2.0f;
+		glm::vec3 destination = (1.5f * position + objects->at(booth)->position) / 2.5f;
+		glm::vec3 dir = (1.5f * direction + objects->at(booth)->direction) / 2.5f;
 		BoundingBox bb = generateBoundingBox(destination, dir, this->up);
 		if (checkPlaceFree(bb)) {
 			this->position = destination;
@@ -147,7 +147,7 @@ void ObjPlayer::step(float gameTime) {
 	// Adjust speed above threshold
 	if (speed > SPEED_THRESHOLD) {
 		if (glm::dot(direction, boostTargetDirection) < 0.95f) {
-			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.35f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
+			glm::vec3 targetDir = lerp(direction, boostTargetDirection, min((SPEED_THRESHOLD * 0.25f) / (pow(speed, 3.0f) * SPEED_THRESHOLD), 1.0f));
 			BoundingBox bb = generateBoundingBox(position, targetDir, this->up);
 			if (checkPlaceFree(bb)) {
 				this->direction = targetDir;
@@ -155,14 +155,14 @@ void ObjPlayer::step(float gameTime) {
 			}
 		}
 		speed -= thresholdDecay;
-		thresholdDecay += 0.01f;
+		thresholdDecay += 0.01f * TICK_FACTOR;
 	}
 	else {
 		boostTargetDirection = direction;
 		thresholdDecay = 0.0f;
 		// Lower speed if above maxSpeed
 		if (speed > maxSpeed) {
-			speed = max(maxSpeed, speed - SPEED_DECAY);
+			speed = max(maxSpeed, speed - (SPEED_DECAY * TICK_FACTOR));
 		}
 	}
 
@@ -170,7 +170,13 @@ void ObjPlayer::step(float gameTime) {
 	if (powerupTime) {
 		powerupTime = max(0.0f, powerupTime - 1.0f / cse125config::TICK_RATE);
 		speed = max(speed, POWERUP_SPEED);
-		objects->push_back(new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * this->speed / 2.0f, this->direction, this->up));
+		ObjTrail* t = new ObjTrail(this->objects, this->objects->size(), this->id, this->position - this->direction * TICK_FACTOR * this->speed / 2.0f, this->direction, this->up);
+		if (createTrailCheck(t)) {
+			objects->push_back(t);
+		}
+		else {
+			delete t;
+		}
 	}
 
 	// Gravity
@@ -197,11 +203,6 @@ void ObjPlayer::action(glm::vec3 dir) {
 
 	// Can't move when stunned or locked in booth
 	if (!stun && !boothTime) {
-		// Increase speed (Note: if we are above the max speed we need to ignore this)
-		if (speed < maxSpeed) {
-			speed = min(maxSpeed, speed + SPEED_FORCE);
-		}
-
 		// SLOPES!!!
 		//glm::vec3 angledDir = dir;
 		//if (this->up.y < 0.9f) {
@@ -214,11 +215,22 @@ void ObjPlayer::action(glm::vec3 dir) {
 		//cout << up.x << "    " << up.y << "    " << up.z << " up\n";
 		//cout << newDir.x << "    " << newDir.y << "    " << newDir.z << " newDir\n";
 
-		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, speed / SPEED_THRESHOLD)));
+		// Increase speed (Note: if we are above the max speed we need to ignore this)
+		if (speed < maxSpeed) {
+			speed = min(maxSpeed, speed + (SPEED_FORCE * TICK_FACTOR));
+		}
+
+		// Set direction
+		glm::vec3 newDir = glm::normalize(lerp(dir, this->direction, min(1.0f, pow(speed / SPEED_THRESHOLD, TICK_FACTOR))));
+		if (glm::dot(newDir, dir) > 0.9999f) {
+			newDir = dir;
+		}
+
+		// Allow breaking away from walls while using a powerup
 		if (powerupTime && momentum == 0.0f) {
 			speed = 0.0f;
 			momentum = 0.01f;
-			newDir = glm::normalize(lerp(this->direction, dir, 0.2f));
+			newDir = glm::normalize(lerp(this->direction, dir, 0.15f));
 		}
 
 		// Move
@@ -240,8 +252,8 @@ void ObjPlayer::idle() {
 	}
 
 	if (speed < SPEED_THRESHOLD) {
-		momentum = max(0.0f, momentum - MOMENTUM_DECAY);
-		speed = max(0.0f, speed - SPEED_DECAY);
+		momentum = max(0.0f, momentum - (MOMENTUM_DECAY * TICK_FACTOR));
+		speed = max(0.0f, speed - (SPEED_DECAY * TICK_FACTOR));
 	}
 	if (speed > 0.0f && !boothTime) {
 		move(direction);
@@ -252,7 +264,7 @@ void ObjPlayer::idle() {
 
 void ObjPlayer::move(glm::vec3 dir) {
 	// Where we are trying to move (might change during collision loop)
-	glm::vec3 destination = this->position + this->speed * dir;
+	glm::vec3 destination = this->position + (this->speed * TICK_FACTOR) * dir;
 
 	// Generate a bounding box at our destination and check what we would collide with
 	BoundingBox bb = generateBoundingBox(destination, dir, this->up);
@@ -294,7 +306,7 @@ void ObjPlayer::move(glm::vec3 dir) {
 		if (obj->type == oPlayer) {
 			glm::vec3 d = glm::normalize(obj->position - this->position);
 			if (glm::dot(d, dir) > 0.0f) {
-				pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed));
+				pushCheck = ((ObjPlayer*)obj)->movePushed(dir, glm::dot(d, dir * this->speed * TICK_FACTOR));
 			}
 			
 			// Don't waste adjustment if player was pushed entirely out of the way
@@ -431,7 +443,7 @@ void ObjPlayer::pickupPowerup(const PhysicalObject* obj) {
 	if (obj->type == oPowerup && !this->hasPowerup) {
 		if (((ObjPowerup*)obj)->spawned) {
 			((ObjPowerup*)obj)->spawned = false;
-			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME;
+			((ObjPowerup*)obj)->respawnTime = POWERUP_RESPAWN_TIME + ((ObjPowerup*)obj)->distributionNormal(((ObjPowerup*)obj)->generator);
 			this->hasPowerup = true;
 			this->gotPowerup = true;
 		}
@@ -444,13 +456,23 @@ bool ObjPlayer::objectPositionTagged(BoundingBox bb, int type, unsigned int id) 
 		if (i == this->id) {
 			continue;
 		}
-		if (this->objects->at(i)->type == type && bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
-			if (type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+		if (this->objects->at(i)->type == type && type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID != id) {
+			if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+bool ObjPlayer::createTrailCheck(ObjTrail* newTrail) {
+	int objCount = this->objects->size();
+	for (unsigned int i = 0; i < objCount; i++) {
+		if (this->objects->at(i)->type == oTrail && ((ObjTrail*)this->objects->at(i))->playerID == this->id && bounding::checkCollision(newTrail->boundingBox, this->objects->at(i)->boundingBox)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ObjPlayer::movePushed(glm::vec3 dir, float pushSpeed) {
@@ -523,8 +545,8 @@ void ObjPlayer::applyGravity() {
 		// Check whether something is below us
 		if (checkPlaceFree(bb)) {
 			// Increase the amount gravity is pulling us
-			this->gravity = min(this->gravity + GRAVITY_FORCE, GRAVITY_MAX);
-			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity, 0.0f);
+			this->gravity = min(this->gravity + (GRAVITY_FORCE * TICK_FACTOR), GRAVITY_MAX);
+			glm::vec3 destination = this->position - glm::vec3(0.0f, this->gravity * TICK_FACTOR, 0.0f);
 			// Make sure we don't fall through the floor
 			if (f && this->position.y > 0.0f) {
 				destination.y = max(destination.y, 0.0f);
@@ -593,6 +615,13 @@ void ObjPlayer::applyGravity() {
 			}
 		}
 		else {
+			// Check if there is a player right below us
+			int tempID = findObjectPosition(bb, oPlayer);
+			if (tempID != -1) {
+				// Transfer/take the crown
+				crownTransfer(this->objects->at(tempID));
+			}
+
 			// We have something solid beneath us, so reset gravity
 			this->gravity = 0.2f;
 			this->speed = max(this->speed, DEFAULT_MAX_SPEED);
@@ -627,9 +656,13 @@ void ObjPlayer::applyGravity() {
 	//	gravity = 0.0f;
 	//}
 
+	//if (this->position.y < -6.0f) {
+	//	this->gravity = -0.8f;
+	//	this->bounced = true;
+	//}
 	// Trampoline
-	if (this->position.y < -6.0f) {
-		this->gravity = -0.8f;
+	if (this->position.y < -4.725f) {
+		this->gravity = -0.732f;
 		this->bounced = true;
 	}
 

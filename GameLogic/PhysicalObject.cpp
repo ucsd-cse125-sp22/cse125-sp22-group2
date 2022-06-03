@@ -58,7 +58,7 @@ vector<int> PhysicalObject::findCollisionObjects(BoundingBox bb) {
 	int objCount = this->objects->size();
 	vector<int> collisions = vector<int>();
 	for (unsigned int i = 0; i < objCount; i++) {
-		if (i == id) {
+		if (i == id || type == oTrail) {
 			continue;
 		}
 		if (bounding::checkCollision(bb, this->objects->at(i)->boundingBox)) {

@@ -26,6 +26,7 @@ arrays of unknown size.
 #include <SurfaceShader.h>
 #include "DepthShader.h"
 #include <UIShader.h>
+#include "PartShader.h"
 
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
@@ -51,6 +52,15 @@ public:
         shader->setUniforms();
         glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); 
+	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glDrawElements(mode,count,type,0);
+    }
+
+    void draw(PartShader *shader){
+        glBindVertexArray(vao);
+        shader->setUniforms();
+		glCullFace(GL_BACK); 
+        glDisable(GL_CULL_FACE);
 	    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         glDrawElements(mode,count,type,0);
     }

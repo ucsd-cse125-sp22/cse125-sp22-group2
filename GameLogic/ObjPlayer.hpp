@@ -89,6 +89,8 @@ public:
 	void pickupPowerup(const PhysicalObject* obj);
 	// Special check to avoid getting objects that were made a specific player (probably only ever themselves)
 	bool objectPositionTagged(BoundingBox bb, int type, unsigned int id);
+	// Check whether a new trail should be made
+	bool createTrailCheck(ObjTrail* newTrail);
 	// Special movement function for when another player is pushing you
 	bool movePushed(glm::vec3 dir, float pushSpeed);
 	// Check whether we are in the floor region of the arena (regardless of whether we are above or below it)
