@@ -51,11 +51,11 @@ void Scene::init(int width, int height) {
     geometry["makeup_station"] = new Obj;
     geometry["makeup_station"]->init("models/MakeupPitStopOnlyMascara.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
     geometry["makeup_station_bar"] = new Obj;
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
     geometry["stop_sign"] = new Obj;
-    geometry["stop_sign"]->init("models/StopSign.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["stop_sign"]->init("models/StopSign.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
     geometry["flags"] = new Obj;
-    geometry["flags"]->init("models/Flags.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["flags"]->init("models/Flags.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
     geometry["makeup_station_lights"] = new Obj;
     geometry["makeup_station_lights"]->init("models/PitStopLights.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
 
@@ -78,13 +78,13 @@ void Scene::init(int width, int height) {
     geometry["curtains"]->init("models/Curtains.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["lipstick"] = new Obj; 
-    geometry["lipstick"]->init("models/Lipstick.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["lipstick"]->init("models/Lipstick.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["mascara_brush"] = new Obj; 
-    geometry["mascara_brush"]->init("models/MascaraBrush.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["mascara_brush"]->init("models/MascaraBrush.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["powder_thing"] = new Obj; 
-    geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["blowdryer_world"] = new Obj;
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
