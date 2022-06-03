@@ -252,11 +252,12 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
         {
             // Interpolate carEngine sound to play
             RealNumber speed = players[i]->getSpeed();
-            if (speed >= 0.5f) speed = 0.5f; // Clamp values above 0.5
+            //std::cerr << speed << std::endl;
+            if (speed >= ENGINE_ACCEL_SPEED) speed = ENGINE_ACCEL_SPEED; // Clamp values above 0.5
             CarEngine carEngine = carEngineChannels[i];
-            RealNumber c = speed / 0.5; // audio fade coefficient based on speed
+            RealNumber c = speed / ENGINE_ACCEL_SPEED; // audio fade coefficient based on speed
             float idleDb = i == clientId ? CLIENT_ENGINE_DB : OTHER_PLAYER_ENGINE_DB;
-            if (speed == 0.5)
+            if (speed >= ENGINE_ACCEL_SPEED)
             {
                 audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, VOLUME_OFF));
                 audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, idleDb));
