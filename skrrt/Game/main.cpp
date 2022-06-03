@@ -58,6 +58,7 @@ bool showStartLogo = true;
 bool showTimer = false;
 bool showMascaraBar = false;
 bool showTireIcons = false;
+bool showCrownIcons = false;
 
 // Game / match flow variables
 bool renderStartText = true;
@@ -68,6 +69,7 @@ float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 bool playMenuTheme = true;
 countdown::CountdownStateMachine countdownSM;
+bool onEndScreen = false;
 
 // Time
 bool arcCamera = true;
@@ -89,35 +91,58 @@ static bool honked = false;
 
 static float timeOfDay = 1.0f;
 
+const std::string player_colors[] = { "Pink", "Blue", "Yellow", "Green" };
+
 #include "hw3AutoScreenshots.h"
 
 std::string makeMatchEndText(int playerId, int winnerId) {
     std::string matchEndText = "";
     if (playerId == winnerId) {
-        matchEndText = "You won the pageant! Press Space to play again!";
+        matchEndText = "YOU WON THE PAGEANT! Press Space to play again!";
     }
     else {
-        matchEndText = "Player " + std::to_string(winnerId + 1) + " won the pageant! Better luck next time! Press Space to play again!";
+        matchEndText = player_colors[winnerId] + " won the pageant! Better luck next time! Press Space to play again!";
     }
     return matchEndText;
 }
 
 void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
+    // Note: we should use playMusic because it stops the ending theme from continuing to play
     switch (csm.getState()) {
     case countdown::CountdownState::PLAY_READY_SOUND:
+        // game.triggerFx("Ready.wav");
         game.playMusic("Ready.wav");
+
         break;
     case countdown::CountdownState::PLAY_SET_SOUND:
-        game.triggerFx("Set.wav");
+        // game.triggerFx("Set.wav");
+        game.playMusic("Set.wav");
+
         break;
     case countdown::CountdownState::PLAY_GO_SOUND:
-        game.triggerFx("Skrrt.wav");
+        // game.triggerFx("Skrrt.wav");
+        game.playMusic("Skrrt.wav");
+
         break;
     case countdown::CountdownState::PLAY_NO_SOUND:
         break;
     default:
         break;
     }
+}
+
+// Reset state for camera arcing
+void goBackToStartView() {
+    winnerId = cse125constants::DEFAULT_WINNER_ID; // prevent match end text from rendering
+    showStartLogo = true;
+    arcCamera = true;
+    renderStartText = true;
+    playMenuTheme = true;
+    scene.camera->target = glm::vec3(0.0f, 0.0f, 0.0f);
+    scene.camera->eye = glm::vec3(0.0f, 4.0f, 15.0f);
+    scene.camera->zoom(CAMERA_ZOOM_FACTOR);
+    game.stopCarEngines();
+    game.stopAllSounds();
 }
 
 
@@ -413,7 +438,8 @@ void display(void) {
     showMascaraBar = !showStartLogo;
     showTireIcons = !showStartLogo;
     showTimer = !showStartLogo;
-    scene.drawUI(showStartLogo, showTimer, showMascaraBar, showTireIcons);
+    showCrownIcons = !showStartLogo;
+    scene.drawUI(showStartLogo, showTimer, showMascaraBar, showTireIcons, showCrownIcons);
 
     scene.camera->nearPlane = scene.camera->near_default;
 
@@ -513,16 +539,21 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 
 void sendPlayToServer() {
     if (enableSendPlay) {
+        //  Special case for hitting space when on the end screen
+        if (onEndScreen) {
+            // DO camera reset
+            onEndScreen = false;
+            goBackToStartView();
+            return;
+        }
         // Send packet to server indicating client is ready to play
         boost::system::error_code error;
         // Check for a packet from the server indicating that the game is ready to restart
         cse125debug::log(LOG_LEVEL_INFO, "Sending play packet to server...\n");
         networkClient->play(&error);
-        if (!error) {
+        if (!error) {          
             enableSendPlay = false;
             waitingToStartMatch = true;
-            // Toggle the start logo visibility
-            scene.node["logo"]->visible = false;
             showStartLogo = false;
             cse125debug::log(LOG_LEVEL_INFO, "Successfully sent play packet to server...\n");
         }
@@ -1035,9 +1066,29 @@ void idle() {
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
+               countdownSM.resetState();
+
                winnerId = frame->winnerId;
                matchInProgress = false;
+               onEndScreen = true;
                enableSendPlay = true;
+               game.endGame();
+               if (game.ranks[0] == clientId) {
+                   game.playMusic("WinTheme.wav", -6.0f);
+               }
+               else {
+                   game.playMusic("LoseTheme.wav", -6.0f);
+               }
+               scene.node["pedestal"]->visible = true;
+               scene.camera->setEnd();
+               cse125framing::ServerFrame* endFrame = game.endFrame();
+               // Use the frame to update the powerups' state
+               updatePowerupState(endFrame);
+               // Use the frame to update the crown's state
+               updateCrownState(endFrame);
+               // Use the frame to update the player's state
+               updatePlayerState(endFrame);
+               delete endFrame;
             }
             triggerAudio(frame->audio);
             // Delete the frame
@@ -1045,6 +1096,8 @@ void idle() {
         }
         else {
             if (waitingToStartMatch) {
+                // Make sure the pedestal isn't visible
+                scene.node["pedestal"]->visible = false;
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
                 // Display the game time
@@ -1065,7 +1118,6 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
-                        countdownSM.resetState();
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1076,7 +1128,6 @@ void idle() {
                     }
                 }
                 else {
-                    countdownSM.resetState();
                     renderStartText = false;
                     arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");

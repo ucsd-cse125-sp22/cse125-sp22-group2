@@ -46,6 +46,7 @@ public:
     void computeMatrices(void);
     void reset(void);
     void reset(int playerId);
+    void setEnd(void);
 
 
     void movePosition(const float distance, const glm::vec3 direction);

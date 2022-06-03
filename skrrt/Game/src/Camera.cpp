@@ -187,3 +187,15 @@ void Camera::reset(int playerId)
         break;
     }
 }
+
+void Camera::setEnd() {
+    eye = glm::vec3(0.0f, 0.5f, -5.0f);// position of the eye
+    target = glm::vec3(0.0f, 0.5f, 0.0f);  // look at target
+    up = up_default;      // up vector
+    fovy = fovy_default;  // field of view in degrees
+    aspect = ((float)width) / ((float)height); // aspect ratio
+    nearPlane = near_default; // near clipping distance
+    farPlane = far_default; // far clipping distance
+    zoom(3.0f);
+    rotateUp(10);
+}
