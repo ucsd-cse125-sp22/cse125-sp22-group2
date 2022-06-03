@@ -1,8 +1,8 @@
 {
-  "host": "137.110.115.253",
+  "host": "128.54.70.38",
   "port": "2350",
   "tickRate": 60,
-  "gameTime": 120,
+  "gameTime": 30,
   "enableCountdown": true,
   "countdownTime": 3
 }

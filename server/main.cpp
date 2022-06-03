@@ -37,15 +37,21 @@ int main()
     std::cout << "Waiting for " << cse125constants::NUM_PLAYERS
               << " clients to connect..." << std::endl;
 
-    while (server->clientsConnected < cse125constants::NUM_PLAYERS)
+    volatile unsigned int num_clients = server->clientsConnected;
+    while (num_clients < cse125constants::NUM_PLAYERS)
     {
         // idle wait for clients
+        num_clients = server->clientsConnected;
     }
 
     // Wait for all clients to be ready to start playing
     std::cerr << "Waiting for clients to start playing..." << std::endl;
     server->setReadyToPlay(false);
-    while (!server->readyToPlay()) {} // Idle wait
+    volatile bool ready = server->readyToPlay();
+    while (!ready) 
+    {
+        ready = server->readyToPlay();
+    } // Idle wait
     std::cerr << "All clients ready to start playing! " << std::endl;
 
     const int numCountdownTicks = cse125config::TICK_RATE * cse125config::COUNTDOWN_LENGTH;
