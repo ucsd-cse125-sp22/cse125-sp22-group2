@@ -68,6 +68,7 @@ float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 bool playMenuTheme = true;
 countdown::CountdownStateMachine countdownSM;
+bool onEndScreen = false;
 
 // Time
 bool arcCamera = true;
@@ -105,15 +106,22 @@ std::string makeMatchEndText(int playerId, int winnerId) {
 }
 
 void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
+    // Note: we should use playMusic because it stops the ending theme from continuing to play
     switch (csm.getState()) {
     case countdown::CountdownState::PLAY_READY_SOUND:
+        // game.triggerFx("Ready.wav");
         game.playMusic("Ready.wav");
+
         break;
     case countdown::CountdownState::PLAY_SET_SOUND:
-        game.triggerFx("Set.wav");
+        // game.triggerFx("Set.wav");
+        game.playMusic("Set.wav");
+
         break;
     case countdown::CountdownState::PLAY_GO_SOUND:
-        game.triggerFx("Skrrt.wav");
+        // game.triggerFx("Skrrt.wav");
+        game.playMusic("Skrrt.wav");
+
         break;
     case countdown::CountdownState::PLAY_NO_SOUND:
         break;
@@ -515,12 +523,17 @@ void sendDataToServer(MovementKey movementKey, vec3 cameraDirection)
 
 void sendPlayToServer() {
     if (enableSendPlay) {
+        //  Special case for hitting space when on the end screen
+        if (onEndScreen) {
+            // DO camera reset
+            return;
+        }
         // Send packet to server indicating client is ready to play
         boost::system::error_code error;
         // Check for a packet from the server indicating that the game is ready to restart
         cse125debug::log(LOG_LEVEL_INFO, "Sending play packet to server...\n");
         networkClient->play(&error);
-        if (!error) {
+        if (!error) {          
             enableSendPlay = false;
             waitingToStartMatch = true;
             // Toggle the start logo visibility
@@ -1045,8 +1058,11 @@ void idle() {
             }
             else {
                cse125debug::log(LOG_LEVEL_INFO, "Match has ended!\n");
+               countdownSM.resetState();
+
                winnerId = frame->winnerId;
                matchInProgress = false;
+               onEndScreen = true;
                enableSendPlay = true;
                game.endGame();
                if (game.ranks[0] == clientId) {
@@ -1094,7 +1110,6 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
-                        countdownSM.resetState();
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1105,7 +1120,6 @@ void idle() {
                     }
                 }
                 else {
-                    countdownSM.resetState();
                     renderStartText = false;
                     arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
