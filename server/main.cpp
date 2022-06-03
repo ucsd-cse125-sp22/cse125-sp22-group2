@@ -31,7 +31,7 @@ int main()
     boost::thread serverThread(launchServer);
 
     // Initialize ticker
-    cse125clocktick::ClockTick* ticker = new cse125clocktick::ClockTick(cse125config::TICK_RATE);
+    cse125clocktick::ClockTick* ticker;
 
     // Block until all clients connected
     std::cout << "Waiting for " << cse125constants::NUM_PLAYERS
@@ -54,6 +54,7 @@ int main()
     bool runServer = true; 
     while (runServer) 
     {
+        ticker = new cse125clocktick::ClockTick(cse125config::TICK_RATE);
         if (cse125config::ENABLE_COUNTDOWN) {
             // Pre-match countdown loop
             ticker->tickStart();
@@ -167,6 +168,7 @@ int main()
 
         // Reset the game manager
         delete manager;
+        delete ticker;
 
         // Tell clients that the match finished
         cse125framing::ServerFrame matchEndFrame;
