@@ -373,7 +373,8 @@ void Scene::updateScreen(void) {
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
 }
 
-void Scene::drawText(const bool& renderCountdownText, const bool& renderMatchEndText, const std::string& countdownText, const std::string& matchEndText) {
+void Scene::drawText(const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText, 
+                     const std::string& countdownText, const std::string& matchEndText) {
     glUseProgram(text_shader->program);
 
     int currentWidth = glutGet(GLUT_WINDOW_WIDTH);
@@ -397,6 +398,23 @@ void Scene::drawText(const bool& renderCountdownText, const bool& renderMatchEnd
     text_shader->setUniforms();
 	game_time->setPosition(currentWidth / 2.0f + 2.0f, currentHeight - 75.0f);
     game_time->RenderTextCenter();
+
+    // Draw start text
+    if (renderStartText) {
+        if (flashStartTextCount < flashStartTextFrequency) {
+            if (showStartText) {
+                text_shader->textColor = start_text->getColor();
+                text_shader->setUniforms();
+                start_text->setPosition(currentWidth / 2.0f, currentHeight - 1000.0f);
+                start_text->RenderTextCenter();
+            }         
+            flashStartTextCount += 1;
+        }
+        else {
+            flashStartTextCount = 0;
+            showStartText = !showStartText;
+        }
+    }
 
     // Draw countdown text
     if (renderCountdownText) {

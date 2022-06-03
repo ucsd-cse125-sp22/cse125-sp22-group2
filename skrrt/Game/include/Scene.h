@@ -81,6 +81,10 @@ private:
     const float nightPointBrightness = 0.7f;
     const float nightSpotBrightness = 1.0f;
     const float nightSunBrightness = 0.75;
+
+    int flashStartTextFrequency = 10;
+    int flashStartTextCount = 0;
+    bool showStartText = true;
 public:
     Camera* camera;
     SurfaceShader* shader;
@@ -93,7 +97,7 @@ public:
 
     Text* scores[4];
     Text* game_time;
-    Text* instructions_text;
+    Text* start_text;
     Text* countdown_instructions_text;
     Text* countdown_go_text;
     Text* match_end_text;
@@ -176,7 +180,8 @@ public:
                                 glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
 
-    void drawText(const bool& renderCountdownText, const bool& renderMatchEndText, const std::string& countdownText = "", const std::string& matchEndText = "");
+    void drawText(const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText, 
+                  const std::string& countdownText = "", const std::string& matchEndText = "");
     void drawUI(void); 
     void drawDrips(void); 
 

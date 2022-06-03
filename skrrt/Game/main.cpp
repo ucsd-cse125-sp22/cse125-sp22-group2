@@ -57,7 +57,7 @@ std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 bool startScreenVisibility = false;
 
 // Game / match flow variables
-bool showStartMenu = true;
+bool renderStartText = true;
 bool matchInProgress = false;
 bool waitingToStartMatch = false;
 bool enableSendPlay = true;
@@ -432,7 +432,7 @@ void display(void) {
     }
 
     // Render text elements
-    scene.drawText(renderCountdownText, renderMatchEndText, countdownText, matchEndText);
+    scene.drawText(renderStartText, renderCountdownText, renderMatchEndText, countdownText, matchEndText);
 
     // Play countdown sound
     handleCountdownSound(countdownSM);
@@ -487,14 +487,6 @@ void display(void) {
     renderQuad(scene.bloomTexOffsets[0], scene.pingpongOffsetsP[!horizontalP], scene.dripOffset, scene.bloomTexOffsets[2], scene.pingpongOffsets[!horizontal]);
     glutSwapBuffers();
     glFlush();
-}
-
-// Toggles the visibility of the start menu and background
-void toggleStartMenuVisibility(const bool& visibility) {
-    //if (visibility != startScreenVisibility) {
-    //    startScreenVisibility = visibility;
-    //    scene.node["start_menu"]->visible = visibility;
-    //}
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -1013,8 +1005,6 @@ void idle() {
         handleMoveRight();
     }
 
-    toggleStartMenuVisibility(showStartMenu);
-
     // Only play the start menu theme once
     if (playMenuTheme) {
        game.playMusic("MenuTheme.wav", -6.0f);
@@ -1051,8 +1041,6 @@ void idle() {
             if (waitingToStartMatch) {
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
-                // Stop showing the start menu
-                showStartMenu = false;
                 // Display the game time
                 game.updateTime(cse125config::MATCH_LENGTH);
 
@@ -1060,6 +1048,8 @@ void idle() {
 
                 // Ready / Set / Go part
                 if (cse125config::ENABLE_COUNTDOWN) {
+                    renderStartText = false;
+                    arcCamera = false;
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);
                     updateCrownState(frame);
@@ -1069,7 +1059,6 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
-                        arcCamera = false;
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1080,6 +1069,7 @@ void idle() {
                     }
                 }
                 else {
+                    renderStartText = false;
                     arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                     matchInProgress = true;
