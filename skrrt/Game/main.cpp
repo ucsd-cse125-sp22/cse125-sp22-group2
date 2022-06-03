@@ -1043,7 +1043,6 @@ void idle() {
         }
         else {
             if (waitingToStartMatch) {
-                countdownSM.resetState();
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
                 // Display the game time
@@ -1064,6 +1063,7 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
+                        countdownSM.resetState();
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1074,6 +1074,7 @@ void idle() {
                     }
                 }
                 else {
+                    countdownSM.resetState();
                     renderStartText = false;
                     arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
