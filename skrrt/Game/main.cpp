@@ -980,6 +980,9 @@ void idle() {
 
         // Update time 
         scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
+        const float TIME_IN_MATCH = 120.0f;
+        timeOfDay = glm::clamp(2.0f - 3.0f * (game.getTime() / 120.0f), 0.0f, 1.0f);
+        scene.setDayNight(timeOfDay);
 
         // Update Engine Audio Positions
         game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
