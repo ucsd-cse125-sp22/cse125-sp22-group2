@@ -74,7 +74,7 @@ bool onEndScreen = false;
 // Time
 bool arcCamera = true;
 const float CAMERA_ZOOM_FACTOR = 3.4f;
-const float CAMERA_ARC_SPEED = 0.00005f;
+const float CAMERA_ARC_SPEED = 0.00001f;
 
 static std::chrono::time_point<std::chrono::system_clock> startTime;
 
