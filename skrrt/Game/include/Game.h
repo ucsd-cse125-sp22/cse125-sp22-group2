@@ -185,9 +185,9 @@ public:
             RealNumber max_score = -1;
             int tracker = 0;
             for (int j = i; j < cse125constants::NUM_PLAYERS; j++) {
-                if (players[j]->getScore() > max_score) {
+                if (players[ranks[j]]->getScore() > max_score) {
                     tracker = j;
-                    max_score = players[j]->getScore();
+                    max_score = players[ranks[j]]->getScore();
                 }
             }
             int temp = ranks[i];
