@@ -1097,7 +1097,7 @@ void Scene::init(int width, int height) {
     game_time->updateText("100");
 
     countdown_instructions_text = new Text(text_shader->program);
-    countdown_instructions_text->updateText("Claim the crown and win the pagaent!");
+    countdown_instructions_text->updateText("Claim the crown and win the pageant!");
 
     countdown_go_text = new Text(text_shader->program);
     countdown_go_text->updateText("Default countdown text");
