@@ -167,6 +167,7 @@ public:
         // the default scene graph already has one node named "world."
         node["world"] = new Node("world");
         node["UI_root"] = new Node("UI_root");
+        // node["UI_logo"] = new Node("UI_logo");
     }
     
     void init(int width, int height);
@@ -180,9 +181,9 @@ public:
                                 glm::vec3(0.41f, 0.76f, 0.24f)}; // green
     
 
-    void drawText(const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText, 
+    void drawText(const bool& renderScores, const bool& renderTime, const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText,
                   const std::string& countdownText = "", const std::string& matchEndText = "");
-    void drawUI(void); 
+    void drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels); 
     void drawDrips(void); 
 
     void updateScreen(void);

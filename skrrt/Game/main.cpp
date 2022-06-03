@@ -54,7 +54,10 @@ std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
 // Optimization to prevent accessing the scene graph to toggle menu visibility
 // if the current visibility is the same as the toggled visibility
-bool startScreenVisibility = false;
+bool showStartLogo = true;
+bool showTimer = false;
+bool showMascaraBar = false;
+bool showTireIcons = false;
 
 // Game / match flow variables
 bool renderStartText = true;
@@ -102,19 +105,13 @@ std::string makeMatchEndText(int playerId, int winnerId) {
 void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
     switch (csm.getState()) {
     case countdown::CountdownState::PLAY_READY_SOUND:
-        game.playMusic("Collision.wav", -6.0f);
-        // game.playMusic("ReadySound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing ready sound\n");
+        game.triggerFx("Ready.wav");
         break;
     case countdown::CountdownState::PLAY_SET_SOUND:
-        game.playMusic("GetCrown.wav", -6.0f);
-        // game.playMusic("SetSound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing set sound\n");
+        game.triggerFx("Set.wav");
         break;
     case countdown::CountdownState::PLAY_GO_SOUND:
-        game.playMusic("Pillow.wav", -6.0f);
-        // game.playMusic("GoSound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing go sound\n");
+        game.triggerFx("Skrrt.wav");
         break;
     case countdown::CountdownState::PLAY_NO_SOUND:
         break;
@@ -413,13 +410,18 @@ void display(void) {
     glDrawBuffers(1, attachmentsUI);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    scene.drawUI();
+    showMascaraBar = !showStartLogo;
+    showTireIcons = !showStartLogo;
+    showTimer = !showStartLogo;
+    scene.drawUI(showStartLogo, showTimer, showMascaraBar, showTireIcons);
 
     scene.camera->nearPlane = scene.camera->near_default;
 
 
     // The countdown, match end, and normal gameplay events should never overlap.
     // Therefore, only text for the current ongoing event will be drawn
+    const bool renderScores = !renderStartText;
+    const bool renderTime = !renderStartText;
     const bool renderCountdownText = cse125config::ENABLE_COUNTDOWN && waitingToStartMatch;
     const bool renderMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
     std::string matchEndText = "";
@@ -432,7 +434,7 @@ void display(void) {
     }
 
     // Render text elements
-    scene.drawText(renderStartText, renderCountdownText, renderMatchEndText, countdownText, matchEndText);
+    scene.drawText(renderScores, renderTime, renderStartText, renderCountdownText, renderMatchEndText, countdownText, matchEndText);
 
     // Play countdown sound
     handleCountdownSound(countdownSM);
@@ -519,6 +521,9 @@ void sendPlayToServer() {
         if (!error) {
             enableSendPlay = false;
             waitingToStartMatch = true;
+            // Toggle the start logo visibility
+            scene.node["logo"]->visible = false;
+            showStartLogo = false;
             cse125debug::log(LOG_LEVEL_INFO, "Successfully sent play packet to server...\n");
         }
         else {
@@ -1010,7 +1015,6 @@ void idle() {
        game.playMusic("MenuTheme.wav", -6.0f);
        playMenuTheme = false;
     }
-
 
     // Handle server communication
     const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;

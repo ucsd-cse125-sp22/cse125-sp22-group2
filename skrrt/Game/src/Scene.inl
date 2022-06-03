@@ -115,6 +115,9 @@ void Scene::init(int width, int height) {
     //geometry["start_menu"] = new Obj;
     //geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
 
+    geometry["logo"] = new Obj;
+    geometry["logo"]->init("models/Plane.obj", "textures/Logo.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
     geometry["blowdryer_icon"] = new Obj;
     geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
 
@@ -236,6 +239,11 @@ void Scene::init(int width, int height) {
     //model["start_menu"] = new Model;
     //model["start_menu"]->geometry = geometry["start_menu"];
     //model["start_menu"]->material = material["ceramic"];
+
+
+    model["logo"] = new Model;
+    model["logo"]->geometry = geometry["logo"];
+    model["logo"]->material = material["ceramic"];
 
     //********************************************
     //*********** UI elem ************************
@@ -731,6 +739,10 @@ void Scene::init(int width, int height) {
     //node["start_menu"]->models.push_back(model["start_menu"]);
     //node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
+    node["logo"] = new Node("logo");
+    node["logo"]->models.push_back(model["logo"]);
+    node["logo"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
     node["clock"] = new Node("clock");
@@ -818,12 +830,15 @@ void Scene::init(int width, int height) {
     node["screen"]->childnodes.push_back(node["drips"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
 
-    //node["screen"]->childnodes.push_back(node["start_menu"]);
-    //// TODO: Dynamic scaling? based on window size
-    //const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
-    //const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
-    //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(START_MENU_SCALE * START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
 
+  /*  node["logo_screen"] = new Node("logo_screen");
+    node["UI_logo"]->childnodes.push_back(node["logo_screen"]);
+    node["UI_logo"]->childtransforms.push_back(mat4(1.0f));*/
+
+    node["screen"]->childnodes.push_back(node["logo"]);
+    const float logo_width_to_height_ratio = 9119.0f / 4988.0f; // determined from the image dimensions
+    const float logo_scale = 10.0f; // tune according to window dimensions
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(logo_scale * logo_width_to_height_ratio, logo_scale, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));

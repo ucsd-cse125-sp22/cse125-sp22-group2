@@ -371,9 +371,12 @@ void Scene::updateScreen(void) {
 
     // Update transform of UI root 
     node["UI_root"]->childtransforms[0] = cur_VM * initial;
+
+    // Update transform of UI root 
+    // node["UI_logo"]->childtransforms[0] = cur_VM * initial;
 }
 
-void Scene::drawText(const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText, 
+void Scene::drawText(const bool& renderScores, const bool& renderTime, const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText, 
                      const std::string& countdownText, const std::string& matchEndText) {
     glUseProgram(text_shader->program);
 
@@ -384,20 +387,24 @@ void Scene::drawText(const bool& renderStartText, const bool& renderCountdownTex
     //text_shader->projection = glm::ortho(0.0f, currentHeight, 0.0f, currentWidth);
 
     // Draw all scores 
-    for (int i = 0; i < NUM_PLAYERS; i++) {
-        scores[i]->setColor(text_colors[i]);
-        text_shader->textColor = scores[i]->getColor(); 
-		text_shader->setUniforms();
-        //scores[i]->setPosition(currentWidth - 120.0f, currentHeight - 50.0f * i - 75.0f);
-        scores[i]->setPosition(120.0f, currentHeight - 75.0f * i - 100.0f);
-        scores[i]->RenderText();
+    if (renderScores) {
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            scores[i]->setColor(text_colors[i]);
+            text_shader->textColor = scores[i]->getColor();
+            text_shader->setUniforms();
+            //scores[i]->setPosition(currentWidth - 120.0f, currentHeight - 50.0f * i - 75.0f);
+            scores[i]->setPosition(120.0f, currentHeight - 75.0f * i - 100.0f);
+            scores[i]->RenderText();
+        }
     }
 
-    // Draw game time
-	text_shader->textColor = game_time->getColor(); 
-    text_shader->setUniforms();
-	game_time->setPosition(currentWidth / 2.0f + 2.0f, currentHeight - 75.0f);
-    game_time->RenderTextCenter();
+    if (renderTime) {
+        // Draw game time
+        text_shader->textColor = game_time->getColor();
+        text_shader->setUniforms();
+        game_time->setPosition(currentWidth / 2.0f + 2.0f, currentHeight - 75.0f);
+        game_time->RenderTextCenter();
+    }
 
     // Draw start text
     if (renderStartText) {
@@ -501,7 +508,7 @@ void Scene::drawDrips(void) {
     } // End of DFS while loop.
 }
 
-void Scene::drawUI(void) {
+void Scene::drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels) {
     glUseProgram(ui_shader->program);
 
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
@@ -535,7 +542,25 @@ void Scene::drawUI(void) {
 		for (unsigned int i = 0; i < cur->models.size(); i++) {
             if (cur->name == "drips") {
                 continue;
+            }    
+
+            // Hack to not draw certain UI elements
+            if (!showStartLogo && cur->name == "logo") {
+                continue;
             }
+
+            if (!showMascara && (cur->name == "mascara_bar" || cur->name == "mascara_icon" || cur->name == "white_bar")) {
+                continue;
+            }
+
+            if (!showWheels && (cur->name == "pink_tire" || cur->name == "blue_tire" || cur->name == "green_tire" || cur->name == "yellow_tire")) {
+                continue;
+            }
+
+            if (!showTimer && (cur->name == "clock")) {
+                continue;
+            }
+
 			// Prepare to draw the geometry. Assign the modelview and the material.
 
 			ui_shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
@@ -638,8 +663,8 @@ void Scene::scaleUi(int width, int height) {
 	node["screen"]->childtransforms[9] = (translate(vec3(0.0f * widthRatio, 0.0f * heightRatio, -1.0f))* scale(vec3(70.0f, 600.0f, 1.0f)));
 
 	// TODO: Dynamic scaling? based on window size
-	//const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
-	//const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
-	////start menu
-	//node["screen"]->childtransforms[10] = (translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(START_MENU_SCALE* START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
+	const float logo_width_to_height_ratio = 9119.0f / 4988.0f; // determined from the image dimensions
+	const float logo_scale = 10.0f; // tune according to window dimensions
+	//start menu
+	node["screen"]->childtransforms[10] = (translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(logo_scale* logo_width_to_height_ratio, logo_scale, 1.0f)));
 }
