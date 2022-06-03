@@ -13,7 +13,7 @@ Scene.inl contains the definition of the scene graph
 #define NUM_PLAYERS 4
 #define DEV_LIGHTING false
 //#define DEV_LIGHTING true
-#define ENABLE_DRIPS false
+#define ENABLE_DRIPS true
 
 using namespace glm;
 void Scene::init(int width, int height) {
