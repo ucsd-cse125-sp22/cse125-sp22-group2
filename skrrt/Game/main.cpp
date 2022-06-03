@@ -629,7 +629,7 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
             game.triggerFx("BlowDryerPowerup.wav", position);
             break;
         case AudioId::POWERUP_USE:
-            //game.triggerFx("BlowDryerUse.wav", position);
+            game.startUsePowerup(clientId, scene.camera->forwardVectorXZ());
             break;
         case AudioId::NO_AUDIO:
         default:
@@ -769,7 +769,7 @@ void keyboard(unsigned char key, int x, int y) {
             // Audio Engine restart (in case something fails)
             game.stopCarEngines();
             game.stopAllSounds();
-            game.playMusic("BattleTheme.wav", -10.0);
+            //game.playMusic("BattleTheme.wav", -10.0);
             game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
             break;
         case 'n':
@@ -982,6 +982,9 @@ void idle() {
 
         // Update Engine Audio Positions
         game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
+        // Update powerupUse Positions
+        game.updateUsePowerup(clientId, scene.camera->forwardVectorXZ());
+
         // Update Audio Engine
         game.updateAudio();
 
@@ -1020,7 +1023,6 @@ void idle() {
         if (matchInProgress) {
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
-            triggerAudio(frame->audio);
             if (frame->matchInProgress) {
                 // Use the frame to update the powerups' state
                 updatePowerupState(frame);
@@ -1036,6 +1038,7 @@ void idle() {
                matchInProgress = false;
                enableSendPlay = true;
             }
+            triggerAudio(frame->audio);
             // Delete the frame
             delete frame;
         }

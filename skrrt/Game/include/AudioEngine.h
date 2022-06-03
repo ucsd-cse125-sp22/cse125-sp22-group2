@@ -18,6 +18,10 @@ AudioEngine is a class to manage all sounds for the game
 
 #define CLIENT_ENGINE_DB -16.0f
 #define OTHER_PLAYER_ENGINE_DB -4.0f
+#define ENGINE_ACCEL_SPEED 0.45f
+
+#define CLIENT_POWERUP_DB -8.0f
+#define OTHER_PLAYER_POWERUP_DB 0.0f
 
 #define VOLUME_OFF -60.0f
 
