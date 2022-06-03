@@ -56,6 +56,8 @@ private:
 
 
 public: 
+	bool isCrashed = false;
+	bool isBouncing = false;
 
 	Player() { player_node = NULL; has_crown = false; makeupLevel = 100.0f; };
 	Player(Node* car) { player_node = car; has_crown = false; makeupLevel = 100.0f; };
@@ -63,7 +65,7 @@ public:
 	void moveCar(glm::vec3 dir, glm::vec3 up, glm::vec3 pos);
 	void spinWheels(float rotationDegree);
 	void bobCrown(float time);
-	void updateParticles(float time, glm::vec3 c = glm::vec3(1.0f));
+	void updateParticles(float time, std::vector<glm::vec3> colors);
 
 	void setPlayer(Node* player) { 
 		player_node = player; 

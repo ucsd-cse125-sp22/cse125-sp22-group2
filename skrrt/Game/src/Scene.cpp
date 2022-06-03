@@ -266,7 +266,7 @@ void Scene::drawNoPart(Node* current_node){
 			// draw all the models at the current node
 			for (unsigned int i = 0; i < cur->models.size(); i++) {
 				// Prepare to draw the geometry. Assign the modelview and the material.
-                shader->iFrames = cur->iframes == 0.0f? 0.0f : 1.0 - (glm::mod(cur->iframes, 10.0f) / 10.0f);
+                shader->iFrames = cur->iframes == 0.0f? 0.0f : 1.0 - (glm::mod(cur->iframes, 15.0f) / 15.0f);
                 //shader->iFrames = cur->iframes;
 
 				shader->modelview = cur_VM * cur->modeltransforms[i]; // HW3: Without updating cur_VM, modelview would just be camera's view matrix.

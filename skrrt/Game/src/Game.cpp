@@ -82,6 +82,8 @@ void Game::triggerGateAnimation(int gateNum) {
 	animations["lipstick_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 	animations["mascara_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 	animations["powder_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+
+    //TODO trigger particles
 }
 
 // *******************************************
@@ -105,6 +107,7 @@ void Game::triggerCarCollisionAnimation(int playerNum) {
 
     // Select which car to apply the animation on 
     animations["collision_anim" + std::to_string(playerNum)]->triggerAnimation(true);
+
 }
 
 void Game::updateAnimations() {
