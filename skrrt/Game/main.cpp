@@ -1043,6 +1043,7 @@ void idle() {
         }
         else {
             if (waitingToStartMatch) {
+                countdownSM.resetState();
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
                 // Display the game time

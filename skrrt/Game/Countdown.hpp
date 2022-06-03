@@ -16,6 +16,7 @@ namespace countdown {
         void ready();
         void set();
         void go();
+        void resetState();
         CountdownState getState() const;
     private:
         bool readySoundPlayed;
