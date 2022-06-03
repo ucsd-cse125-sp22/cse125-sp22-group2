@@ -75,7 +75,26 @@ public:
 	void setSpeed(RealNumber speed) { current_speed = speed; }
 	void setMakeupLevel(RealNumber muLevel) { makeupLevel = muLevel; }; 
 	void setPlayerScore(RealNumber s) { score = s; };
-	void setInvincibility(RealNumber inv) { iframes = inv; }
+	void setInvincibility(RealNumber inv) { 
+		iframes = inv; 
+
+		std::stack < Node* > dfs_stack;
+		dfs_stack.push(player_node);
+		if (has_crown) {
+			dfs_stack.push(crown_node);
+		}
+		while (!dfs_stack.empty()) {
+			Node* cur = dfs_stack.top();
+			dfs_stack.pop();
+			if (cur->isParticleSource) {
+				continue;
+			}
+			cur->iframes = inv;
+			for (Node* child : cur->childnodes) {
+				dfs_stack.push(child);
+			}
+		}
+	}
 	void setPlayerTransform(glm::mat4 transform) { 
 		animation_transform = transform;
 

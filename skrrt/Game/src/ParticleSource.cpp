@@ -176,13 +176,25 @@ void ParticleSource::Update(float deltaTime, glm::vec3 p, glm::vec3 v, float m, 
 	}
 }
 
-void ParticleSource::Draw(const glm::mat4& viewProjMtx, GLuint shader) {
+void ParticleSource::Draw(const glm::mat4& viewProjMtx, SurfaceShader* shader, GLuint program) {
 
 	//std::cout << "Print Particle Source" << std::endl;
 
+	
 	// Draw all particles 
 	for (int i = 0; i < numParticles; i++) {
-		particles[i]->draw(viewProjMtx, shader);
+		shader->particleColor = particles[i]->getColor();
+		shader->setUniforms();
+		particles[i]->draw(viewProjMtx, program);
+	}
+}
+
+void ParticleSource::Draw(const glm::mat4& viewProjMtx, PartShader* shader, GLuint program) {
+	// Draw all particles 
+	for (int i = 0; i < numParticles; i++) {
+		shader->particleColor = glm::vec4(particles[i]->getColor(), 1.0f);
+		shader->setUniforms();
+		particles[i]->draw(viewProjMtx, program);
 	}
 }
 

@@ -142,6 +142,8 @@
     <None Include="shaders\gaussian.vert" />
     <None Include="shaders\lightingShadowsDisabled.frag" />
     <None Include="shaders\lightingShadowsEnabled.frag" />
+    <None Include="shaders\part.frag" />
+    <None Include="shaders\part.vert" />
     <None Include="shaders\projectiveShadowsDisabled.vert" />
     <None Include="shaders\projectiveShadowsEnabled.vert" />
     <None Include="shaders\quad.frag" />
@@ -186,6 +188,7 @@
     <ClInclude Include="include\Debug.h" />
     <ClInclude Include="include\DepthShader.h" />
     <ClInclude Include="include\GaussianShader.h" />
+    <ClInclude Include="include\PartShader.h" />
     <ClInclude Include="include\QuadShader.h" />
     <ClInclude Include="include\ShadowMapConstants.h" />
     <ClInclude Include="include\FreeImage.h" />
