@@ -82,6 +82,8 @@ void Game::triggerGateAnimation(int gateNum) {
 	animations["lipstick_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 	animations["mascara_anim" + std::to_string(gateNum)]->triggerAnimation(true);
 	animations["powder_anim" + std::to_string(gateNum)]->triggerAnimation(true);
+
+    //TODO trigger particles
 }
 
 // *******************************************
@@ -105,6 +107,7 @@ void Game::triggerCarCollisionAnimation(int playerNum) {
 
     // Select which car to apply the animation on 
     animations["collision_anim" + std::to_string(playerNum)]->triggerAnimation(true);
+
 }
 
 void Game::updateAnimations() {
@@ -163,6 +166,10 @@ void Game::updateAudio()
 void Game::stopAllSounds()
 {
     audioEngine.stopAllChannels();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        powerupChannels[i] = 0;
+    }
 }
 
 int Game::playMusic(const char* musicName, float db)
@@ -216,7 +223,7 @@ void Game::startCarEngines(int clientId, vec3& cameraPos)
         int accelerate = Game::triggerFx("EngineAccelerate.wav", enginePosition, VOLUME_OFF);
         // Add channel number to carEngineChannels
         carEngineChannels[i] = CarEngine{ idle, accelerate };
-        printf("player: %d | idle: %d accelerate: %d\n", i, idle, accelerate);
+        //printf("player: %d | idle: %d accelerate: %d\n", i, idle, accelerate);
 
         // Update so we can have multiple instances of the same sound
         audioEngine.update();
@@ -253,16 +260,18 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
         {
             // Interpolate carEngine sound to play
             RealNumber speed = players[i]->getSpeed();
-            if (speed >= 0.5f) speed = 0.5f; // Clamp values above 0.5
+            //std::cerr << speed << std::endl;
+            if (speed >= ENGINE_ACCEL_SPEED) speed = ENGINE_ACCEL_SPEED; // Clamp values above 0.5
             CarEngine carEngine = carEngineChannels[i];
-            RealNumber c = speed / 0.5; // audio fade coefficient based on speed
+            RealNumber c = speed / ENGINE_ACCEL_SPEED; // audio fade coefficient based on speed
             float idleDb = i == clientId ? CLIENT_ENGINE_DB : OTHER_PLAYER_ENGINE_DB;
-            if (speed == 0.5)
+            if (speed >= ENGINE_ACCEL_SPEED)
             {
                 audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, VOLUME_OFF));
                 audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, idleDb));
             }
-            else {
+            else 
+            {
                 audioEngine.setChannelVolume(carEngine.idle, Game::fadeEngine(carEngine.idle, idleDb));
                 audioEngine.setChannelVolume(carEngine.accelerate, Game::fadeEngine(carEngine.accelerate, VOLUME_OFF));
             }
@@ -271,6 +280,44 @@ void Game::updateCarEngines(int clientId, vec3& cameraPos)
             vec3 enginePosition = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
             audioEngine.setChannel3dPosition(carEngine.idle, enginePosition);
             audioEngine.setChannel3dPosition(carEngine.accelerate, enginePosition);
+        }
+    }
+}
+
+void Game::startUsePowerup(int clientId, vec3& cameraPos)
+{
+    //std::cerr << "powerup use trigger" << std::endl;
+    vec3 playerPos = players[clientId]->getPosition();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        std::cout << players[i]->getUsingPowerup() << std::endl;
+        if (players[i]->getUsingPowerup() && powerupChannels[i] == 0)
+        {
+            vec3 powerupPos = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+            float powerupDb = i == clientId ? CLIENT_POWERUP_DB : OTHER_PLAYER_POWERUP_DB;
+            //int powerupChannel = triggerFx("BlowDryerUse.wav", powerupPos, powerupDb);
+            int powerupChannel = triggerFx("BlowDryerUse.wav", powerupPos);
+            powerupChannels[i] = powerupChannel;
+            //std::cerr << "player " << i << "starting powerup: [" << powerupChannel << "]" << std::endl;
+        }
+    }
+}
+
+void Game::updateUsePowerup(int clientId, vec3& cameraPos)
+{
+    vec3 playerPos = players[clientId]->getPosition();
+    for (int i = 0; i < cse125constants::NUM_PLAYERS; i++)
+    {
+        if (players[i]->getUsingPowerup() && powerupChannels[i])
+        {
+            //std::cerr << "updating powerup: " << powerupChannels[i] << std::endl;
+            vec3 powerupPos = Game::computeCamRelative3dPosition(cameraPos, playerPos, players[i]->getPosition());
+            audioEngine.setChannel3dPosition(powerupChannels[i], powerupPos);
+        }
+        else if (powerupChannels[i])
+        {
+            //std::cerr << "turning off powerup" << powerupChannels[i] << std::endl;
+            powerupChannels[i] = 0;
         }
     }
 }

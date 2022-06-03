@@ -54,10 +54,13 @@ std::unique_ptr<cse125networkclient::NetworkClient> networkClient;
 
 // Optimization to prevent accessing the scene graph to toggle menu visibility
 // if the current visibility is the same as the toggled visibility
-bool startScreenVisibility = false;
+bool showStartLogo = true;
+bool showTimer = false;
+bool showMascaraBar = false;
+bool showTireIcons = false;
 
 // Game / match flow variables
-bool showStartMenu = true;
+bool renderStartText = true;
 bool matchInProgress = false;
 bool waitingToStartMatch = false;
 bool enableSendPlay = true;
@@ -67,6 +70,10 @@ bool playMenuTheme = true;
 countdown::CountdownStateMachine countdownSM;
 
 // Time
+bool arcCamera = true;
+const float CAMERA_ZOOM_FACTOR = 3.4f;
+const float CAMERA_ARC_SPEED = 0.00005f;
+
 static std::chrono::time_point<std::chrono::system_clock> startTime;
 
 static int mouseX = 0.0f;
@@ -81,8 +88,6 @@ static bool mouseLocked = true;
 static bool honked = false;
 
 static float timeOfDay = 1.0f;
-
-
 
 #include "hw3AutoScreenshots.h"
 
@@ -100,19 +105,13 @@ std::string makeMatchEndText(int playerId, int winnerId) {
 void handleCountdownSound(const countdown::CountdownStateMachine& csm) {
     switch (csm.getState()) {
     case countdown::CountdownState::PLAY_READY_SOUND:
-        game.playMusic("Collision.wav", -6.0f);
-        // game.playMusic("ReadySound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing ready sound\n");
+        game.playMusic("Ready.wav");
         break;
     case countdown::CountdownState::PLAY_SET_SOUND:
-        game.playMusic("GetCrown.wav", -6.0f);
-        // game.playMusic("SetSound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing set sound\n");
+        game.triggerFx("Set.wav");
         break;
     case countdown::CountdownState::PLAY_GO_SOUND:
-        game.playMusic("Pillow.wav", -6.0f);
-        // game.playMusic("GoSound.wav", -6.0f);
-        cse125debug::log(LOG_LEVEL_INFO, "Playing go sound\n");
+        game.triggerFx("Skrrt.wav");
         break;
     case countdown::CountdownState::PLAY_NO_SOUND:
         break;
@@ -193,7 +192,10 @@ void initialize(void)
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
 
-    scene.camera->setAspect(width, height);
+    // Zoom out the camera to show off the map
+    scene.camera->zoom(CAMERA_ZOOM_FACTOR);
+    scene.camera->target = glm::vec3(0.0f, 0.0f, 0.0f);
+
     scene.setDayNight(timeOfDay);
 }
 
@@ -408,13 +410,18 @@ void display(void) {
     glDrawBuffers(1, attachmentsUI);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    scene.drawUI();
+    showMascaraBar = !showStartLogo;
+    showTireIcons = !showStartLogo;
+    showTimer = !showStartLogo;
+    scene.drawUI(showStartLogo, showTimer, showMascaraBar, showTireIcons);
 
     scene.camera->nearPlane = scene.camera->near_default;
 
 
     // The countdown, match end, and normal gameplay events should never overlap.
     // Therefore, only text for the current ongoing event will be drawn
+    const bool renderScores = !renderStartText;
+    const bool renderTime = !renderStartText;
     const bool renderCountdownText = cse125config::ENABLE_COUNTDOWN && waitingToStartMatch;
     const bool renderMatchEndText = winnerId != cse125constants::DEFAULT_WINNER_ID;
     std::string matchEndText = "";
@@ -427,7 +434,7 @@ void display(void) {
     }
 
     // Render text elements
-    scene.drawText(renderCountdownText, renderMatchEndText, countdownText, matchEndText);
+    scene.drawText(renderScores, renderTime, renderStartText, renderCountdownText, renderMatchEndText, countdownText, matchEndText);
 
     // Play countdown sound
     handleCountdownSound(countdownSM);
@@ -484,14 +491,6 @@ void display(void) {
     glFlush();
 }
 
-// Toggles the visibility of the start menu and background
-void toggleStartMenuVisibility(const bool& visibility) {
-    if (visibility != startScreenVisibility) {
-        startScreenVisibility = visibility;
-        scene.node["start_menu"]->visible = visibility;
-    }
-}
-
 void saveScreenShot(const char* filename = "test.png")
 {
     int currentwidth = glutGet(GLUT_WINDOW_WIDTH);
@@ -522,6 +521,9 @@ void sendPlayToServer() {
         if (!error) {
             enableSendPlay = false;
             waitingToStartMatch = true;
+            // Toggle the start logo visibility
+            scene.node["logo"]->visible = false;
+            showStartLogo = false;
             cse125debug::log(LOG_LEVEL_INFO, "Successfully sent play packet to server...\n");
         }
         else {
@@ -595,9 +597,11 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
     // crash animation
     for (int playerId = 0; playerId < cse125constants::NUM_PLAYERS; playerId++)
     {
+        game.players[playerId]->isCrashed = false;
         if (triggers.playerCrash[playerId])
         {
-            // trigger crash animation
+            game.players[playerId]->isCrashed = true;
+            
             game.triggerCarCollisionAnimation(playerId);
         }
     }
@@ -605,6 +609,9 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
 
 void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MAX_NUM_SOUNDS])
 {
+	for (auto player : game.players) {
+	    player->isBouncing = false;
+	}
     using namespace cse125framing;
     using namespace cse125constants;
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
@@ -624,12 +631,17 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
             break;
         case AudioId::BOUNCE:
             game.triggerFx("Pillow.wav", position);
+            for (auto player : game.players) {
+                if (glm::length(player->getPosition() - position) < 2.0f) {
+                    player->isBouncing = true;
+                }
+            }
             break;
         case AudioId::POWERUP_PICKUP:
             game.triggerFx("BlowDryerPowerup.wav", position);
             break;
         case AudioId::POWERUP_USE:
-            //game.triggerFx("BlowDryerUse.wav", position);
+            game.startUsePowerup(clientId, scene.camera->forwardVectorXZ());
             break;
         case AudioId::NO_AUDIO:
         default:
@@ -769,7 +781,7 @@ void keyboard(unsigned char key, int x, int y) {
             // Audio Engine restart (in case something fails)
             game.stopCarEngines();
             game.stopAllSounds();
-            game.playMusic("BattleTheme.wav", -10.0);
+            //game.playMusic("BattleTheme.wav", -10.0);
             game.startCarEngines(clientId, scene.camera->forwardVectorXZ());
             break;
         case 'n':
@@ -958,7 +970,7 @@ void idle() {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, scene.text_colors[i]);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, std::vector<glm::vec3> {scene.text_colors[i], scene.text_colors[i], scene.text_colors[i] + glm::vec3(0.5f)});
             //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));
@@ -982,6 +994,9 @@ void idle() {
 
         // Update Engine Audio Positions
         game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
+        // Update powerupUse Positions
+        game.updateUsePowerup(clientId, scene.camera->forwardVectorXZ());
+
         // Update Audio Engine
         game.updateAudio();
 
@@ -1005,14 +1020,11 @@ void idle() {
         handleMoveRight();
     }
 
-    toggleStartMenuVisibility(showStartMenu);
-
     // Only play the start menu theme once
     if (playMenuTheme) {
        game.playMusic("MenuTheme.wav", -6.0f);
        playMenuTheme = false;
     }
-
 
     // Handle server communication
     const bool connectedToServer = clientId != cse125constants::DEFAULT_CLIENT_ID;
@@ -1020,7 +1032,6 @@ void idle() {
         if (matchInProgress) {
             cse125framing::ServerFrame* frame = receiveDataFromServer();
             triggerAnimations(frame->animations);
-            triggerAudio(frame->audio);
             if (frame->matchInProgress) {
                 // Use the frame to update the powerups' state
                 updatePowerupState(frame);
@@ -1036,6 +1047,7 @@ void idle() {
                matchInProgress = false;
                enableSendPlay = true;
             }
+            triggerAudio(frame->audio);
             // Delete the frame
             delete frame;
         }
@@ -1043,8 +1055,6 @@ void idle() {
             if (waitingToStartMatch) {
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
-                // Stop showing the start menu
-                showStartMenu = false;
                 // Display the game time
                 game.updateTime(cse125config::MATCH_LENGTH);
 
@@ -1052,6 +1062,8 @@ void idle() {
 
                 // Ready / Set / Go part
                 if (cse125config::ENABLE_COUNTDOWN) {
+                    renderStartText = false;
+                    arcCamera = false;
                     scene.camera->reset(clientId);
                     updatePlayerState(frame);
                     updateCrownState(frame);
@@ -1061,6 +1073,7 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
+                        countdownSM.resetState();
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1071,6 +1084,9 @@ void idle() {
                     }
                 }
                 else {
+                    countdownSM.resetState();
+                    renderStartText = false;
+                    arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                     matchInProgress = true;
                     waitingToStartMatch = false;
@@ -1085,6 +1101,10 @@ void idle() {
         }
     }
 
+    // Intro camera effect
+    if (arcCamera) {
+        scene.camera->rotateRight(CAMERA_ARC_SPEED);
+    }
 
     if (render) {
         glutPostRedisplay();
@@ -1092,6 +1112,9 @@ void idle() {
 }
 
 void mouseMovement(int x, int y) {
+    if (arcCamera) {
+        return;
+    }
 	int maxDelta = 100;
 	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
 	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);

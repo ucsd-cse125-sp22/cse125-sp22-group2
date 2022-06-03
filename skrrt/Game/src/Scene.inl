@@ -57,7 +57,7 @@ void Scene::init(int width, int height) {
     geometry["flags"] = new Obj;
     geometry["flags"]->init("models/Flags.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
     geometry["makeup_station_lights"] = new Obj;
-    geometry["makeup_station_lights"]->init("models/PitStopLights.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["makeup_station_lights"]->init("models/PitStopLights.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["tire_rack"] = new Obj;
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
@@ -118,8 +118,11 @@ void Scene::init(int width, int height) {
     geometry["white_bar"] = new Obj;
     geometry["white_bar"]->init("models/StatusBar.obj", "textures/LipstickMeter.png", "textures/map_specular.png", "textures/map_emission.png", 16);
 
-    geometry["start_menu"] = new Obj;
-    geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+    //geometry["start_menu"] = new Obj;
+    //geometry["start_menu"]->init("models/Plane.obj", "textures/start_menu.png", "textures/no_emission.png", "textures/no_emission.png", 17);
+
+    geometry["logo"] = new Obj;
+    geometry["logo"]->init("models/Plane.obj", "textures/Logo.png", "textures/no_emission.png", "textures/no_emission.png", 17);
 
     geometry["blowdryer_icon"] = new Obj;
     geometry["blowdryer_icon"]->init("models/Plane.obj", "textures/BlowDryer_Icon@4x.png", "textures/no_emission.png", "textures/no_emission.png", 18);
@@ -251,9 +254,14 @@ void Scene::init(int width, int height) {
     model["blowdryer_world"]->geometry = geometry["blowdryer_world"];
     model["blowdryer_world"]->material = material["silver"];
 
-    model["start_menu"] = new Model;
-    model["start_menu"]->geometry = geometry["start_menu"];
-    model["start_menu"]->material = material["ceramic"];
+    //model["start_menu"] = new Model;
+    //model["start_menu"]->geometry = geometry["start_menu"];
+    //model["start_menu"]->material = material["ceramic"];
+
+
+    model["logo"] = new Model;
+    model["logo"]->geometry = geometry["logo"];
+    model["logo"]->material = material["ceramic"];
 
     //********************************************
     //*********** UI elem ************************
@@ -598,6 +606,7 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
+
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
@@ -659,17 +668,17 @@ void Scene::init(int width, int height) {
 	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["lipstick0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["mascara_brush0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["powder_thing0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["stop_sign0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["flags0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["makeup_station_lights0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
     
     // makeup_station1 is the one in the lower right 
 	node["world"]->childnodes.push_back(node["makeup_station1"]); 
@@ -677,17 +686,17 @@ void Scene::init(int width, int height) {
 	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["lipstick1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["mascara_brush1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["powder_thing1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["stop_sign1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["flags1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["makeup_station_lights1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);
@@ -769,9 +778,13 @@ void Scene::init(int width, int height) {
     //node["drips"]->modeltransforms.push_back(rotate(float(M_PI), vec3(0.0f, 1.0f, 0.0f)) * rotate(-90*float(M_PI)/180.0f, vec3(1.0f, 0.0f, 0.0f)));
     node["back_drips"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
-    node["start_menu"] = new Node("start_menu");
-    node["start_menu"]->models.push_back(model["start_menu"]);
-    node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+    //node["start_menu"] = new Node("start_menu");
+    //node["start_menu"]->models.push_back(model["start_menu"]);
+    //node["start_menu"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
+
+    node["logo"] = new Node("logo");
+    node["logo"]->models.push_back(model["logo"]);
+    node["logo"]->modeltransforms.push_back(rotate(90 * float(M_PI) / 180.0f, vec3(1.0f, 0.0f, 0.0f)));
 
     mat4 UI_rotation = rotate(float(M_PI) / 2.0f, vec3(1.0f, 0.0f, 0.0f));
 
@@ -860,12 +873,15 @@ void Scene::init(int width, int height) {
     node["screen"]->childnodes.push_back(node["drips"]);
     node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -1.0f)) * scale(vec3(70.0f, 600.0f, 1.0f)));
 
-    node["screen"]->childnodes.push_back(node["start_menu"]);
-    // TODO: Dynamic scaling? based on window size
-    const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
-    const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
-    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(START_MENU_SCALE * START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
 
+  /*  node["logo_screen"] = new Node("logo_screen");
+    node["UI_logo"]->childnodes.push_back(node["logo_screen"]);
+    node["UI_logo"]->childtransforms.push_back(mat4(1.0f));*/
+
+    node["screen"]->childnodes.push_back(node["logo"]);
+    const float logo_width_to_height_ratio = 9119.0f / 4988.0f; // determined from the image dimensions
+    const float logo_scale = 10.0f; // tune according to window dimensions
+    node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 1.0f)) * scale(vec3(logo_scale * logo_width_to_height_ratio, logo_scale, 1.0f)));
 
     //node["screen"]->childnodes.push_back(node["back_drips"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(0.0f, 3.0f, -1.5f)) * scale(30.0f * vec3(1.0f)));
@@ -1137,6 +1153,9 @@ void Scene::init(int width, int height) {
 
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
+
+    start_text = new Text(text_shader->program);
+    start_text->updateText("Press Space to Start");
 
     countdown_instructions_text = new Text(text_shader->program);
     countdown_instructions_text->updateText("Claim the crown and win the pageant!");
