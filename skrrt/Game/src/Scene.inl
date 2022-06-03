@@ -42,6 +42,9 @@ void Scene::init(int width, int height) {
     geometry["map"] = new Obj;
     geometry["map"]->init("models/MapFinal.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
+    geometry["tent"] = new Obj;
+    geometry["tent"]->init("models/CutTent.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
+
     //geometry["end"] = new Obj;
     //geometry["end"]->init("models/Pedestal.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
@@ -60,7 +63,7 @@ void Scene::init(int width, int height) {
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["cones"] = new Obj;
-    geometry["cones"]->init("models/Cones.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
+    geometry["cones"]->init("models/TrafficCones.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["flowers"] = new Obj; 
     geometry["flowers"]->init("models/FlowersPillar.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
@@ -191,6 +194,10 @@ void Scene::init(int width, int height) {
     model["map"] = new Model;
     model["map"]->geometry = geometry["map"];
     model["map"]->material = material["silver"];
+
+    model["tent"] = new Model;
+    model["tent"]->geometry = geometry["tent"];
+    model["tent"]->material = material["silver"];
 
     //model["end"] = new Model;
     //model["end"]->geometry = geometry["end"];
@@ -521,6 +528,11 @@ void Scene::init(int width, int height) {
     node["map"]->models.push_back(model["map"]);
     node["map"]->modeltransforms.push_back(mat4(1.0f));
 
+    // Tent
+    node["tent"] = new Node("tent");
+    node["tent"]->models.push_back(model["tent"]);
+    node["tent"]->modeltransforms.push_back(mat4(1.0f));
+
     // Makeup station 
     for (int i = 0; i < cse125constants::NUM_MAKEUP_STATIONS; i++) {
         node["makeup_station" + std::to_string(i)] = new Node("makeup_station" + std::to_string(i));
@@ -552,7 +564,7 @@ void Scene::init(int width, int height) {
     for (int i = 0; i < cse125constants::NUM_CONES; i++) {
         node["cones" + std::to_string(i)] = new Node("cones" + std::to_string(i));
         node["cones" + std::to_string(i)]->models.push_back(model["cones"]);
-        node["cones" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+        node["cones" + std::to_string(i)]->modeltransforms.push_back(translate(vec3(0.0f, 0.5f, 0.0f)));
     }
 
     for (int i = 0; i < 4; i++) {
@@ -661,6 +673,8 @@ void Scene::init(int width, int height) {
     //node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["map"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
+    node["world"]->childnodes.push_back(node["tent"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["traffic_light"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 8.0f, 0.0f)) * scale(0.5f * vec3(1.0f)));
