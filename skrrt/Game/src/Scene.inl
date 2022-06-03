@@ -750,9 +750,11 @@ void Scene::init(int width, int height) {
     node["green_tire"]->models.push_back(model["green_tire"]);
     node["green_tire"]->modeltransforms.push_back(UI_rotation);
 
-    node["crown_icon"] = new Node("crown_icon");
-    node["crown_icon"]->models.push_back(model["crown_icon"]);
-    node["crown_icon"]->modeltransforms.push_back(UI_rotation);
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+		node["crown_icon" + std::to_string(i)] = new Node("crown_icon" + std::to_string(i), false);
+		node["crown_icon" + std::to_string(i)]->models.push_back(model["crown_icon"]);
+		node["crown_icon" + std::to_string(i)]->modeltransforms.push_back(UI_rotation);
+    }
 
     node["blowdryer_icon"] = new Node("blowdryer_icon");
     node["blowdryer_icon"]->models.push_back(model["blowdryer_icon"]);
@@ -787,6 +789,16 @@ void Scene::init(int width, int height) {
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 13.8f + 1.28f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 10.5f + 0.92f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
+
+    const float crown_ratio = 108.0f / 82.0f; 
+    node["screen"]->childnodes.push_back(node["crown_icon0"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 20.4f + 2.05f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f))* scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
+    node["screen"]->childnodes.push_back(node["crown_icon1"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 17.1f + 1.68f + 1.1f, 0.0f))  * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["crown_icon2"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 13.8f + 1.28f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
+    node["screen"]->childnodes.push_back(node["crown_icon3"]); 
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 10.5f + 0.92f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
 
     const float mascara_icon_ratio = 1782.0f / 751.0f; 
     const float mascara_bar_ratio = 1133.0f / 353.0f;
@@ -1085,7 +1097,7 @@ void Scene::init(int width, int height) {
     game_time->updateText("100");
 
     countdown_instructions_text = new Text(text_shader->program);
-    countdown_instructions_text->updateText("Claim the crown and win the pagaent!");
+    countdown_instructions_text->updateText("Claim the crown and win the pageant!");
 
     countdown_go_text = new Text(text_shader->program);
     countdown_go_text->updateText("Default countdown text");
