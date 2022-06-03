@@ -64,6 +64,7 @@ bool enableSendPlay = true;
 float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 bool playMenuTheme = true;
+bool arcCamera = true;
 countdown::CountdownStateMachine countdownSM;
 
 // Time
@@ -81,8 +82,6 @@ static bool mouseLocked = true;
 static bool honked = false;
 
 static float timeOfDay = 1.0f;
-
-
 
 #include "hw3AutoScreenshots.h"
 
@@ -486,10 +485,10 @@ void display(void) {
 
 // Toggles the visibility of the start menu and background
 void toggleStartMenuVisibility(const bool& visibility) {
-    if (visibility != startScreenVisibility) {
-        startScreenVisibility = visibility;
-        scene.node["start_menu"]->visible = visibility;
-    }
+    //if (visibility != startScreenVisibility) {
+    //    startScreenVisibility = visibility;
+    //    scene.node["start_menu"]->visible = visibility;
+    //}
 }
 
 void saveScreenShot(const char* filename = "test.png")
@@ -1064,6 +1063,7 @@ void idle() {
                     // Update countdown time
                     countdownTimeRemaining = frame->countdownTimeRemaining;
                     if (countdownTimeRemaining <= 0) {
+                        arcCamera = false;
                         cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                         matchInProgress = true;
                         waitingToStartMatch = false;
@@ -1074,6 +1074,7 @@ void idle() {
                     }
                 }
                 else {
+                    arcCamera = false;
                     cse125debug::log(LOG_LEVEL_INFO, "Ready to start match!\n");
                     matchInProgress = true;
                     waitingToStartMatch = false;
@@ -1095,6 +1096,9 @@ void idle() {
 }
 
 void mouseMovement(int x, int y) {
+    if (arcCamera) {
+        return;
+    }
 	int maxDelta = 100;
 	int dx = glm::clamp(x - mouseX, -maxDelta, maxDelta);
 	int dy = glm::clamp(y - mouseY, -maxDelta, maxDelta);

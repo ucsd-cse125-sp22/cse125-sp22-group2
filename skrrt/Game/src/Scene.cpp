@@ -620,8 +620,8 @@ void Scene::scaleUi(int width, int height) {
 	node["screen"]->childtransforms[9] = (translate(vec3(0.0f * widthRatio, 0.0f * heightRatio, -1.0f))* scale(vec3(70.0f, 600.0f, 1.0f)));
 
 	// TODO: Dynamic scaling? based on window size
-	const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
-	const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
-	//start menu
-	node["screen"]->childtransforms[10] = (translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(START_MENU_SCALE* START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
+	//const float START_MENU_WIDTH_TO_HEIGHT_RATIO = 1780.0f / 1003.0f; // determined from the image dimensions
+	//const float START_MENU_SCALE = 15.0f; // tune according to window dimensions
+	////start menu
+	//node["screen"]->childtransforms[10] = (translate(vec3(0.0f, 0.0f, 1.0f))* scale(vec3(START_MENU_SCALE* START_MENU_WIDTH_TO_HEIGHT_RATIO, START_MENU_SCALE, 1.0f)));
 }
