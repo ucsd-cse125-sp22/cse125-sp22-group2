@@ -629,11 +629,11 @@ void Scene::init(int width, int height) {
 	node["makeup_station0"]->childnodes.push_back(node["makeup_station_bar0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["lipstick0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["mascara_brush0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["powder_thing0"]);
-	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
     
     // makeup_station1 is the one in the lower right 
 	node["world"]->childnodes.push_back(node["makeup_station1"]); 
@@ -641,11 +641,11 @@ void Scene::init(int width, int height) {
 	node["makeup_station1"]->childnodes.push_back(node["makeup_station_bar1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(3.0f, 0.5f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["lipstick1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["mascara_brush1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["powder_thing1"]);
-	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);
