@@ -1096,6 +1096,9 @@ void Scene::init(int width, int height) {
     game_time = new Text(text_shader->program);
     game_time->updateText("100");
 
+    instructions_text = new Text(text_shader->program);
+    instructions_text->updateText("Press Space to Start");
+
     countdown_instructions_text = new Text(text_shader->program);
     countdown_instructions_text->updateText("Claim the crown and win the pageant!");
 

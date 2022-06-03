@@ -93,6 +93,7 @@ public:
 
     Text* scores[4];
     Text* game_time;
+    Text* instructions_text;
     Text* countdown_instructions_text;
     Text* countdown_go_text;
     Text* match_end_text;

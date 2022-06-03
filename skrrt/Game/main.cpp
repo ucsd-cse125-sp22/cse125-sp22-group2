@@ -64,10 +64,13 @@ bool enableSendPlay = true;
 float countdownTimeRemaining = cse125constants::DEFAULT_COUNTDOWN_TIME_REMAINING;
 int winnerId = cse125constants::DEFAULT_WINNER_ID;
 bool playMenuTheme = true;
-bool arcCamera = true;
 countdown::CountdownStateMachine countdownSM;
 
 // Time
+bool arcCamera = true;
+const float CAMERA_ZOOM_FACTOR = 3.4f;
+const float CAMERA_ARC_SPEED = 0.00005f;
+
 static std::chrono::time_point<std::chrono::system_clock> startTime;
 
 static int mouseX = 0.0f;
@@ -192,7 +195,10 @@ void initialize(void)
     // Make the cursor invisible
     glutSetCursor(GLUT_CURSOR_NONE);
 
-    scene.camera->setAspect(width, height);
+    // Zoom out the camera to show off the map
+    scene.camera->zoom(CAMERA_ZOOM_FACTOR);
+    scene.camera->target = glm::vec3(0.0f, 0.0f, 0.0f);
+
     scene.setDayNight(timeOfDay);
 }
 
@@ -1089,6 +1095,10 @@ void idle() {
         }
     }
 
+    // Intro camera effect
+    if (arcCamera) {
+        scene.camera->rotateRight(CAMERA_ARC_SPEED);
+    }
 
     if (render) {
         glutPostRedisplay();
