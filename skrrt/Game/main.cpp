@@ -595,9 +595,11 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
     // crash animation
     for (int playerId = 0; playerId < cse125constants::NUM_PLAYERS; playerId++)
     {
+        game.players[playerId]->isCrashed = false;
         if (triggers.playerCrash[playerId])
         {
-            // trigger crash animation
+            game.players[playerId]->isCrashed = true;
+            
             game.triggerCarCollisionAnimation(playerId);
         }
     }
@@ -605,6 +607,9 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
 
 void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MAX_NUM_SOUNDS])
 {
+	for (auto player : game.players) {
+	    player->isBouncing = false;
+	}
     using namespace cse125framing;
     using namespace cse125constants;
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
@@ -624,6 +629,11 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
             break;
         case AudioId::BOUNCE:
             game.triggerFx("Pillow.wav", position);
+            for (auto player : game.players) {
+                if (glm::length(player->getPosition() - position) < 2.0f) {
+                    player->isBouncing = true;
+                }
+            }
             break;
         case AudioId::POWERUP_PICKUP:
             game.triggerFx("BlowDryerPowerup.wav", position);
@@ -958,7 +968,7 @@ void idle() {
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             game.players[i]->spinWheels(speed * game.players[i]->getSpeed());
             game.players[i]->bobCrown(time);
-            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, scene.text_colors[i]);
+            game.players[i]->updateParticles((time - lastRenderTime) / 50.0f, std::vector<glm::vec3> {scene.text_colors[i], scene.text_colors[i], scene.text_colors[i] + glm::vec3(0.5f)});
             //std::cout << (time - lastRenderTime) / 50.0f << "\n";
 
             scene.scores[i]->updateText(std::to_string((int)game.players[i]->getScore()));

@@ -61,6 +61,8 @@ public:
 
     ParticleSource* particles;
     ParticleSource* particlesPowerup;
+    ParticleSource* particlesCollision;
+    ParticleSource* particlesPillows;
 
     std::vector< Node* > childnodes;
     std::vector< glm::mat4 > childtransforms;

@@ -568,6 +568,7 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
+
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
