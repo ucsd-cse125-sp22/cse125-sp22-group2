@@ -597,11 +597,8 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
     // crash animation
     for (int playerId = 0; playerId < cse125constants::NUM_PLAYERS; playerId++)
     {
-        game.players[playerId]->isCrashed = false;
         if (triggers.playerCrash[playerId])
         {
-            game.players[playerId]->isCrashed = true;
-            
             game.triggerCarCollisionAnimation(playerId);
         }
     }
@@ -609,9 +606,6 @@ void triggerAnimations(const cse125framing::AnimationTrigger& triggers)
 
 void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MAX_NUM_SOUNDS])
 {
-	for (auto player : game.players) {
-	    player->isBouncing = false;
-	}
     using namespace cse125framing;
     using namespace cse125constants;
     for (int i = 0; i < MAX_NUM_SOUNDS; i++)
@@ -631,11 +625,6 @@ void triggerAudio(const cse125framing::AudioTrigger triggers[cse125constants::MA
             break;
         case AudioId::BOUNCE:
             game.triggerFx("Pillow.wav", position);
-            for (auto player : game.players) {
-                if (glm::length(player->getPosition() - position) < 2.0f) {
-                    player->isBouncing = true;
-                }
-            }
             break;
         case AudioId::POWERUP_PICKUP:
             game.triggerFx("BlowDryerPowerup.wav", position);
@@ -991,6 +980,9 @@ void idle() {
 
         // Update time 
         scene.game_time->updateText(std::to_string((int)(game.getTime() + 0.5f)));
+        const float TIME_IN_MATCH = 120.0f;
+        timeOfDay = glm::clamp(2.0f - 3.0f * (game.getTime() / 120.0f), 0.0f, 1.0f);
+        scene.setDayNight(timeOfDay);
 
         // Update Engine Audio Positions
         game.updateCarEngines(clientId, scene.camera->forwardVectorXZ());
