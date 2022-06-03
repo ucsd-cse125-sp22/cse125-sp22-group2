@@ -46,7 +46,7 @@ void countdown::CountdownStateMachine::go()
 void countdown::CountdownStateMachine::resetState()
 {
     this->state = countdown::CountdownState::PLAY_NO_SOUND;
-    this->goSoundPlayed = false;
+    this->readySoundPlayed = false;
     this->setSoundPlayed = false;
     this->goSoundPlayed = false;
 }

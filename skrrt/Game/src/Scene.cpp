@@ -508,7 +508,7 @@ void Scene::drawDrips(void) {
     } // End of DFS while loop.
 }
 
-void Scene::drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels) {
+void Scene::drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels, const bool& showCrownIcons) {
     glUseProgram(ui_shader->program);
 
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
@@ -558,6 +558,11 @@ void Scene::drawUI(const bool& showStartLogo, const bool& showTimer, const bool&
             }
 
             if (!showTimer && (cur->name == "clock")) {
+                continue;
+            }
+
+            // Check if string starts with 'crown_icon'
+            if (!showCrownIcons && (cur->name.find("crown_icon") == 0)) {
                 continue;
             }
 

@@ -55,9 +55,15 @@ void Scene::init(int width, int height) {
     geometry["drips"]->init("models/Plane.obj", "textures/drips.png", "textures/map_specular.png", "textures/no_emissions.png", 5);
 
     geometry["makeup_station"] = new Obj;
-    geometry["makeup_station"]->init("models/MakeupPitStopNo_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["makeup_station"]->init("models/MakeupPitStopOnlyMascara.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
     geometry["makeup_station_bar"] = new Obj;
-    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/no_emission.png", 6);
+    geometry["makeup_station_bar"]->init("models/MakeupPitStopJust_bar.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
+    geometry["stop_sign"] = new Obj;
+    geometry["stop_sign"]->init("models/StopSign.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
+    geometry["flags"] = new Obj;
+    geometry["flags"]->init("models/Flags.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
+    geometry["makeup_station_lights"] = new Obj;
+    geometry["makeup_station_lights"]->init("models/PitStopLights.obj", "textures/PitStopTexture4x.png", "textures/map_specular.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["tire_rack"] = new Obj;
     geometry["tire_rack"]->init("models/TireRack.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
@@ -78,13 +84,13 @@ void Scene::init(int width, int height) {
     geometry["curtains"]->init("models/Curtains.obj", "textures/Multitexture.png", "textures/no_emission.png", "textures/no_emission.png", 7);
 
     geometry["lipstick"] = new Obj; 
-    geometry["lipstick"]->init("models/Lipstick.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["lipstick"]->init("models/Lipstick.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["mascara_brush"] = new Obj; 
-    geometry["mascara_brush"]->init("models/MascaraBrush.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["mascara_brush"]->init("models/MascaraBrush.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["powder_thing"] = new Obj; 
-    geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/no_emission.png", 6);
+    geometry["powder_thing"]->init("models/PowderThing.obj", "textures/PitStopTexture4x.png", "textures/no_emission.png", "textures/PitStop_Emission4x.png", 6);
 
     geometry["blowdryer_world"] = new Obj;
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
@@ -218,6 +224,18 @@ void Scene::init(int width, int height) {
     model["makeup_station_bar"] = new Model;
     model["makeup_station_bar"]->geometry = geometry["makeup_station_bar"];
     model["makeup_station_bar"]->material = material["ceramic"];
+
+    model["stop_sign"] = new Model;
+    model["stop_sign"]->geometry = geometry["stop_sign"];
+    model["stop_sign"]->material = material["ceramic"];
+
+    model["flags"] = new Model;
+    model["flags"]->geometry = geometry["flags"];
+    model["flags"]->material = material["ceramic"];
+
+    model["makeup_station_lights"] = new Model;
+    model["makeup_station_lights"]->geometry = geometry["makeup_station_lights"];
+    model["makeup_station_lights"]->material = material["ceramic"];
 
     model["tire_rack"] = new Model;
     model["tire_rack"]->geometry = geometry["tire_rack"];
@@ -543,6 +561,18 @@ void Scene::init(int width, int height) {
 		node["makeup_station_bar" + std::to_string(i)]->models.push_back(model["makeup_station_bar"]);
 		node["makeup_station_bar" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
 
+		node["stop_sign" + std::to_string(i)] = new Node("stop_sign" + std::to_string(i));
+		node["stop_sign" + std::to_string(i)]->models.push_back(model["stop_sign"]);
+		node["stop_sign" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+
+		node["flags" + std::to_string(i)] = new Node("flags" + std::to_string(i));
+		node["flags" + std::to_string(i)]->models.push_back(model["flags"]);
+		node["flags" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+
+		node["makeup_station_lights" + std::to_string(i)] = new Node("makeup_station_lights" + std::to_string(i));
+		node["makeup_station_lights" + std::to_string(i)]->models.push_back(model["makeup_station_lights"]);
+		node["makeup_station_lights" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
+
 		node["lipstick" + std::to_string(i)] = new Node("lipstick" + std::to_string(i));
 		node["lipstick" + std::to_string(i)]->models.push_back(model["lipstick"]);
 		node["lipstick" + std::to_string(i)]->modeltransforms.push_back(mat4(1.0f));
@@ -700,6 +730,12 @@ void Scene::init(int width, int height) {
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station0"]->childnodes.push_back(node["powder_thing0"]);
 	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["stop_sign0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["flags0"]);
+	node["makeup_station0"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station0"]->childnodes.push_back(node["makeup_station_lights0"]);
     
     // makeup_station1 is the one in the lower right 
 	node["world"]->childnodes.push_back(node["makeup_station1"]); 
@@ -712,6 +748,12 @@ void Scene::init(int width, int height) {
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
 	node["makeup_station1"]->childnodes.push_back(node["powder_thing1"]);
 	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["stop_sign1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["flags1"]);
+	node["makeup_station1"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+	node["makeup_station1"]->childnodes.push_back(node["makeup_station_lights1"]);
 
     // Obstacles
     node["world"]->childnodes.push_back(node["tire_rack0"]);

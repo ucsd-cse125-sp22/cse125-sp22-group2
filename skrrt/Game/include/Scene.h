@@ -183,7 +183,7 @@ public:
 
     void drawText(const bool& renderScores, const bool& renderTime, const bool& renderStartText, const bool& renderCountdownText, const bool& renderMatchEndText,
                   const std::string& countdownText = "", const std::string& matchEndText = "");
-    void drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels); 
+    void drawUI(const bool& showStartLogo, const bool& showTimer, const bool& showMascara, const bool& showWheels, const bool& showCrownIcons); 
     void drawDrips(void); 
 
     void updateScreen(void);
