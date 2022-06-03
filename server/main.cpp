@@ -57,7 +57,7 @@ int main()
     const int numCountdownTicks = cse125config::TICK_RATE * cse125config::COUNTDOWN_LENGTH;
     // server loop
     manager = initializeGame();
-    bool runServer = true; 
+    volatile bool runServer = true; 
     while (runServer) 
     {
         ticker = new cse125clocktick::ClockTick(cse125config::TICK_RATE);
@@ -184,7 +184,11 @@ int main()
         // Wait for all clients to be ready to play again
         std::cerr << "Waiting for clients to replay..." << std::endl;
         server->setReadyToPlay(false);
-        while (!server->readyToPlay()) {}
+        ready = server->readyToPlay();
+        while (!ready) 
+        {
+            ready = server->readyToPlay();
+        }
 
         // Reset the server packet queue
         server->queueMtx.lock();
