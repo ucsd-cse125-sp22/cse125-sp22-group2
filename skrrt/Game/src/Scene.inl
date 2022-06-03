@@ -42,8 +42,8 @@ void Scene::init(int width, int height) {
     geometry["map"] = new Obj;
     geometry["map"]->init("models/MapFinal.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
-    geometry["end"] = new Obj;
-    geometry["end"]->init("models/Pedestal.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
+    //geometry["end"] = new Obj;
+    //geometry["end"]->init("models/Pedestal.obj", "textures/map_texture.png", "textures/map_specular.png", "textures/map_emission.png", 3);
 
     geometry["plane"] = new Obj;
     geometry["plane"]->init("models/Plane.obj", "textures/ring.png", "textures/map_specular.png", "textures/map_emission.png", 4);
@@ -86,6 +86,9 @@ void Scene::init(int width, int height) {
     geometry["blowdryer_world"] = new Obj;
     geometry["blowdryer_world"]->init("models/BlowDryer.obj", "textures/BlowDryerTexture.png", "textures/white.png", "textures/no_emission.png", 19);
 
+    geometry["pedestal"] = new Obj;
+    geometry["pedestal"]->init("models/Pedestal.obj", "textures/trophies.png", "textures/white.png", "textures/no_emission.png", 20);
+
     //*****************************
     //********** UI obj ***********
     //*****************************
@@ -125,7 +128,7 @@ void Scene::init(int width, int height) {
     //          SET THIS VALUE            //
     //      WHEN YOU ADD A NEW OBJECT     //
     ////////////////////////////////////////
-    int maxObjectNumber = 20; // THIS VALUE RIGHT HERE :)
+    int maxObjectNumber = 21; // THIS VALUE RIGHT HERE :)
     shadowMapOffset = maxObjectNumber * NUM_TEXTURES + 1;
     bloomTexOffsets[0] = shadowMapOffset + 1;
     bloomTexOffsets[1] = bloomTexOffsets[0] + 1;
@@ -178,13 +181,17 @@ void Scene::init(int width, int height) {
     model["crown"]->geometry = geometry["crown"];
     model["crown"]->material = material["silver"];
 
+    model["pedestal"] = new Model;
+    model["pedestal"]->geometry = geometry["pedestal"];
+    model["pedestal"]->material = material["silver"];
+
     model["map"] = new Model;
     model["map"]->geometry = geometry["map"];
     model["map"]->material = material["silver"];
 
-    model["end"] = new Model;
-    model["end"]->geometry = geometry["end"];
-    model["end"]->material = material["silver"];
+    //model["end"] = new Model;
+    //model["end"]->geometry = geometry["end"];
+    //model["end"]->material = material["silver"];
 
     model["plane"] = new Model;
     model["plane"]->geometry = geometry["plane"];
@@ -479,6 +486,11 @@ void Scene::init(int width, int height) {
     node["crown_world"]->modeltransforms.push_back(glm::scale(glm::vec3(0.75f)));
 
 
+    node["pedestal"] = new Node("pedestal", false);
+    node["pedestal"]->models.push_back(model["pedestal"]);
+    node["pedestal"]->modeltransforms.push_back(glm::mat4(1.0f));
+
+
     // Powerups
     for (int i = 0; i < NUM_PLAYERS; i++) {
         node["blowdryer" + std::to_string(i)] = new Node("blowdryer" + std::to_string(i), false);
@@ -571,7 +583,7 @@ void Scene::init(int width, int height) {
     node["world"]->childnodes.push_back(node["player0"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player0"]->childnodes.push_back(node["pink_car"]);
-    node["player0"]->childtransforms.push_back(translate(vec3(21.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player0"]->childtransforms.push_back(translate(vec3(21.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(0.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["pink_car"]->childnodes.push_back(node["p_tire_f"]);
     node["pink_car"]->childtransforms.push_back(front_tire_transform);
     node["pink_car"]->childnodes.push_back(node["p_tire_b"]);
@@ -583,11 +595,10 @@ void Scene::init(int width, int height) {
     node["pink_car"]->childnodes.push_back(node["particles0"]);
     node["pink_car"]->childtransforms.push_back(particle_transform);
 
-
     node["world"]->childnodes.push_back(node["player1"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player1"]->childnodes.push_back(node["blue_car"]);
-    node["player1"]->childtransforms.push_back(translate(vec3(-21.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player1"]->childtransforms.push_back(translate(vec3(-21.0f, 0.0f, 0.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(180.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["blue_car"]->childnodes.push_back(node["b_tire_f"]);
     node["blue_car"]->childtransforms.push_back(front_tire_transform);
     node["blue_car"]->childnodes.push_back(node["b_tire_b"]);
@@ -602,7 +613,7 @@ void Scene::init(int width, int height) {
     node["world"]->childnodes.push_back(node["player2"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player2"]->childnodes.push_back(node["yellow_car"]);
-    node["player2"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 21.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(0.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player2"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 21.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(-90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["yellow_car"]->childnodes.push_back(node["y_tire_f"]);
     node["yellow_car"]->childtransforms.push_back(front_tire_transform);
     node["yellow_car"]->childnodes.push_back(node["y_tire_b"]);
@@ -617,7 +628,7 @@ void Scene::init(int width, int height) {
     node["world"]->childnodes.push_back(node["player3"]);
     node["world"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
     node["player3"]->childnodes.push_back(node["green_car"]);
-    node["player3"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -21.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(180.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["player3"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, -21.0f)) * scale(vec3(0.5f, 0.5f, 0.5)) * rotate(90.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     node["green_car"]->childnodes.push_back(node["g_tire_f"]);
     node["green_car"]->childtransforms.push_back(front_tire_transform);
     node["green_car"]->childnodes.push_back(node["g_tire_b"]);
@@ -629,25 +640,28 @@ void Scene::init(int width, int height) {
     node["green_car"]->childnodes.push_back(node["particles3"]);
     node["green_car"]->childtransforms.push_back(particle_transform);
 
-    node["end"] = new Node("end");
-    node["end"]->models.push_back(model["end"]);
-    node["end"]->modeltransforms.push_back(scale(vec3(0.5f, 0.5f, 0.5)));
-    node["end"]->childnodes.push_back(node["player1"]);
-    node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
-    node["end"]->childnodes.push_back(node["player2"]);
-    node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
-    node["end"]->childnodes.push_back(node["player3"]);
-    node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
-    node["end"]->childnodes.push_back(node["player4"]);
-    node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
+    //node["end"] = new Node("end");
+    //node["end"]->models.push_back(model["end"]);
+    //node["end"]->modeltransforms.push_back(scale(vec3(0.5f, 0.5f, 0.5)));
+    //node["end"]->childnodes.push_back(node["player1"]);
+    //node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
+    //node["end"]->childnodes.push_back(node["player2"]);
+    //node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
+    //node["end"]->childnodes.push_back(node["player3"]);
+    //node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
+    //node["end"]->childnodes.push_back(node["player4"]);
+    //node["end"]->childtransforms.push_back(scale(car_scale * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["map"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.5f, 0.0f)) * scale(0.5f * vec3(1.0f)));
     node["world"]->childnodes.push_back(node["traffic_light"]);
-    node["world"]->childtransforms.push_back(scale(0.5f * vec3(1.0f)));
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 9.0f, 0.0f)) * scale(0.5f * vec3(1.0f)));
 
     node["world"]->childnodes.push_back(node["crown_world"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+
+    node["world"]->childnodes.push_back(node["pedestal"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, -0.45f, -0.7f)) * glm::scale(glm::vec3(0.27f)));
 
     // ************
     // * NOTE: This makeup station is the one in the upper left corner of the map
@@ -781,9 +795,9 @@ void Scene::init(int width, int height) {
     node["green_tire"]->modeltransforms.push_back(UI_rotation);
 
     for (int i = 0; i < NUM_PLAYERS; i++) {
-		node["crown_icon" + std::to_string(i)] = new Node("crown_icon" + std::to_string(i), false);
-		node["crown_icon" + std::to_string(i)]->models.push_back(model["crown_icon"]);
-		node["crown_icon" + std::to_string(i)]->modeltransforms.push_back(UI_rotation);
+        node["crown_icon" + std::to_string(i)] = new Node("crown_icon" + std::to_string(i), false);
+        node["crown_icon" + std::to_string(i)]->models.push_back(model["crown_icon"]);
+        node["crown_icon" + std::to_string(i)]->modeltransforms.push_back(UI_rotation);
     }
 
     node["blowdryer_icon"] = new Node("blowdryer_icon");
@@ -805,20 +819,20 @@ void Scene::init(int width, int height) {
 
     //node["screen"]->childnodes.push_back(node["test_UI_elem"]); 
     //node["screen"]->childtransforms.push_back(translate(vec3(-25.0f, 20.0f, 0.0f)));
-    const float clock_ratio = 407.0f / 514.0f; 
+    const float clock_ratio = 407.0f / 514.0f;
     node["screen"]->childnodes.push_back(node["clock"]);
-    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f+2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
+    node["screen"]->childtransforms.push_back(translate(vec3(-3.0f, 21.5f + 2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
     //["screen"]->childtransforms.push_back(translate(vec3(-3.0f + 1.5f, 21.5f + 2.35f, 0.0f)) * scale(1.4f * vec3(clock_ratio, 1.0f, 0.0f)));
 
-    const float crown_ratio = 108.0f / 82.0f; 
-    node["screen"]->childnodes.push_back(node["crown_icon0"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 20.4f + 2.05f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f))* scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
-    node["screen"]->childnodes.push_back(node["crown_icon1"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 17.1f + 1.68f + 1.1f, 0.0f))  * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
-    node["screen"]->childnodes.push_back(node["crown_icon2"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 13.8f + 1.28f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
-    node["screen"]->childnodes.push_back(node["crown_icon3"]); 
-    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 10.5f + 0.92f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)) );
+    const float crown_ratio = 108.0f / 82.0f;
+    node["screen"]->childnodes.push_back(node["crown_icon0"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 20.4f + 2.05f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["crown_icon1"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 17.1f + 1.68f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["crown_icon2"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 13.8f + 1.28f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
+    node["screen"]->childnodes.push_back(node["crown_icon3"]);
+    node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f - 1.2f, 10.5f + 0.92f + 1.1f, 0.0f)) * rotate(45.0f * float(M_PI) / 180.0f, vec3(0.0f, 0.0f, 1.0f)) * scale(0.9f * vec3(crown_ratio, 1.0f, 0.0f)));
 
     const float tire_icon_ratio = 65.0f / 64.0f;
     node["screen"]->childnodes.push_back(node["pink_tire"]);
@@ -829,7 +843,6 @@ void Scene::init(int width, int height) {
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 13.8f + 1.28f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
     node["screen"]->childnodes.push_back(node["green_tire"]);
     node["screen"]->childtransforms.push_back(translate(vec3(-39.0f - 3.5f, 10.5f + 0.92f, 0.0f)) * scale(1.0f * vec3(tire_icon_ratio, 1.0f, 0.0f)));
-
 
     const float mascara_icon_ratio = 1782.0f / 751.0f; 
     const float mascara_bar_ratio = 1133.0f / 353.0f;

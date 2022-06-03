@@ -24,10 +24,24 @@
 
 #include "../../../Constants.hpp"
 #include "../../../Definitions.hpp"
+#include "../../../Frame.hpp"
 
 class Game {
 private:
     float game_time = 0;
+
+    const std::vector<glm::vec3> end_positions = {
+        glm::vec3(0.0f, 3.0f, 0.0f),
+        glm::vec3(-1.5f, 1.48f, 0.0f),
+        glm::vec3(1.5f, 0.77f, 0.0f),
+        glm::vec3(-3.0f, 0.05f, 0.0f)
+    };
+    const std::vector<glm::vec3> end_directions = {
+        glm::normalize(glm::vec3(0.25f, 0.0f, -1.0f)),
+        glm::normalize(glm::vec3(-0.1f, 0.0f, -1.0f)),
+        glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)),
+        glm::normalize(glm::vec3(0.025f, 0.0f, -1.0f))
+    };
 
     // Add other parameters as needed
     Node* UI_root = nullptr;
@@ -87,6 +101,7 @@ public:
         for (int i = 0; i < numPlayers; i++) {
             players.push_back(new Player());
             scores.push_back(0);
+            ranks.push_back(i);
         }
     }
 
@@ -165,8 +180,6 @@ public:
     void updateTime(RealNumber t) { game_time = t; }
     float getTime() { return game_time; };
     void setRanks() {
-        std::vector<int> temp;
-        RealNumber max_score = 0;
 
         for (int i = 0; i < cse125constants::NUM_PLAYERS; i++) {
             RealNumber max_score = -1;
@@ -179,6 +192,7 @@ public:
             }
             int temp = ranks[i];
             ranks[i] = ranks[tracker];
+            ranks[tracker] = temp;
         }
 
         //auto cmp = [](std::pair<int, int> p1, std::pair<int, int> p2) { return p1.second > p2.second; };
@@ -243,8 +257,59 @@ public:
     }
 
     void endGame() {
-        return;
         setRanks();
+    }
+
+    // Initializes the frame the server will send back to all clients
+    cse125framing::ServerFrame* endFrame() {
+        cse125framing::ServerFrame* frame = new cse125framing::ServerFrame();
+        frame->ctr = 0;
+        frame->gameTime = 0;
+
+        // crown
+        frame->crown.crownPosition = glm::vec3(0.0f);
+        frame->crown.crownVisible = false;
+
+        // powerup
+        for (int id = 0; id < cse125constants::NUM_POWERUPS; id++) {
+            frame->powerup[id].powerupPosition = glm::vec3(0.0f);
+            frame->powerup[id].powerupVisible = false;
+        }
+
+        // initialize audio triggers
+        for (int i = 0; i < cse125constants::MAX_NUM_SOUNDS; i++) {
+            frame->audio[i].id = cse125framing::AudioId::NO_AUDIO;
+        }
+
+        // initialize animation triggers
+        frame->animations = { }; // initialize to false --> no animations
+
+        // player
+        for (int id = 0; id < cse125constants::NUM_PLAYERS; id++)
+        {
+            int ranking = 0;
+            for (int j = 0; j < cse125constants::NUM_PLAYERS; j++) {
+                if (ranks[j] == id) {
+                    ranking = j;
+                    break;
+                }
+            }
+            frame->players[id].hasCrown = !ranking;
+            frame->players[id].playerSpeed = 0.0f;
+            frame->players[id].makeupLevel = 100.0f;
+            frame->players[id].playerDirection = end_directions[ranking];
+            frame->players[id].playerUp = glm::vec3(0.0f, 1.0f, 0.0f);
+            frame->players[id].playerPosition = vec4(end_positions[ranking], 1.0f);
+            frame->players[id].score = players[id]->getScore();
+            frame->players[id].hasPowerup = false;
+            frame->players[id].powerupActive = false;
+            frame->players[id].iframes = 0.0f;
+        }
+
+        // set game restart values
+        frame->matchInProgress = false;
+
+        return frame;
     }
 };
 

@@ -1048,6 +1048,16 @@ void idle() {
                matchInProgress = false;
                enableSendPlay = true;
                game.endGame();
+               scene.node["pedestal"]->visible = true;
+               scene.camera->setEnd();
+               cse125framing::ServerFrame* endFrame = game.endFrame();
+               // Use the frame to update the powerups' state
+               updatePowerupState(endFrame);
+               // Use the frame to update the crown's state
+               updateCrownState(endFrame);
+               // Use the frame to update the player's state
+               updatePlayerState(endFrame);
+               delete endFrame;
             }
             triggerAudio(frame->audio);
             // Delete the frame
@@ -1055,6 +1065,8 @@ void idle() {
         }
         else {
             if (waitingToStartMatch) {
+                // Make sure the pedestal isn't visible
+                scene.node["pedestal"]->visible = false;
                 // Reset the winner id for this new match
                 winnerId = cse125constants::DEFAULT_WINNER_ID;
                 // Stop showing the start menu
