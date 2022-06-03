@@ -56,9 +56,6 @@ private:
 
 
 public: 
-	bool isCrashed = false;
-	bool isBouncing = false;
-
 	Player() { player_node = NULL; has_crown = false; makeupLevel = 100.0f; };
 	Player(Node* car) { player_node = car; has_crown = false; makeupLevel = 100.0f; };
 
