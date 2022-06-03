@@ -81,7 +81,7 @@ std::string countdown::makeCountdownText(const float& countdownTimeRemaining, Co
         csm.set();
         break;
     case 0:
-        countdownText = "GO!";
+        countdownText = "SKRRT!";
         csm.go();
         break;
     default:

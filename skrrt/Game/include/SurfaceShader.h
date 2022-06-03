@@ -107,11 +107,15 @@ struct SurfaceShader : Shader {
 
     glm::mat4 lightSpace;
     GLuint lightSpace_loc;
+
+    glm::vec3 particleColor;
+    GLuint particleColor_loc;
     
     float iFrames; GLuint iFrames_loc;
     
     void initUniforms(){
         iFrames_loc = glGetUniformLocation(program, "iFrames");
+        particleColor_loc = glGetUniformLocation(program, "particleColor"); 
         if (ENABLE_SHADOW_MAP) {
             directionalDepthMap_loc = glGetUniformLocation(program, "directionalDepthMap");
 			for (int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++) {
@@ -180,6 +184,8 @@ struct SurfaceShader : Shader {
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &modelview[0][0]);
         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &projection[0][0]);
+
+        glUniform3fv(particleColor_loc, 1, &(particleColor[0]));
 
         glUniformMatrix4fv(lightSpace_loc, 1, GL_FALSE, &lightSpace[0][0]);
 

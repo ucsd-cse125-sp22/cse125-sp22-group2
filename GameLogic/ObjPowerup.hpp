@@ -17,6 +17,7 @@ public:
 	// Randomness
 	default_random_engine generator;
 	uniform_int_distribution<int> distribution;
+	normal_distribution<float> distributionNormal;
 
 	ObjPowerup();
 	ObjPowerup(vector<PhysicalObject*>* objects, unsigned int id, vector<glm::vec3> locations, glm::vec3 direction, glm::vec3 up);

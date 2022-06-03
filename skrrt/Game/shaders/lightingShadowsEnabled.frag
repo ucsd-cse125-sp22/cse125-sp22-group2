@@ -7,6 +7,8 @@ in vec4 posDirectionalLightSpace;
 
 uniform float iFrames; // 0.0f means no glow, 1.0f means full glow
 
+uniform vec3 particleColor; 
+
 uniform mat4 modelview; // from model coord to eye coord
 uniform mat4 view;      // from world coord to eye coord
 
@@ -235,13 +237,17 @@ void main (void){
 
 	fragColor += emisColor; 
 	
-	fragColor += iFrames * vec4(0.5f,0.5f,0.5f,0.0f);
+	fragColor += iFrames * vec4(0.5f,0.5f,0.5f,1.0f);
 
-	fragColor.w = texColor.w;
+	fragColor.w = 1.0f;
 	float brightness = dot(fragColor.xyz + 5.0f * emisColor.xyz, vec3(0.2126f, 0.7152f, 0.0722f)); // convert to greyscale
-	if(brightness > 1.0f) {
+	if(brightness > 1.0f || iFrames != 0.0f) {
 		brightColor = vec4(fragColor.xyz, 1.0f);
 	} else {
 		brightColor = vec4(0.0f,0.0f,0.0f,1.0f);
+	}
+	if(particleColor != vec3(0.0f, 0.0f, 0.0f)) {
+		brightColor = vec4(particleColor, 1.0f);
+		fragColor = vec4(particleColor,1.0f);
 	}
 }
